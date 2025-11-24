@@ -7,7 +7,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/google/uuid"
 )
 
@@ -26,21 +26,21 @@ func NewSQLiteAPIKeyRepository(db *sql.DB) *SQLiteAPIKeyRepository {
 // APIKey operations
 
 // Create creates a new apikey
-func (r *SQLiteAPIKeyRepository) Create(ctx context.Context, apikey *models.APIKey) (*models.APIKey, error) {
+func (r *SQLiteAPIKeyRepository) Create(ctx context.Context, apikey *core.APIKey) (*core.APIKey, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per apikey
 	return nil, fmt.Errorf("CreateAPIKey not yet implemented - requires custom mapping")
 }
 
 // Get retrieves a apikey by ID
-func (r *SQLiteAPIKeyRepository) Get(ctx context.Context, id uuid.UUID) (*models.APIKey, error) {
+func (r *SQLiteAPIKeyRepository) Get(ctx context.Context, id uuid.UUID) (*core.APIKey, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per apikey
 	return nil, fmt.Errorf("GetAPIKey not yet implemented - requires custom mapping")
 }
 
 // Update updates an existing apikey
-func (r *SQLiteAPIKeyRepository) Update(ctx context.Context, id uuid.UUID, apikey *models.APIKey) (*models.APIKey, error) {
+func (r *SQLiteAPIKeyRepository) Update(ctx context.Context, id uuid.UUID, apikey *core.APIKey) (*core.APIKey, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per apikey
 	return nil, fmt.Errorf("UpdateAPIKey not yet implemented - requires custom mapping")
@@ -54,7 +54,7 @@ func (r *SQLiteAPIKeyRepository) Delete(ctx context.Context, id uuid.UUID) error
 }
 
 // List returns a paginated list of apikeys
-func (r *SQLiteAPIKeyRepository) List(ctx context.Context, limit, offset int32) ([]*models.APIKey, int64, error) {
+func (r *SQLiteAPIKeyRepository) List(ctx context.Context, limit, offset int32) ([]*core.APIKey, int64, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per apikey
 	return nil, 0, fmt.Errorf("ListAPIKeys not yet implemented - requires custom mapping")

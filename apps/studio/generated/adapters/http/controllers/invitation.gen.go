@@ -12,7 +12,7 @@ import (
 
 	commands "github.com/archesai/archesai/apps/studio/generated/application/commands/invitation"
 	queries "github.com/archesai/archesai/apps/studio/generated/application/queries/invitation"
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/archesai/archesai/pkg/server"
 )
 
@@ -74,7 +74,7 @@ type CreateInvitationResponse interface {
 }
 
 type CreateInvitation201Response struct {
-	Data models.Invitation `json:"data"`
+	Data core.Invitation `json:"data"`
 }
 
 func (response CreateInvitation201Response) VisitCreateInvitationResponse(w http.ResponseWriter) error {
@@ -248,7 +248,7 @@ type GetInvitationResponse interface {
 }
 
 type GetInvitation200Response struct {
-	Data models.Invitation `json:"data"`
+	Data core.Invitation `json:"data"`
 }
 
 func (response GetInvitation200Response) VisitGetInvitationResponse(w http.ResponseWriter) error {
@@ -441,8 +441,8 @@ type ListInvitationsResponse interface {
 }
 
 type ListInvitations200Response struct {
-	Data []models.Invitation   `json:"data"`
-	Meta models.PaginationMeta `json:"meta"`
+	Data []core.Invitation   `json:"data"`
+	Meta core.PaginationMeta `json:"meta"`
 }
 
 func (response ListInvitations200Response) VisitListInvitationsResponse(w http.ResponseWriter) error {
@@ -616,7 +616,7 @@ func (c *InvitationController) ListInvitations(w http.ResponseWriter, r *http.Re
 	}
 
 	// Convert pointer slice to value slice for response
-	data := make([]models.Invitation, len(results))
+	data := make([]core.Invitation, len(results))
 	for i, item := range results {
 		if item != nil {
 			data[i] = *item
@@ -625,7 +625,7 @@ func (c *InvitationController) ListInvitations(w http.ResponseWriter, r *http.Re
 
 	response := ListInvitations200Response{
 		Data: data,
-		Meta: models.PaginationMeta{Total: int32(total)},
+		Meta: core.PaginationMeta{Total: int32(total)},
 	}
 	if err := response.VisitListInvitationsResponse(w); err != nil {
 		fmt.Fprintf(w, "error writing response: %v", err)
@@ -656,7 +656,7 @@ type UpdateInvitationResponse interface {
 }
 
 type UpdateInvitation200Response struct {
-	Data models.Invitation `json:"data"`
+	Data core.Invitation `json:"data"`
 }
 
 func (response UpdateInvitation200Response) VisitUpdateInvitationResponse(w http.ResponseWriter) error {

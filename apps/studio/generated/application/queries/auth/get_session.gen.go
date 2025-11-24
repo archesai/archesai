@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/archesai/archesai/apps/studio/generated/core/repositories"
 )
 
@@ -42,7 +42,7 @@ func NewGetSessionQueryHandler(repo repositories.SessionRepository) *GetSessionQ
 }
 
 // Handle executes the get auth query.
-func (h *GetSessionQueryHandler) Handle(ctx context.Context, query *GetSessionQuery) (*models.Session, error) {
+func (h *GetSessionQueryHandler) Handle(ctx context.Context, query *GetSessionQuery) (*core.Session, error) {
 	result, err := h.repo.Get(ctx, query.ID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get auth: %w", err)

@@ -18,7 +18,7 @@ type EventsTemplateData struct {
 // GenerateEvents generates domain events for all entities
 func (g *Generator) GenerateEvents(schemas []*parsers.SchemaDef) error {
 
-	outputPath := "github.com/archesai/archesai" + strings.TrimPrefix(g.outputDir, ".")
+	outputPath := "github.com/archesai/archesai" + strings.TrimPrefix(g.storage.BaseDir(), ".")
 
 	for _, schema := range schemas {
 
@@ -39,7 +39,7 @@ func (g *Generator) GenerateEvents(schemas []*parsers.SchemaDef) error {
 
 		// Write using storage
 		eventFilePath := filepath.Join(
-			g.outputDir, "generated", "core", "events",
+			"generated", "core",
 			strings.ToLower(schema.Name)+"_events.gen.go",
 		)
 		if err := g.storage.WriteFile(eventFilePath, buf.Bytes(), 0644); err != nil {

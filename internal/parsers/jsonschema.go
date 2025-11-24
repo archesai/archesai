@@ -16,11 +16,13 @@ import (
 	"go.yaml.in/yaml/v4"
 )
 
+const (
+	omitEmptyTag = ",omitempty"
+)
+
 // JSONSchemaParser handles parsing JSON Schema files
 type JSONSchemaParser struct {
 	openAPIDoc *v3.Document
-	schemaType XCodegenSchemaType
-	schemaName string // Track the current schema name being parsed
 }
 
 // NewJSONSchemaParser creates a new JSONSchemaParser instance
@@ -71,29 +73,7 @@ func (p *JSONSchemaParser) Parse(data []byte) (*SchemaDef, error) {
 		return nil, fmt.Errorf("failed to build high-level schema")
 	}
 
-	// Track the schema name from title
-	p.schemaName = schema.Title
-
-	// Determine schema type from x-codegen extension
-	p.schemaType = XCodegenSchemaTypeValueobject // Default
-	if schema.Extensions != nil {
-		if ext, ok := schema.Extensions.Get("x-codegen-schema-type"); ok {
-			var schemaType string
-			if err := ext.Decode(&schemaType); err == nil {
-				p.schemaType = XCodegenSchemaType(schemaType)
-			}
-		}
-	}
-
-	processed, err := p.extractSchemaRecursive(schema, "")
-	if err != nil {
-		return nil, fmt.Errorf("failed to extract schema definition: %w", err)
-	}
-
-	// Set the schema type on the processed schema
-	processed.XCodegenSchemaType = p.schemaType
-
-	return processed, nil
+	return p.ParseBase(schema)
 }
 
 // ParseFile reads and parses a JSON Schema from a file
@@ -111,107 +91,93 @@ func (p *JSONSchemaParser) ParseBase(schema *base.Schema) (*SchemaDef, error) {
 		return nil, fmt.Errorf("schema is nil")
 	}
 
-	// Track the schema name from title
-	p.schemaName = schema.Title
-
-	// Determine schema type from x-codegen extension
-	p.schemaType = XCodegenSchemaTypeValueobject // Default
+	// Extract schema type from extension
+	schemaType := XCodegenSchemaTypeValueobject
 	if schema.Extensions != nil {
 		if ext, ok := schema.Extensions.Get("x-codegen-schema-type"); ok {
-			var schemaType string
-			if err := ext.Decode(&schemaType); err == nil {
-				p.schemaType = XCodegenSchemaType(schemaType)
+			var schemaTypeStr string
+			if err := ext.Decode(&schemaTypeStr); err == nil {
+				schemaType = XCodegenSchemaType(schemaTypeStr)
 			}
 		}
 	}
 
-	processed, err := p.extractSchemaRecursive(schema, "")
+	// Track the schema name from title
+	schemaName := schema.Title
+
+	processed, err := p.extractSchemaRecursive(schema, "", schemaName, schemaType)
 	if err != nil {
 		return nil, fmt.Errorf("failed to extract schema definition: %w", err)
 	}
 
 	// Set the schema type on the processed schema
-	processed.XCodegenSchemaType = p.schemaType
+	processed.XCodegenSchemaType = schemaType
 
 	return processed, nil
 }
 
-// extractSchemaRecursive builds a recursive SchemaDef structure
-// processAllOfSchemas handles allOf schema composition
-func (p *JSONSchemaParser) processAllOfSchemas(
-	allOfItem *base.SchemaProxy,
-	result *SchemaDef,
-	parentName string,
-) {
-	allOfSchema := allOfItem.Schema()
-	if allOfSchema == nil {
-		return
-	}
-
-	// Handle references in allOf
-	if allOfItem.GetReference() != "" {
-		p.processAllOfReference(
-			result,
-			parentName,
-			allOfItem.GetReference(),
-		)
-		return
-	}
-
-	// Handle direct properties in allOf
-	if allOfSchema.Properties != nil {
-		result.Required = append(result.Required, allOfSchema.Required...)
-		p.extractPropertiesInto(allOfSchema, result, parentName)
-	}
-}
-
-// processAllOfReference resolves and processes a reference in an allOf schema
-func (p *JSONSchemaParser) processAllOfReference(
-	result *SchemaDef,
-	parentName,
-	refString string,
-) {
-	if !strings.HasPrefix(refString, "#/components/schemas/") {
-		return
-	}
-
-	schemaName := strings.TrimPrefix(refString, "#/components/schemas/")
-	schemaName = strings.TrimSuffix(schemaName, ".yaml")
-
-	// Check if we can resolve the reference
+// resolveReferencedSchema resolves a schema reference by name
+func (p *JSONSchemaParser) resolveReferencedSchema(schemaName string) (*base.Schema, error) {
 	if p.openAPIDoc == nil || p.openAPIDoc.Components == nil ||
 		p.openAPIDoc.Components.Schemas == nil {
-		return
+		return nil, fmt.Errorf("openAPI document or component schemas not available")
 	}
 
 	referencedSchemaProxy, ok := p.openAPIDoc.Components.Schemas.Get(schemaName)
 	if !ok {
-		return
+		return nil, fmt.Errorf("schema %s not found", schemaName)
 	}
 
 	resolvedSchema := referencedSchemaProxy.Schema()
 	if resolvedSchema == nil {
-		return
+		return nil, fmt.Errorf("resolved schema %s is nil", schemaName)
 	}
 
-	// Merge required fields FIRST, before extracting properties
-	result.Required = append(result.Required, resolvedSchema.Required...)
-	// Then extract properties from the resolved schema
-	p.extractPropertiesInto(resolvedSchema, result, parentName)
+	return resolvedSchema, nil
 }
 
-// extractSchemaBasicInfo extracts basic schema information (name, type, format, etc.)
-func (p *JSONSchemaParser) extractSchemaBasicInfo(
+// extractSchemaRecursive builds a recursive SchemaDef structure
+func (p *JSONSchemaParser) extractSchemaRecursive(
 	schema *base.Schema,
-) *SchemaDef {
+	parentName string,
+	schemaName string,
+	schemaType XCodegenSchemaType,
+) (*SchemaDef, error) {
+	if schema == nil {
+		return nil, fmt.Errorf("schema is nil")
+	}
 
+	result := p.buildBasicSchemaDef(schema, schemaType)
+	p.extractSchemaType(schema, result)
+
+	// Handle different types
+	switch result.Type {
+	case schemaTypeObject:
+		p.processObjectSchema(schema, result, parentName, schemaName, schemaType)
+	case schemaTypeArray:
+		p.processArraySchema(schema, result, parentName, schemaName, schemaType)
+	default:
+		p.processSimpleSchema(schema, result)
+	}
+
+	// Compute GoType
+	result.GoType = p.computeGoType(result, parentName, schemaName, schemaType)
+
+	return result, nil
+}
+
+// buildBasicSchemaDef creates the basic SchemaDef structure
+func (p *JSONSchemaParser) buildBasicSchemaDef(
+	schema *base.Schema,
+	schemaType XCodegenSchemaType,
+) *SchemaDef {
 	result := &SchemaDef{
 		Name:               schema.Title,
 		Description:        schema.Description,
 		Schema:             schema,
 		Format:             schema.Format,
 		DefaultValue:       schema.Default,
-		XCodegenSchemaType: p.schemaType,
+		XCodegenSchemaType: schemaType,
 	}
 
 	// Extract x-codegen extension if at top level
@@ -227,13 +193,17 @@ func (p *JSONSchemaParser) extractSchemaBasicInfo(
 		}
 	}
 
-	// Determine type from schema
+	return result
+}
+
+// extractSchemaType determines the type from schema
+func (p *JSONSchemaParser) extractSchemaType(schema *base.Schema, result *SchemaDef) {
 	if len(schema.Type) > 0 {
 		for _, t := range schema.Type {
 			if t == "null" {
 				result.Nullable = true
 			} else {
-				result.Type = t // Use the non-null type
+				result.Type = t
 			}
 		}
 	} else if len(schema.AllOf) > 0 {
@@ -243,58 +213,80 @@ func (p *JSONSchemaParser) extractSchemaBasicInfo(
 	if schema.Nullable != nil {
 		result.Nullable = *schema.Nullable
 	}
-
-	return result
 }
 
-// processObjectType handles object type schemas
-func (p *JSONSchemaParser) processObjectType(
+// processObjectSchema processes object type schemas
+func (p *JSONSchemaParser) processObjectSchema(
 	schema *base.Schema,
 	result *SchemaDef,
 	parentName string,
+	schemaName string,
+	schemaType XCodegenSchemaType,
 ) {
-	// Initialize properties map for objects
 	result.Properties = make(map[string]*SchemaDef)
 	result.Required = schema.Required
 
-	// Process allOf first (even if there are no direct properties)
-	for _, allOfItem := range schema.AllOf {
-		p.processAllOfSchemas(allOfItem, result, parentName)
-	}
+	// Process allOf schemas
+	p.processAllOfSchemas(schema, result, parentName, schemaName, schemaType)
 
 	// Process direct properties if present
 	if schema.Properties != nil {
-		p.extractPropertiesInto(schema, result, parentName)
+		p.extractPropertiesInto(schema, result, parentName, schemaName, schemaType)
 	}
 }
 
-// processArrayItemReference resolves array item references and returns a SchemaDef
-func (p *JSONSchemaParser) processArrayItemReference(
-	refString string,
-) *SchemaDef {
-	if !strings.HasPrefix(refString, "#/components/schemas/") {
-		return nil
-	}
-
-	schemaName := strings.TrimPrefix(refString, "#/components/schemas/")
-	schemaName = strings.TrimSuffix(schemaName, ".yaml")
-
-	// Resolve the reference to get type info
-	goType, schemaType, format := p.resolvePropertyReference(schemaName)
-
-	return &SchemaDef{
-		Name:   schemaName,
-		GoType: goType,
-		Type:   schemaType,
-		Format: format,
-	}
-}
-
-// processArrayType handles array type schemas
-func (p *JSONSchemaParser) processArrayType(
+// processAllOfSchemas processes allOf schemas
+func (p *JSONSchemaParser) processAllOfSchemas(
 	schema *base.Schema,
 	result *SchemaDef,
-	name string,
+	parentName string,
+	schemaName string,
+	schemaType XCodegenSchemaType,
+) {
+	for _, allOfItem := range schema.AllOf {
+		allOfSchema := allOfItem.Schema()
+		if allOfSchema == nil {
+			continue
+		}
+
+		if refString := allOfItem.GetReference(); refString != "" {
+			p.processAllOfReference(refString, result, parentName, schemaName, schemaType)
+		} else if allOfSchema.Properties != nil {
+			result.Required = append(result.Required, allOfSchema.Required...)
+			p.extractPropertiesInto(allOfSchema, result, parentName, schemaName, schemaType)
+		}
+	}
+}
+
+// processAllOfReference processes a reference in allOf
+func (p *JSONSchemaParser) processAllOfReference(
+	refString string,
+	result *SchemaDef,
+	parentName string,
+	schemaName string,
+	schemaType XCodegenSchemaType,
+) {
+	if !strings.HasPrefix(refString, "#/components/schemas/") {
+		return
+	}
+
+	refSchemaName := strings.TrimPrefix(refString, "#/components/schemas/")
+	refSchemaName = strings.TrimSuffix(refSchemaName, ".yaml")
+
+	resolvedSchema, err := p.resolveReferencedSchema(refSchemaName)
+	if err == nil {
+		result.Required = append(result.Required, resolvedSchema.Required...)
+		p.extractPropertiesInto(resolvedSchema, result, parentName, schemaName, schemaType)
+	}
+}
+
+// processArraySchema processes array type schemas
+func (p *JSONSchemaParser) processArraySchema(
+	schema *base.Schema,
+	result *SchemaDef,
+	parentName string,
+	schemaName string,
+	schemaType XCodegenSchemaType,
 ) {
 	if schema.Items == nil || schema.Items.A == nil {
 		return
@@ -306,32 +298,65 @@ func (p *JSONSchemaParser) processArrayType(
 		return
 	}
 
-	// Check if the item is a reference to another schema
 	if refString := itemProxy.GetReference(); refString != "" {
-		// Handle reference - extract the referenced type name
-		result.Items = p.processArrayItemReference(refString)
+		p.processArrayItemReference(refString, result, schemaName, schemaType)
+	} else {
+		p.processArrayItemInline(itemSchema, result, parentName, schemaName, schemaType)
+	}
+}
+
+// processArrayItemReference processes a reference in array items
+func (p *JSONSchemaParser) processArrayItemReference(
+	refString string,
+	result *SchemaDef,
+	schemaName string,
+	schemaType XCodegenSchemaType,
+) {
+	if !strings.HasPrefix(refString, "#/components/schemas/") {
 		return
 	}
 
-	// For non-reference items (inline schemas), create a nested type name
-	itemName := ""
-	if name != "" {
-		itemName = name + "Item"
-	}
-	// For array items, use the itemName as the parentName to avoid duplication
-	result.Items, _ = p.extractSchemaRecursive(itemSchema, itemName)
+	refSchemaName := strings.TrimPrefix(refString, "#/components/schemas/")
+	refSchemaName = strings.TrimSuffix(refSchemaName, ".yaml")
 
-	// If the item is an object with properties, ensure it has a name for type generation
+	goType, itemSchemaType, format := p.resolvePropertyType(refSchemaName, schemaName, schemaType)
+	result.Items = &SchemaDef{
+		Name:   refSchemaName,
+		GoType: goType,
+		Type:   itemSchemaType,
+		Format: format,
+	}
+}
+
+// processArrayItemInline processes inline array item schemas
+func (p *JSONSchemaParser) processArrayItemInline(
+	itemSchema *base.Schema,
+	result *SchemaDef,
+	parentName string,
+	schemaName string,
+	schemaType XCodegenSchemaType,
+) {
+	arrayName := result.Name
+	if arrayName == "" && parentName != "" {
+		arrayName = parentName
+	}
+
+	itemName := ""
+	if arrayName != "" {
+		itemName = arrayName + "Item"
+	}
+
+	result.Items, _ = p.extractSchemaRecursive(itemSchema, itemName, schemaName, schemaType)
+
 	if result.Items != nil && result.Items.Type == schemaTypeObject &&
-		len(result.Items.Properties) > 0 &&
-		itemName != "" {
+		len(result.Items.Properties) > 0 && itemName != "" {
 		result.Items.Name = itemName
 		result.Items.GoType = itemName
 	}
 }
 
-// processEnumType handles enum value extraction for simple types
-func processEnumType(schema *base.Schema, result *SchemaDef) {
+// processSimpleSchema processes simple type schemas
+func (p *JSONSchemaParser) processSimpleSchema(schema *base.Schema, result *SchemaDef) {
 	if schema.Enum == nil {
 		return
 	}
@@ -340,7 +365,6 @@ func processEnumType(schema *base.Schema, result *SchemaDef) {
 		if enumVal == nil {
 			continue
 		}
-		// Decode yaml.Node to string
 		var strVal string
 		if err := enumVal.Decode(&strVal); err == nil {
 			result.Enum = append(result.Enum, strVal)
@@ -348,65 +372,23 @@ func processEnumType(schema *base.Schema, result *SchemaDef) {
 	}
 }
 
-func (p *JSONSchemaParser) extractSchemaRecursive(
-	schema *base.Schema,
-	parentName string,
-) (*SchemaDef, error) {
-
-	if schema == nil {
-		return nil, fmt.Errorf("schema is nil")
-	}
-
-	result := p.extractSchemaBasicInfo(schema)
-
-	// Handle different types
-	switch result.Type {
-	case schemaTypeObject:
-		p.processObjectType(schema, result, parentName)
-	case schemaTypeArray:
-		// Use parentName if Name is empty (for nested properties)
-		arrayName := result.Name
-		if arrayName == "" && parentName != "" {
-			arrayName = parentName
-		}
-		p.processArrayType(schema, result, arrayName)
-	default:
-		// Simple types - extract enum values
-		processEnumType(schema, result)
-	}
-
-	// Compute GoType
-	result.GoType = p.computeGoType(result, parentName)
-
-	return result, nil
-}
-
-// resolvePropertyReference resolves a schema reference and returns the resolved schema and type info
-func (p *JSONSchemaParser) resolvePropertyReference(
-	schemaName string,
+// resolvePropertyType resolves a schema reference and returns type info
+func (p *JSONSchemaParser) resolvePropertyType(
+	refSchemaName string,
+	currentSchemaName string,
+	currentSchemaType XCodegenSchemaType,
 ) (goType string, schemaType string, format string) {
-	if p.openAPIDoc == nil || p.openAPIDoc.Components == nil ||
-		p.openAPIDoc.Components.Schemas == nil {
-		return schemaName, "", ""
-	}
-
-	referencedSchemaProxy, ok := p.openAPIDoc.Components.Schemas.Get(schemaName)
-	if !ok {
-		return schemaName, "", ""
-	}
-
-	resolvedSchema := referencedSchemaProxy.Schema()
-	if resolvedSchema == nil {
-		return schemaName, "", ""
+	resolvedSchema, err := p.resolveReferencedSchema(refSchemaName)
+	if err != nil {
+		return refSchemaName, "", ""
 	}
 
 	// Get the actual type name from the schema's title
 	actualTypeName := resolvedSchema.Title
 	if actualTypeName == "" {
-		actualTypeName = schemaName
+		actualTypeName = refSchemaName
 	}
 
-	// Set the GoType with proper qualification
 	// Determine the target package type from the referenced schema
 	targetPackage := string(XCodegenSchemaTypeEntity) // Default to entity
 	if resolvedSchema.Extensions != nil {
@@ -417,7 +399,19 @@ func (p *JSONSchemaParser) resolvePropertyReference(
 			}
 		}
 	}
-	qualifiedType := p.qualifyPropertyType(actualTypeName, targetPackage)
+
+	// Qualify the type if needed (inline qualifyPropertyType)
+	// Response schemas always qualify model types
+	isResponseSchema := currentSchemaName != "" && strings.HasSuffix(currentSchemaName, "Response")
+	if isResponseSchema {
+		goType = "core." + actualTypeName
+	} else if string(currentSchemaType) == targetPackage {
+		// Within the same package, no qualification needed
+		goType = actualTypeName
+	} else {
+		// Different package, always qualify
+		goType = "core." + actualTypeName
+	}
 
 	// Copy type info from resolved schema
 	if len(resolvedSchema.Type) > 0 {
@@ -427,142 +421,7 @@ func (p *JSONSchemaParser) resolvePropertyReference(
 		format = resolvedSchema.Format
 	}
 
-	return qualifiedType, schemaType, format
-}
-
-// qualifyPropertyType qualifies a property type name based on context
-func (p *JSONSchemaParser) qualifyPropertyType(
-	typeName, targetPackage string,
-) string {
-	// For response schemas (which default to valueobject but aren't really valueobjects),
-	// we need to check if we're in a different context.
-	// If the current schema is a valueobject but the name suggests it's a response schema,
-	// we should always qualify references to actual valueobjects and entities.
-	if p.schemaName != "" && strings.HasSuffix(p.schemaName, "Response") {
-		// This is a response schema, always qualify model types
-		if targetPackage == string(XCodegenSchemaTypeValueobject) ||
-			targetPackage == string(XCodegenSchemaTypeEntity) {
-			return "models." + typeName
-		}
-		return "models." + typeName
-	}
-
-	// If we're not parsing an entity or valueobject (e.g., we're in a controller),
-	// always qualify entity and valueobject types
-	if p.schemaType != XCodegenSchemaTypeEntity && p.schemaType != XCodegenSchemaTypeValueobject {
-		if targetPackage == string(XCodegenSchemaTypeValueobject) {
-			return "models." + typeName
-		}
-		return "models." + typeName
-	}
-
-	// Within entity/valueobject packages, only qualify if different package
-	switch string(p.schemaType) {
-	case targetPackage:
-		return typeName
-	default:
-		if targetPackage == string(XCodegenSchemaTypeValueobject) {
-			return "models." + typeName
-		}
-		return "models." + typeName
-	}
-}
-
-// addOmitEmptyTags adds omitempty to tags if property is not required
-func addOmitEmptyTags(def *SchemaDef, isRequired bool) {
-
-	tagOmitEmpty := ",omitempty"
-
-	if isRequired {
-		return
-	}
-
-	if def.JSONTag != "" && !strings.Contains(def.JSONTag, tagOmitEmpty) {
-		def.JSONTag += tagOmitEmpty
-	}
-	if def.YAMLTag != "" && !strings.Contains(def.YAMLTag, tagOmitEmpty) {
-		def.YAMLTag += tagOmitEmpty
-	}
-}
-
-// processPropertyReference handles reference properties
-func (p *JSONSchemaParser) processPropertyReference(
-	propSchema *base.Schema,
-	propName, fieldName string,
-	parent *SchemaDef,
-	refString string,
-) {
-	if !strings.HasPrefix(refString, "#/components/schemas/") {
-		return
-	}
-
-	schemaName := strings.TrimPrefix(refString, "#/components/schemas/")
-	schemaName = strings.TrimSuffix(schemaName, ".yaml")
-
-	// Create a simple SchemaDef for the reference
-	refDef := &SchemaDef{
-		Name:    fieldName,
-		JSONTag: propName,
-		YAMLTag: propName,
-		Schema:  propSchema,
-	}
-
-	// Resolve the reference to get type info
-	goType, schemaType, format := p.resolvePropertyReference(schemaName)
-	refDef.GoType = goType
-	refDef.Type = schemaType
-	refDef.Format = format
-
-	// If we couldn't resolve, try to use the title from any available info
-	if refDef.GoType == "" {
-		if propSchema != nil && propSchema.Title != "" {
-			refDef.GoType = propSchema.Title
-		} else {
-			refDef.GoType = schemaName
-		}
-	}
-
-	// Add omitempty if not required
-	addOmitEmptyTags(refDef, parent.IsPropertyRequired(propName))
-
-	parent.Properties[fieldName] = refDef
-}
-
-// processDirectProperty handles non-reference properties
-func (p *JSONSchemaParser) processDirectProperty(
-	propSchema *base.Schema,
-	propName, fieldName string,
-	parent *SchemaDef,
-	parentName string,
-) {
-	// For nested objects, always prefix with parent name to avoid conflicts
-	typeName := fieldName
-	if parentName != "" {
-		typeName = parentName + fieldName
-	} else if parent.Name != "" {
-		typeName = parent.Name + fieldName
-	}
-
-	propDef, _ := p.extractSchemaRecursive(propSchema, typeName)
-	if propDef == nil {
-		return
-	}
-
-	// Use the original property name for JSON/YAML tags
-	propDef.JSONTag = propName
-	propDef.YAMLTag = propName
-
-	// Add omitempty if not required
-	addOmitEmptyTags(propDef, parent.IsPropertyRequired(propName))
-
-	parent.Properties[fieldName] = propDef
-
-	// If this is a nested object with properties, set its GoType to the prefixed name
-	// Objects with only additionalProperties should keep their map type
-	// Don't change Name which should remain as the field name
-	if propDef.Type == schemaTypeObject && typeName != "" && len(propDef.Properties) > 0 {
-		propDef.GoType = typeName // Type name
-	}
+	return goType, schemaType, format
 }
 
 // extractPropertiesInto extracts properties into a parent SchemaDef
@@ -570,6 +429,8 @@ func (p *JSONSchemaParser) extractPropertiesInto(
 	schema *base.Schema,
 	parent *SchemaDef,
 	parentName string,
+	currentSchemaName string,
+	currentSchemaType XCodegenSchemaType,
 ) {
 	if schema.Properties == nil {
 		return
@@ -591,16 +452,96 @@ func (p *JSONSchemaParser) extractPropertiesInto(
 		fieldName := PascalCase(propName)
 
 		// Check if it's a reference
-		if propProxy.GetReference() != "" {
-			p.processPropertyReference(
-				propSchema,
-				propName,
-				fieldName,
-				parent,
-				propProxy.GetReference(),
-			)
+		if refString := propProxy.GetReference(); refString != "" {
+			// Handle reference property (inline processPropertyReference)
+			if strings.HasPrefix(refString, "#/components/schemas/") {
+				schemaName := strings.TrimPrefix(refString, "#/components/schemas/")
+				schemaName = strings.TrimSuffix(schemaName, ".yaml")
+
+				// Create a simple SchemaDef for the reference
+				refDef := &SchemaDef{
+					Name:    fieldName,
+					JSONTag: propName,
+					YAMLTag: propName,
+					Schema:  propSchema,
+				}
+
+				// Resolve the reference to get type info
+				goType, schemaType, format := p.resolvePropertyType(
+					schemaName,
+					currentSchemaName,
+					currentSchemaType,
+				)
+				refDef.GoType = goType
+				refDef.Type = schemaType
+				refDef.Format = format
+
+				// If we couldn't resolve, try to use the title from any available info
+				if refDef.GoType == "" {
+					if propSchema != nil && propSchema.Title != "" {
+						refDef.GoType = propSchema.Title
+					} else {
+						refDef.GoType = schemaName
+					}
+				}
+
+				// Add omitempty if not required (inline addOmitEmptyTags)
+				if !parent.IsPropertyRequired(propName) {
+					if refDef.JSONTag != "" && !strings.Contains(refDef.JSONTag, omitEmptyTag) {
+						refDef.JSONTag += omitEmptyTag
+					}
+					if refDef.YAMLTag != "" && !strings.Contains(refDef.YAMLTag, omitEmptyTag) {
+						refDef.YAMLTag += omitEmptyTag
+					}
+				}
+
+				parent.Properties[fieldName] = refDef
+			}
 		} else {
-			p.processDirectProperty(propSchema, propName, fieldName, parent, parentName)
+			// Handle direct property (inline processDirectProperty)
+			// For nested objects, generate consistent type names
+			effectiveParentName := parentName
+			if effectiveParentName == "" {
+				effectiveParentName = parent.Name
+			}
+
+			// Inline generateNestedTypeName
+			typeName := ""
+			if effectiveParentName != "" && fieldName != "" {
+				typeName = effectiveParentName + fieldName
+			} else if fieldName != "" {
+				typeName = fieldName
+			} else {
+				typeName = effectiveParentName
+			}
+
+			propDef, _ := p.extractSchemaRecursive(propSchema, typeName, currentSchemaName, currentSchemaType)
+			if propDef == nil {
+				continue
+			}
+
+			// Use the original property name for JSON/YAML tags
+			propDef.JSONTag = propName
+			propDef.YAMLTag = propName
+
+			// Add omitempty if not required (inline addOmitEmptyTags)
+			if !parent.IsPropertyRequired(propName) {
+				if propDef.JSONTag != "" && !strings.Contains(propDef.JSONTag, omitEmptyTag) {
+					propDef.JSONTag += omitEmptyTag
+				}
+				if propDef.YAMLTag != "" && !strings.Contains(propDef.YAMLTag, omitEmptyTag) {
+					propDef.YAMLTag += omitEmptyTag
+				}
+			}
+
+			parent.Properties[fieldName] = propDef
+
+			// If this is a nested object with properties, set its GoType to the prefixed name
+			// Objects with only additionalProperties should keep their map type
+			// Don't change Name which should remain as the field name
+			if propDef.Type == schemaTypeObject && typeName != "" && len(propDef.Properties) > 0 {
+				propDef.GoType = typeName // Type name
+			}
 		}
 	}
 }
@@ -609,6 +550,8 @@ func (p *JSONSchemaParser) extractPropertiesInto(
 func (p *JSONSchemaParser) computeGoType(
 	schema *SchemaDef,
 	parentName string,
+	_ string,
+	currentSchemaType XCodegenSchemaType,
 ) string {
 	// If already set (e.g., for references), use it
 	if schema.GoType != "" {
@@ -633,9 +576,14 @@ func (p *JSONSchemaParser) computeGoType(
 			return "[]" + schema.Items.Name
 		}
 		// Otherwise compute the item type recursively
-		return "[]" + p.computeGoType(schema.Items, parentName)
+		return "[]" + p.computeGoType(
+			schema.Items,
+			parentName,
+			"",
+			currentSchemaType,
+		)
 	}
 
 	// For simple types, use type conversion
-	return SchemaToGoType(schema.Schema, p.openAPIDoc, string(p.schemaType))
+	return SchemaToGoType(schema.Schema, p.openAPIDoc, string(currentSchemaType))
 }

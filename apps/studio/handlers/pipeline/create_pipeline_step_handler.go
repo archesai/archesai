@@ -10,8 +10,7 @@ import (
 	"github.com/google/uuid"
 
 	commands "github.com/archesai/archesai/apps/studio/generated/application/commands/pipeline"
-	domainevents "github.com/archesai/archesai/apps/studio/generated/core/events"
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/archesai/archesai/apps/studio/generated/core/repositories"
 	"github.com/archesai/archesai/pkg/events"
 )
@@ -37,7 +36,7 @@ func NewCreatePipelineStepCommandHandler(
 func (h *CreatePipelineStepCommandHandler) Handle(
 	ctx context.Context,
 	cmd *commands.CreatePipelineStepCommand,
-) (*models.PipelineStep, error) {
+) (*core.PipelineStep, error) {
 	// Verify pipeline exists
 	pipeline, err := h.pipelineRepo.Get(ctx, cmd.ID)
 	if err != nil {
@@ -46,7 +45,7 @@ func (h *CreatePipelineStepCommandHandler) Handle(
 
 	// Create the pipeline step entity
 	now := time.Now().UTC()
-	step := &models.PipelineStep{
+	step := &core.PipelineStep{
 		ID:         uuid.New(),
 		PipelineID: pipeline.ID,
 		ToolID:     cmd.ToolID,
@@ -55,7 +54,7 @@ func (h *CreatePipelineStepCommandHandler) Handle(
 		// Config:       cmd.Config,
 		// Position:     cmd.Position,
 		// Dependencies: cmd.Dependencies,
-		// Status:       models.PipelineStepStatusPending,
+		// Status:       core.PipelineStepStatusPending,
 		CreatedAt: now,
 		UpdatedAt: now,
 	}
@@ -69,7 +68,7 @@ func (h *CreatePipelineStepCommandHandler) Handle(
 	_ = step // Suppress unused variable warning
 
 	// Publish domain event
-	event := domainevents.NewPipelineStepCreatedEvent(step.ID)
+	event := core.NewPipelineStepCreatedEvent(step.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		slog.Error("failed to publish event", "error", err)
 	}

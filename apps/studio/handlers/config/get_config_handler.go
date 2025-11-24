@@ -5,16 +5,16 @@ import (
 	"context"
 
 	queries "github.com/archesai/archesai/apps/studio/generated/application/queries/config"
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 )
 
 // GetConfigQueryHandler handles the get config query.
 type GetConfigQueryHandler struct {
-	config *models.Config
+	config *core.Config
 }
 
 // NewGetConfigQueryHandler creates a new get config query handler.
-func NewGetConfigQueryHandler(config *models.Config) *GetConfigQueryHandler {
+func NewGetConfigQueryHandler(config *core.Config) *GetConfigQueryHandler {
 	return &GetConfigQueryHandler{
 		config: config,
 	}
@@ -24,7 +24,7 @@ func NewGetConfigQueryHandler(config *models.Config) *GetConfigQueryHandler {
 func (h *GetConfigQueryHandler) Handle(
 	_ context.Context,
 	_ *queries.GetConfigQuery,
-) (*models.Config, error) {
+) (*core.Config, error) {
 	// Return the injected configuration
 	return h.config, nil
 }

@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/archesai/archesai/apps/studio/generated/core/repositories"
 )
 
@@ -39,7 +39,7 @@ func NewListRunsQueryHandler(repo repositories.RunRepository) *ListRunsQueryHand
 }
 
 // Handle executes the list runs query.
-func (h *ListRunsQueryHandler) Handle(ctx context.Context, query *ListRunsQuery) ([]*models.Run, int64, error) {
+func (h *ListRunsQueryHandler) Handle(ctx context.Context, query *ListRunsQuery) ([]*core.Run, int64, error) {
 	// TODO: Apply filters based on query parameters
 	results, total, err := h.repo.List(ctx, 100, 0)
 	if err != nil {

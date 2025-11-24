@@ -13,8 +13,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"{{ .OutputPath }}/generated/core/models"
-	domainevents "{{ .OutputPath }}/generated/core/events"
+	"{{ .OutputPath }}/generated/core"
 	"{{ .OutputPath }}/generated/core/repositories"
 	"github.com/archesai/archesai/pkg/events"
 )
@@ -93,9 +92,9 @@ func New{{ .Operation.ID }}CommandHandler(
 }
 
 // Handle executes the create {{ lower .Operation.Tag }} command.
-func (h *{{ .Operation.ID }}CommandHandler) Handle(ctx context.Context, cmd *{{ .Operation.ID }}Command) (*models.{{ if .Operation.XCodegenRepository }}{{ .Operation.XCodegenRepository }}{{ else }}{{ .Operation.Tag }}{{ end }}, error) {
+func (h *{{ .Operation.ID }}CommandHandler) Handle(ctx context.Context, cmd *{{ .Operation.ID }}Command) (*core.{{ if .Operation.XCodegenRepository }}{{ .Operation.XCodegenRepository }}{{ else }}{{ .Operation.Tag }}{{ end }}, error) {
 	// Create the {{ lower .Operation.Tag }} entity
-	entity := &models.{{ if .Operation.XCodegenRepository }}{{ .Operation.XCodegenRepository }}{{ else }}{{ .Operation.Tag }}{{ end }}{
+	entity := &core.{{ if .Operation.XCodegenRepository }}{{ .Operation.XCodegenRepository }}{{ else }}{{ .Operation.Tag }}{{ end }}{
 		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
@@ -108,8 +107,8 @@ func (h *{{ .Operation.ID }}CommandHandler) Handle(ctx context.Context, cmd *{{ 
 		return nil, fmt.Errorf("failed to create {{ lower .Operation.Tag }}: %w", err)
 	}
 
-	// Publish domain event
-	event := domainevents.New{{ if .Operation.XCodegenRepository }}{{ .Operation.XCodegenRepository }}{{ else }}{{ .Operation.Tag }}{{ end }}CreatedEvent(created.ID)
+	// Publish event
+	event := core.New{{ if .Operation.XCodegenRepository }}{{ .Operation.XCodegenRepository }}{{ else }}{{ .Operation.Tag }}{{ end }}CreatedEvent(created.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 		// FIXME: Implement logging
@@ -137,7 +136,7 @@ func New{{ .Operation.ID }}CommandHandler(
 }
 
 // Handle executes the update {{ lower .Operation.Tag }} command.
-func (h *{{ .Operation.ID }}CommandHandler) Handle(ctx context.Context, cmd *{{ .Operation.ID }}Command) (*models.{{ if .Operation.XCodegenRepository }}{{ .Operation.XCodegenRepository }}{{ else }}{{ .Operation.Tag }}{{ end }}, error) {
+func (h *{{ .Operation.ID }}CommandHandler) Handle(ctx context.Context, cmd *{{ .Operation.ID }}Command) (*core.{{ if .Operation.XCodegenRepository }}{{ .Operation.XCodegenRepository }}{{ else }}{{ .Operation.Tag }}{{ end }}, error) {
 	// Fetch existing {{ lower .Operation.Tag }}
 	existing, err := h.repo.Get(ctx, cmd.ID)
 	if err != nil {
@@ -155,7 +154,7 @@ func (h *{{ .Operation.ID }}CommandHandler) Handle(ctx context.Context, cmd *{{ 
 	}
 
 	// Publish domain event
-	event := domainevents.New{{ if .Operation.XCodegenRepository }}{{ .Operation.XCodegenRepository }}{{ else }}{{ .Operation.Tag }}{{ end }}UpdatedEvent(updated.ID)
+	event := core.New{{ if .Operation.XCodegenRepository }}{{ .Operation.XCodegenRepository }}{{ else }}{{ .Operation.Tag }}{{ end }}UpdatedEvent(updated.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 		// FIXME: Implement logging
@@ -190,7 +189,7 @@ func (h *{{ .Operation.ID }}CommandHandler) Handle(ctx context.Context, cmd *{{ 
 	}
 
 	// Publish domain event
-	event := domainevents.New{{ if .Operation.XCodegenRepository }}{{ .Operation.XCodegenRepository }}{{ else }}{{ .Operation.Tag }}{{ end }}DeletedEvent(cmd.ID)
+	event := core.New{{ if .Operation.XCodegenRepository }}{{ .Operation.XCodegenRepository }}{{ else }}{{ .Operation.Tag }}{{ end }}DeletedEvent(cmd.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 		// FIXME: Implement logging

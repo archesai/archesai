@@ -11,38 +11,52 @@ import (
 	"github.com/google/uuid"
 )
 
+const countTools = `-- name: CountTools :one
+SELECT
+  COUNT(*)
+FROM
+  tool
+`
+
+func (q *Queries) CountTools(ctx context.Context) (int64, error) {
+	row := q.db.QueryRow(ctx, countTools)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createTool = `-- name: CreateTool :one
 INSERT INTO
-  tool (
-    id,
-    organization_id,
-    name,
-    description,
-    input_mime_type,
-    output_mime_type
-  )
+  tool (id, description, input_mime_type, name, organization_id, output_mime_type)
 VALUES
-  ($1, $2, $3, $4, $5, $6)
+  (
+    $1,
+    $2,
+    $3,
+    $4,
+    $5,
+    $6
+  )
 RETURNING
   id, created_at, updated_at, description, input_mime_type, name, organization_id, output_mime_type
 `
 
 type CreateToolParams struct {
 	ID             uuid.UUID
-	OrganizationID uuid.UUID
-	Name           string
 	Description    string
 	InputMimeType  string
+	Name           string
+	OrganizationID uuid.UUID
 	OutputMimeType string
 }
 
 func (q *Queries) CreateTool(ctx context.Context, arg CreateToolParams) (Tool, error) {
 	row := q.db.QueryRow(ctx, createTool,
 		arg.ID,
-		arg.OrganizationID,
-		arg.Name,
 		arg.Description,
 		arg.InputMimeType,
+		arg.Name,
+		arg.OrganizationID,
 		arg.OutputMimeType,
 	)
 	var i Tool
@@ -71,21 +85,6 @@ type DeleteToolParams struct {
 
 func (q *Queries) DeleteTool(ctx context.Context, arg DeleteToolParams) error {
 	_, err := q.db.Exec(ctx, deleteTool, arg.ID)
-	return err
-}
-
-const deleteToolsByOrganization = `-- name: DeleteToolsByOrganization :exec
-DELETE FROM tool
-WHERE
-  organization_id = $1
-`
-
-type DeleteToolsByOrganizationParams struct {
-	OrganizationID uuid.UUID
-}
-
-func (q *Queries) DeleteToolsByOrganization(ctx context.Context, arg DeleteToolsByOrganizationParams) error {
-	_, err := q.db.Exec(ctx, deleteToolsByOrganization, arg.OrganizationID)
 	return err
 }
 
@@ -128,18 +127,18 @@ FROM
 ORDER BY
   created_at DESC
 LIMIT
-  $1
-OFFSET
   $2
+OFFSET
+  $1
 `
 
 type ListToolsParams struct {
-	Limit  int32
 	Offset int32
+	Limit  int32
 }
 
 func (q *Queries) ListTools(ctx context.Context, arg ListToolsParams) ([]Tool, error) {
-	rows, err := q.db.Query(ctx, listTools, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listTools, arg.Offset, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
@@ -176,20 +175,14 @@ WHERE
   organization_id = $1
 ORDER BY
   created_at DESC
-LIMIT
-  $2
-OFFSET
-  $3
 `
 
 type ListToolsByOrganizationParams struct {
 	OrganizationID uuid.UUID
-	Limit          int32
-	Offset         int32
 }
 
 func (q *Queries) ListToolsByOrganization(ctx context.Context, arg ListToolsByOrganizationParams) ([]Tool, error) {
-	rows, err := q.db.Query(ctx, listToolsByOrganization, arg.OrganizationID, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listToolsByOrganization, arg.OrganizationID)
 	if err != nil {
 		return nil, err
 	}
@@ -220,31 +213,34 @@ func (q *Queries) ListToolsByOrganization(ctx context.Context, arg ListToolsByOr
 const updateTool = `-- name: UpdateTool :one
 UPDATE tool
 SET
-  name = COALESCE($2, name),
-  description = COALESCE($3, description),
-  input_mime_type = COALESCE($4, input_mime_type),
+  description = COALESCE($1, description),
+  input_mime_type = COALESCE($2, input_mime_type),
+  name = COALESCE($3, name),
+  organization_id = COALESCE($4, organization_id),
   output_mime_type = COALESCE($5, output_mime_type)
 WHERE
-  id = $1
+  id = $6
 RETURNING
   id, created_at, updated_at, description, input_mime_type, name, organization_id, output_mime_type
 `
 
 type UpdateToolParams struct {
-	ID             uuid.UUID
-	Name           *string
 	Description    *string
 	InputMimeType  *string
+	Name           *string
+	OrganizationID *uuid.UUID
 	OutputMimeType *string
+	ID             uuid.UUID
 }
 
 func (q *Queries) UpdateTool(ctx context.Context, arg UpdateToolParams) (Tool, error) {
 	row := q.db.QueryRow(ctx, updateTool,
-		arg.ID,
-		arg.Name,
 		arg.Description,
 		arg.InputMimeType,
+		arg.Name,
+		arg.OrganizationID,
 		arg.OutputMimeType,
+		arg.ID,
 	)
 	var i Tool
 	err := row.Scan(

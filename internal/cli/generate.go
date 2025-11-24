@@ -2,38 +2,34 @@ package cli
 
 import (
 	"fmt"
+	"log/slog"
+	"path/filepath"
+	"sort"
+	"strings"
 
 	"github.com/spf13/cobra"
 
 	"github.com/archesai/archesai/internal/codegen"
 	"github.com/archesai/archesai/internal/parsers"
+	"github.com/archesai/archesai/pkg/storage"
 )
 
 var (
 	outputPath string
+	specPath   string
 	bundleFlag bool
 	orvalFix   bool
+	dryRun     bool
 )
 
 // generateCmd represents the generate command
 var generateCmd = &cobra.Command{
 	Use:   "generate",
-	Short: "Generate code from specifications",
-	Long: `Generate code from OpenAPI or JSON Schema specifications.
-
-This command provides various code generation capabilities including:
-- OpenAPI to Go code generation
-- JSON Schema to Go struct generation`,
-}
-
-// openapiCmd represents the openapi subcommand
-var openapiCmd = &cobra.Command{
-	Use:   "openapi [spec-path]",
-	Short: "Generate code from an OpenAPI specification",
+	Short: "Generate code from OpenAPI specification",
 	Long: `Generate Go code from an OpenAPI specification.
 
 This command generates:
-- Models (entities and value objects)
+- Models
 - Repositories
 - Controllers
 - Command/Query handlers
@@ -43,27 +39,28 @@ This command generates:
 - Bootstrap code
 
 The --bundle flag will output a bundled version of the OpenAPI specification
-instead of generating code.`,
-	Args:          cobra.MaximumNArgs(1),
+instead of generating code.
+
+The --dry-run flag will show what files would be generated without actually
+writing them to disk.`,
 	SilenceErrors: true,
 	SilenceUsage:  true,
-	RunE: func(_ *cobra.Command, args []string) error {
+	RunE: func(_ *cobra.Command, _ []string) error {
 		// If bundle flag is set, bundle the OpenAPI spec
 		if bundleFlag {
-			if len(args) < 1 {
-				return fmt.Errorf("input path required when using --bundle")
+			if specPath == "" {
+				return fmt.Errorf("--spec flag is required when using --bundle")
 			}
 			if outputPath == "" {
 				return fmt.Errorf("--output flag is required when using --bundle")
 			}
 
-			inputPath := args[0]
 			parser := parsers.NewOpenAPIParser()
-			if err := parser.Bundle(inputPath, outputPath, orvalFix); err != nil {
+			if err := parser.Bundle(specPath, outputPath, orvalFix); err != nil {
 				return fmt.Errorf("bundling failed: %w", err)
 			}
 
-			fmt.Printf("✅ Bundled OpenAPI specification written to %s\n", outputPath)
+			slog.Info("Bundled OpenAPI specification", slog.String("output", outputPath))
 			return nil
 		}
 
@@ -72,54 +69,83 @@ instead of generating code.`,
 			return fmt.Errorf("--output flag is required")
 		}
 
-		path := "api/openapi.bundled.yaml"
-		if len(args) > 0 {
-			path = args[0]
+		// Use default spec path if not provided
+		if specPath == "" {
+			specPath = "api/openapi.bundled.yaml"
 		}
 
 		generator := codegen.NewGenerator(outputPath)
+
+		// Use memory storage for dry-run
+		if dryRun {
+			memStorage := storage.NewMemoryStorage()
+			generator = generator.WithStorage(memStorage)
+		}
+
 		if err := generator.Initialize(); err != nil {
 			return fmt.Errorf("failed to initialize code generator: %w", err)
 		}
 
-		if _, err := generator.GenerateAPI(path); err != nil {
+		if err := generator.GenerateAPI(specPath); err != nil {
 			return fmt.Errorf("code generation failed: %w", err)
 		}
 
-		fmt.Println("✅ Code generation completed successfully")
-		return nil
-	},
-}
+		// If dry-run, print what would be generated
+		if dryRun {
+			memStorage := generator.GetStorage().(*storage.MemoryStorage)
+			files := memStorage.GetFiles()
 
-// jsonschemaCmd represents the jsonschema subcommand
-var jsonschemaCmd = &cobra.Command{
-	Use:   "jsonschema [spec-path]",
-	Short: "Generate Go structs from a JSON Schema",
-	Long: `Generate Go structs from a JSON Schema specification.
+			// Sort file paths for consistent output
+			var paths []string
+			for path := range files {
+				paths = append(paths, path)
+			}
+			sort.Strings(paths)
 
-This command converts JSON Schema definitions into Go structs with
-appropriate JSON tags and validation annotations.`,
-	Args:          cobra.ExactArgs(1),
-	SilenceErrors: true,
-	SilenceUsage:  true,
-	RunE: func(_ *cobra.Command, args []string) error {
-		schemaPath := args[0]
+			slog.Info("🔍 Dry-run mode - Files that would be generated")
 
-		if outputPath == "" {
-			return fmt.Errorf("--output flag is required")
+			// Group files by directory
+			dirFiles := make(map[string][]string)
+			totalSize := 0
+			for _, path := range paths {
+				dir := filepath.Dir(path)
+				dirFiles[dir] = append(dirFiles[dir], filepath.Base(path))
+				totalSize += len(files[path])
+			}
+
+			// Sort directories
+			var dirs []string
+			for dir := range dirFiles {
+				dirs = append(dirs, dir)
+			}
+			sort.Strings(dirs)
+
+			// Log each directory and its files
+			for _, dir := range dirs {
+				relDir := strings.TrimPrefix(dir, outputPath+"/")
+				if relDir == dir {
+					relDir = dir
+				}
+
+				// Log files in this directory
+				for _, file := range dirFiles[dir] {
+					fileInfo := files[filepath.Join(dir, file)]
+					slog.Info("  File would be generated",
+						slog.String("dir", relDir),
+						slog.String("file", file),
+						slog.Int("size", len(fileInfo)),
+					)
+				}
+			}
+
+			slog.Info("✨ Dry-run complete",
+				slog.Int("total_files", len(files)),
+				slog.Int("total_bytes", totalSize),
+			)
+			return nil
 		}
 
-		// For JSON schema, use the output path's directory as the base
-		generator := codegen.NewGenerator(outputPath)
-		if err := generator.Initialize(); err != nil {
-			return fmt.Errorf("failed to initialize code generator: %w", err)
-		}
-
-		if _, err := generator.GenerateJSONSchema(schemaPath, outputPath); err != nil {
-			return fmt.Errorf("code generation failed: %w", err)
-		}
-
-		fmt.Println("✅ JSON Schema generation completed successfully")
+		slog.Info("Code generation completed successfully")
 		return nil
 	},
 }
@@ -128,19 +154,16 @@ func init() {
 	// Add generate command to root
 	rootCmd.AddCommand(generateCmd)
 
-	// Add subcommands to generate
-	generateCmd.AddCommand(openapiCmd)
-	generateCmd.AddCommand(jsonschemaCmd)
-
-	// OpenAPI command flags
-	openapiCmd.Flags().
+	// Generate command flags
+	generateCmd.Flags().
 		StringVar(&outputPath, "output", "", "Output directory for generated code (required)")
-	openapiCmd.Flags().
+	generateCmd.Flags().
+		StringVar(&specPath, "spec", "", "Path to OpenAPI specification file (default: api/openapi.bundled.yaml)")
+	generateCmd.Flags().
 		BoolVar(&bundleFlag, "bundle", false, "Bundle the OpenAPI spec into a single file instead of generating code")
-	openapiCmd.Flags().
+	generateCmd.Flags().
 		BoolVar(&orvalFix, "orval-fix", false, "Apply fixes for Orval compatibility (only used with --bundle)")
-	_ = openapiCmd.MarkFlagRequired("output")
-
-	// JSON Schema command flags
-	jsonschemaCmd.Flags().StringVar(&outputPath, "output", "", "Output file path")
+	generateCmd.Flags().
+		BoolVar(&dryRun, "dry-run", false, "Show what would be generated without writing files")
+	_ = generateCmd.MarkFlagRequired("output")
 }

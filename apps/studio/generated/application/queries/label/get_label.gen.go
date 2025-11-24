@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/archesai/archesai/apps/studio/generated/core/repositories"
 )
 
@@ -42,7 +42,7 @@ func NewGetLabelQueryHandler(repo repositories.LabelRepository) *GetLabelQueryHa
 }
 
 // Handle executes the get label query.
-func (h *GetLabelQueryHandler) Handle(ctx context.Context, query *GetLabelQuery) (*models.Label, error) {
+func (h *GetLabelQueryHandler) Handle(ctx context.Context, query *GetLabelQuery) (*core.Label, error) {
 	result, err := h.repo.Get(ctx, query.ID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get label: %w", err)

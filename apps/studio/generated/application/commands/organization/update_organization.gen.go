@@ -9,8 +9,7 @@ import (
 
 	"github.com/google/uuid"
 
-	domainevents "github.com/archesai/archesai/apps/studio/generated/core/events"
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/archesai/archesai/apps/studio/generated/core/repositories"
 	"github.com/archesai/archesai/pkg/events"
 )
@@ -56,7 +55,7 @@ func NewUpdateOrganizationCommandHandler(
 }
 
 // Handle executes the update organization command.
-func (h *UpdateOrganizationCommandHandler) Handle(ctx context.Context, cmd *UpdateOrganizationCommand) (*models.Organization, error) {
+func (h *UpdateOrganizationCommandHandler) Handle(ctx context.Context, cmd *UpdateOrganizationCommand) (*core.Organization, error) {
 	// Fetch existing organization
 	existing, err := h.repo.Get(ctx, cmd.ID)
 	if err != nil {
@@ -74,7 +73,7 @@ func (h *UpdateOrganizationCommandHandler) Handle(ctx context.Context, cmd *Upda
 	}
 
 	// Publish domain event
-	event := domainevents.NewOrganizationUpdatedEvent(updated.ID)
+	event := core.NewOrganizationUpdatedEvent(updated.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 		// FIXME: Implement logging

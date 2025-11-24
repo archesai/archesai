@@ -9,8 +9,7 @@ import (
 
 	"github.com/google/uuid"
 
-	domainevents "github.com/archesai/archesai/apps/studio/generated/core/events"
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/archesai/archesai/apps/studio/generated/core/repositories"
 	"github.com/archesai/archesai/pkg/events"
 )
@@ -59,9 +58,9 @@ func NewCreateAPIKeyCommandHandler(
 }
 
 // Handle executes the create apikey command.
-func (h *CreateAPIKeyCommandHandler) Handle(ctx context.Context, cmd *CreateAPIKeyCommand) (*models.APIKey, error) {
+func (h *CreateAPIKeyCommandHandler) Handle(ctx context.Context, cmd *CreateAPIKeyCommand) (*core.APIKey, error) {
 	// Create the apikey entity
-	entity := &models.APIKey{
+	entity := &core.APIKey{
 		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
@@ -74,8 +73,8 @@ func (h *CreateAPIKeyCommandHandler) Handle(ctx context.Context, cmd *CreateAPIK
 		return nil, fmt.Errorf("failed to create apikey: %w", err)
 	}
 
-	// Publish domain event
-	event := domainevents.NewAPIKeyCreatedEvent(created.ID)
+	// Publish event
+	event := core.NewAPIKeyCreatedEvent(created.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 		// FIXME: Implement logging

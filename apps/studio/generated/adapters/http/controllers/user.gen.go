@@ -12,7 +12,7 @@ import (
 
 	commands "github.com/archesai/archesai/apps/studio/generated/application/commands/user"
 	queries "github.com/archesai/archesai/apps/studio/generated/application/queries/user"
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	customHandlers "github.com/archesai/archesai/apps/studio/handlers/user"
 	"github.com/archesai/archesai/pkg/server"
 )
@@ -76,7 +76,7 @@ type GetCurrentUserResponse interface {
 }
 
 type GetCurrentUser200Response struct {
-	Data models.User `json:"data"`
+	Data core.User `json:"data"`
 }
 
 func (response GetCurrentUser200Response) VisitGetCurrentUserResponse(w http.ResponseWriter) error {
@@ -208,7 +208,7 @@ type GetUserResponse interface {
 }
 
 type GetUser200Response struct {
-	Data models.User `json:"data"`
+	Data core.User `json:"data"`
 }
 
 func (response GetUser200Response) VisitGetUserResponse(w http.ResponseWriter) error {
@@ -386,8 +386,8 @@ type ListUsersResponse interface {
 }
 
 type ListUsers200Response struct {
-	Data []models.User         `json:"data"`
-	Meta models.PaginationMeta `json:"meta"`
+	Data []core.User         `json:"data"`
+	Meta core.PaginationMeta `json:"meta"`
 }
 
 func (response ListUsers200Response) VisitListUsersResponse(w http.ResponseWriter) error {
@@ -547,7 +547,7 @@ func (c *UserController) ListUsers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Convert pointer slice to value slice for response
-	data := make([]models.User, len(results))
+	data := make([]core.User, len(results))
 	for i, item := range results {
 		if item != nil {
 			data[i] = *item
@@ -556,7 +556,7 @@ func (c *UserController) ListUsers(w http.ResponseWriter, r *http.Request) {
 
 	response := ListUsers200Response{
 		Data: data,
-		Meta: models.PaginationMeta{Total: int32(total)},
+		Meta: core.PaginationMeta{Total: int32(total)},
 	}
 	if err := response.VisitListUsersResponse(w); err != nil {
 		fmt.Fprintf(w, "error writing response: %v", err)
@@ -585,7 +585,7 @@ type UpdateCurrentUserResponse interface {
 }
 
 type UpdateCurrentUser200Response struct {
-	Data models.User `json:"data"`
+	Data core.User `json:"data"`
 }
 
 func (response UpdateCurrentUser200Response) VisitUpdateCurrentUserResponse(w http.ResponseWriter) error {
@@ -753,7 +753,7 @@ type UpdateUserResponse interface {
 }
 
 type UpdateUser200Response struct {
-	Data models.User `json:"data"`
+	Data core.User `json:"data"`
 }
 
 func (response UpdateUser200Response) VisitUpdateUserResponse(w http.ResponseWriter) error {

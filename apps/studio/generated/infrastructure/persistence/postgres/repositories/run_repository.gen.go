@@ -8,8 +8,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
-	corerrors "github.com/archesai/archesai/pkg/errors"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -30,7 +29,7 @@ func NewPostgresRunRepository(db *pgxpool.Pool) *PostgresRunRepository {
 // Run operations
 
 // Create creates a new run
-func (r *PostgresRunRepository) Create(ctx context.Context, entity *models.Run) (*models.Run, error) {
+func (r *PostgresRunRepository) Create(ctx context.Context, entity *core.Run) (*core.Run, error) {
 	params := CreateRunParams{
 		ID:             entity.ID,
 		OrganizationID: entity.OrganizationID,
@@ -49,7 +48,7 @@ func (r *PostgresRunRepository) Create(ctx context.Context, entity *models.Run) 
 }
 
 // Get retrieves a run by ID
-func (r *PostgresRunRepository) Get(ctx context.Context, id uuid.UUID) (*models.Run, error) {
+func (r *PostgresRunRepository) Get(ctx context.Context, id uuid.UUID) (*core.Run, error) {
 	params := GetRunParams{
 		ID: id,
 	}
@@ -57,7 +56,7 @@ func (r *PostgresRunRepository) Get(ctx context.Context, id uuid.UUID) (*models.
 	result, err := r.queries.GetRun(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return nil, corerrors.ErrRunNotFound
+			return nil, core.ErrRunNotFound
 		}
 		return nil, fmt.Errorf("failed to get run: %w", err)
 	}
@@ -66,7 +65,7 @@ func (r *PostgresRunRepository) Get(ctx context.Context, id uuid.UUID) (*models.
 }
 
 // Update updates an existing run
-func (r *PostgresRunRepository) Update(ctx context.Context, id uuid.UUID, entity *models.Run) (*models.Run, error) {
+func (r *PostgresRunRepository) Update(ctx context.Context, id uuid.UUID, entity *core.Run) (*core.Run, error) {
 
 	statusStr := string(entity.Status)
 	params := UpdateRunParams{
@@ -83,7 +82,7 @@ func (r *PostgresRunRepository) Update(ctx context.Context, id uuid.UUID, entity
 	result, err := r.queries.UpdateRun(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return nil, corerrors.ErrRunNotFound
+			return nil, core.ErrRunNotFound
 		}
 		return nil, fmt.Errorf("failed to update run: %w", err)
 	}
@@ -100,7 +99,7 @@ func (r *PostgresRunRepository) Delete(ctx context.Context, id uuid.UUID) error 
 	err := r.queries.DeleteRun(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return corerrors.ErrRunNotFound
+			return core.ErrRunNotFound
 		}
 		return fmt.Errorf("failed to delete run: %w", err)
 	}
@@ -108,7 +107,7 @@ func (r *PostgresRunRepository) Delete(ctx context.Context, id uuid.UUID) error 
 }
 
 // List returns a paginated list of runs
-func (r *PostgresRunRepository) List(ctx context.Context, limit, offset int32) ([]*models.Run, int64, error) {
+func (r *PostgresRunRepository) List(ctx context.Context, limit, offset int32) ([]*core.Run, int64, error) {
 	listParams := ListRunsParams{
 		Limit:  limit,
 		Offset: offset,
@@ -119,7 +118,7 @@ func (r *PostgresRunRepository) List(ctx context.Context, limit, offset int32) (
 		return nil, 0, fmt.Errorf("failed to list runs: %w", err)
 	}
 
-	items := make([]*models.Run, len(results))
+	items := make([]*core.Run, len(results))
 	for i, result := range results {
 		items[i] = mapRunFromDB(&result)
 	}
@@ -132,7 +131,7 @@ func (r *PostgresRunRepository) List(ctx context.Context, limit, offset int32) (
 }
 
 // ListRunsByPipeline retrieves multiple Runs by pipelineID
-func (r *PostgresRunRepository) ListRunsByPipeline(ctx context.Context, pipelineID string) ([]*models.Run, error) {
+func (r *PostgresRunRepository) ListRunsByPipeline(ctx context.Context, pipelineID string) ([]*core.Run, error) {
 	params := ListRunsByPipelineParams{
 		PipelineID: uuid.MustParse(pipelineID),
 	}
@@ -140,11 +139,11 @@ func (r *PostgresRunRepository) ListRunsByPipeline(ctx context.Context, pipeline
 	result, err := r.queries.ListRunsByPipeline(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return nil, corerrors.ErrRunNotFound
+			return nil, core.ErrRunNotFound
 		}
 		return nil, fmt.Errorf("failed to ListRunsByPipeline: %w", err)
 	}
-	items := make([]*models.Run, len(result))
+	items := make([]*core.Run, len(result))
 	for i, res := range result {
 		items[i] = mapRunFromDB(&res)
 	}
@@ -153,7 +152,7 @@ func (r *PostgresRunRepository) ListRunsByPipeline(ctx context.Context, pipeline
 }
 
 // ListRunsByOrganization retrieves multiple Runs by organizationID
-func (r *PostgresRunRepository) ListRunsByOrganization(ctx context.Context, organizationID string) ([]*models.Run, error) {
+func (r *PostgresRunRepository) ListRunsByOrganization(ctx context.Context, organizationID string) ([]*core.Run, error) {
 	params := ListRunsByOrganizationParams{
 		OrganizationID: uuid.MustParse(organizationID),
 	}
@@ -161,11 +160,11 @@ func (r *PostgresRunRepository) ListRunsByOrganization(ctx context.Context, orga
 	result, err := r.queries.ListRunsByOrganization(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return nil, corerrors.ErrRunNotFound
+			return nil, core.ErrRunNotFound
 		}
 		return nil, fmt.Errorf("failed to ListRunsByOrganization: %w", err)
 	}
-	items := make([]*models.Run, len(result))
+	items := make([]*core.Run, len(result))
 	for i, res := range result {
 		items[i] = mapRunFromDB(&res)
 	}
@@ -174,7 +173,7 @@ func (r *PostgresRunRepository) ListRunsByOrganization(ctx context.Context, orga
 }
 
 // ListRunsByTool retrieves multiple Runs by toolID
-func (r *PostgresRunRepository) ListRunsByTool(ctx context.Context, toolID string) ([]*models.Run, error) {
+func (r *PostgresRunRepository) ListRunsByTool(ctx context.Context, toolID string) ([]*core.Run, error) {
 	params := ListRunsByToolParams{
 		ToolID: uuid.MustParse(toolID),
 	}
@@ -182,11 +181,11 @@ func (r *PostgresRunRepository) ListRunsByTool(ctx context.Context, toolID strin
 	result, err := r.queries.ListRunsByTool(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return nil, corerrors.ErrRunNotFound
+			return nil, core.ErrRunNotFound
 		}
 		return nil, fmt.Errorf("failed to ListRunsByTool: %w", err)
 	}
-	items := make([]*models.Run, len(result))
+	items := make([]*core.Run, len(result))
 	for i, res := range result {
 		items[i] = mapRunFromDB(&res)
 	}
@@ -194,12 +193,12 @@ func (r *PostgresRunRepository) ListRunsByTool(ctx context.Context, toolID strin
 
 }
 
-func mapRunFromDB(db *Run) *models.Run {
+func mapRunFromDB(db *Run) *core.Run {
 	if db == nil {
 		return nil
 	}
 
-	result := &models.Run{
+	result := &core.Run{
 		ID:             db.ID,
 		CreatedAt:      db.CreatedAt,
 		UpdatedAt:      db.UpdatedAt,
@@ -209,7 +208,7 @@ func mapRunFromDB(db *Run) *models.Run {
 		PipelineID:     db.PipelineID,
 		Progress:       db.Progress,
 		StartedAt:      db.StartedAt,
-		Status:         models.RunStatus(db.Status),
+		Status:         core.RunStatus(db.Status),
 		ToolID:         db.ToolID,
 	}
 

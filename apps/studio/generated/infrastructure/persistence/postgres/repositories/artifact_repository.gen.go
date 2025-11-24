@@ -8,8 +8,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
-	corerrors "github.com/archesai/archesai/pkg/errors"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -30,7 +29,7 @@ func NewPostgresArtifactRepository(db *pgxpool.Pool) *PostgresArtifactRepository
 // Artifact operations
 
 // Create creates a new artifact
-func (r *PostgresArtifactRepository) Create(ctx context.Context, entity *models.Artifact) (*models.Artifact, error) {
+func (r *PostgresArtifactRepository) Create(ctx context.Context, entity *core.Artifact) (*core.Artifact, error) {
 	params := CreateArtifactParams{
 		ID:             entity.ID,
 		Credits:        entity.Credits,
@@ -53,7 +52,7 @@ func (r *PostgresArtifactRepository) Create(ctx context.Context, entity *models.
 }
 
 // Get retrieves a artifact by ID
-func (r *PostgresArtifactRepository) Get(ctx context.Context, id uuid.UUID) (*models.Artifact, error) {
+func (r *PostgresArtifactRepository) Get(ctx context.Context, id uuid.UUID) (*core.Artifact, error) {
 	params := GetArtifactParams{
 		ID: id,
 	}
@@ -61,7 +60,7 @@ func (r *PostgresArtifactRepository) Get(ctx context.Context, id uuid.UUID) (*mo
 	result, err := r.queries.GetArtifact(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return nil, corerrors.ErrArtifactNotFound
+			return nil, core.ErrArtifactNotFound
 		}
 		return nil, fmt.Errorf("failed to get artifact: %w", err)
 	}
@@ -70,7 +69,7 @@ func (r *PostgresArtifactRepository) Get(ctx context.Context, id uuid.UUID) (*mo
 }
 
 // Update updates an existing artifact
-func (r *PostgresArtifactRepository) Update(ctx context.Context, id uuid.UUID, entity *models.Artifact) (*models.Artifact, error) {
+func (r *PostgresArtifactRepository) Update(ctx context.Context, id uuid.UUID, entity *core.Artifact) (*core.Artifact, error) {
 
 	params := UpdateArtifactParams{
 		ID:           id,
@@ -86,7 +85,7 @@ func (r *PostgresArtifactRepository) Update(ctx context.Context, id uuid.UUID, e
 	result, err := r.queries.UpdateArtifact(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return nil, corerrors.ErrArtifactNotFound
+			return nil, core.ErrArtifactNotFound
 		}
 		return nil, fmt.Errorf("failed to update artifact: %w", err)
 	}
@@ -103,7 +102,7 @@ func (r *PostgresArtifactRepository) Delete(ctx context.Context, id uuid.UUID) e
 	err := r.queries.DeleteArtifact(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return corerrors.ErrArtifactNotFound
+			return core.ErrArtifactNotFound
 		}
 		return fmt.Errorf("failed to delete artifact: %w", err)
 	}
@@ -111,7 +110,7 @@ func (r *PostgresArtifactRepository) Delete(ctx context.Context, id uuid.UUID) e
 }
 
 // List returns a paginated list of artifacts
-func (r *PostgresArtifactRepository) List(ctx context.Context, limit, offset int32) ([]*models.Artifact, int64, error) {
+func (r *PostgresArtifactRepository) List(ctx context.Context, limit, offset int32) ([]*core.Artifact, int64, error) {
 	listParams := ListArtifactsParams{
 		Limit:  limit,
 		Offset: offset,
@@ -122,7 +121,7 @@ func (r *PostgresArtifactRepository) List(ctx context.Context, limit, offset int
 		return nil, 0, fmt.Errorf("failed to list artifacts: %w", err)
 	}
 
-	items := make([]*models.Artifact, len(results))
+	items := make([]*core.Artifact, len(results))
 	for i, result := range results {
 		items[i] = mapArtifactFromDB(&result)
 	}
@@ -135,7 +134,7 @@ func (r *PostgresArtifactRepository) List(ctx context.Context, limit, offset int
 }
 
 // ListArtifactsByOrganization retrieves multiple Artifacts by organizationID
-func (r *PostgresArtifactRepository) ListArtifactsByOrganization(ctx context.Context, organizationID string) ([]*models.Artifact, error) {
+func (r *PostgresArtifactRepository) ListArtifactsByOrganization(ctx context.Context, organizationID string) ([]*core.Artifact, error) {
 	params := ListArtifactsByOrganizationParams{
 		OrganizationID: uuid.MustParse(organizationID),
 	}
@@ -143,11 +142,11 @@ func (r *PostgresArtifactRepository) ListArtifactsByOrganization(ctx context.Con
 	result, err := r.queries.ListArtifactsByOrganization(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return nil, corerrors.ErrArtifactNotFound
+			return nil, core.ErrArtifactNotFound
 		}
 		return nil, fmt.Errorf("failed to ListArtifactsByOrganization: %w", err)
 	}
-	items := make([]*models.Artifact, len(result))
+	items := make([]*core.Artifact, len(result))
 	for i, res := range result {
 		items[i] = mapArtifactFromDB(&res)
 	}
@@ -156,7 +155,7 @@ func (r *PostgresArtifactRepository) ListArtifactsByOrganization(ctx context.Con
 }
 
 // ListArtifactsByProducer retrieves multiple Artifacts by producerID
-func (r *PostgresArtifactRepository) ListArtifactsByProducer(ctx context.Context, producerID string) ([]*models.Artifact, error) {
+func (r *PostgresArtifactRepository) ListArtifactsByProducer(ctx context.Context, producerID string) ([]*core.Artifact, error) {
 	params := ListArtifactsByProducerParams{
 		ProducerID: func() *uuid.UUID {
 			if producerID == "" {
@@ -170,11 +169,11 @@ func (r *PostgresArtifactRepository) ListArtifactsByProducer(ctx context.Context
 	result, err := r.queries.ListArtifactsByProducer(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return nil, corerrors.ErrArtifactNotFound
+			return nil, core.ErrArtifactNotFound
 		}
 		return nil, fmt.Errorf("failed to ListArtifactsByProducer: %w", err)
 	}
-	items := make([]*models.Artifact, len(result))
+	items := make([]*core.Artifact, len(result))
 	for i, res := range result {
 		items[i] = mapArtifactFromDB(&res)
 	}
@@ -182,12 +181,12 @@ func (r *PostgresArtifactRepository) ListArtifactsByProducer(ctx context.Context
 
 }
 
-func mapArtifactFromDB(db *Artifact) *models.Artifact {
+func mapArtifactFromDB(db *Artifact) *core.Artifact {
 	if db == nil {
 		return nil
 	}
 
-	result := &models.Artifact{
+	result := &core.Artifact{
 		ID:             db.ID,
 		CreatedAt:      db.CreatedAt,
 		UpdatedAt:      db.UpdatedAt,

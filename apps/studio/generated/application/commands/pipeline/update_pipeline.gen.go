@@ -9,8 +9,7 @@ import (
 
 	"github.com/google/uuid"
 
-	domainevents "github.com/archesai/archesai/apps/studio/generated/core/events"
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/archesai/archesai/apps/studio/generated/core/repositories"
 	"github.com/archesai/archesai/pkg/events"
 )
@@ -56,7 +55,7 @@ func NewUpdatePipelineCommandHandler(
 }
 
 // Handle executes the update pipeline command.
-func (h *UpdatePipelineCommandHandler) Handle(ctx context.Context, cmd *UpdatePipelineCommand) (*models.Pipeline, error) {
+func (h *UpdatePipelineCommandHandler) Handle(ctx context.Context, cmd *UpdatePipelineCommand) (*core.Pipeline, error) {
 	// Fetch existing pipeline
 	existing, err := h.repo.Get(ctx, cmd.ID)
 	if err != nil {
@@ -74,7 +73,7 @@ func (h *UpdatePipelineCommandHandler) Handle(ctx context.Context, cmd *UpdatePi
 	}
 
 	// Publish domain event
-	event := domainevents.NewPipelineUpdatedEvent(updated.ID)
+	event := core.NewPipelineUpdatedEvent(updated.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 		// FIXME: Implement logging

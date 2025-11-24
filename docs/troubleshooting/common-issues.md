@@ -69,7 +69,7 @@ make generate
 
 # If OpenAPI-related:
 # Check your OpenAPI spec is valid
-archesai generate openapi api/openapi.yaml --bundle --output test.yaml
+archesai generate --spec api/openapi.yaml --bundle --output test.yaml
 # This will show validation errors
 ```
 
@@ -259,12 +259,12 @@ paths:
 
 ```bash
 # Use bundle mode to combine files
-archesai generate openapi api/openapi.yaml \
+archesai generate --spec api/openapi.yaml \
   --bundle \
   --output bundled.yaml
 
 # Then generate from bundled file
-archesai generate openapi bundled.yaml \
+archesai generate --spec bundled.yaml \
   --output ./myapp
 ```
 

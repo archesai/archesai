@@ -48,3 +48,5 @@ opencode.json
 .vscode/mcp.json
 
 api/openapi.bundled.yaml
+go.work
+go.work.sum

@@ -9,8 +9,7 @@ import (
 
 	"github.com/google/uuid"
 
-	domainevents "github.com/archesai/archesai/apps/studio/generated/core/events"
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/archesai/archesai/apps/studio/generated/core/repositories"
 	"github.com/archesai/archesai/pkg/events"
 )
@@ -59,7 +58,7 @@ func NewUpdateAPIKeyCommandHandler(
 }
 
 // Handle executes the update apikey command.
-func (h *UpdateAPIKeyCommandHandler) Handle(ctx context.Context, cmd *UpdateAPIKeyCommand) (*models.APIKey, error) {
+func (h *UpdateAPIKeyCommandHandler) Handle(ctx context.Context, cmd *UpdateAPIKeyCommand) (*core.APIKey, error) {
 	// Fetch existing apikey
 	existing, err := h.repo.Get(ctx, cmd.ID)
 	if err != nil {
@@ -77,7 +76,7 @@ func (h *UpdateAPIKeyCommandHandler) Handle(ctx context.Context, cmd *UpdateAPIK
 	}
 
 	// Publish domain event
-	event := domainevents.NewAPIKeyUpdatedEvent(updated.ID)
+	event := core.NewAPIKeyUpdatedEvent(updated.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 		// FIXME: Implement logging

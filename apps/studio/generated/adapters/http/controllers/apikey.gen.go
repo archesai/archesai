@@ -13,7 +13,7 @@ import (
 
 	commands "github.com/archesai/archesai/apps/studio/generated/application/commands/apikey"
 	queries "github.com/archesai/archesai/apps/studio/generated/application/queries/apikey"
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/archesai/archesai/pkg/server"
 )
 
@@ -76,7 +76,7 @@ type CreateAPIKeyResponse interface {
 }
 
 type CreateAPIKey201Response struct {
-	Data models.APIKey `json:"data"`
+	Data core.APIKey `json:"data"`
 }
 
 func (response CreateAPIKey201Response) VisitCreateAPIKeyResponse(w http.ResponseWriter) error {
@@ -237,7 +237,7 @@ type GetAPIKeyResponse interface {
 }
 
 type GetAPIKey200Response struct {
-	Data models.APIKey `json:"data"`
+	Data core.APIKey `json:"data"`
 }
 
 func (response GetAPIKey200Response) VisitGetAPIKeyResponse(w http.ResponseWriter) error {
@@ -415,8 +415,8 @@ type ListAPIKeysResponse interface {
 }
 
 type ListAPIKeys200Response struct {
-	Data []models.APIKey       `json:"data"`
-	Meta models.PaginationMeta `json:"meta"`
+	Data []core.APIKey       `json:"data"`
+	Meta core.PaginationMeta `json:"meta"`
 }
 
 func (response ListAPIKeys200Response) VisitListAPIKeysResponse(w http.ResponseWriter) error {
@@ -576,7 +576,7 @@ func (c *APIKeyController) ListAPIKeys(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Convert pointer slice to value slice for response
-	data := make([]models.APIKey, len(results))
+	data := make([]core.APIKey, len(results))
 	for i, item := range results {
 		if item != nil {
 			data[i] = *item
@@ -585,7 +585,7 @@ func (c *APIKeyController) ListAPIKeys(w http.ResponseWriter, r *http.Request) {
 
 	response := ListAPIKeys200Response{
 		Data: data,
-		Meta: models.PaginationMeta{Total: int32(total)},
+		Meta: core.PaginationMeta{Total: int32(total)},
 	}
 	if err := response.VisitListAPIKeysResponse(w); err != nil {
 		fmt.Fprintf(w, "error writing response: %v", err)
@@ -616,7 +616,7 @@ type UpdateAPIKeyResponse interface {
 }
 
 type UpdateAPIKey200Response struct {
-	Data models.APIKey `json:"data"`
+	Data core.APIKey `json:"data"`
 }
 
 func (response UpdateAPIKey200Response) VisitUpdateAPIKeyResponse(w http.ResponseWriter) error {

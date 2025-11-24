@@ -8,8 +8,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
-	corerrors "github.com/archesai/archesai/pkg/errors"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -30,7 +29,7 @@ func NewPostgresToolRepository(db *pgxpool.Pool) *PostgresToolRepository {
 // Tool operations
 
 // Create creates a new tool
-func (r *PostgresToolRepository) Create(ctx context.Context, entity *models.Tool) (*models.Tool, error) {
+func (r *PostgresToolRepository) Create(ctx context.Context, entity *core.Tool) (*core.Tool, error) {
 	params := CreateToolParams{
 		ID:             entity.ID,
 		Description:    entity.Description,
@@ -49,7 +48,7 @@ func (r *PostgresToolRepository) Create(ctx context.Context, entity *models.Tool
 }
 
 // Get retrieves a tool by ID
-func (r *PostgresToolRepository) Get(ctx context.Context, id uuid.UUID) (*models.Tool, error) {
+func (r *PostgresToolRepository) Get(ctx context.Context, id uuid.UUID) (*core.Tool, error) {
 	params := GetToolParams{
 		ID: id,
 	}
@@ -57,7 +56,7 @@ func (r *PostgresToolRepository) Get(ctx context.Context, id uuid.UUID) (*models
 	result, err := r.queries.GetTool(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return nil, corerrors.ErrToolNotFound
+			return nil, core.ErrToolNotFound
 		}
 		return nil, fmt.Errorf("failed to get tool: %w", err)
 	}
@@ -66,7 +65,7 @@ func (r *PostgresToolRepository) Get(ctx context.Context, id uuid.UUID) (*models
 }
 
 // Update updates an existing tool
-func (r *PostgresToolRepository) Update(ctx context.Context, id uuid.UUID, entity *models.Tool) (*models.Tool, error) {
+func (r *PostgresToolRepository) Update(ctx context.Context, id uuid.UUID, entity *core.Tool) (*core.Tool, error) {
 
 	params := UpdateToolParams{
 		ID:             id,
@@ -79,7 +78,7 @@ func (r *PostgresToolRepository) Update(ctx context.Context, id uuid.UUID, entit
 	result, err := r.queries.UpdateTool(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return nil, corerrors.ErrToolNotFound
+			return nil, core.ErrToolNotFound
 		}
 		return nil, fmt.Errorf("failed to update tool: %w", err)
 	}
@@ -96,7 +95,7 @@ func (r *PostgresToolRepository) Delete(ctx context.Context, id uuid.UUID) error
 	err := r.queries.DeleteTool(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return corerrors.ErrToolNotFound
+			return core.ErrToolNotFound
 		}
 		return fmt.Errorf("failed to delete tool: %w", err)
 	}
@@ -104,7 +103,7 @@ func (r *PostgresToolRepository) Delete(ctx context.Context, id uuid.UUID) error
 }
 
 // List returns a paginated list of tools
-func (r *PostgresToolRepository) List(ctx context.Context, limit, offset int32) ([]*models.Tool, int64, error) {
+func (r *PostgresToolRepository) List(ctx context.Context, limit, offset int32) ([]*core.Tool, int64, error) {
 	listParams := ListToolsParams{
 		Limit:  limit,
 		Offset: offset,
@@ -115,7 +114,7 @@ func (r *PostgresToolRepository) List(ctx context.Context, limit, offset int32) 
 		return nil, 0, fmt.Errorf("failed to list tools: %w", err)
 	}
 
-	items := make([]*models.Tool, len(results))
+	items := make([]*core.Tool, len(results))
 	for i, result := range results {
 		items[i] = mapToolFromDB(&result)
 	}
@@ -128,7 +127,7 @@ func (r *PostgresToolRepository) List(ctx context.Context, limit, offset int32) 
 }
 
 // ListToolsByOrganization retrieves multiple Tools by organizationID
-func (r *PostgresToolRepository) ListToolsByOrganization(ctx context.Context, organizationID string) ([]*models.Tool, error) {
+func (r *PostgresToolRepository) ListToolsByOrganization(ctx context.Context, organizationID string) ([]*core.Tool, error) {
 	params := ListToolsByOrganizationParams{
 		OrganizationID: uuid.MustParse(organizationID),
 	}
@@ -136,11 +135,11 @@ func (r *PostgresToolRepository) ListToolsByOrganization(ctx context.Context, or
 	result, err := r.queries.ListToolsByOrganization(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return nil, corerrors.ErrToolNotFound
+			return nil, core.ErrToolNotFound
 		}
 		return nil, fmt.Errorf("failed to ListToolsByOrganization: %w", err)
 	}
-	items := make([]*models.Tool, len(result))
+	items := make([]*core.Tool, len(result))
 	for i, res := range result {
 		items[i] = mapToolFromDB(&res)
 	}
@@ -148,12 +147,12 @@ func (r *PostgresToolRepository) ListToolsByOrganization(ctx context.Context, or
 
 }
 
-func mapToolFromDB(db *Tool) *models.Tool {
+func mapToolFromDB(db *Tool) *core.Tool {
 	if db == nil {
 		return nil
 	}
 
-	result := &models.Tool{
+	result := &core.Tool{
 		ID:             db.ID,
 		CreatedAt:      db.CreatedAt,
 		UpdatedAt:      db.UpdatedAt,

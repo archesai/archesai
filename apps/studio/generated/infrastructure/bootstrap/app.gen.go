@@ -34,7 +34,7 @@ import (
 	runQueries "github.com/archesai/archesai/apps/studio/generated/application/queries/run"
 	toolQueries "github.com/archesai/archesai/apps/studio/generated/application/queries/tool"
 	userQueries "github.com/archesai/archesai/apps/studio/generated/application/queries/user"
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/archesai/archesai/pkg/executor"
 	"github.com/archesai/archesai/pkg/server"
 
@@ -62,7 +62,7 @@ type App struct {
 	infra *Infrastructure
 
 	// Public infrastructure access
-	Config    *models.Config
+	Config    *core.Config
 	APIServer *server.APIServer
 
 	// HTTP Controllers
@@ -83,7 +83,7 @@ type App struct {
 }
 
 // NewApp creates and initializes all application dependencies.
-func NewApp(cfg *models.Config) (*App, error) {
+func NewApp(cfg *core.Config) (*App, error) {
 	// Initialize infrastructure
 	infra, err := NewInfrastructure(cfg)
 	if err != nil {

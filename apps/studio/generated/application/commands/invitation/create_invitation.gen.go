@@ -9,8 +9,7 @@ import (
 
 	"github.com/google/uuid"
 
-	domainevents "github.com/archesai/archesai/apps/studio/generated/core/events"
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/archesai/archesai/apps/studio/generated/core/repositories"
 	"github.com/archesai/archesai/pkg/events"
 )
@@ -56,9 +55,9 @@ func NewCreateInvitationCommandHandler(
 }
 
 // Handle executes the create invitation command.
-func (h *CreateInvitationCommandHandler) Handle(ctx context.Context, cmd *CreateInvitationCommand) (*models.Invitation, error) {
+func (h *CreateInvitationCommandHandler) Handle(ctx context.Context, cmd *CreateInvitationCommand) (*core.Invitation, error) {
 	// Create the invitation entity
-	entity := &models.Invitation{
+	entity := &core.Invitation{
 		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
@@ -71,8 +70,8 @@ func (h *CreateInvitationCommandHandler) Handle(ctx context.Context, cmd *Create
 		return nil, fmt.Errorf("failed to create invitation: %w", err)
 	}
 
-	// Publish domain event
-	event := domainevents.NewInvitationCreatedEvent(created.ID)
+	// Publish event
+	event := core.NewInvitationCreatedEvent(created.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 		// FIXME: Implement logging

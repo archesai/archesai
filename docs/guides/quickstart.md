@@ -168,7 +168,7 @@ components:
 
 ```bash
 # Generate the complete application
-archesai generate openapi bookstore.yaml --output bookstore-app
+archesai generate --spec bookstore.yaml --output bookstore-app
 
 # Navigate to your new app
 cd bookstore-app

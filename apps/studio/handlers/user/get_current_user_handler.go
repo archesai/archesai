@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	queries "github.com/archesai/archesai/apps/studio/generated/application/queries/user"
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/archesai/archesai/apps/studio/generated/core/repositories"
 )
 
@@ -28,7 +28,7 @@ func NewGetCurrentUserQueryHandler(
 func (h *GetCurrentUserQueryHandler) Handle(
 	ctx context.Context,
 	query *queries.GetCurrentUserQuery,
-) (*models.User, error) {
+) (*core.User, error) {
 	// Get user by ID from session
 	user, err := h.userRepo.GetUserBySessionID(ctx, query.SessionID.String())
 	if err != nil {

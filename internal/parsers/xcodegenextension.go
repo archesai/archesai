@@ -1,9 +1,11 @@
 package parsers
 
-import (
-	"fmt"
-	"strings"
-)
+// XCodegenExtension represents Configuration for code generation from OpenAPI schemas
+type XCodegenExtension struct {
+
+	// Repository Repository generation configuration
+	Repository *XCodegenExtensionRepository `json:"repository,omitempty" yaml:"repository,omitempty"`
+}
 
 // XCodegenExtensionRepository represents Repository generation configuration
 type XCodegenExtensionRepository struct {
@@ -67,54 +69,4 @@ type XCodegenExtensionRepositoryRelationsItem struct {
 
 	// ReferencesField The field in the referenced table (defaults to 'id')
 	ReferencesField *string `json:"referencesField,omitempty" yaml:"referencesField,omitempty"`
-}
-
-// XCodegenExtension represents Configuration for code generation from OpenAPI schemas
-type XCodegenExtension struct {
-
-	// Repository Repository generation configuration
-	Repository *XCodegenExtensionRepository `json:"repository,omitempty" yaml:"repository,omitempty"`
-}
-
-// NewXCodegenExtension creates a new immutable XCodegenExtension value object.
-// Value objects are immutable and validated upon creation.
-func NewXCodegenExtension(
-	repository *XCodegenExtensionRepository,
-) (XCodegenExtension, error) {
-	// Validate required fields
-	return XCodegenExtension{
-		Repository: repository,
-	}, nil
-}
-
-// ZeroXCodegenExtension returns the zero value for XCodegenExtension.
-// This is useful for comparisons and as a default value.
-func ZeroXCodegenExtension() XCodegenExtension {
-	return XCodegenExtension{}
-}
-
-// GetRepository returns the Repository value.
-// Value objects are immutable, so this returns a copy of the value.
-func (v XCodegenExtension) GetRepository() *XCodegenExtensionRepository {
-	return v.Repository
-}
-
-// Validate validates the XCodegenExtension value object.
-// Returns an error if any field fails validation.
-func (v XCodegenExtension) Validate() error {
-	return nil
-}
-
-// IsZero returns true if this is the zero value.
-func (v XCodegenExtension) IsZero() bool {
-	zero := ZeroXCodegenExtension()
-	// Compare using string representation as a simple equality check
-	return v.String() == zero.String()
-}
-
-// String returns a string representation of XCodegenExtension
-func (v XCodegenExtension) String() string {
-	var fields []string
-	fields = append(fields, fmt.Sprintf("Repository: %v", v.Repository))
-	return fmt.Sprintf("XCodegenExtension{%s}", strings.Join(fields, ", "))
 }

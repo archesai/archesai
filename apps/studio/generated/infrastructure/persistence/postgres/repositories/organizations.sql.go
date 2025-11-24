@@ -11,44 +11,58 @@ import (
 	"github.com/google/uuid"
 )
 
+const countOrganizations = `-- name: CountOrganizations :one
+SELECT
+  COUNT(*)
+FROM
+  organization
+`
+
+func (q *Queries) CountOrganizations(ctx context.Context) (int64, error) {
+	row := q.db.QueryRow(ctx, countOrganizations)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createOrganization = `-- name: CreateOrganization :one
 INSERT INTO
-  organization (
-    id,
-    name,
-    slug,
-    billing_email,
-    plan,
-    credits,
-    logo,
-    stripe_customer_identifier
-  )
+  organization (id, billing_email, credits, logo, name, plan, slug, stripe_customer_identifier)
 VALUES
-  ($1, $2, $3, $4, $5, $6, $7, $8)
+  (
+    $1,
+    $2,
+    $3,
+    $4,
+    $5,
+    $6,
+    $7,
+    $8
+  )
 RETURNING
   id, created_at, updated_at, billing_email, credits, logo, name, plan, slug, stripe_customer_identifier
 `
 
 type CreateOrganizationParams struct {
 	ID                       uuid.UUID
-	Name                     string
-	Slug                     string
 	BillingEmail             *string
-	Plan                     string
 	Credits                  int32
 	Logo                     *string
+	Name                     string
+	Plan                     string
+	Slug                     string
 	StripeCustomerIdentifier string
 }
 
 func (q *Queries) CreateOrganization(ctx context.Context, arg CreateOrganizationParams) (Organization, error) {
 	row := q.db.QueryRow(ctx, createOrganization,
 		arg.ID,
-		arg.Name,
-		arg.Slug,
 		arg.BillingEmail,
-		arg.Plan,
 		arg.Credits,
 		arg.Logo,
+		arg.Name,
+		arg.Plan,
+		arg.Slug,
 		arg.StripeCustomerIdentifier,
 	)
 	var i Organization
@@ -189,18 +203,18 @@ FROM
 ORDER BY
   created_at DESC
 LIMIT
-  $1
-OFFSET
   $2
+OFFSET
+  $1
 `
 
 type ListOrganizationsParams struct {
-	Limit  int32
 	Offset int32
+	Limit  int32
 }
 
 func (q *Queries) ListOrganizations(ctx context.Context, arg ListOrganizationsParams) ([]Organization, error) {
-	rows, err := q.db.Query(ctx, listOrganizations, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listOrganizations, arg.Offset, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
@@ -233,43 +247,40 @@ func (q *Queries) ListOrganizations(ctx context.Context, arg ListOrganizationsPa
 const updateOrganization = `-- name: UpdateOrganization :one
 UPDATE organization
 SET
-  name = COALESCE($2, name),
-  slug = COALESCE($3, slug),
-  billing_email = COALESCE($4, billing_email),
+  billing_email = COALESCE($1, billing_email),
+  credits = COALESCE($2, credits),
+  logo = COALESCE($3, logo),
+  name = COALESCE($4, name),
   plan = COALESCE($5, plan),
-  credits = COALESCE($6, credits),
-  logo = COALESCE($7, logo),
-  stripe_customer_identifier = COALESCE(
-    $8,
-    stripe_customer_identifier
-  )
+  slug = COALESCE($6, slug),
+  stripe_customer_identifier = COALESCE($7, stripe_customer_identifier)
 WHERE
-  id = $1
+  id = $8
 RETURNING
   id, created_at, updated_at, billing_email, credits, logo, name, plan, slug, stripe_customer_identifier
 `
 
 type UpdateOrganizationParams struct {
-	ID                       uuid.UUID
-	Name                     *string
-	Slug                     *string
 	BillingEmail             *string
-	Plan                     *string
 	Credits                  *int32
 	Logo                     *string
+	Name                     *string
+	Plan                     *string
+	Slug                     *string
 	StripeCustomerIdentifier *string
+	ID                       uuid.UUID
 }
 
 func (q *Queries) UpdateOrganization(ctx context.Context, arg UpdateOrganizationParams) (Organization, error) {
 	row := q.db.QueryRow(ctx, updateOrganization,
-		arg.ID,
-		arg.Name,
-		arg.Slug,
 		arg.BillingEmail,
-		arg.Plan,
 		arg.Credits,
 		arg.Logo,
+		arg.Name,
+		arg.Plan,
+		arg.Slug,
 		arg.StripeCustomerIdentifier,
+		arg.ID,
 	)
 	var i Organization
 	err := row.Scan(

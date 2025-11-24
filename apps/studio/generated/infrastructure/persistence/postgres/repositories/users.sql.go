@@ -27,13 +27,13 @@ func (q *Queries) CountUsers(ctx context.Context) (int64, error) {
 
 const createUser = `-- name: CreateUser :one
 INSERT INTO
-  "user" (id, email, name, email_verified, image)
+  "user" (id, email, email_verified, image, name)
 VALUES
   (
     $1,
     $2,
     $3,
-    COALESCE($4, false),
+    $4,
     $5
   )
 RETURNING
@@ -43,18 +43,18 @@ RETURNING
 type CreateUserParams struct {
 	ID            uuid.UUID
 	Email         string
-	Name          string
-	EmailVerified interface{}
+	EmailVerified bool
 	Image         *string
+	Name          string
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
 	row := q.db.QueryRow(ctx, createUser,
 		arg.ID,
 		arg.Email,
-		arg.Name,
 		arg.EmailVerified,
 		arg.Image,
+		arg.Name,
 	)
 	var i User
 	err := row.Scan(
@@ -82,36 +82,6 @@ type DeleteUserParams struct {
 func (q *Queries) DeleteUser(ctx context.Context, arg DeleteUserParams) error {
 	_, err := q.db.Exec(ctx, deleteUser, arg.ID)
 	return err
-}
-
-const getByEmail = `-- name: GetByEmail :one
-SELECT
-  id, created_at, updated_at, email, email_verified, image, name
-FROM
-  "user"
-WHERE
-  email = $1
-LIMIT
-  1
-`
-
-type GetByEmailParams struct {
-	Email string
-}
-
-func (q *Queries) GetByEmail(ctx context.Context, arg GetByEmailParams) (User, error) {
-	row := q.db.QueryRow(ctx, getByEmail, arg.Email)
-	var i User
-	err := row.Scan(
-		&i.ID,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-		&i.Email,
-		&i.EmailVerified,
-		&i.Image,
-		&i.Name,
-	)
-	return i, err
 }
 
 const getUser = `-- name: GetUser :one
@@ -209,18 +179,18 @@ FROM
 ORDER BY
   created_at DESC
 LIMIT
-  $1
-OFFSET
   $2
+OFFSET
+  $1
 `
 
 type ListUsersParams struct {
-	Limit  int32
 	Offset int32
+	Limit  int32
 }
 
 func (q *Queries) ListUsers(ctx context.Context, arg ListUsersParams) ([]User, error) {
-	rows, err := q.db.Query(ctx, listUsers, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listUsers, arg.Offset, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
@@ -250,31 +220,31 @@ func (q *Queries) ListUsers(ctx context.Context, arg ListUsersParams) ([]User, e
 const updateUser = `-- name: UpdateUser :one
 UPDATE "user"
 SET
-  name = COALESCE($2, name),
-  email = COALESCE($3, email),
-  email_verified = COALESCE($4, email_verified),
-  image = COALESCE($5, image)
+  email = COALESCE($1, email),
+  email_verified = COALESCE($2, email_verified),
+  image = COALESCE($3, image),
+  name = COALESCE($4, name)
 WHERE
-  id = $1
+  id = $5
 RETURNING
   id, created_at, updated_at, email, email_verified, image, name
 `
 
 type UpdateUserParams struct {
-	ID            uuid.UUID
-	Name          *string
 	Email         *string
 	EmailVerified *bool
 	Image         *string
+	Name          *string
+	ID            uuid.UUID
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
 	row := q.db.QueryRow(ctx, updateUser,
-		arg.ID,
-		arg.Name,
 		arg.Email,
 		arg.EmailVerified,
 		arg.Image,
+		arg.Name,
+		arg.ID,
 	)
 	var i User
 	err := row.Scan(

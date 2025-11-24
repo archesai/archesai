@@ -8,7 +8,6 @@ import (
 // Standard response types that match the OpenAPI spec
 
 // ProblemDetails represents an RFC 7807 problem details response.
-// This is used by generated code for embedding in response types.
 type ProblemDetails struct {
 	Type      string    `json:"type"`
 	Title     string    `json:"title"`

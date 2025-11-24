@@ -8,8 +8,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
-	corerrors "github.com/archesai/archesai/pkg/errors"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -30,7 +29,7 @@ func NewPostgresAPIKeyRepository(db *pgxpool.Pool) *PostgresAPIKeyRepository {
 // APIKey operations
 
 // Create creates a new apikey
-func (r *PostgresAPIKeyRepository) Create(ctx context.Context, entity *models.APIKey) (*models.APIKey, error) {
+func (r *PostgresAPIKeyRepository) Create(ctx context.Context, entity *core.APIKey) (*core.APIKey, error) {
 	params := CreateAPIKeyParams{
 		ID:             entity.ID,
 		ExpiresAt:      entity.ExpiresAt,
@@ -52,7 +51,7 @@ func (r *PostgresAPIKeyRepository) Create(ctx context.Context, entity *models.AP
 }
 
 // Get retrieves a apikey by ID
-func (r *PostgresAPIKeyRepository) Get(ctx context.Context, id uuid.UUID) (*models.APIKey, error) {
+func (r *PostgresAPIKeyRepository) Get(ctx context.Context, id uuid.UUID) (*core.APIKey, error) {
 	params := GetAPIKeyParams{
 		ID: id,
 	}
@@ -60,7 +59,7 @@ func (r *PostgresAPIKeyRepository) Get(ctx context.Context, id uuid.UUID) (*mode
 	result, err := r.queries.GetAPIKey(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return nil, corerrors.ErrAPIKeyNotFound
+			return nil, core.ErrAPIKeyNotFound
 		}
 		return nil, fmt.Errorf("failed to get apikey: %w", err)
 	}
@@ -69,7 +68,7 @@ func (r *PostgresAPIKeyRepository) Get(ctx context.Context, id uuid.UUID) (*mode
 }
 
 // Update updates an existing apikey
-func (r *PostgresAPIKeyRepository) Update(ctx context.Context, id uuid.UUID, entity *models.APIKey) (*models.APIKey, error) {
+func (r *PostgresAPIKeyRepository) Update(ctx context.Context, id uuid.UUID, entity *core.APIKey) (*core.APIKey, error) {
 
 	params := UpdateAPIKeyParams{
 		ID:        id,
@@ -82,7 +81,7 @@ func (r *PostgresAPIKeyRepository) Update(ctx context.Context, id uuid.UUID, ent
 	result, err := r.queries.UpdateAPIKey(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return nil, corerrors.ErrAPIKeyNotFound
+			return nil, core.ErrAPIKeyNotFound
 		}
 		return nil, fmt.Errorf("failed to update apikey: %w", err)
 	}
@@ -99,7 +98,7 @@ func (r *PostgresAPIKeyRepository) Delete(ctx context.Context, id uuid.UUID) err
 	err := r.queries.DeleteAPIKey(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return corerrors.ErrAPIKeyNotFound
+			return core.ErrAPIKeyNotFound
 		}
 		return fmt.Errorf("failed to delete apikey: %w", err)
 	}
@@ -107,7 +106,7 @@ func (r *PostgresAPIKeyRepository) Delete(ctx context.Context, id uuid.UUID) err
 }
 
 // List returns a paginated list of apikeys
-func (r *PostgresAPIKeyRepository) List(ctx context.Context, limit, offset int32) ([]*models.APIKey, int64, error) {
+func (r *PostgresAPIKeyRepository) List(ctx context.Context, limit, offset int32) ([]*core.APIKey, int64, error) {
 	listParams := ListAPIKeysParams{
 		Limit:  limit,
 		Offset: offset,
@@ -118,7 +117,7 @@ func (r *PostgresAPIKeyRepository) List(ctx context.Context, limit, offset int32
 		return nil, 0, fmt.Errorf("failed to list apikeys: %w", err)
 	}
 
-	items := make([]*models.APIKey, len(results))
+	items := make([]*core.APIKey, len(results))
 	for i, result := range results {
 		items[i] = mapAPIKeyFromDB(&result)
 	}
@@ -130,12 +129,12 @@ func (r *PostgresAPIKeyRepository) List(ctx context.Context, limit, offset int32
 	return items, count, nil
 }
 
-func mapAPIKeyFromDB(db *APIKey) *models.APIKey {
+func mapAPIKeyFromDB(db *APIKey) *core.APIKey {
 	if db == nil {
 		return nil
 	}
 
-	result := &models.APIKey{
+	result := &core.APIKey{
 		ID:             db.ID,
 		CreatedAt:      db.CreatedAt,
 		UpdatedAt:      db.UpdatedAt,

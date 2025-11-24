@@ -7,7 +7,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/google/uuid"
 )
 
@@ -26,21 +26,21 @@ func NewSQLiteToolRepository(db *sql.DB) *SQLiteToolRepository {
 // Tool operations
 
 // Create creates a new tool
-func (r *SQLiteToolRepository) Create(ctx context.Context, tool *models.Tool) (*models.Tool, error) {
+func (r *SQLiteToolRepository) Create(ctx context.Context, tool *core.Tool) (*core.Tool, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per tool
 	return nil, fmt.Errorf("CreateTool not yet implemented - requires custom mapping")
 }
 
 // Get retrieves a tool by ID
-func (r *SQLiteToolRepository) Get(ctx context.Context, id uuid.UUID) (*models.Tool, error) {
+func (r *SQLiteToolRepository) Get(ctx context.Context, id uuid.UUID) (*core.Tool, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per tool
 	return nil, fmt.Errorf("GetTool not yet implemented - requires custom mapping")
 }
 
 // Update updates an existing tool
-func (r *SQLiteToolRepository) Update(ctx context.Context, id uuid.UUID, tool *models.Tool) (*models.Tool, error) {
+func (r *SQLiteToolRepository) Update(ctx context.Context, id uuid.UUID, tool *core.Tool) (*core.Tool, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per tool
 	return nil, fmt.Errorf("UpdateTool not yet implemented - requires custom mapping")
@@ -54,7 +54,7 @@ func (r *SQLiteToolRepository) Delete(ctx context.Context, id uuid.UUID) error {
 }
 
 // List returns a paginated list of tools
-func (r *SQLiteToolRepository) List(ctx context.Context, limit, offset int32) ([]*models.Tool, int64, error) {
+func (r *SQLiteToolRepository) List(ctx context.Context, limit, offset int32) ([]*core.Tool, int64, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per tool
 	return nil, 0, fmt.Errorf("ListTools not yet implemented - requires custom mapping")
@@ -63,7 +63,7 @@ func (r *SQLiteToolRepository) List(ctx context.Context, limit, offset int32) ([
 // Additional methods
 
 // ListToolsByOrganization retrieves multiple tools by organizationID
-func (r *SQLiteToolRepository) ListToolsByOrganization(ctx context.Context, organizationID string) ([]*models.Tool, error) {
+func (r *SQLiteToolRepository) ListToolsByOrganization(ctx context.Context, organizationID string) ([]*core.Tool, error) {
 	// TODO: Implement ListToolsByOrganization
 	return nil, fmt.Errorf("ListToolsByOrganization not yet implemented - requires custom mapping")
 }

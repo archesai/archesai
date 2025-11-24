@@ -416,7 +416,7 @@ func (s *SchemaDef) GetDBMapValue(dbVar string, parentSchema *SchemaDef) string 
 	fieldAccess := fmt.Sprintf("%s.%s", dbVar, s.Name)
 	enumType := ""
 	if parentSchema != nil && len(s.Enum) > 0 {
-		enumType = fmt.Sprintf("models.%s%s", parentSchema.Name, s.Name)
+		enumType = fmt.Sprintf("core.%s%s", parentSchema.Name, s.Name)
 	}
 
 	// Nullable enum - convert *string to *EnumType

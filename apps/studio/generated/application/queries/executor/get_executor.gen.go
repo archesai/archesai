@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/archesai/archesai/apps/studio/generated/core/repositories"
 )
 
@@ -42,7 +42,7 @@ func NewGetExecutorQueryHandler(repo repositories.ExecutorRepository) *GetExecut
 }
 
 // Handle executes the get executor query.
-func (h *GetExecutorQueryHandler) Handle(ctx context.Context, query *GetExecutorQuery) (*models.Executor, error) {
+func (h *GetExecutorQueryHandler) Handle(ctx context.Context, query *GetExecutorQuery) (*core.Executor, error) {
 	result, err := h.repo.Get(ctx, query.ID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get executor: %w", err)

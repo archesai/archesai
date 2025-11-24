@@ -4,11 +4,11 @@ Generates: A single events file per entity
 Expected data: EventsTemplateData
 */ -}}
 {{template "header" .}}
-package events
+package core
 
 import (
 	"github.com/google/uuid"
-	pkgevents "github.com/archesai/archesai/pkg/events"
+	"github.com/archesai/archesai/pkg/events"
 )
 
 // Event type constants for {{ .Entity.Name }}.
@@ -20,14 +20,14 @@ const (
 
 // {{ .Entity.Name }}CreatedEvent represents a created event for {{ .Entity.Name }}.
 type {{ .Entity.Name }}CreatedEvent struct {
-	pkgevents.BaseEvent
+	events.BaseEvent
 	{{ .Entity.Name }}ID uuid.UUID `json:"{{lower .Entity.Name}}_id"`
 }
 
 // New{{ .Entity.Name }}CreatedEvent creates a new {{ .Entity.Name }} created event.
 func New{{ .Entity.Name }}CreatedEvent(id uuid.UUID) *{{ .Entity.Name }}CreatedEvent {
 	return &{{ .Entity.Name }}CreatedEvent{
-		BaseEvent: pkgevents.NewBaseEvent("{{lower .Entity.Name}}", Event{{ .Entity.Name }}Created),
+		BaseEvent: events.NewBaseEvent("{{lower .Entity.Name}}", Event{{ .Entity.Name }}Created),
 		{{ .Entity.Name }}ID: id,
 	}
 }
@@ -44,14 +44,14 @@ func (e *{{ .Entity.Name }}CreatedEvent) EventData() any {
 
 // {{ .Entity.Name }}UpdatedEvent represents an updated event for {{ .Entity.Name }}.
 type {{ .Entity.Name }}UpdatedEvent struct {
-	pkgevents.BaseEvent
+	events.BaseEvent
 	{{ .Entity.Name }}ID uuid.UUID `json:"{{lower .Entity.Name}}_id"`
 }
 
 // New{{ .Entity.Name }}UpdatedEvent creates a new {{ .Entity.Name }} updated event.
 func New{{ .Entity.Name }}UpdatedEvent(id uuid.UUID) *{{ .Entity.Name }}UpdatedEvent {
 	return &{{ .Entity.Name }}UpdatedEvent{
-		BaseEvent: pkgevents.NewBaseEvent("{{lower .Entity.Name}}", Event{{ .Entity.Name }}Updated),
+		BaseEvent: events.NewBaseEvent("{{lower .Entity.Name}}", Event{{ .Entity.Name }}Updated),
 		{{ .Entity.Name }}ID: id,
 	}
 }
@@ -68,14 +68,14 @@ func (e *{{ .Entity.Name }}UpdatedEvent) EventData() any {
 
 // {{ .Entity.Name }}DeletedEvent represents a deleted event for {{ .Entity.Name }}.
 type {{ .Entity.Name }}DeletedEvent struct {
-	pkgevents.BaseEvent
+	events.BaseEvent
 	{{ .Entity.Name }}ID uuid.UUID `json:"{{lower .Entity.Name}}_id"`
 }
 
 // New{{ .Entity.Name }}DeletedEvent creates a new {{ .Entity.Name }} deleted event.
 func New{{ .Entity.Name }}DeletedEvent(id uuid.UUID) *{{ .Entity.Name }}DeletedEvent {
 	return &{{ .Entity.Name }}DeletedEvent{
-		BaseEvent: pkgevents.NewBaseEvent("{{lower .Entity.Name}}", Event{{ .Entity.Name }}Deleted),
+		BaseEvent: events.NewBaseEvent("{{lower .Entity.Name}}", Event{{ .Entity.Name }}Deleted),
 		{{ .Entity.Name }}ID: id,
 	}
 }

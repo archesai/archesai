@@ -8,7 +8,7 @@ import (
 	"github.com/google/uuid"
 
 	queries "github.com/archesai/archesai/apps/studio/generated/application/queries/pipeline"
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/archesai/archesai/apps/studio/generated/core/repositories"
 )
 
@@ -58,7 +58,7 @@ func (h *GetPipelineExecutionPlanQueryHandler) Handle(
 	// if err != nil {
 	// 	return nil, fmt.Errorf("failed to list pipeline steps: %w", err)
 	// }
-	steps := []*models.PipelineStep{}
+	steps := []*core.PipelineStep{}
 
 	// Build execution plan based on dependencies
 	levels := h.buildExecutionLevels(steps)
@@ -82,7 +82,7 @@ func (h *GetPipelineExecutionPlanQueryHandler) Handle(
 
 // buildExecutionLevels creates execution levels based on step dependencies.
 func (h *GetPipelineExecutionPlanQueryHandler) buildExecutionLevels(
-	steps []*models.PipelineStep,
+	steps []*core.PipelineStep,
 ) []ExecutionLevel {
 	if len(steps) == 0 {
 		return []ExecutionLevel{}
@@ -140,7 +140,7 @@ func (h *GetPipelineExecutionPlanQueryHandler) buildExecutionLevels(
 
 	// // calculateEstimatedDuration estimates total execution time.
 	// func (h *GetPipelineExecutionPlanQueryHandler) calculateEstimatedDuration(
-	// 	steps []*models.PipelineStep,
+	// 	steps []*core.PipelineStep,
 	// 	levels []ExecutionLevel,
 	// ) int {
 	// 	if len(steps) == 0 {
@@ -173,7 +173,7 @@ func (h *GetPipelineExecutionPlanQueryHandler) buildExecutionLevels(
 }
 
 // hasCycles checks for circular dependencies using DFS.
-func (h *GetPipelineExecutionPlanQueryHandler) hasCycles(_ []*models.PipelineStep) bool {
+func (h *GetPipelineExecutionPlanQueryHandler) hasCycles(_ []*core.PipelineStep) bool {
 	// Build adjacency list
 	// graph := make(map[string][]string)
 	// for _, step := range steps {

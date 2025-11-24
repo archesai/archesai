@@ -9,8 +9,7 @@ import (
 
 	"github.com/google/uuid"
 
-	domainevents "github.com/archesai/archesai/apps/studio/generated/core/events"
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/archesai/archesai/apps/studio/generated/core/repositories"
 	"github.com/archesai/archesai/pkg/events"
 )
@@ -50,9 +49,9 @@ func NewCreateRunCommandHandler(
 }
 
 // Handle executes the create run command.
-func (h *CreateRunCommandHandler) Handle(ctx context.Context, cmd *CreateRunCommand) (*models.Run, error) {
+func (h *CreateRunCommandHandler) Handle(ctx context.Context, cmd *CreateRunCommand) (*core.Run, error) {
 	// Create the run entity
-	entity := &models.Run{
+	entity := &core.Run{
 		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
@@ -65,8 +64,8 @@ func (h *CreateRunCommandHandler) Handle(ctx context.Context, cmd *CreateRunComm
 		return nil, fmt.Errorf("failed to create run: %w", err)
 	}
 
-	// Publish domain event
-	event := domainevents.NewRunCreatedEvent(created.ID)
+	// Publish event
+	event := core.NewRunCreatedEvent(created.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 		// FIXME: Implement logging

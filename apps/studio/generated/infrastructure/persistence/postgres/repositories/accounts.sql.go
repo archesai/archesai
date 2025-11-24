@@ -12,20 +12,23 @@ import (
 	"github.com/google/uuid"
 )
 
+const countAccounts = `-- name: CountAccounts :one
+SELECT
+  COUNT(*)
+FROM
+  account
+`
+
+func (q *Queries) CountAccounts(ctx context.Context) (int64, error) {
+	row := q.db.QueryRow(ctx, countAccounts)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createAccount = `-- name: CreateAccount :one
 INSERT INTO
-  account (
-    id,
-    user_id,
-    provider,
-    account_identifier,
-    access_token,
-    refresh_token,
-    access_token_expires_at,
-    refresh_token_expires_at,
-    scope,
-    id_token
-  )
+  account (id, access_token, access_token_expires_at, account_identifier, id_token, provider, refresh_token, refresh_token_expires_at, scope, user_id)
 VALUES
   (
     $1,
@@ -45,29 +48,29 @@ RETURNING
 
 type CreateAccountParams struct {
 	ID                    uuid.UUID
-	UserID                uuid.UUID
-	Provider              string
-	AccountIdentifier     string
 	AccessToken           *string
-	RefreshToken          *string
 	AccessTokenExpiresAt  *time.Time
+	AccountIdentifier     string
+	IDToken               *string
+	Provider              string
+	RefreshToken          *string
 	RefreshTokenExpiresAt *time.Time
 	Scope                 *string
-	IDToken               *string
+	UserID                uuid.UUID
 }
 
 func (q *Queries) CreateAccount(ctx context.Context, arg CreateAccountParams) (Account, error) {
 	row := q.db.QueryRow(ctx, createAccount,
 		arg.ID,
-		arg.UserID,
-		arg.Provider,
-		arg.AccountIdentifier,
 		arg.AccessToken,
-		arg.RefreshToken,
 		arg.AccessTokenExpiresAt,
+		arg.AccountIdentifier,
+		arg.IDToken,
+		arg.Provider,
+		arg.RefreshToken,
 		arg.RefreshTokenExpiresAt,
 		arg.Scope,
-		arg.IDToken,
+		arg.UserID,
 	)
 	var i Account
 	err := row.Scan(
@@ -99,21 +102,6 @@ type DeleteAccountParams struct {
 
 func (q *Queries) DeleteAccount(ctx context.Context, arg DeleteAccountParams) error {
 	_, err := q.db.Exec(ctx, deleteAccount, arg.ID)
-	return err
-}
-
-const deleteAccountsByUser = `-- name: DeleteAccountsByUser :exec
-DELETE FROM account
-WHERE
-  user_id = $1
-`
-
-type DeleteAccountsByUserParams struct {
-	UserID uuid.UUID
-}
-
-func (q *Queries) DeleteAccountsByUser(ctx context.Context, arg DeleteAccountsByUserParams) error {
-	_, err := q.db.Exec(ctx, deleteAccountsByUser, arg.UserID)
 	return err
 }
 
@@ -158,8 +146,8 @@ SELECT
 FROM
   account
 WHERE
-  provider = $1
-  AND account_identifier = $2
+  provider = $1 AND
+  account_identifier = $2
 LIMIT
   1
 `
@@ -189,43 +177,6 @@ func (q *Queries) GetAccountByProvider(ctx context.Context, arg GetAccountByProv
 	return i, err
 }
 
-const getAccountByUser = `-- name: GetAccountByUser :one
-SELECT
-  id, created_at, updated_at, access_token, access_token_expires_at, account_identifier, id_token, provider, refresh_token, refresh_token_expires_at, scope, user_id
-FROM
-  account
-WHERE
-  user_id = $1
-  AND provider = $2
-LIMIT
-  1
-`
-
-type GetAccountByUserParams struct {
-	UserID   uuid.UUID
-	Provider string
-}
-
-func (q *Queries) GetAccountByUser(ctx context.Context, arg GetAccountByUserParams) (Account, error) {
-	row := q.db.QueryRow(ctx, getAccountByUser, arg.UserID, arg.Provider)
-	var i Account
-	err := row.Scan(
-		&i.ID,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-		&i.AccessToken,
-		&i.AccessTokenExpiresAt,
-		&i.AccountIdentifier,
-		&i.IDToken,
-		&i.Provider,
-		&i.RefreshToken,
-		&i.RefreshTokenExpiresAt,
-		&i.Scope,
-		&i.UserID,
-	)
-	return i, err
-}
-
 const listAccounts = `-- name: ListAccounts :many
 SELECT
   id, created_at, updated_at, access_token, access_token_expires_at, account_identifier, id_token, provider, refresh_token, refresh_token_expires_at, scope, user_id
@@ -234,66 +185,18 @@ FROM
 ORDER BY
   created_at DESC
 LIMIT
-  $1
-OFFSET
   $2
+OFFSET
+  $1
 `
 
 type ListAccountsParams struct {
-	Limit  int32
 	Offset int32
+	Limit  int32
 }
 
 func (q *Queries) ListAccounts(ctx context.Context, arg ListAccountsParams) ([]Account, error) {
-	rows, err := q.db.Query(ctx, listAccounts, arg.Limit, arg.Offset)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Account
-	for rows.Next() {
-		var i Account
-		if err := rows.Scan(
-			&i.ID,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-			&i.AccessToken,
-			&i.AccessTokenExpiresAt,
-			&i.AccountIdentifier,
-			&i.IDToken,
-			&i.Provider,
-			&i.RefreshToken,
-			&i.RefreshTokenExpiresAt,
-			&i.Scope,
-			&i.UserID,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const listAccountsByUser = `-- name: ListAccountsByUser :many
-SELECT
-  id, created_at, updated_at, access_token, access_token_expires_at, account_identifier, id_token, provider, refresh_token, refresh_token_expires_at, scope, user_id
-FROM
-  account
-WHERE
-  user_id = $1
-ORDER BY
-  created_at DESC
-`
-
-type ListAccountsByUserParams struct {
-	UserID uuid.UUID
-}
-
-func (q *Queries) ListAccountsByUser(ctx context.Context, arg ListAccountsByUserParams) ([]Account, error) {
-	rows, err := q.db.Query(ctx, listAccountsByUser, arg.UserID)
+	rows, err := q.db.Query(ctx, listAccounts, arg.Offset, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
@@ -376,44 +279,46 @@ func (q *Queries) ListAccountsByUserID(ctx context.Context, arg ListAccountsByUs
 const updateAccount = `-- name: UpdateAccount :one
 UPDATE account
 SET
-  access_token = COALESCE($2, access_token),
-  refresh_token = COALESCE($3, refresh_token),
-  access_token_expires_at = COALESCE(
-    $4,
-    access_token_expires_at
-  ),
-  refresh_token_expires_at = COALESCE(
-    $5,
-    refresh_token_expires_at
-  ),
-  scope = COALESCE($6, scope),
-  id_token = COALESCE($7, id_token),
-  updated_at = NOW()
+  access_token = COALESCE($1, access_token),
+  access_token_expires_at = COALESCE($2, access_token_expires_at),
+  account_identifier = COALESCE($3, account_identifier),
+  id_token = COALESCE($4, id_token),
+  provider = COALESCE($5, provider),
+  refresh_token = COALESCE($6, refresh_token),
+  refresh_token_expires_at = COALESCE($7, refresh_token_expires_at),
+  scope = COALESCE($8, scope),
+  user_id = COALESCE($9, user_id)
 WHERE
-  id = $1
+  id = $10
 RETURNING
   id, created_at, updated_at, access_token, access_token_expires_at, account_identifier, id_token, provider, refresh_token, refresh_token_expires_at, scope, user_id
 `
 
 type UpdateAccountParams struct {
-	ID                    uuid.UUID
 	AccessToken           *string
-	RefreshToken          *string
 	AccessTokenExpiresAt  *time.Time
+	AccountIdentifier     *string
+	IDToken               *string
+	Provider              *string
+	RefreshToken          *string
 	RefreshTokenExpiresAt *time.Time
 	Scope                 *string
-	IDToken               *string
+	UserID                *uuid.UUID
+	ID                    uuid.UUID
 }
 
 func (q *Queries) UpdateAccount(ctx context.Context, arg UpdateAccountParams) (Account, error) {
 	row := q.db.QueryRow(ctx, updateAccount,
-		arg.ID,
 		arg.AccessToken,
-		arg.RefreshToken,
 		arg.AccessTokenExpiresAt,
+		arg.AccountIdentifier,
+		arg.IDToken,
+		arg.Provider,
+		arg.RefreshToken,
 		arg.RefreshTokenExpiresAt,
 		arg.Scope,
-		arg.IDToken,
+		arg.UserID,
+		arg.ID,
 	)
 	var i Account
 	err := row.Scan(

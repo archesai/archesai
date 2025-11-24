@@ -8,7 +8,7 @@ import (
 	"net/http"
 
 	queries "github.com/archesai/archesai/apps/studio/generated/application/queries/config"
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	customHandlers "github.com/archesai/archesai/apps/studio/handlers/config"
 	"github.com/archesai/archesai/pkg/server"
 )
@@ -48,7 +48,7 @@ type GetConfigResponse interface {
 }
 
 type GetConfig200Response struct {
-	Data models.Config `json:"data,omitempty"`
+	Data core.Config `json:"data,omitempty"`
 }
 
 func (response GetConfig200Response) VisitGetConfigResponse(w http.ResponseWriter) error {

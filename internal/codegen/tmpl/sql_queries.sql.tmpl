@@ -1,0 +1,107 @@
+{{- /*
+Template: sql_queries.sql.tmpl
+Generates: SQL queries for SQLC
+Expected data: RepositoriesTemplateData
+*/ -}}
+{{- $entity := .Entity }}
+{{- $tableName := snakeCase $entity.Name }}
+{{- $quotedTableName := $tableName }}
+{{- if or (eq $tableName "user") (eq $tableName "session") (eq $tableName "order") }}
+  {{- $quotedTableName = printf "\"%s\"" $tableName }}
+{{- end }}
+
+-- name: Create{{ $entity.Name }} :one
+INSERT INTO
+  {{ $quotedTableName }} (id{{ range $entity.GetSortedProperties }}{{ $field := . }}{{ if not $field.IsSpecialField }}, {{ snakeCase $field.Name }}{{ end }}{{ end }})
+VALUES
+  (
+    $1{{ range $entity.GetSortedProperties }}{{ $field := . }}{{ if not $field.IsSpecialField }},
+    {{ if $field.Nullable }}sqlc.narg('{{ snakeCase $field.Name }}'){{ else }}sqlc.arg('{{ snakeCase $field.Name }}'){{ end }}{{ end }}{{ end }}
+  )
+RETURNING
+  *;
+
+-- name: Get{{ $entity.Name }} :one
+SELECT
+  *
+FROM
+  {{ $quotedTableName }}
+WHERE
+  id = sqlc.arg('id')
+LIMIT
+  1;
+
+-- name: List{{ $entity.Name }}s :many
+SELECT
+  *
+FROM
+  {{ $quotedTableName }}
+ORDER BY
+  created_at DESC
+LIMIT
+  sqlc.arg('limit')
+OFFSET
+  sqlc.arg('offset');
+
+-- name: Count{{ $entity.Name }}s :one
+SELECT
+  COUNT(*)
+FROM
+  {{ $quotedTableName }};
+
+-- name: Update{{ $entity.Name }} :one
+UPDATE {{ $quotedTableName }}
+SET{{ $first := true }}{{ range $field := $entity.GetSortedProperties }}{{ if not $field.IsSpecialField }}{{ if not $first }},{{ else }}{{ $first = false }}{{ end }}
+  {{ snakeCase $field.Name }} = COALESCE(sqlc.narg('{{ snakeCase $field.Name }}'), {{ snakeCase $field.Name }}){{ end }}{{ end }}
+WHERE
+  id = sqlc.arg('id')
+RETURNING
+  *;
+
+-- name: Delete{{ $entity.Name }} :exec
+DELETE FROM {{ $quotedTableName }}
+WHERE
+  id = sqlc.arg('id');
+{{- if and $entity.XCodegen $entity.XCodegen.Repository }}
+{{- $repo := $entity.XCodegen.Repository }}
+{{- if $repo.AdditionalMethods }}
+{{ range $repo.AdditionalMethods }}
+{{- $method := . }}
+
+{{- /* Special case: GetUserBySessionID needs a join */ -}}
+{{- if and (eq $entity.Name "User") (eq $method.Name "GetUserBySessionID") }}
+-- name: {{ $method.Name }} :one
+SELECT u.*
+FROM {{ $quotedTableName }} u
+JOIN "session" s ON u.id = s.user_id
+WHERE s.id = sqlc.arg(session_id)
+LIMIT 1;
+{{- /* Special case: GetByEmail uses positional parameter */ -}}
+{{- else if or (eq $method.Name "GetByEmail") (eq $method.Name "GetUserByEmail") }}
+-- name: {{ $method.Name }} :one
+SELECT
+  *
+FROM
+  {{ $quotedTableName }}
+WHERE
+  email = $1
+LIMIT
+  1;
+{{- /* Default case: use sqlc.arg for named parameters */ -}}
+{{- else }}
+-- name: {{ $method.Name }} :{{ if eq $method.Returns "multiple" }}many{{ else }}one{{ end }}
+SELECT
+  *
+FROM
+  {{ $quotedTableName }}{{ if $method.Params }}
+WHERE{{ range $i, $param := $method.Params }}{{ if $i }} AND{{ end }}
+  {{ snakeCase $param.Name }} = sqlc.arg('{{ snakeCase $param.Name }}'){{ end }}{{ end }}
+{{- if eq $method.Returns "multiple" }}
+ORDER BY
+  created_at DESC{{ else }}
+LIMIT
+  1{{ end }};
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}

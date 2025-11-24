@@ -11,51 +11,65 @@ import (
 	"github.com/google/uuid"
 )
 
+const countArtifacts = `-- name: CountArtifacts :one
+SELECT
+  COUNT(*)
+FROM
+  artifact
+`
+
+func (q *Queries) CountArtifacts(ctx context.Context) (int64, error) {
+	row := q.db.QueryRow(ctx, countArtifacts)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createArtifact = `-- name: CreateArtifact :one
 INSERT INTO
-  artifact (
-    id,
-    organization_id,
-    name,
-    description,
-    mime_type,
-    url,
-    credits,
-    preview_image,
-    producer_id,
-    text
-  )
+  artifact (id, credits, description, mime_type, name, organization_id, preview_image, producer_id, text, url)
 VALUES
-  ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+  (
+    $1,
+    $2,
+    $3,
+    $4,
+    $5,
+    $6,
+    $7,
+    $8,
+    $9,
+    $10
+  )
 RETURNING
   id, created_at, updated_at, credits, description, mime_type, name, organization_id, preview_image, producer_id, text, url
 `
 
 type CreateArtifactParams struct {
 	ID             uuid.UUID
-	OrganizationID uuid.UUID
-	Name           *string
+	Credits        int32
 	Description    *string
 	MimeType       string
-	URL            *string
-	Credits        int32
+	Name           *string
+	OrganizationID uuid.UUID
 	PreviewImage   *string
 	ProducerID     *uuid.UUID
 	Text           *string
+	URL            *string
 }
 
 func (q *Queries) CreateArtifact(ctx context.Context, arg CreateArtifactParams) (Artifact, error) {
 	row := q.db.QueryRow(ctx, createArtifact,
 		arg.ID,
-		arg.OrganizationID,
-		arg.Name,
+		arg.Credits,
 		arg.Description,
 		arg.MimeType,
-		arg.URL,
-		arg.Credits,
+		arg.Name,
+		arg.OrganizationID,
 		arg.PreviewImage,
 		arg.ProducerID,
 		arg.Text,
+		arg.URL,
 	)
 	var i Artifact
 	err := row.Scan(
@@ -87,21 +101,6 @@ type DeleteArtifactParams struct {
 
 func (q *Queries) DeleteArtifact(ctx context.Context, arg DeleteArtifactParams) error {
 	_, err := q.db.Exec(ctx, deleteArtifact, arg.ID)
-	return err
-}
-
-const deleteArtifactsByOrganization = `-- name: DeleteArtifactsByOrganization :exec
-DELETE FROM artifact
-WHERE
-  organization_id = $1
-`
-
-type DeleteArtifactsByOrganizationParams struct {
-	OrganizationID uuid.UUID
-}
-
-func (q *Queries) DeleteArtifactsByOrganization(ctx context.Context, arg DeleteArtifactsByOrganizationParams) error {
-	_, err := q.db.Exec(ctx, deleteArtifactsByOrganization, arg.OrganizationID)
 	return err
 }
 
@@ -148,18 +147,18 @@ FROM
 ORDER BY
   created_at DESC
 LIMIT
-  $1
-OFFSET
   $2
+OFFSET
+  $1
 `
 
 type ListArtifactsParams struct {
-	Limit  int32
 	Offset int32
+	Limit  int32
 }
 
 func (q *Queries) ListArtifacts(ctx context.Context, arg ListArtifactsParams) ([]Artifact, error) {
-	rows, err := q.db.Query(ctx, listArtifacts, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listArtifacts, arg.Offset, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
@@ -200,20 +199,14 @@ WHERE
   organization_id = $1
 ORDER BY
   created_at DESC
-LIMIT
-  $2
-OFFSET
-  $3
 `
 
 type ListArtifactsByOrganizationParams struct {
 	OrganizationID uuid.UUID
-	Limit          int32
-	Offset         int32
 }
 
 func (q *Queries) ListArtifactsByOrganization(ctx context.Context, arg ListArtifactsByOrganizationParams) ([]Artifact, error) {
-	rows, err := q.db.Query(ctx, listArtifactsByOrganization, arg.OrganizationID, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listArtifactsByOrganization, arg.OrganizationID)
 	if err != nil {
 		return nil, err
 	}
@@ -254,20 +247,14 @@ WHERE
   producer_id = $1
 ORDER BY
   created_at DESC
-LIMIT
-  $2
-OFFSET
-  $3
 `
 
 type ListArtifactsByProducerParams struct {
 	ProducerID *uuid.UUID
-	Limit      int32
-	Offset     int32
 }
 
 func (q *Queries) ListArtifactsByProducer(ctx context.Context, arg ListArtifactsByProducerParams) ([]Artifact, error) {
-	rows, err := q.db.Query(ctx, listArtifactsByProducer, arg.ProducerID, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listArtifactsByProducer, arg.ProducerID)
 	if err != nil {
 		return nil, err
 	}
@@ -302,40 +289,46 @@ func (q *Queries) ListArtifactsByProducer(ctx context.Context, arg ListArtifacts
 const updateArtifact = `-- name: UpdateArtifact :one
 UPDATE artifact
 SET
-  name = COALESCE($2, name),
-  description = COALESCE($3, description),
-  mime_type = COALESCE($4, mime_type),
-  url = COALESCE($5, url),
-  credits = COALESCE($6, credits),
-  preview_image = COALESCE($7, preview_image),
-  text = COALESCE($8, text)
+  credits = COALESCE($1, credits),
+  description = COALESCE($2, description),
+  mime_type = COALESCE($3, mime_type),
+  name = COALESCE($4, name),
+  organization_id = COALESCE($5, organization_id),
+  preview_image = COALESCE($6, preview_image),
+  producer_id = COALESCE($7, producer_id),
+  text = COALESCE($8, text),
+  url = COALESCE($9, url)
 WHERE
-  id = $1
+  id = $10
 RETURNING
   id, created_at, updated_at, credits, description, mime_type, name, organization_id, preview_image, producer_id, text, url
 `
 
 type UpdateArtifactParams struct {
-	ID           uuid.UUID
-	Name         *string
-	Description  *string
-	MimeType     *string
-	URL          *string
-	Credits      *int32
-	PreviewImage *string
-	Text         *string
+	Credits        *int32
+	Description    *string
+	MimeType       *string
+	Name           *string
+	OrganizationID *uuid.UUID
+	PreviewImage   *string
+	ProducerID     *uuid.UUID
+	Text           *string
+	URL            *string
+	ID             uuid.UUID
 }
 
 func (q *Queries) UpdateArtifact(ctx context.Context, arg UpdateArtifactParams) (Artifact, error) {
 	row := q.db.QueryRow(ctx, updateArtifact,
-		arg.ID,
-		arg.Name,
+		arg.Credits,
 		arg.Description,
 		arg.MimeType,
-		arg.URL,
-		arg.Credits,
+		arg.Name,
+		arg.OrganizationID,
 		arg.PreviewImage,
+		arg.ProducerID,
 		arg.Text,
+		arg.URL,
+		arg.ID,
 	)
 	var i Artifact
 	err := row.Scan(

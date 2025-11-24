@@ -8,8 +8,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
-	corerrors "github.com/archesai/archesai/pkg/errors"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -30,7 +29,7 @@ func NewPostgresExecutorRepository(db *pgxpool.Pool) *PostgresExecutorRepository
 // Executor operations
 
 // Create creates a new executor
-func (r *PostgresExecutorRepository) Create(ctx context.Context, entity *models.Executor) (*models.Executor, error) {
+func (r *PostgresExecutorRepository) Create(ctx context.Context, entity *core.Executor) (*core.Executor, error) {
 	params := CreateExecutorParams{
 		ID:             entity.ID,
 		CPUShares:      entity.CPUShares,
@@ -59,7 +58,7 @@ func (r *PostgresExecutorRepository) Create(ctx context.Context, entity *models.
 }
 
 // Get retrieves a executor by ID
-func (r *PostgresExecutorRepository) Get(ctx context.Context, id uuid.UUID) (*models.Executor, error) {
+func (r *PostgresExecutorRepository) Get(ctx context.Context, id uuid.UUID) (*core.Executor, error) {
 	params := GetExecutorParams{
 		ID: id,
 	}
@@ -67,7 +66,7 @@ func (r *PostgresExecutorRepository) Get(ctx context.Context, id uuid.UUID) (*mo
 	result, err := r.queries.GetExecutor(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return nil, corerrors.ErrExecutorNotFound
+			return nil, core.ErrExecutorNotFound
 		}
 		return nil, fmt.Errorf("failed to get executor: %w", err)
 	}
@@ -76,7 +75,7 @@ func (r *PostgresExecutorRepository) Get(ctx context.Context, id uuid.UUID) (*mo
 }
 
 // Update updates an existing executor
-func (r *PostgresExecutorRepository) Update(ctx context.Context, id uuid.UUID, entity *models.Executor) (*models.Executor, error) {
+func (r *PostgresExecutorRepository) Update(ctx context.Context, id uuid.UUID, entity *core.Executor) (*core.Executor, error) {
 
 	languageStr := string(entity.Language)
 	params := UpdateExecutorParams{
@@ -99,7 +98,7 @@ func (r *PostgresExecutorRepository) Update(ctx context.Context, id uuid.UUID, e
 	result, err := r.queries.UpdateExecutor(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return nil, corerrors.ErrExecutorNotFound
+			return nil, core.ErrExecutorNotFound
 		}
 		return nil, fmt.Errorf("failed to update executor: %w", err)
 	}
@@ -116,7 +115,7 @@ func (r *PostgresExecutorRepository) Delete(ctx context.Context, id uuid.UUID) e
 	err := r.queries.DeleteExecutor(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return corerrors.ErrExecutorNotFound
+			return core.ErrExecutorNotFound
 		}
 		return fmt.Errorf("failed to delete executor: %w", err)
 	}
@@ -124,7 +123,7 @@ func (r *PostgresExecutorRepository) Delete(ctx context.Context, id uuid.UUID) e
 }
 
 // List returns a paginated list of executors
-func (r *PostgresExecutorRepository) List(ctx context.Context, limit, offset int32) ([]*models.Executor, int64, error) {
+func (r *PostgresExecutorRepository) List(ctx context.Context, limit, offset int32) ([]*core.Executor, int64, error) {
 	listParams := ListExecutorsParams{
 		Limit:  limit,
 		Offset: offset,
@@ -135,7 +134,7 @@ func (r *PostgresExecutorRepository) List(ctx context.Context, limit, offset int
 		return nil, 0, fmt.Errorf("failed to list executors: %w", err)
 	}
 
-	items := make([]*models.Executor, len(results))
+	items := make([]*core.Executor, len(results))
 	for i, result := range results {
 		items[i] = mapExecutorFromDB(&result)
 	}
@@ -148,7 +147,7 @@ func (r *PostgresExecutorRepository) List(ctx context.Context, limit, offset int
 }
 
 // ListExecutorsByOrganization retrieves multiple Executors by organizationID
-func (r *PostgresExecutorRepository) ListExecutorsByOrganization(ctx context.Context, organizationID string) ([]*models.Executor, error) {
+func (r *PostgresExecutorRepository) ListExecutorsByOrganization(ctx context.Context, organizationID string) ([]*core.Executor, error) {
 	params := ListExecutorsByOrganizationParams{
 		OrganizationID: uuid.MustParse(organizationID),
 	}
@@ -156,11 +155,11 @@ func (r *PostgresExecutorRepository) ListExecutorsByOrganization(ctx context.Con
 	result, err := r.queries.ListExecutorsByOrganization(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return nil, corerrors.ErrExecutorNotFound
+			return nil, core.ErrExecutorNotFound
 		}
 		return nil, fmt.Errorf("failed to ListExecutorsByOrganization: %w", err)
 	}
-	items := make([]*models.Executor, len(result))
+	items := make([]*core.Executor, len(result))
 	for i, res := range result {
 		items[i] = mapExecutorFromDB(&res)
 	}
@@ -168,12 +167,12 @@ func (r *PostgresExecutorRepository) ListExecutorsByOrganization(ctx context.Con
 
 }
 
-func mapExecutorFromDB(db *Executor) *models.Executor {
+func mapExecutorFromDB(db *Executor) *core.Executor {
 	if db == nil {
 		return nil
 	}
 
-	result := &models.Executor{
+	result := &core.Executor{
 		ID:             db.ID,
 		CreatedAt:      db.CreatedAt,
 		UpdatedAt:      db.UpdatedAt,
@@ -184,7 +183,7 @@ func mapExecutorFromDB(db *Executor) *models.Executor {
 		ExecuteCode:    db.ExecuteCode,
 		ExtraFiles:     db.ExtraFiles,
 		IsActive:       db.IsActive,
-		Language:       models.ExecutorLanguage(db.Language),
+		Language:       core.ExecutorLanguage(db.Language),
 		MemoryMB:       db.MemoryMB,
 		Name:           db.Name,
 		OrganizationID: db.OrganizationID,

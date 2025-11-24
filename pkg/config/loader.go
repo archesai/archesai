@@ -6,13 +6,11 @@ import (
 	"strings"
 
 	"github.com/spf13/viper"
-
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
 )
 
-// Configuration wraps the generated Config for easy access.
+// Configuration wraps the Config for easy access.
 type Configuration struct {
-	*models.Config
+	*Config
 	v *viper.Viper
 }
 

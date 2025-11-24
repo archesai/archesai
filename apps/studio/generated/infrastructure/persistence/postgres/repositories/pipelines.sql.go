@@ -11,28 +11,47 @@ import (
 	"github.com/google/uuid"
 )
 
+const countPipelines = `-- name: CountPipelines :one
+SELECT
+  COUNT(*)
+FROM
+  pipeline
+`
+
+func (q *Queries) CountPipelines(ctx context.Context) (int64, error) {
+	row := q.db.QueryRow(ctx, countPipelines)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createPipeline = `-- name: CreatePipeline :one
 INSERT INTO
-  pipeline (id, organization_id, name, description)
+  pipeline (id, description, name, organization_id)
 VALUES
-  ($1, $2, $3, $4)
+  (
+    $1,
+    $2,
+    $3,
+    $4
+  )
 RETURNING
   id, created_at, updated_at, description, name, organization_id
 `
 
 type CreatePipelineParams struct {
 	ID             uuid.UUID
-	OrganizationID uuid.UUID
-	Name           *string
 	Description    *string
+	Name           *string
+	OrganizationID uuid.UUID
 }
 
 func (q *Queries) CreatePipeline(ctx context.Context, arg CreatePipelineParams) (Pipeline, error) {
 	row := q.db.QueryRow(ctx, createPipeline,
 		arg.ID,
-		arg.OrganizationID,
-		arg.Name,
 		arg.Description,
+		arg.Name,
+		arg.OrganizationID,
 	)
 	var i Pipeline
 	err := row.Scan(
@@ -58,21 +77,6 @@ type DeletePipelineParams struct {
 
 func (q *Queries) DeletePipeline(ctx context.Context, arg DeletePipelineParams) error {
 	_, err := q.db.Exec(ctx, deletePipeline, arg.ID)
-	return err
-}
-
-const deletePipelinesByOrganization = `-- name: DeletePipelinesByOrganization :exec
-DELETE FROM pipeline
-WHERE
-  organization_id = $1
-`
-
-type DeletePipelinesByOrganizationParams struct {
-	OrganizationID uuid.UUID
-}
-
-func (q *Queries) DeletePipelinesByOrganization(ctx context.Context, arg DeletePipelinesByOrganizationParams) error {
-	_, err := q.db.Exec(ctx, deletePipelinesByOrganization, arg.OrganizationID)
 	return err
 }
 
@@ -113,18 +117,18 @@ FROM
 ORDER BY
   created_at DESC
 LIMIT
-  $1
-OFFSET
   $2
+OFFSET
+  $1
 `
 
 type ListPipelinesParams struct {
-	Limit  int32
 	Offset int32
+	Limit  int32
 }
 
 func (q *Queries) ListPipelines(ctx context.Context, arg ListPipelinesParams) ([]Pipeline, error) {
-	rows, err := q.db.Query(ctx, listPipelines, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listPipelines, arg.Offset, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
@@ -159,20 +163,14 @@ WHERE
   organization_id = $1
 ORDER BY
   created_at DESC
-LIMIT
-  $2
-OFFSET
-  $3
 `
 
 type ListPipelinesByOrganizationParams struct {
 	OrganizationID uuid.UUID
-	Limit          int32
-	Offset         int32
 }
 
 func (q *Queries) ListPipelinesByOrganization(ctx context.Context, arg ListPipelinesByOrganizationParams) ([]Pipeline, error) {
-	rows, err := q.db.Query(ctx, listPipelinesByOrganization, arg.OrganizationID, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listPipelinesByOrganization, arg.OrganizationID)
 	if err != nil {
 		return nil, err
 	}
@@ -201,22 +199,29 @@ func (q *Queries) ListPipelinesByOrganization(ctx context.Context, arg ListPipel
 const updatePipeline = `-- name: UpdatePipeline :one
 UPDATE pipeline
 SET
+  description = COALESCE($1, description),
   name = COALESCE($2, name),
-  description = COALESCE($3, description)
+  organization_id = COALESCE($3, organization_id)
 WHERE
-  id = $1
+  id = $4
 RETURNING
   id, created_at, updated_at, description, name, organization_id
 `
 
 type UpdatePipelineParams struct {
-	ID          uuid.UUID
-	Name        *string
-	Description *string
+	Description    *string
+	Name           *string
+	OrganizationID *uuid.UUID
+	ID             uuid.UUID
 }
 
 func (q *Queries) UpdatePipeline(ctx context.Context, arg UpdatePipelineParams) (Pipeline, error) {
-	row := q.db.QueryRow(ctx, updatePipeline, arg.ID, arg.Name, arg.Description)
+	row := q.db.QueryRow(ctx, updatePipeline,
+		arg.Description,
+		arg.Name,
+		arg.OrganizationID,
+		arg.ID,
+	)
 	var i Pipeline
 	err := row.Scan(
 		&i.ID,

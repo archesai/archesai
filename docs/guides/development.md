@@ -53,7 +53,7 @@ to set up your development environment and contribute to the project.
 ```bash
 # Code Generation
 make generate        # Generate all code from OpenAPI/SQL
-archesai generate openapi api/openapi.yaml --output ./generated
+archesai generate --spec api/openapi.yaml --output ./generated
 
 # Development
 make dev-all         # Start everything with hot reload
@@ -119,7 +119,7 @@ For a detailed overview of the project organization, see
 2. **Generate Your Application**:
 
    ```bash
-   archesai generate openapi myapp.yaml --output ./myapp
+   archesai generate --spec myapp.yaml --output ./myapp
    ```
 
 3. **Start Development**:

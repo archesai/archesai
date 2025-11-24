@@ -5,22 +5,22 @@ package repositories
 import (
 	"context"
 
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/google/uuid"
 )
 
 // OrganizationRepository handles organization persistence
 type OrganizationRepository interface {
 	// Basic CRUD operations (always included)
-	Create(ctx context.Context, entity *models.Organization) (*models.Organization, error)
-	Get(ctx context.Context, id uuid.UUID) (*models.Organization, error)
-	Update(ctx context.Context, id uuid.UUID, entity *models.Organization) (*models.Organization, error)
+	Create(ctx context.Context, entity *core.Organization) (*core.Organization, error)
+	Get(ctx context.Context, id uuid.UUID) (*core.Organization, error)
+	Update(ctx context.Context, id uuid.UUID, entity *core.Organization) (*core.Organization, error)
 	Delete(ctx context.Context, id uuid.UUID) error
-	List(ctx context.Context, limit, offset int32) ([]*models.Organization, int64, error)
+	List(ctx context.Context, limit, offset int32) ([]*core.Organization, int64, error)
 
 	// GetOrganizationBySlug retrieves a single organization by slug
-	GetOrganizationBySlug(ctx context.Context, slug string) (*models.Organization, error)
+	GetOrganizationBySlug(ctx context.Context, slug string) (*core.Organization, error)
 
 	// GetOrganizationByStripeCustomerID retrieves a single organization by stripeCustomerIdentifier
-	GetOrganizationByStripeCustomerID(ctx context.Context, stripeCustomerIdentifier string) (*models.Organization, error)
+	GetOrganizationByStripeCustomerID(ctx context.Context, stripeCustomerIdentifier string) (*core.Organization, error)
 }

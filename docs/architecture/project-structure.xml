@@ -105,7 +105,7 @@
   <dir name="internal" dirs="6">
     <dir name="cli" files="6"/>
     <dir name="codegen" files="13" dirs="1">
-      <dir name="tmpl" files="13"/>
+      <dir name="tmpl" files="14"/>
     </dir>
     <dir name="dev" files="3"/>
     <dir name="parsers" files="13"/>
@@ -131,7 +131,7 @@
   <dir name="web" purpose="Web applications" dirs="3">
     <dir name="client" type="npm-package" purpose="Client SDK" files="5" dirs="3" key-files="package.json">
       <dir name="src" files="3" dirs="1" key-files="index.ts">
-        <dir name="generated" type="generated" files="2" dirs="14"/>
+        <dir name="generated" type="generated" files="2" dirs="15"/>
       </dir>
     </dir>
     <dir name="platform" type="npm-package" purpose="Platform UI" files="7" dirs="4" key-files="package.json,Dockerfile">

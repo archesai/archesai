@@ -11,23 +11,41 @@ import (
 	"github.com/google/uuid"
 )
 
+const countLabels = `-- name: CountLabels :one
+SELECT
+  COUNT(*)
+FROM
+  label
+`
+
+func (q *Queries) CountLabels(ctx context.Context) (int64, error) {
+	row := q.db.QueryRow(ctx, countLabels)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createLabel = `-- name: CreateLabel :one
 INSERT INTO
-  label (id, organization_id, name)
+  label (id, name, organization_id)
 VALUES
-  ($1, $2, $3)
+  (
+    $1,
+    $2,
+    $3
+  )
 RETURNING
   id, created_at, updated_at, name, organization_id
 `
 
 type CreateLabelParams struct {
 	ID             uuid.UUID
-	OrganizationID uuid.UUID
 	Name           string
+	OrganizationID uuid.UUID
 }
 
 func (q *Queries) CreateLabel(ctx context.Context, arg CreateLabelParams) (Label, error) {
-	row := q.db.QueryRow(ctx, createLabel, arg.ID, arg.OrganizationID, arg.Name)
+	row := q.db.QueryRow(ctx, createLabel, arg.ID, arg.Name, arg.OrganizationID)
 	var i Label
 	err := row.Scan(
 		&i.ID,
@@ -51,21 +69,6 @@ type DeleteLabelParams struct {
 
 func (q *Queries) DeleteLabel(ctx context.Context, arg DeleteLabelParams) error {
 	_, err := q.db.Exec(ctx, deleteLabel, arg.ID)
-	return err
-}
-
-const deleteLabelsByOrganization = `-- name: DeleteLabelsByOrganization :exec
-DELETE FROM label
-WHERE
-  organization_id = $1
-`
-
-type DeleteLabelsByOrganizationParams struct {
-	OrganizationID uuid.UUID
-}
-
-func (q *Queries) DeleteLabelsByOrganization(ctx context.Context, arg DeleteLabelsByOrganizationParams) error {
-	_, err := q.db.Exec(ctx, deleteLabelsByOrganization, arg.OrganizationID)
 	return err
 }
 
@@ -103,19 +106,19 @@ SELECT
 FROM
   label
 WHERE
-  organization_id = $1
-  AND name = $2
+  name = $1 AND
+  organization_id = $2
 LIMIT
   1
 `
 
 type GetLabelByNameParams struct {
-	OrganizationID uuid.UUID
 	Name           string
+	OrganizationID uuid.UUID
 }
 
 func (q *Queries) GetLabelByName(ctx context.Context, arg GetLabelByNameParams) (Label, error) {
-	row := q.db.QueryRow(ctx, getLabelByName, arg.OrganizationID, arg.Name)
+	row := q.db.QueryRow(ctx, getLabelByName, arg.Name, arg.OrganizationID)
 	var i Label
 	err := row.Scan(
 		&i.ID,
@@ -135,18 +138,18 @@ FROM
 ORDER BY
   created_at DESC
 LIMIT
-  $1
-OFFSET
   $2
+OFFSET
+  $1
 `
 
 type ListLabelsParams struct {
-	Limit  int32
 	Offset int32
+	Limit  int32
 }
 
 func (q *Queries) ListLabels(ctx context.Context, arg ListLabelsParams) ([]Label, error) {
-	rows, err := q.db.Query(ctx, listLabels, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listLabels, arg.Offset, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
@@ -179,21 +182,15 @@ FROM
 WHERE
   organization_id = $1
 ORDER BY
-  name ASC
-LIMIT
-  $2
-OFFSET
-  $3
+  created_at DESC
 `
 
 type ListLabelsByOrganizationParams struct {
 	OrganizationID uuid.UUID
-	Limit          int32
-	Offset         int32
 }
 
 func (q *Queries) ListLabelsByOrganization(ctx context.Context, arg ListLabelsByOrganizationParams) ([]Label, error) {
-	rows, err := q.db.Query(ctx, listLabelsByOrganization, arg.OrganizationID, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listLabelsByOrganization, arg.OrganizationID)
 	if err != nil {
 		return nil, err
 	}
@@ -221,20 +218,22 @@ func (q *Queries) ListLabelsByOrganization(ctx context.Context, arg ListLabelsBy
 const updateLabel = `-- name: UpdateLabel :one
 UPDATE label
 SET
-  name = COALESCE($2, name)
+  name = COALESCE($1, name),
+  organization_id = COALESCE($2, organization_id)
 WHERE
-  id = $1
+  id = $3
 RETURNING
   id, created_at, updated_at, name, organization_id
 `
 
 type UpdateLabelParams struct {
-	ID   uuid.UUID
-	Name *string
+	Name           *string
+	OrganizationID *uuid.UUID
+	ID             uuid.UUID
 }
 
 func (q *Queries) UpdateLabel(ctx context.Context, arg UpdateLabelParams) (Label, error) {
-	row := q.db.QueryRow(ctx, updateLabel, arg.ID, arg.Name)
+	row := q.db.QueryRow(ctx, updateLabel, arg.Name, arg.OrganizationID, arg.ID)
 	var i Label
 	err := row.Scan(
 		&i.ID,

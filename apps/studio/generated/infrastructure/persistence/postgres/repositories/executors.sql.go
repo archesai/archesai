@@ -11,68 +11,82 @@ import (
 	"github.com/google/uuid"
 )
 
+const countExecutors = `-- name: CountExecutors :one
+SELECT
+  COUNT(*)
+FROM
+  executor
+`
+
+func (q *Queries) CountExecutors(ctx context.Context) (int64, error) {
+	row := q.db.QueryRow(ctx, countExecutors)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createExecutor = `-- name: CreateExecutor :one
 INSERT INTO
-  executor (
-    id,
-    organization_id,
-    name,
-    description,
-    language,
-    execute_code,
-    dependencies,
-    schema_in,
-    schema_out,
-    extra_files,
-    timeout,
-    memory_mb,
-    cpu_shares,
-    env,
-    is_active,
-    version
-  )
+  executor (id, cpu_shares, dependencies, description, env, execute_code, extra_files, is_active, language, memory_mb, name, organization_id, schema_in, schema_out, timeout, version)
 VALUES
-  ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
+  (
+    $1,
+    $2,
+    $3,
+    $4,
+    $5,
+    $6,
+    $7,
+    $8,
+    $9,
+    $10,
+    $11,
+    $12,
+    $13,
+    $14,
+    $15,
+    $16
+  )
 RETURNING
   id, created_at, updated_at, cpu_shares, dependencies, description, env, execute_code, extra_files, is_active, language, memory_mb, name, organization_id, schema_in, schema_out, timeout, version
 `
 
 type CreateExecutorParams struct {
 	ID             uuid.UUID
-	OrganizationID uuid.UUID
-	Name           string
-	Description    string
-	Language       string
-	ExecuteCode    string
+	CPUShares      int32
 	Dependencies   *string
+	Description    string
+	Env            *string
+	ExecuteCode    string
+	ExtraFiles     *string
+	IsActive       bool
+	Language       string
+	MemoryMB       int32
+	Name           string
+	OrganizationID uuid.UUID
 	SchemaIn       *string
 	SchemaOut      *string
-	ExtraFiles     *string
 	Timeout        int32
-	MemoryMB       int32
-	CPUShares      int32
-	Env            *string
-	IsActive       bool
 	Version        int32
 }
 
 func (q *Queries) CreateExecutor(ctx context.Context, arg CreateExecutorParams) (Executor, error) {
 	row := q.db.QueryRow(ctx, createExecutor,
 		arg.ID,
-		arg.OrganizationID,
-		arg.Name,
-		arg.Description,
-		arg.Language,
-		arg.ExecuteCode,
+		arg.CPUShares,
 		arg.Dependencies,
+		arg.Description,
+		arg.Env,
+		arg.ExecuteCode,
+		arg.ExtraFiles,
+		arg.IsActive,
+		arg.Language,
+		arg.MemoryMB,
+		arg.Name,
+		arg.OrganizationID,
 		arg.SchemaIn,
 		arg.SchemaOut,
-		arg.ExtraFiles,
 		arg.Timeout,
-		arg.MemoryMB,
-		arg.CPUShares,
-		arg.Env,
-		arg.IsActive,
 		arg.Version,
 	)
 	var i Executor
@@ -111,21 +125,6 @@ type DeleteExecutorParams struct {
 
 func (q *Queries) DeleteExecutor(ctx context.Context, arg DeleteExecutorParams) error {
 	_, err := q.db.Exec(ctx, deleteExecutor, arg.ID)
-	return err
-}
-
-const deleteExecutorsByOrganization = `-- name: DeleteExecutorsByOrganization :exec
-DELETE FROM executor
-WHERE
-  organization_id = $1
-`
-
-type DeleteExecutorsByOrganizationParams struct {
-	OrganizationID uuid.UUID
-}
-
-func (q *Queries) DeleteExecutorsByOrganization(ctx context.Context, arg DeleteExecutorsByOrganizationParams) error {
-	_, err := q.db.Exec(ctx, deleteExecutorsByOrganization, arg.OrganizationID)
 	return err
 }
 
@@ -178,18 +177,18 @@ FROM
 ORDER BY
   created_at DESC
 LIMIT
-  $1
-OFFSET
   $2
+OFFSET
+  $1
 `
 
 type ListExecutorsParams struct {
-	Limit  int32
 	Offset int32
+	Limit  int32
 }
 
 func (q *Queries) ListExecutors(ctx context.Context, arg ListExecutorsParams) ([]Executor, error) {
-	rows, err := q.db.Query(ctx, listExecutors, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listExecutors, arg.Offset, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
@@ -236,20 +235,14 @@ WHERE
   organization_id = $1
 ORDER BY
   created_at DESC
-LIMIT
-  $2
-OFFSET
-  $3
 `
 
 type ListExecutorsByOrganizationParams struct {
 	OrganizationID uuid.UUID
-	Limit          int32
-	Offset         int32
 }
 
 func (q *Queries) ListExecutorsByOrganization(ctx context.Context, arg ListExecutorsByOrganizationParams) ([]Executor, error) {
-	rows, err := q.db.Query(ctx, listExecutorsByOrganization, arg.OrganizationID, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listExecutorsByOrganization, arg.OrganizationID)
 	if err != nil {
 		return nil, err
 	}
@@ -290,60 +283,64 @@ func (q *Queries) ListExecutorsByOrganization(ctx context.Context, arg ListExecu
 const updateExecutor = `-- name: UpdateExecutor :one
 UPDATE executor
 SET
-  name = COALESCE($2, name),
+  cpu_shares = COALESCE($1, cpu_shares),
+  dependencies = COALESCE($2, dependencies),
   description = COALESCE($3, description),
-  language = COALESCE($4, language),
+  env = COALESCE($4, env),
   execute_code = COALESCE($5, execute_code),
-  dependencies = COALESCE($6, dependencies),
-  schema_in = COALESCE($7, schema_in),
-  schema_out = COALESCE($8, schema_out),
-  extra_files = COALESCE($9, extra_files),
-  timeout = COALESCE($10, timeout),
-  memory_mb = COALESCE($11, memory_mb),
-  cpu_shares = COALESCE($12, cpu_shares),
-  env = COALESCE($13, env),
-  is_active = COALESCE($14, is_active),
-  version = version + 1,
-  updated_at = CURRENT_TIMESTAMP
+  extra_files = COALESCE($6, extra_files),
+  is_active = COALESCE($7, is_active),
+  language = COALESCE($8, language),
+  memory_mb = COALESCE($9, memory_mb),
+  name = COALESCE($10, name),
+  organization_id = COALESCE($11, organization_id),
+  schema_in = COALESCE($12, schema_in),
+  schema_out = COALESCE($13, schema_out),
+  timeout = COALESCE($14, timeout),
+  version = COALESCE($15, version)
 WHERE
-  id = $1
+  id = $16
 RETURNING
   id, created_at, updated_at, cpu_shares, dependencies, description, env, execute_code, extra_files, is_active, language, memory_mb, name, organization_id, schema_in, schema_out, timeout, version
 `
 
 type UpdateExecutorParams struct {
-	ID           uuid.UUID
-	Name         *string
-	Description  *string
-	Language     *string
-	ExecuteCode  *string
-	Dependencies *string
-	SchemaIn     *string
-	SchemaOut    *string
-	ExtraFiles   *string
-	Timeout      *int32
-	MemoryMB     *int32
-	CPUShares    *int32
-	Env          *string
-	IsActive     *bool
+	CPUShares      *int32
+	Dependencies   *string
+	Description    *string
+	Env            *string
+	ExecuteCode    *string
+	ExtraFiles     *string
+	IsActive       *bool
+	Language       *string
+	MemoryMB       *int32
+	Name           *string
+	OrganizationID *uuid.UUID
+	SchemaIn       *string
+	SchemaOut      *string
+	Timeout        *int32
+	Version        *int32
+	ID             uuid.UUID
 }
 
 func (q *Queries) UpdateExecutor(ctx context.Context, arg UpdateExecutorParams) (Executor, error) {
 	row := q.db.QueryRow(ctx, updateExecutor,
-		arg.ID,
-		arg.Name,
-		arg.Description,
-		arg.Language,
-		arg.ExecuteCode,
+		arg.CPUShares,
 		arg.Dependencies,
+		arg.Description,
+		arg.Env,
+		arg.ExecuteCode,
+		arg.ExtraFiles,
+		arg.IsActive,
+		arg.Language,
+		arg.MemoryMB,
+		arg.Name,
+		arg.OrganizationID,
 		arg.SchemaIn,
 		arg.SchemaOut,
-		arg.ExtraFiles,
 		arg.Timeout,
-		arg.MemoryMB,
-		arg.CPUShares,
-		arg.Env,
-		arg.IsActive,
+		arg.Version,
+		arg.ID,
 	)
 	var i Executor
 	err := row.Scan(

@@ -12,21 +12,23 @@ import (
 	"github.com/google/uuid"
 )
 
+const countSessions = `-- name: CountSessions :one
+SELECT
+  COUNT(*)
+FROM
+  "session"
+`
+
+func (q *Queries) CountSessions(ctx context.Context) (int64, error) {
+	row := q.db.QueryRow(ctx, countSessions)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createSession = `-- name: CreateSession :one
 INSERT INTO
-  session (
-    id,
-    user_id,
-    token,
-    expires_at,
-    organization_id,
-    ip_address,
-    user_agent,
-    auth_method,
-    auth_provider,
-    created_at,
-    updated_at
-  )
+  "session" (id, auth_method, auth_provider, expires_at, ip_address, organization_id, token, user_agent, user_id)
 VALUES
   (
     $1,
@@ -37,9 +39,7 @@ VALUES
     $6,
     $7,
     $8,
-    $9,
-    NOW(),
-    NOW()
+    $9
   )
 RETURNING
   id, created_at, updated_at, auth_method, auth_provider, expires_at, ip_address, organization_id, token, user_agent, user_id
@@ -47,27 +47,27 @@ RETURNING
 
 type CreateSessionParams struct {
 	ID             uuid.UUID
-	UserID         uuid.UUID
-	Token          string
-	ExpiresAt      time.Time
-	OrganizationID *uuid.UUID
-	IPAddress      *string
-	UserAgent      *string
 	AuthMethod     *string
 	AuthProvider   *string
+	ExpiresAt      time.Time
+	IPAddress      *string
+	OrganizationID *uuid.UUID
+	Token          string
+	UserAgent      *string
+	UserID         uuid.UUID
 }
 
 func (q *Queries) CreateSession(ctx context.Context, arg CreateSessionParams) (Session, error) {
 	row := q.db.QueryRow(ctx, createSession,
 		arg.ID,
-		arg.UserID,
-		arg.Token,
-		arg.ExpiresAt,
-		arg.OrganizationID,
-		arg.IPAddress,
-		arg.UserAgent,
 		arg.AuthMethod,
 		arg.AuthProvider,
+		arg.ExpiresAt,
+		arg.IPAddress,
+		arg.OrganizationID,
+		arg.Token,
+		arg.UserAgent,
+		arg.UserID,
 	)
 	var i Session
 	err := row.Scan(
@@ -87,7 +87,7 @@ func (q *Queries) CreateSession(ctx context.Context, arg CreateSessionParams) (S
 }
 
 const deleteSession = `-- name: DeleteSession :exec
-DELETE FROM session
+DELETE FROM "session"
 WHERE
   id = $1
 `
@@ -101,26 +101,11 @@ func (q *Queries) DeleteSession(ctx context.Context, arg DeleteSessionParams) er
 	return err
 }
 
-const deleteSessionsByUser = `-- name: DeleteSessionsByUser :exec
-DELETE FROM session
-WHERE
-  user_id = $1
-`
-
-type DeleteSessionsByUserParams struct {
-	UserID uuid.UUID
-}
-
-func (q *Queries) DeleteSessionsByUser(ctx context.Context, arg DeleteSessionsByUserParams) error {
-	_, err := q.db.Exec(ctx, deleteSessionsByUser, arg.UserID)
-	return err
-}
-
 const getSession = `-- name: GetSession :one
 SELECT
   id, created_at, updated_at, auth_method, auth_provider, expires_at, ip_address, organization_id, token, user_agent, user_id
 FROM
-  session
+  "session"
 WHERE
   id = $1
 LIMIT
@@ -150,113 +135,26 @@ func (q *Queries) GetSession(ctx context.Context, arg GetSessionParams) (Session
 	return i, err
 }
 
-const getSessionByToken = `-- name: GetSessionByToken :one
-SELECT
-  id, created_at, updated_at, auth_method, auth_provider, expires_at, ip_address, organization_id, token, user_agent, user_id
-FROM
-  session
-WHERE
-  token = $1
-LIMIT
-  1
-`
-
-type GetSessionByTokenParams struct {
-	Token string
-}
-
-func (q *Queries) GetSessionByToken(ctx context.Context, arg GetSessionByTokenParams) (Session, error) {
-	row := q.db.QueryRow(ctx, getSessionByToken, arg.Token)
-	var i Session
-	err := row.Scan(
-		&i.ID,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-		&i.AuthMethod,
-		&i.AuthProvider,
-		&i.ExpiresAt,
-		&i.IPAddress,
-		&i.OrganizationID,
-		&i.Token,
-		&i.UserAgent,
-		&i.UserID,
-	)
-	return i, err
-}
-
 const listSessions = `-- name: ListSessions :many
 SELECT
   id, created_at, updated_at, auth_method, auth_provider, expires_at, ip_address, organization_id, token, user_agent, user_id
 FROM
-  session
+  "session"
 ORDER BY
   created_at DESC
 LIMIT
-  $1
-OFFSET
   $2
+OFFSET
+  $1
 `
 
 type ListSessionsParams struct {
-	Limit  int32
 	Offset int32
+	Limit  int32
 }
 
 func (q *Queries) ListSessions(ctx context.Context, arg ListSessionsParams) ([]Session, error) {
-	rows, err := q.db.Query(ctx, listSessions, arg.Limit, arg.Offset)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Session
-	for rows.Next() {
-		var i Session
-		if err := rows.Scan(
-			&i.ID,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-			&i.AuthMethod,
-			&i.AuthProvider,
-			&i.ExpiresAt,
-			&i.IPAddress,
-			&i.OrganizationID,
-			&i.Token,
-			&i.UserAgent,
-			&i.UserID,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const listSessionsByUser = `-- name: ListSessionsByUser :many
-SELECT
-  id, created_at, updated_at, auth_method, auth_provider, expires_at, ip_address, organization_id, token, user_agent, user_id
-FROM
-  session
-WHERE
-  user_id = $1
-ORDER BY
-  created_at DESC
-LIMIT
-  $2
-OFFSET
-  $3
-`
-
-type ListSessionsByUserParams struct {
-	UserID uuid.UUID
-	Limit  int32
-	Offset int32
-}
-
-func (q *Queries) ListSessionsByUser(ctx context.Context, arg ListSessionsByUserParams) ([]Session, error) {
-	rows, err := q.db.Query(ctx, listSessionsByUser, arg.UserID, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listSessions, arg.Offset, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
@@ -288,37 +186,45 @@ func (q *Queries) ListSessionsByUser(ctx context.Context, arg ListSessionsByUser
 }
 
 const updateSession = `-- name: UpdateSession :one
-UPDATE session
+UPDATE "session"
 SET
-  expires_at = COALESCE($2, expires_at),
-  organization_id = COALESCE(
-    $3,
-    organization_id
-  ),
-  auth_method = COALESCE($4, auth_method),
-  auth_provider = COALESCE($5, auth_provider),
-  updated_at = NOW()
+  auth_method = COALESCE($1, auth_method),
+  auth_provider = COALESCE($2, auth_provider),
+  expires_at = COALESCE($3, expires_at),
+  ip_address = COALESCE($4, ip_address),
+  organization_id = COALESCE($5, organization_id),
+  token = COALESCE($6, token),
+  user_agent = COALESCE($7, user_agent),
+  user_id = COALESCE($8, user_id)
 WHERE
-  id = $1
+  id = $9
 RETURNING
   id, created_at, updated_at, auth_method, auth_provider, expires_at, ip_address, organization_id, token, user_agent, user_id
 `
 
 type UpdateSessionParams struct {
-	ID             uuid.UUID
-	ExpiresAt      *time.Time
-	OrganizationID *uuid.UUID
 	AuthMethod     *string
 	AuthProvider   *string
+	ExpiresAt      *time.Time
+	IPAddress      *string
+	OrganizationID *uuid.UUID
+	Token          *string
+	UserAgent      *string
+	UserID         *uuid.UUID
+	ID             uuid.UUID
 }
 
 func (q *Queries) UpdateSession(ctx context.Context, arg UpdateSessionParams) (Session, error) {
 	row := q.db.QueryRow(ctx, updateSession,
-		arg.ID,
-		arg.ExpiresAt,
-		arg.OrganizationID,
 		arg.AuthMethod,
 		arg.AuthProvider,
+		arg.ExpiresAt,
+		arg.IPAddress,
+		arg.OrganizationID,
+		arg.Token,
+		arg.UserAgent,
+		arg.UserID,
+		arg.ID,
 	)
 	var i Session
 	err := row.Scan(

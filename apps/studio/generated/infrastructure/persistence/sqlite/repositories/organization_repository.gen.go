@@ -7,7 +7,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/google/uuid"
 )
 
@@ -26,21 +26,21 @@ func NewSQLiteOrganizationRepository(db *sql.DB) *SQLiteOrganizationRepository {
 // Organization operations
 
 // Create creates a new organization
-func (r *SQLiteOrganizationRepository) Create(ctx context.Context, organization *models.Organization) (*models.Organization, error) {
+func (r *SQLiteOrganizationRepository) Create(ctx context.Context, organization *core.Organization) (*core.Organization, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per organization
 	return nil, fmt.Errorf("CreateOrganization not yet implemented - requires custom mapping")
 }
 
 // Get retrieves a organization by ID
-func (r *SQLiteOrganizationRepository) Get(ctx context.Context, id uuid.UUID) (*models.Organization, error) {
+func (r *SQLiteOrganizationRepository) Get(ctx context.Context, id uuid.UUID) (*core.Organization, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per organization
 	return nil, fmt.Errorf("GetOrganization not yet implemented - requires custom mapping")
 }
 
 // Update updates an existing organization
-func (r *SQLiteOrganizationRepository) Update(ctx context.Context, id uuid.UUID, organization *models.Organization) (*models.Organization, error) {
+func (r *SQLiteOrganizationRepository) Update(ctx context.Context, id uuid.UUID, organization *core.Organization) (*core.Organization, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per organization
 	return nil, fmt.Errorf("UpdateOrganization not yet implemented - requires custom mapping")
@@ -54,7 +54,7 @@ func (r *SQLiteOrganizationRepository) Delete(ctx context.Context, id uuid.UUID)
 }
 
 // List returns a paginated list of organizations
-func (r *SQLiteOrganizationRepository) List(ctx context.Context, limit, offset int32) ([]*models.Organization, int64, error) {
+func (r *SQLiteOrganizationRepository) List(ctx context.Context, limit, offset int32) ([]*core.Organization, int64, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per organization
 	return nil, 0, fmt.Errorf("ListOrganizations not yet implemented - requires custom mapping")
@@ -63,13 +63,13 @@ func (r *SQLiteOrganizationRepository) List(ctx context.Context, limit, offset i
 // Additional methods
 
 // GetOrganizationBySlug retrieves a single organization by slug
-func (r *SQLiteOrganizationRepository) GetOrganizationBySlug(ctx context.Context, slug string) (*models.Organization, error) {
+func (r *SQLiteOrganizationRepository) GetOrganizationBySlug(ctx context.Context, slug string) (*core.Organization, error) {
 	// TODO: Implement GetOrganizationBySlug
 	return nil, fmt.Errorf("GetOrganizationBySlug not yet implemented - requires custom mapping")
 }
 
 // GetOrganizationByStripeCustomerID retrieves a single organization by stripeCustomerIdentifier
-func (r *SQLiteOrganizationRepository) GetOrganizationByStripeCustomerID(ctx context.Context, stripeCustomerIdentifier string) (*models.Organization, error) {
+func (r *SQLiteOrganizationRepository) GetOrganizationByStripeCustomerID(ctx context.Context, stripeCustomerIdentifier string) (*core.Organization, error) {
 	// TODO: Implement GetOrganizationByStripeCustomerID
 	return nil, fmt.Errorf("GetOrganizationByStripeCustomerID not yet implemented - requires custom mapping")
 }

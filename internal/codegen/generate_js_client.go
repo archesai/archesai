@@ -22,7 +22,7 @@ type OrvalOutput struct {
 }
 
 // GenerateJSClient generates a JavaScript/TypeScript client using orval in a container
-func (g *Generator) GenerateJSClient(specPath string, outputDir string) error {
+func (g *Generator) GenerateJSClient(specPath string) error {
 	// Read the OpenAPI specification
 	specContent, err := os.ReadFile(specPath)
 	if err != nil {
@@ -140,7 +140,14 @@ func (g *Generator) GenerateJSClient(specPath string, outputDir string) error {
 
 	// Write generated files to output directory
 	for filePath, content := range output.Files {
-		fullPath := filepath.Join(outputDir, filePath)
+		fullPath := filepath.Join(
+			g.storage.BaseDir(),
+			"frontend",
+			"src",
+			"lib",
+			"generated",
+			filePath,
+		)
 
 		// Create directory if needed
 		dir := filepath.Dir(fullPath)

@@ -8,8 +8,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
-	corerrors "github.com/archesai/archesai/pkg/errors"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -30,7 +29,7 @@ func NewPostgresAccountRepository(db *pgxpool.Pool) *PostgresAccountRepository {
 // Account operations
 
 // Create creates a new account
-func (r *PostgresAccountRepository) Create(ctx context.Context, entity *models.Account) (*models.Account, error) {
+func (r *PostgresAccountRepository) Create(ctx context.Context, entity *core.Account) (*core.Account, error) {
 	params := CreateAccountParams{
 		ID:                    entity.ID,
 		AccessToken:           entity.AccessToken,
@@ -53,7 +52,7 @@ func (r *PostgresAccountRepository) Create(ctx context.Context, entity *models.A
 }
 
 // Get retrieves a account by ID
-func (r *PostgresAccountRepository) Get(ctx context.Context, id uuid.UUID) (*models.Account, error) {
+func (r *PostgresAccountRepository) Get(ctx context.Context, id uuid.UUID) (*core.Account, error) {
 	params := GetAccountParams{
 		ID: id,
 	}
@@ -61,7 +60,7 @@ func (r *PostgresAccountRepository) Get(ctx context.Context, id uuid.UUID) (*mod
 	result, err := r.queries.GetAccount(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return nil, corerrors.ErrAccountNotFound
+			return nil, core.ErrAccountNotFound
 		}
 		return nil, fmt.Errorf("failed to get account: %w", err)
 	}
@@ -70,7 +69,7 @@ func (r *PostgresAccountRepository) Get(ctx context.Context, id uuid.UUID) (*mod
 }
 
 // Update updates an existing account
-func (r *PostgresAccountRepository) Update(ctx context.Context, id uuid.UUID, entity *models.Account) (*models.Account, error) {
+func (r *PostgresAccountRepository) Update(ctx context.Context, id uuid.UUID, entity *core.Account) (*core.Account, error) {
 
 	params := UpdateAccountParams{
 		ID:                    id,
@@ -85,7 +84,7 @@ func (r *PostgresAccountRepository) Update(ctx context.Context, id uuid.UUID, en
 	result, err := r.queries.UpdateAccount(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return nil, corerrors.ErrAccountNotFound
+			return nil, core.ErrAccountNotFound
 		}
 		return nil, fmt.Errorf("failed to update account: %w", err)
 	}
@@ -102,7 +101,7 @@ func (r *PostgresAccountRepository) Delete(ctx context.Context, id uuid.UUID) er
 	err := r.queries.DeleteAccount(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return corerrors.ErrAccountNotFound
+			return core.ErrAccountNotFound
 		}
 		return fmt.Errorf("failed to delete account: %w", err)
 	}
@@ -110,7 +109,7 @@ func (r *PostgresAccountRepository) Delete(ctx context.Context, id uuid.UUID) er
 }
 
 // List returns a paginated list of accounts
-func (r *PostgresAccountRepository) List(ctx context.Context, limit, offset int32) ([]*models.Account, int64, error) {
+func (r *PostgresAccountRepository) List(ctx context.Context, limit, offset int32) ([]*core.Account, int64, error) {
 	listParams := ListAccountsParams{
 		Limit:  limit,
 		Offset: offset,
@@ -121,7 +120,7 @@ func (r *PostgresAccountRepository) List(ctx context.Context, limit, offset int3
 		return nil, 0, fmt.Errorf("failed to list accounts: %w", err)
 	}
 
-	items := make([]*models.Account, len(results))
+	items := make([]*core.Account, len(results))
 	for i, result := range results {
 		items[i] = mapAccountFromDB(&result)
 	}
@@ -134,7 +133,7 @@ func (r *PostgresAccountRepository) List(ctx context.Context, limit, offset int3
 }
 
 // GetAccountByProvider retrieves a single Account by provider and accountIdentifier
-func (r *PostgresAccountRepository) GetAccountByProvider(ctx context.Context, provider string, accountIdentifier string) (*models.Account, error) {
+func (r *PostgresAccountRepository) GetAccountByProvider(ctx context.Context, provider string, accountIdentifier string) (*core.Account, error) {
 	params := GetAccountByProviderParams{
 		Provider:          provider,
 		AccountIdentifier: accountIdentifier,
@@ -143,7 +142,7 @@ func (r *PostgresAccountRepository) GetAccountByProvider(ctx context.Context, pr
 	result, err := r.queries.GetAccountByProvider(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return nil, corerrors.ErrAccountNotFound
+			return nil, core.ErrAccountNotFound
 		}
 		return nil, fmt.Errorf("failed to GetAccountByProvider: %w", err)
 	}
@@ -153,7 +152,7 @@ func (r *PostgresAccountRepository) GetAccountByProvider(ctx context.Context, pr
 }
 
 // ListAccountsByUserID retrieves multiple Accounts by userID
-func (r *PostgresAccountRepository) ListAccountsByUserID(ctx context.Context, userID string) ([]*models.Account, error) {
+func (r *PostgresAccountRepository) ListAccountsByUserID(ctx context.Context, userID string) ([]*core.Account, error) {
 	params := ListAccountsByUserIDParams{
 		UserID: uuid.MustParse(userID),
 	}
@@ -161,11 +160,11 @@ func (r *PostgresAccountRepository) ListAccountsByUserID(ctx context.Context, us
 	result, err := r.queries.ListAccountsByUserID(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return nil, corerrors.ErrAccountNotFound
+			return nil, core.ErrAccountNotFound
 		}
 		return nil, fmt.Errorf("failed to ListAccountsByUserID: %w", err)
 	}
-	items := make([]*models.Account, len(result))
+	items := make([]*core.Account, len(result))
 	for i, res := range result {
 		items[i] = mapAccountFromDB(&res)
 	}
@@ -173,12 +172,12 @@ func (r *PostgresAccountRepository) ListAccountsByUserID(ctx context.Context, us
 
 }
 
-func mapAccountFromDB(db *Account) *models.Account {
+func mapAccountFromDB(db *Account) *core.Account {
 	if db == nil {
 		return nil
 	}
 
-	result := &models.Account{
+	result := &core.Account{
 		ID:                    db.ID,
 		CreatedAt:             db.CreatedAt,
 		UpdatedAt:             db.UpdatedAt,
@@ -186,7 +185,7 @@ func mapAccountFromDB(db *Account) *models.Account {
 		AccessTokenExpiresAt:  db.AccessTokenExpiresAt,
 		AccountIdentifier:     db.AccountIdentifier,
 		IDToken:               db.IDToken,
-		Provider:              models.AccountProvider(db.Provider),
+		Provider:              core.AccountProvider(db.Provider),
 		RefreshToken:          db.RefreshToken,
 		RefreshTokenExpiresAt: db.RefreshTokenExpiresAt,
 		Scope:                 db.Scope,

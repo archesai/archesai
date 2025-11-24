@@ -3,6 +3,7 @@ package codegen
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"path/filepath"
 	"strings"
 
@@ -11,15 +12,15 @@ import (
 
 // SchemasTemplateData defines a template data structure
 type SchemasTemplateData struct {
-	Package    string
-	Schema     *parsers.SchemaDef
-	OutputPath string // Import path for generated code
+	Package string
+	Schema  *parsers.SchemaDef
 }
 
 // GenerateSchemas generates all model types (DTOs, entities, value objects)
 func (g *Generator) GenerateSchemas(schemas []*parsers.SchemaDef) error {
 	for _, processed := range schemas {
-		if err := g.generateSchema(processed, nil); err != nil {
+		var buf bytes.Buffer
+		if err := g.generateSchema(processed, &buf); err != nil {
 			return fmt.Errorf(
 				"failed to generate %s %s: %w",
 				processed.XCodegenSchemaType,
@@ -27,51 +28,32 @@ func (g *Generator) GenerateSchemas(schemas []*parsers.SchemaDef) error {
 				err,
 			)
 		}
+		outputPath := filepath.Join(
+			"generated",
+			"core",
+			strings.ToLower(processed.Name)+".gen.go",
+		)
+		err := g.storage.WriteFile(outputPath, buf.Bytes(), 0644)
+		if err != nil {
+			return fmt.Errorf("failed to write file %s: %w", outputPath, err)
+		}
 	}
 
 	return nil
 }
 
-// generateSchema generates a single model file (simplified - no more batching)
+// generateSchema generates a single model file
 func (g *Generator) generateSchema(
 	schema *parsers.SchemaDef,
-	customOutputDir *string,
+	out io.Writer,
 ) error {
-
-	// Use a single package for all schema types
-	var packageName, outputDir string
-
-	switch schema.XCodegenSchemaType {
-	case schemaTypeEntity, schemaTypeValueObject:
-		packageName = "models"
-		outputDir = filepath.Join(g.outputDir, "generated", "core", "models")
-		if customOutputDir != nil {
-			outputDir = *customOutputDir
-			packageName = filepath.Base(*customOutputDir)
-		}
-	default:
-		return fmt.Errorf(
-			"unsupported model type: %s for schema %s",
-			schema.XCodegenSchemaType,
-			schema.Name,
-		)
-	}
-
-	importPath := "github.com/archesai/archesai" + strings.TrimPrefix(g.outputDir, ".")
-
 	data := SchemasTemplateData{
-		Package:    packageName,
-		Schema:     schema,
-		OutputPath: importPath,
+		Package: "core",
+		Schema:  schema,
 	}
-
-	// Render to buffer
-	var buf bytes.Buffer
-	if err := g.renderer.Render(&buf, "schema.go.tmpl", data); err != nil {
+	if err := g.renderer.Render(out, "schema.go.tmpl", data); err != nil {
 		return fmt.Errorf("failed to render schema: %w", err)
 	}
+	return nil
 
-	// Write using storage interface
-	outputPath := filepath.Join(outputDir, strings.ToLower(schema.Name)+".gen.go")
-	return g.storage.WriteFile(outputPath, buf.Bytes(), 0644)
 }

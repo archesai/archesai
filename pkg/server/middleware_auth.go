@@ -23,10 +23,10 @@ const (
 	// SessionIDContextKey is the context key for session ID
 	SessionIDContextKey contextKey = "auth.sessionID"
 
-	// BearerAuthScopes is used by generated handlers for bearer token authentication
+	// BearerAuthScopes is used by handlers for bearer token authentication
 	BearerAuthScopes = "bearerAuth.Scopes"
 
-	// SessionCookieScopes is used by generated handlers for session cookie authentication
+	// SessionCookieScopes is used by handlers for session cookie authentication
 	SessionCookieScopes = "sessionCookie.Scopes"
 
 	// AuthAPIKeyContextKey is the context key for API token

@@ -35,7 +35,7 @@ const (
 // GenerateMigrations generates a migration for a specific database type
 func (g *Generator) GenerateMigrations(ctx context.Context, dbType database.Type) error {
 	m := &MigrationGenerator{
-		outputDir: g.outputDir,
+		outputDir: g.storage.BaseDir(),
 	}
 
 	// Start database

@@ -5,19 +5,19 @@ package repositories
 import (
 	"context"
 
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/google/uuid"
 )
 
 // PipelineRepository handles pipeline persistence
 type PipelineRepository interface {
 	// Basic CRUD operations (always included)
-	Create(ctx context.Context, entity *models.Pipeline) (*models.Pipeline, error)
-	Get(ctx context.Context, id uuid.UUID) (*models.Pipeline, error)
-	Update(ctx context.Context, id uuid.UUID, entity *models.Pipeline) (*models.Pipeline, error)
+	Create(ctx context.Context, entity *core.Pipeline) (*core.Pipeline, error)
+	Get(ctx context.Context, id uuid.UUID) (*core.Pipeline, error)
+	Update(ctx context.Context, id uuid.UUID, entity *core.Pipeline) (*core.Pipeline, error)
 	Delete(ctx context.Context, id uuid.UUID) error
-	List(ctx context.Context, limit, offset int32) ([]*models.Pipeline, int64, error)
+	List(ctx context.Context, limit, offset int32) ([]*core.Pipeline, int64, error)
 
 	// ListPipelinesByOrganization retrieves multiple pipelines by organizationID
-	ListPipelinesByOrganization(ctx context.Context, organizationID string) ([]*models.Pipeline, error)
+	ListPipelinesByOrganization(ctx context.Context, organizationID string) ([]*core.Pipeline, error)
 }

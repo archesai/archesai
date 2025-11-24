@@ -196,7 +196,7 @@ components:
 
 ```bash
 # Generate the complete application
-archesai generate openapi todo-api.yaml --output ./todo-app
+archesai generate --spec todo-api.yaml --output ./todo-app
 
 # Navigate to the generated app
 cd todo-app
@@ -254,7 +254,7 @@ curl http://localhost:3001/todos/{id}
 ### Making Changes
 
 1. **Update OpenAPI Spec**: Modify your `todo-api.yaml`
-2. **Regenerate Code**: Run `archesai generate openapi todo-api.yaml --output ./todo-app`
+2. **Regenerate Code**: Run `archesai generate --spec todo-api.yaml --output ./todo-app`
 3. **Hot Reload**: Changes are automatically picked up if using `archesai dev`
 
 ### Adding Custom Logic
@@ -265,7 +265,7 @@ Generated handlers are extensible. Add your business logic in the `handlers/` di
 // handlers/todo_custom.go
 package handlers
 
-func (h *TodoHandler) ValidateTodo(todo *models.Todo) error {
+func (h *TodoHandler) ValidateTodo(todo *core.Todo) error {
     // Add custom validation logic
     if todo.Title == "" {
         return errors.New("title cannot be empty")

@@ -9,8 +9,7 @@ import (
 
 	"github.com/google/uuid"
 
-	domainevents "github.com/archesai/archesai/apps/studio/generated/core/events"
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/archesai/archesai/apps/studio/generated/core/repositories"
 	"github.com/archesai/archesai/pkg/events"
 )
@@ -50,9 +49,9 @@ func NewCreateLabelCommandHandler(
 }
 
 // Handle executes the create label command.
-func (h *CreateLabelCommandHandler) Handle(ctx context.Context, cmd *CreateLabelCommand) (*models.Label, error) {
+func (h *CreateLabelCommandHandler) Handle(ctx context.Context, cmd *CreateLabelCommand) (*core.Label, error) {
 	// Create the label entity
-	entity := &models.Label{
+	entity := &core.Label{
 		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
@@ -65,8 +64,8 @@ func (h *CreateLabelCommandHandler) Handle(ctx context.Context, cmd *CreateLabel
 		return nil, fmt.Errorf("failed to create label: %w", err)
 	}
 
-	// Publish domain event
-	event := domainevents.NewLabelCreatedEvent(created.ID)
+	// Publish event
+	event := core.NewLabelCreatedEvent(created.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 		// FIXME: Implement logging

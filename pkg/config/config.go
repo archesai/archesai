@@ -7,22 +7,24 @@
 // 3. Default values from OpenAPI specification
 package config
 
-import "github.com/archesai/archesai/apps/studio/generated/core/models"
+import "github.com/archesai/archesai/apps/studio/generated/core"
 
 // Type aliases for convenience - avoiding stuttering names
 type (
+	// Config is the main configuration structure
+	Config = core.Config
 	// API configuration
-	API = models.APIConfig
+	API = core.APIConfig
 	// Auth configuration
-	Auth = models.AuthConfig
+	Auth = core.AuthConfig
 	// AuthLocal configuration
-	AuthLocal = models.LocalAuthConfig
+	AuthLocal = core.LocalAuthConfig
 	// Database configuration
-	Database = models.DatabaseConfig
+	Database = core.DatabaseConfig
 	// Redis configuration
-	Redis = models.RedisConfig
+	Redis = core.RedisConfig
 	// Logging configuration
-	Logging = models.LoggingConfig
+	Logging = core.LoggingConfig
 )
 
 // Configuration constants.
@@ -52,8 +54,8 @@ var ConfigFileNames = []string{
 }
 
 // New returns the default configuration.
-func New() *models.Config {
-	return &models.Config{
+func New() *Config {
+	return &Config{
 		API: &API{
 			Host:        "0.0.0.0",
 			Port:        8080,

@@ -42,13 +42,16 @@ func (g *Generator) GenerateCommandQueryHandlers(
 
 			// Get the output path
 			outputPath := filepath.Join(
-				g.outputDir, "generated", "application",
+				"generated", "application",
 				output,
 				strings.ToLower(tag),
 				fmt.Sprintf("%s.gen.go", parsers.SnakeCase(op.ID)),
 			)
 
-			importPath := "github.com/archesai/archesai" + strings.TrimPrefix(g.outputDir, ".")
+			importPath := "github.com/archesai/archesai" + strings.TrimPrefix(
+				g.storage.BaseDir(),
+				".",
+			)
 
 			// Create minimal template data
 			data := &CQRSHandlerTemplateData{

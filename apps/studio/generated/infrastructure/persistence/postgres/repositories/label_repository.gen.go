@@ -8,8 +8,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
-	corerrors "github.com/archesai/archesai/pkg/errors"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -30,7 +29,7 @@ func NewPostgresLabelRepository(db *pgxpool.Pool) *PostgresLabelRepository {
 // Label operations
 
 // Create creates a new label
-func (r *PostgresLabelRepository) Create(ctx context.Context, entity *models.Label) (*models.Label, error) {
+func (r *PostgresLabelRepository) Create(ctx context.Context, entity *core.Label) (*core.Label, error) {
 	params := CreateLabelParams{
 		ID:             entity.ID,
 		Name:           entity.Name,
@@ -46,7 +45,7 @@ func (r *PostgresLabelRepository) Create(ctx context.Context, entity *models.Lab
 }
 
 // Get retrieves a label by ID
-func (r *PostgresLabelRepository) Get(ctx context.Context, id uuid.UUID) (*models.Label, error) {
+func (r *PostgresLabelRepository) Get(ctx context.Context, id uuid.UUID) (*core.Label, error) {
 	params := GetLabelParams{
 		ID: id,
 	}
@@ -54,7 +53,7 @@ func (r *PostgresLabelRepository) Get(ctx context.Context, id uuid.UUID) (*model
 	result, err := r.queries.GetLabel(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return nil, corerrors.ErrLabelNotFound
+			return nil, core.ErrLabelNotFound
 		}
 		return nil, fmt.Errorf("failed to get label: %w", err)
 	}
@@ -63,7 +62,7 @@ func (r *PostgresLabelRepository) Get(ctx context.Context, id uuid.UUID) (*model
 }
 
 // Update updates an existing label
-func (r *PostgresLabelRepository) Update(ctx context.Context, id uuid.UUID, entity *models.Label) (*models.Label, error) {
+func (r *PostgresLabelRepository) Update(ctx context.Context, id uuid.UUID, entity *core.Label) (*core.Label, error) {
 
 	params := UpdateLabelParams{
 		ID:   id,
@@ -73,7 +72,7 @@ func (r *PostgresLabelRepository) Update(ctx context.Context, id uuid.UUID, enti
 	result, err := r.queries.UpdateLabel(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return nil, corerrors.ErrLabelNotFound
+			return nil, core.ErrLabelNotFound
 		}
 		return nil, fmt.Errorf("failed to update label: %w", err)
 	}
@@ -90,7 +89,7 @@ func (r *PostgresLabelRepository) Delete(ctx context.Context, id uuid.UUID) erro
 	err := r.queries.DeleteLabel(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return corerrors.ErrLabelNotFound
+			return core.ErrLabelNotFound
 		}
 		return fmt.Errorf("failed to delete label: %w", err)
 	}
@@ -98,7 +97,7 @@ func (r *PostgresLabelRepository) Delete(ctx context.Context, id uuid.UUID) erro
 }
 
 // List returns a paginated list of labels
-func (r *PostgresLabelRepository) List(ctx context.Context, limit, offset int32) ([]*models.Label, int64, error) {
+func (r *PostgresLabelRepository) List(ctx context.Context, limit, offset int32) ([]*core.Label, int64, error) {
 	listParams := ListLabelsParams{
 		Limit:  limit,
 		Offset: offset,
@@ -109,7 +108,7 @@ func (r *PostgresLabelRepository) List(ctx context.Context, limit, offset int32)
 		return nil, 0, fmt.Errorf("failed to list labels: %w", err)
 	}
 
-	items := make([]*models.Label, len(results))
+	items := make([]*core.Label, len(results))
 	for i, result := range results {
 		items[i] = mapLabelFromDB(&result)
 	}
@@ -122,7 +121,7 @@ func (r *PostgresLabelRepository) List(ctx context.Context, limit, offset int32)
 }
 
 // ListLabelsByOrganization retrieves multiple Labels by organizationID
-func (r *PostgresLabelRepository) ListLabelsByOrganization(ctx context.Context, organizationID string) ([]*models.Label, error) {
+func (r *PostgresLabelRepository) ListLabelsByOrganization(ctx context.Context, organizationID string) ([]*core.Label, error) {
 	params := ListLabelsByOrganizationParams{
 		OrganizationID: uuid.MustParse(organizationID),
 	}
@@ -130,11 +129,11 @@ func (r *PostgresLabelRepository) ListLabelsByOrganization(ctx context.Context, 
 	result, err := r.queries.ListLabelsByOrganization(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return nil, corerrors.ErrLabelNotFound
+			return nil, core.ErrLabelNotFound
 		}
 		return nil, fmt.Errorf("failed to ListLabelsByOrganization: %w", err)
 	}
-	items := make([]*models.Label, len(result))
+	items := make([]*core.Label, len(result))
 	for i, res := range result {
 		items[i] = mapLabelFromDB(&res)
 	}
@@ -143,7 +142,7 @@ func (r *PostgresLabelRepository) ListLabelsByOrganization(ctx context.Context, 
 }
 
 // GetLabelByName retrieves a single Label by name and organizationID
-func (r *PostgresLabelRepository) GetLabelByName(ctx context.Context, name string, organizationID string) (*models.Label, error) {
+func (r *PostgresLabelRepository) GetLabelByName(ctx context.Context, name string, organizationID string) (*core.Label, error) {
 	params := GetLabelByNameParams{
 		Name:           name,
 		OrganizationID: uuid.MustParse(organizationID),
@@ -152,7 +151,7 @@ func (r *PostgresLabelRepository) GetLabelByName(ctx context.Context, name strin
 	result, err := r.queries.GetLabelByName(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return nil, corerrors.ErrLabelNotFound
+			return nil, core.ErrLabelNotFound
 		}
 		return nil, fmt.Errorf("failed to GetLabelByName: %w", err)
 	}
@@ -161,12 +160,12 @@ func (r *PostgresLabelRepository) GetLabelByName(ctx context.Context, name strin
 
 }
 
-func mapLabelFromDB(db *Label) *models.Label {
+func mapLabelFromDB(db *Label) *core.Label {
 	if db == nil {
 		return nil
 	}
 
-	result := &models.Label{
+	result := &core.Label{
 		ID:             db.ID,
 		CreatedAt:      db.CreatedAt,
 		UpdatedAt:      db.UpdatedAt,

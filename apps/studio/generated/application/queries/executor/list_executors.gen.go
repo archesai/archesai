@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/archesai/archesai/apps/studio/generated/core/repositories"
 )
 
@@ -39,7 +39,7 @@ func NewListExecutorsQueryHandler(repo repositories.ExecutorRepository) *ListExe
 }
 
 // Handle executes the list executors query.
-func (h *ListExecutorsQueryHandler) Handle(ctx context.Context, query *ListExecutorsQuery) ([]*models.Executor, int64, error) {
+func (h *ListExecutorsQueryHandler) Handle(ctx context.Context, query *ListExecutorsQuery) ([]*core.Executor, int64, error) {
 	// TODO: Apply filters based on query parameters
 	results, total, err := h.repo.List(ctx, 100, 0)
 	if err != nil {

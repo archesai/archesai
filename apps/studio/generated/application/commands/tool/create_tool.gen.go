@@ -9,8 +9,7 @@ import (
 
 	"github.com/google/uuid"
 
-	domainevents "github.com/archesai/archesai/apps/studio/generated/core/events"
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/archesai/archesai/apps/studio/generated/core/repositories"
 	"github.com/archesai/archesai/pkg/events"
 )
@@ -53,9 +52,9 @@ func NewCreateToolCommandHandler(
 }
 
 // Handle executes the create tool command.
-func (h *CreateToolCommandHandler) Handle(ctx context.Context, cmd *CreateToolCommand) (*models.Tool, error) {
+func (h *CreateToolCommandHandler) Handle(ctx context.Context, cmd *CreateToolCommand) (*core.Tool, error) {
 	// Create the tool entity
-	entity := &models.Tool{
+	entity := &core.Tool{
 		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
@@ -68,8 +67,8 @@ func (h *CreateToolCommandHandler) Handle(ctx context.Context, cmd *CreateToolCo
 		return nil, fmt.Errorf("failed to create tool: %w", err)
 	}
 
-	// Publish domain event
-	event := domainevents.NewToolCreatedEvent(created.ID)
+	// Publish event
+	event := core.NewToolCreatedEvent(created.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 		// FIXME: Implement logging

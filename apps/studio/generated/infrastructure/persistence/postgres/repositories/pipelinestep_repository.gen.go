@@ -8,8 +8,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
-	corerrors "github.com/archesai/archesai/pkg/errors"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -30,7 +29,7 @@ func NewPostgresPipelineStepRepository(db *pgxpool.Pool) *PostgresPipelineStepRe
 // PipelineStep operations
 
 // Create creates a new pipelinestep
-func (r *PostgresPipelineStepRepository) Create(ctx context.Context, entity *models.PipelineStep) (*models.PipelineStep, error) {
+func (r *PostgresPipelineStepRepository) Create(ctx context.Context, entity *core.PipelineStep) (*core.PipelineStep, error) {
 	params := CreatePipelineStepParams{
 		ID:         entity.ID,
 		PipelineID: entity.PipelineID,
@@ -46,7 +45,7 @@ func (r *PostgresPipelineStepRepository) Create(ctx context.Context, entity *mod
 }
 
 // Get retrieves a pipelinestep by ID
-func (r *PostgresPipelineStepRepository) Get(ctx context.Context, id uuid.UUID) (*models.PipelineStep, error) {
+func (r *PostgresPipelineStepRepository) Get(ctx context.Context, id uuid.UUID) (*core.PipelineStep, error) {
 	params := GetPipelineStepParams{
 		ID: id,
 	}
@@ -54,7 +53,7 @@ func (r *PostgresPipelineStepRepository) Get(ctx context.Context, id uuid.UUID) 
 	result, err := r.queries.GetPipelineStep(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return nil, corerrors.ErrPipelineStepNotFound
+			return nil, core.ErrPipelineStepNotFound
 		}
 		return nil, fmt.Errorf("failed to get pipelinestep: %w", err)
 	}
@@ -63,7 +62,7 @@ func (r *PostgresPipelineStepRepository) Get(ctx context.Context, id uuid.UUID) 
 }
 
 // Update updates an existing pipelinestep
-func (r *PostgresPipelineStepRepository) Update(ctx context.Context, id uuid.UUID, entity *models.PipelineStep) (*models.PipelineStep, error) {
+func (r *PostgresPipelineStepRepository) Update(ctx context.Context, id uuid.UUID, entity *core.PipelineStep) (*core.PipelineStep, error) {
 
 	params := UpdatePipelineStepParams{
 		ID:     id,
@@ -73,7 +72,7 @@ func (r *PostgresPipelineStepRepository) Update(ctx context.Context, id uuid.UUI
 	result, err := r.queries.UpdatePipelineStep(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return nil, corerrors.ErrPipelineStepNotFound
+			return nil, core.ErrPipelineStepNotFound
 		}
 		return nil, fmt.Errorf("failed to update pipelinestep: %w", err)
 	}
@@ -90,7 +89,7 @@ func (r *PostgresPipelineStepRepository) Delete(ctx context.Context, id uuid.UUI
 	err := r.queries.DeletePipelineStep(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return corerrors.ErrPipelineStepNotFound
+			return core.ErrPipelineStepNotFound
 		}
 		return fmt.Errorf("failed to delete pipelinestep: %w", err)
 	}
@@ -98,7 +97,7 @@ func (r *PostgresPipelineStepRepository) Delete(ctx context.Context, id uuid.UUI
 }
 
 // List returns a paginated list of pipelinesteps
-func (r *PostgresPipelineStepRepository) List(ctx context.Context, limit, offset int32) ([]*models.PipelineStep, int64, error) {
+func (r *PostgresPipelineStepRepository) List(ctx context.Context, limit, offset int32) ([]*core.PipelineStep, int64, error) {
 	listParams := ListPipelineStepsParams{
 		Limit:  limit,
 		Offset: offset,
@@ -109,7 +108,7 @@ func (r *PostgresPipelineStepRepository) List(ctx context.Context, limit, offset
 		return nil, 0, fmt.Errorf("failed to list pipelinesteps: %w", err)
 	}
 
-	items := make([]*models.PipelineStep, len(results))
+	items := make([]*core.PipelineStep, len(results))
 	for i, result := range results {
 		items[i] = mapPipelineStepFromDB(&result)
 	}
@@ -121,12 +120,12 @@ func (r *PostgresPipelineStepRepository) List(ctx context.Context, limit, offset
 	return items, count, nil
 }
 
-func mapPipelineStepFromDB(db *PipelineStep) *models.PipelineStep {
+func mapPipelineStepFromDB(db *PipelineStep) *core.PipelineStep {
 	if db == nil {
 		return nil
 	}
 
-	result := &models.PipelineStep{
+	result := &core.PipelineStep{
 		ID:         db.ID,
 		CreatedAt:  db.CreatedAt,
 		UpdatedAt:  db.UpdatedAt,

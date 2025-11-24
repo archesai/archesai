@@ -12,6 +12,7 @@ import (
 
 	"github.com/archesai/archesai/internal/parsers"
 	"github.com/archesai/archesai/pkg/database"
+	"github.com/archesai/archesai/pkg/storage"
 )
 
 // HCLTemplateData defines the template data for HCL generation
@@ -45,7 +46,6 @@ func (g *Generator) GenerateHCL(schemas []*parsers.SchemaDef) error {
 		DatabaseType: database.TypePostgreSQL,
 	}
 	postgresHCLPath := filepath.Join(
-		g.outputDir,
 		"generated",
 		"infrastructure",
 		"persistence",
@@ -69,7 +69,6 @@ func (g *Generator) GenerateHCL(schemas []*parsers.SchemaDef) error {
 		DatabaseType: database.TypeSQLite,
 	}
 	sqliteHCLPath := filepath.Join(
-		g.outputDir,
 		"generated",
 		"infrastructure",
 		"persistence",
@@ -90,6 +89,14 @@ func (g *Generator) GenerateHCL(schemas []*parsers.SchemaDef) error {
 	// Wait for HCL file generation to complete
 	if err := eg.Wait(); err != nil {
 		return err
+	}
+
+	// FIXME: Skip migrations if using memory storage (e.g., dry-run mode)
+	// Memory storage doesn't create actual files that migration tools can read
+	if _, isMemory := g.storage.(*storage.MemoryStorage); isMemory {
+		// In dry-run mode, just indicate what would be generated
+		// The HCL files themselves are already in memory storage
+		return nil
 	}
 
 	// Check Docker availability before migrations

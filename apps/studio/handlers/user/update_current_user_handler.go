@@ -7,8 +7,7 @@ import (
 	"time"
 
 	queries "github.com/archesai/archesai/apps/studio/generated/application/commands/user"
-	domainevents "github.com/archesai/archesai/apps/studio/generated/core/events"
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/archesai/archesai/apps/studio/generated/core/repositories"
 	"github.com/archesai/archesai/pkg/events"
 )
@@ -34,7 +33,7 @@ func NewUpdateCurrentUserCommandHandler(
 func (h *UpdateCurrentUserCommandHandler) Handle(
 	ctx context.Context,
 	cmd *queries.UpdateCurrentUserCommand,
-) (*models.User, error) {
+) (*core.User, error) {
 	// Get existing user
 	user, err := h.userRepo.GetUserBySessionID(ctx, cmd.SessionID.String())
 	if err != nil {
@@ -57,7 +56,7 @@ func (h *UpdateCurrentUserCommandHandler) Handle(
 	}
 
 	// Publish domain event
-	event := domainevents.NewUserUpdatedEvent(updated.ID)
+	event := core.NewUserUpdatedEvent(updated.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		slog.Error("failed to publish event", "error", err)
 	}

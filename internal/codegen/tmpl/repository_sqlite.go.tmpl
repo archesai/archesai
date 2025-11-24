@@ -11,7 +11,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"{{ .OutputPath }}/generated/core/models"
+	"{{ .OutputPath }}/generated/core"
 	"github.com/google/uuid"
 )
 
@@ -32,21 +32,21 @@ func NewSQLite{{ $entity.Name }}Repository(db *sql.DB) *SQLite{{ $entity.Name }}
 // {{ $entity.Name }} operations
 
 // Create creates a new {{ lower $entity.Name }}
-func (r *SQLite{{ $entity.Name }}Repository) Create(ctx context.Context, {{ camelCase $entity.Name }} *models.{{ $entity.Name }}) (*models.{{ $entity.Name }}, error) {
+func (r *SQLite{{ $entity.Name }}Repository) Create(ctx context.Context, {{ camelCase $entity.Name }} *core.{{ $entity.Name }}) (*core.{{ $entity.Name }}, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per {{ camelCase $entity.Name }}
 	return nil, fmt.Errorf("Create{{ $entity.Name }} not yet implemented - requires custom mapping")
 }
 
 // Get retrieves a {{ lower $entity.Name }} by ID
-func (r *SQLite{{ $entity.Name }}Repository) Get(ctx context.Context, id uuid.UUID) (*models.{{ $entity.Name }}, error) {
+func (r *SQLite{{ $entity.Name }}Repository) Get(ctx context.Context, id uuid.UUID) (*core.{{ $entity.Name }}, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per {{ camelCase $entity.Name }}
 	return nil, fmt.Errorf("Get{{ $entity.Name }} not yet implemented - requires custom mapping")
 }
 
 // Update updates an existing {{ lower $entity.Name }}
-func (r *SQLite{{ $entity.Name }}Repository) Update(ctx context.Context, id uuid.UUID, {{ camelCase $entity.Name }} *models.{{ $entity.Name }}) (*models.{{ $entity.Name }}, error) {
+func (r *SQLite{{ $entity.Name }}Repository) Update(ctx context.Context, id uuid.UUID, {{ camelCase $entity.Name }} *core.{{ $entity.Name }}) (*core.{{ $entity.Name }}, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per {{ camelCase $entity.Name }}
 	return nil, fmt.Errorf("Update{{ $entity.Name }} not yet implemented - requires custom mapping")
@@ -60,7 +60,7 @@ func (r *SQLite{{ $entity.Name }}Repository) Delete(ctx context.Context, id uuid
 }
 
 // List returns a paginated list of {{ lower $entity.Name }}s
-func (r *SQLite{{ $entity.Name }}Repository) List(ctx context.Context, limit, offset int32) ([]*models.{{ $entity.Name }}, int64, error) {
+func (r *SQLite{{ $entity.Name }}Repository) List(ctx context.Context, limit, offset int32) ([]*core.{{ $entity.Name }}, int64, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per {{ camelCase $entity.Name }}
 	return nil, 0, fmt.Errorf("List{{ $entity.Name }}s not yet implemented - requires custom mapping")
@@ -71,7 +71,7 @@ func (r *SQLite{{ $entity.Name }}Repository) List(ctx context.Context, limit, of
 {{ range $repo.AdditionalMethods }}
 {{- $additionalMethod := . }}
 // {{ $additionalMethod.Name }} retrieves {{if eq $additionalMethod.Returns "multiple"}}multiple {{ lower $entity.Name }}s{{ else }}a single {{ lower $entity.Name }}{{ end }}{{ if $additionalMethod.Params }} by {{ range $i, $param := $additionalMethod.Params }}{{ if $i }} and {{ end }}{{ $param.Name }}{{ end }}{{ end }}
-func (r *SQLite{{ $entity.Name }}Repository) {{ $additionalMethod.Name }}(ctx context.Context{{ if $additionalMethod.Params }}{{ range $i, $param := $additionalMethod.Params }}, {{ $param.Name }} {{ $param.Type }}{{ end }}{{ end }}) ({{ if eq $additionalMethod.Returns "single" }}*models.{{ $entity.Name }}{{ else if eq $additionalMethod.Returns "multiple" }}[]*models.{{ $entity.Name }}{{ end }}, error) {
+func (r *SQLite{{ $entity.Name }}Repository) {{ $additionalMethod.Name }}(ctx context.Context{{ if $additionalMethod.Params }}{{ range $i, $param := $additionalMethod.Params }}, {{ $param.Name }} {{ $param.Type }}{{ end }}{{ end }}) ({{ if eq $additionalMethod.Returns "single" }}*core.{{ $entity.Name }}{{ else if eq $additionalMethod.Returns "multiple" }}[]*core.{{ $entity.Name }}{{ end }}, error) {
 	// TODO: Implement {{ $additionalMethod.Name }}
 	return nil, fmt.Errorf("{{ $additionalMethod.Name }} not yet implemented - requires custom mapping")
 }

@@ -85,3 +85,8 @@ func (d *DiskStorage) Stat(path string) (os.FileInfo, error) {
 func (d *DiskStorage) Walk(root string, fn filepath.WalkFunc) error {
 	return filepath.Walk(d.resolvePath(root), fn)
 }
+
+// BaseDir returns the base directory of the storage
+func (d *DiskStorage) BaseDir() string {
+	return d.baseDir
+}

@@ -7,7 +7,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/google/uuid"
 )
 
@@ -26,21 +26,21 @@ func NewSQLiteUserRepository(db *sql.DB) *SQLiteUserRepository {
 // User operations
 
 // Create creates a new user
-func (r *SQLiteUserRepository) Create(ctx context.Context, user *models.User) (*models.User, error) {
+func (r *SQLiteUserRepository) Create(ctx context.Context, user *core.User) (*core.User, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per user
 	return nil, fmt.Errorf("CreateUser not yet implemented - requires custom mapping")
 }
 
 // Get retrieves a user by ID
-func (r *SQLiteUserRepository) Get(ctx context.Context, id uuid.UUID) (*models.User, error) {
+func (r *SQLiteUserRepository) Get(ctx context.Context, id uuid.UUID) (*core.User, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per user
 	return nil, fmt.Errorf("GetUser not yet implemented - requires custom mapping")
 }
 
 // Update updates an existing user
-func (r *SQLiteUserRepository) Update(ctx context.Context, id uuid.UUID, user *models.User) (*models.User, error) {
+func (r *SQLiteUserRepository) Update(ctx context.Context, id uuid.UUID, user *core.User) (*core.User, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per user
 	return nil, fmt.Errorf("UpdateUser not yet implemented - requires custom mapping")
@@ -54,7 +54,7 @@ func (r *SQLiteUserRepository) Delete(ctx context.Context, id uuid.UUID) error {
 }
 
 // List returns a paginated list of users
-func (r *SQLiteUserRepository) List(ctx context.Context, limit, offset int32) ([]*models.User, int64, error) {
+func (r *SQLiteUserRepository) List(ctx context.Context, limit, offset int32) ([]*core.User, int64, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per user
 	return nil, 0, fmt.Errorf("ListUsers not yet implemented - requires custom mapping")
@@ -63,13 +63,13 @@ func (r *SQLiteUserRepository) List(ctx context.Context, limit, offset int32) ([
 // Additional methods
 
 // GetUserByEmail retrieves a single user by email
-func (r *SQLiteUserRepository) GetUserByEmail(ctx context.Context, email string) (*models.User, error) {
+func (r *SQLiteUserRepository) GetUserByEmail(ctx context.Context, email string) (*core.User, error) {
 	// TODO: Implement GetUserByEmail
 	return nil, fmt.Errorf("GetUserByEmail not yet implemented - requires custom mapping")
 }
 
 // GetUserBySessionID retrieves a single user by sessionID
-func (r *SQLiteUserRepository) GetUserBySessionID(ctx context.Context, sessionID string) (*models.User, error) {
+func (r *SQLiteUserRepository) GetUserBySessionID(ctx context.Context, sessionID string) (*core.User, error) {
 	// TODO: Implement GetUserBySessionID
 	return nil, fmt.Errorf("GetUserBySessionID not yet implemented - requires custom mapping")
 }

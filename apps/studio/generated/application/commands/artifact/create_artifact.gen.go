@@ -9,8 +9,7 @@ import (
 
 	"github.com/google/uuid"
 
-	domainevents "github.com/archesai/archesai/apps/studio/generated/core/events"
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/archesai/archesai/apps/studio/generated/core/repositories"
 	"github.com/archesai/archesai/pkg/events"
 )
@@ -53,9 +52,9 @@ func NewCreateArtifactCommandHandler(
 }
 
 // Handle executes the create artifact command.
-func (h *CreateArtifactCommandHandler) Handle(ctx context.Context, cmd *CreateArtifactCommand) (*models.Artifact, error) {
+func (h *CreateArtifactCommandHandler) Handle(ctx context.Context, cmd *CreateArtifactCommand) (*core.Artifact, error) {
 	// Create the artifact entity
-	entity := &models.Artifact{
+	entity := &core.Artifact{
 		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
@@ -68,8 +67,8 @@ func (h *CreateArtifactCommandHandler) Handle(ctx context.Context, cmd *CreateAr
 		return nil, fmt.Errorf("failed to create artifact: %w", err)
 	}
 
-	// Publish domain event
-	event := domainevents.NewArtifactCreatedEvent(created.ID)
+	// Publish event
+	event := core.NewArtifactCreatedEvent(created.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 		// FIXME: Implement logging

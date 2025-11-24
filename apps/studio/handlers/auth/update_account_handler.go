@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 
 	commands "github.com/archesai/archesai/apps/studio/generated/application/commands/auth"
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/archesai/archesai/pkg/auth"
 )
 
@@ -29,7 +29,7 @@ func NewUpdateAccountCommandHandler(
 func (h *UpdateAccountCommandHandler) Handle(
 	ctx context.Context,
 	cmd *commands.UpdateAccountCommand,
-) (*models.User, error) {
+) (*core.User, error) {
 	if cmd.SessionID == uuid.Nil {
 		return nil, fmt.Errorf("session ID is required")
 	}

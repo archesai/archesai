@@ -8,8 +8,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
-	corerrors "github.com/archesai/archesai/pkg/errors"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -30,7 +29,7 @@ func NewPostgresMemberRepository(db *pgxpool.Pool) *PostgresMemberRepository {
 // Member operations
 
 // Create creates a new member
-func (r *PostgresMemberRepository) Create(ctx context.Context, entity *models.Member) (*models.Member, error) {
+func (r *PostgresMemberRepository) Create(ctx context.Context, entity *core.Member) (*core.Member, error) {
 	params := CreateMemberParams{
 		ID:             entity.ID,
 		OrganizationID: entity.OrganizationID,
@@ -47,7 +46,7 @@ func (r *PostgresMemberRepository) Create(ctx context.Context, entity *models.Me
 }
 
 // Get retrieves a member by ID
-func (r *PostgresMemberRepository) Get(ctx context.Context, id uuid.UUID) (*models.Member, error) {
+func (r *PostgresMemberRepository) Get(ctx context.Context, id uuid.UUID) (*core.Member, error) {
 	params := GetMemberParams{
 		ID: id,
 	}
@@ -55,7 +54,7 @@ func (r *PostgresMemberRepository) Get(ctx context.Context, id uuid.UUID) (*mode
 	result, err := r.queries.GetMember(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return nil, corerrors.ErrMemberNotFound
+			return nil, core.ErrMemberNotFound
 		}
 		return nil, fmt.Errorf("failed to get member: %w", err)
 	}
@@ -64,7 +63,7 @@ func (r *PostgresMemberRepository) Get(ctx context.Context, id uuid.UUID) (*mode
 }
 
 // Update updates an existing member
-func (r *PostgresMemberRepository) Update(ctx context.Context, id uuid.UUID, entity *models.Member) (*models.Member, error) {
+func (r *PostgresMemberRepository) Update(ctx context.Context, id uuid.UUID, entity *core.Member) (*core.Member, error) {
 
 	roleStr := string(entity.Role)
 	params := UpdateMemberParams{
@@ -75,7 +74,7 @@ func (r *PostgresMemberRepository) Update(ctx context.Context, id uuid.UUID, ent
 	result, err := r.queries.UpdateMember(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return nil, corerrors.ErrMemberNotFound
+			return nil, core.ErrMemberNotFound
 		}
 		return nil, fmt.Errorf("failed to update member: %w", err)
 	}
@@ -92,7 +91,7 @@ func (r *PostgresMemberRepository) Delete(ctx context.Context, id uuid.UUID) err
 	err := r.queries.DeleteMember(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return corerrors.ErrMemberNotFound
+			return core.ErrMemberNotFound
 		}
 		return fmt.Errorf("failed to delete member: %w", err)
 	}
@@ -100,7 +99,7 @@ func (r *PostgresMemberRepository) Delete(ctx context.Context, id uuid.UUID) err
 }
 
 // List returns a paginated list of members
-func (r *PostgresMemberRepository) List(ctx context.Context, limit, offset int32) ([]*models.Member, int64, error) {
+func (r *PostgresMemberRepository) List(ctx context.Context, limit, offset int32) ([]*core.Member, int64, error) {
 	listParams := ListMembersParams{
 		Limit:  limit,
 		Offset: offset,
@@ -111,7 +110,7 @@ func (r *PostgresMemberRepository) List(ctx context.Context, limit, offset int32
 		return nil, 0, fmt.Errorf("failed to list members: %w", err)
 	}
 
-	items := make([]*models.Member, len(results))
+	items := make([]*core.Member, len(results))
 	for i, result := range results {
 		items[i] = mapMemberFromDB(&result)
 	}
@@ -124,7 +123,7 @@ func (r *PostgresMemberRepository) List(ctx context.Context, limit, offset int32
 }
 
 // ListMembersByOrganization retrieves multiple Members by organizationID
-func (r *PostgresMemberRepository) ListMembersByOrganization(ctx context.Context, organizationID string) ([]*models.Member, error) {
+func (r *PostgresMemberRepository) ListMembersByOrganization(ctx context.Context, organizationID string) ([]*core.Member, error) {
 	params := ListMembersByOrganizationParams{
 		OrganizationID: uuid.MustParse(organizationID),
 	}
@@ -132,11 +131,11 @@ func (r *PostgresMemberRepository) ListMembersByOrganization(ctx context.Context
 	result, err := r.queries.ListMembersByOrganization(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return nil, corerrors.ErrMemberNotFound
+			return nil, core.ErrMemberNotFound
 		}
 		return nil, fmt.Errorf("failed to ListMembersByOrganization: %w", err)
 	}
-	items := make([]*models.Member, len(result))
+	items := make([]*core.Member, len(result))
 	for i, res := range result {
 		items[i] = mapMemberFromDB(&res)
 	}
@@ -145,7 +144,7 @@ func (r *PostgresMemberRepository) ListMembersByOrganization(ctx context.Context
 }
 
 // ListMembersByUser retrieves multiple Members by userID
-func (r *PostgresMemberRepository) ListMembersByUser(ctx context.Context, userID string) ([]*models.Member, error) {
+func (r *PostgresMemberRepository) ListMembersByUser(ctx context.Context, userID string) ([]*core.Member, error) {
 	params := ListMembersByUserParams{
 		UserID: uuid.MustParse(userID),
 	}
@@ -153,11 +152,11 @@ func (r *PostgresMemberRepository) ListMembersByUser(ctx context.Context, userID
 	result, err := r.queries.ListMembersByUser(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return nil, corerrors.ErrMemberNotFound
+			return nil, core.ErrMemberNotFound
 		}
 		return nil, fmt.Errorf("failed to ListMembersByUser: %w", err)
 	}
-	items := make([]*models.Member, len(result))
+	items := make([]*core.Member, len(result))
 	for i, res := range result {
 		items[i] = mapMemberFromDB(&res)
 	}
@@ -166,7 +165,7 @@ func (r *PostgresMemberRepository) ListMembersByUser(ctx context.Context, userID
 }
 
 // GetMemberByUserAndOrganization retrieves a single Member by userID and organizationID
-func (r *PostgresMemberRepository) GetMemberByUserAndOrganization(ctx context.Context, userID string, organizationID string) (*models.Member, error) {
+func (r *PostgresMemberRepository) GetMemberByUserAndOrganization(ctx context.Context, userID string, organizationID string) (*core.Member, error) {
 	params := GetMemberByUserAndOrganizationParams{
 		UserID:         uuid.MustParse(userID),
 		OrganizationID: uuid.MustParse(organizationID),
@@ -175,7 +174,7 @@ func (r *PostgresMemberRepository) GetMemberByUserAndOrganization(ctx context.Co
 	result, err := r.queries.GetMemberByUserAndOrganization(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return nil, corerrors.ErrMemberNotFound
+			return nil, core.ErrMemberNotFound
 		}
 		return nil, fmt.Errorf("failed to GetMemberByUserAndOrganization: %w", err)
 	}
@@ -184,17 +183,17 @@ func (r *PostgresMemberRepository) GetMemberByUserAndOrganization(ctx context.Co
 
 }
 
-func mapMemberFromDB(db *Member) *models.Member {
+func mapMemberFromDB(db *Member) *core.Member {
 	if db == nil {
 		return nil
 	}
 
-	result := &models.Member{
+	result := &core.Member{
 		ID:             db.ID,
 		CreatedAt:      db.CreatedAt,
 		UpdatedAt:      db.UpdatedAt,
 		OrganizationID: db.OrganizationID,
-		Role:           models.MemberRole(db.Role),
+		Role:           core.MemberRole(db.Role),
 		UserID:         db.UserID,
 	}
 

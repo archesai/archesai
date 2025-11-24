@@ -31,4 +31,7 @@ type Storage interface {
 
 	// Walk walks the file tree rooted at root
 	Walk(root string, fn filepath.WalkFunc) error
+
+	// BaseDir returns the base directory of the storage
+	BaseDir() string
 }

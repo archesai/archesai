@@ -12,7 +12,7 @@ import (
 
 	commands "github.com/archesai/archesai/apps/studio/generated/application/commands/member"
 	queries "github.com/archesai/archesai/apps/studio/generated/application/queries/member"
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/archesai/archesai/pkg/server"
 )
 
@@ -73,7 +73,7 @@ type CreateMemberResponse interface {
 }
 
 type CreateMember201Response struct {
-	Data models.Member `json:"data"`
+	Data core.Member `json:"data"`
 }
 
 func (response CreateMember201Response) VisitCreateMemberResponse(w http.ResponseWriter) error {
@@ -246,7 +246,7 @@ type GetMemberResponse interface {
 }
 
 type GetMember200Response struct {
-	Data models.Member `json:"data"`
+	Data core.Member `json:"data"`
 }
 
 func (response GetMember200Response) VisitGetMemberResponse(w http.ResponseWriter) error {
@@ -439,8 +439,8 @@ type ListMembersResponse interface {
 }
 
 type ListMembers200Response struct {
-	Data []models.Member       `json:"data"`
-	Meta models.PaginationMeta `json:"meta"`
+	Data []core.Member       `json:"data"`
+	Meta core.PaginationMeta `json:"meta"`
 }
 
 func (response ListMembers200Response) VisitListMembersResponse(w http.ResponseWriter) error {
@@ -614,7 +614,7 @@ func (c *MemberController) ListMembers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Convert pointer slice to value slice for response
-	data := make([]models.Member, len(results))
+	data := make([]core.Member, len(results))
 	for i, item := range results {
 		if item != nil {
 			data[i] = *item
@@ -623,7 +623,7 @@ func (c *MemberController) ListMembers(w http.ResponseWriter, r *http.Request) {
 
 	response := ListMembers200Response{
 		Data: data,
-		Meta: models.PaginationMeta{Total: int32(total)},
+		Meta: core.PaginationMeta{Total: int32(total)},
 	}
 	if err := response.VisitListMembersResponse(w); err != nil {
 		fmt.Fprintf(w, "error writing response: %v", err)
@@ -653,7 +653,7 @@ type UpdateMemberResponse interface {
 }
 
 type UpdateMember200Response struct {
-	Data models.Member `json:"data"`
+	Data core.Member `json:"data"`
 }
 
 func (response UpdateMember200Response) VisitUpdateMemberResponse(w http.ResponseWriter) error {

@@ -254,6 +254,9 @@
 │   └── studio
 │       ├── cmd
 │       │   └── main.go
+│       ├── frontend
+│       │   └── src
+│       │       └── lib
 │       ├── generated
 │       │   ├── adapters
 │       │   │   └── http
@@ -261,8 +264,6 @@
 │       │   │   ├── commands
 │       │   │   └── queries
 │       │   ├── core
-│       │   │   ├── events
-│       │   │   ├── models
 │       │   │   └── repositories
 │       │   └── infrastructure
 │       │       ├── bootstrap
@@ -475,6 +476,19 @@
 │   ├── contributing.md
 │   ├── getting-started.md
 │   └── ROADMAP.md
+├── examples
+│   └── basic
+│       ├── app
+│       │   ├── frontend
+│       │   │   └── src
+│       │   ├── generated
+│       │   │   ├── adapters
+│       │   │   ├── application
+│       │   │   ├── core
+│       │   │   └── infrastructure
+│       │   ├── go.mod
+│       │   └── go.sum
+│       └── openapi.yaml
 ├── internal
 │   ├── cli
 │   │   ├── completion.go
@@ -497,7 +511,8 @@
 │   │   │   ├── repository_postgres.go.tmpl
 │   │   │   ├── repository_sqlite.go.tmpl
 │   │   │   ├── schema.go.tmpl
-│   │   │   └── sqlc.yaml.tmpl
+│   │   │   ├── sqlc.yaml.tmpl
+│   │   │   └── sql_queries.sql.tmpl
 │   │   ├── generate_bootstrap.go
 │   │   ├── generate_controllers.go
 │   │   ├── generate_cqrs.go
@@ -560,8 +575,6 @@
 │   │   ├── database.go
 │   │   ├── migrate.go
 │   │   └── repository.go
-│   ├── errors
-│   │   └── errors.go
 │   ├── events
 │   │   ├── events.go
 │   │   ├── noop.go
@@ -575,6 +588,7 @@
 │   │   ├── config.go
 │   │   ├── container.go
 │   │   ├── container_test.go
+│   │   ├── executor.go
 │   │   ├── local.go
 │   │   ├── local_test.go
 │   │   ├── ports.go
@@ -591,11 +605,9 @@
 │   │   └── logger.go
 │   ├── notifications
 │   │   ├── console.go
+│   │   ├── deliverer.go
 │   │   ├── email.go
-│   │   ├── otp.go
-│   │   └── service.go
-│   ├── optional
-│   │   └── optional.go
+│   │   └── otp.go
 │   ├── redis
 │   │   ├── client.go
 │   │   ├── config.go
@@ -672,6 +684,7 @@
 │   │   │   │   ├── run
 │   │   │   │   ├── tool
 │   │   │   │   ├── user
+│   │   │   │   ├── users
 │   │   │   │   ├── orval.schemas.ts
 │   │   │   │   └── zod.ts
 │   │   │   ├── fetcher.ts
@@ -780,6 +793,8 @@
 ├── go.mod
 ├── .goreleaser.yaml
 ├── go.sum
+├── go.work
+├── go.work.sum
 ├── .lefthook.yaml
 ├── LICENSE
 ├── Makefile
@@ -794,5 +809,5 @@
 ├── tools.sum
 └── tsconfig.json
 
-181 directories, 609 files
+191 directories, 614 files
 ```

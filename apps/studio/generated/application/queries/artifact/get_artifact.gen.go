@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/archesai/archesai/apps/studio/generated/core/repositories"
 )
 
@@ -42,7 +42,7 @@ func NewGetArtifactQueryHandler(repo repositories.ArtifactRepository) *GetArtifa
 }
 
 // Handle executes the get artifact query.
-func (h *GetArtifactQueryHandler) Handle(ctx context.Context, query *GetArtifactQuery) (*models.Artifact, error) {
+func (h *GetArtifactQueryHandler) Handle(ctx context.Context, query *GetArtifactQuery) (*core.Artifact, error) {
 	result, err := h.repo.Get(ctx, query.ID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get artifact: %w", err)

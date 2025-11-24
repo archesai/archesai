@@ -9,8 +9,7 @@ import (
 
 	"github.com/google/uuid"
 
-	domainevents "github.com/archesai/archesai/apps/studio/generated/core/events"
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/archesai/archesai/apps/studio/generated/core/repositories"
 	"github.com/archesai/archesai/pkg/events"
 )
@@ -53,9 +52,9 @@ func NewCreateMemberCommandHandler(
 }
 
 // Handle executes the create member command.
-func (h *CreateMemberCommandHandler) Handle(ctx context.Context, cmd *CreateMemberCommand) (*models.Member, error) {
+func (h *CreateMemberCommandHandler) Handle(ctx context.Context, cmd *CreateMemberCommand) (*core.Member, error) {
 	// Create the member entity
-	entity := &models.Member{
+	entity := &core.Member{
 		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
@@ -68,8 +67,8 @@ func (h *CreateMemberCommandHandler) Handle(ctx context.Context, cmd *CreateMemb
 		return nil, fmt.Errorf("failed to create member: %w", err)
 	}
 
-	// Publish domain event
-	event := domainevents.NewMemberCreatedEvent(created.ID)
+	// Publish event
+	event := core.NewMemberCreatedEvent(created.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 		// FIXME: Implement logging

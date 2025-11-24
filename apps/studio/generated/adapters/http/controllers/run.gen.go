@@ -12,7 +12,7 @@ import (
 
 	commands "github.com/archesai/archesai/apps/studio/generated/application/commands/run"
 	queries "github.com/archesai/archesai/apps/studio/generated/application/queries/run"
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/archesai/archesai/pkg/server"
 )
 
@@ -72,7 +72,7 @@ type CreateRunResponse interface {
 }
 
 type CreateRun201Response struct {
-	Data models.Run `json:"data"`
+	Data core.Run `json:"data"`
 }
 
 func (response CreateRun201Response) VisitCreateRunResponse(w http.ResponseWriter) error {
@@ -230,7 +230,7 @@ type GetRunResponse interface {
 }
 
 type GetRun200Response struct {
-	Data models.Run `json:"data"`
+	Data core.Run `json:"data"`
 }
 
 func (response GetRun200Response) VisitGetRunResponse(w http.ResponseWriter) error {
@@ -408,8 +408,8 @@ type ListRunsResponse interface {
 }
 
 type ListRuns200Response struct {
-	Data []models.Run          `json:"data"`
-	Meta models.PaginationMeta `json:"meta"`
+	Data []core.Run          `json:"data"`
+	Meta core.PaginationMeta `json:"meta"`
 }
 
 func (response ListRuns200Response) VisitListRunsResponse(w http.ResponseWriter) error {
@@ -569,7 +569,7 @@ func (c *RunController) ListRuns(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Convert pointer slice to value slice for response
-	data := make([]models.Run, len(results))
+	data := make([]core.Run, len(results))
 	for i, item := range results {
 		if item != nil {
 			data[i] = *item
@@ -578,7 +578,7 @@ func (c *RunController) ListRuns(w http.ResponseWriter, r *http.Request) {
 
 	response := ListRuns200Response{
 		Data: data,
-		Meta: models.PaginationMeta{Total: int32(total)},
+		Meta: core.PaginationMeta{Total: int32(total)},
 	}
 	if err := response.VisitListRunsResponse(w); err != nil {
 		fmt.Fprintf(w, "error writing response: %v", err)
@@ -607,7 +607,7 @@ type UpdateRunResponse interface {
 }
 
 type UpdateRun200Response struct {
-	Data models.Run `json:"data"`
+	Data core.Run `json:"data"`
 }
 
 func (response UpdateRun200Response) VisitUpdateRunResponse(w http.ResponseWriter) error {

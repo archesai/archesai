@@ -11,14 +11,21 @@ import (
 	"strings"
 	"time"
 	"github.com/google/uuid"
-	"github.com/archesai/archesai/pkg/errors"
-	domainevents "{{ .OutputPath }}/generated/core/events"
 	"github.com/archesai/archesai/pkg/events"
 )
 
 {{- $schema := .Schema }}
 {{- $isEntity := eq $schema.XCodegenSchemaType "entity" }}
 {{- $isValueObject := eq $schema.XCodegenSchemaType "valueobject" }}
+
+{{ if $isEntity -}}
+{{- /* Base Error */ -}}
+
+var (
+	// Err{{ $schema.Name }}NotFound is returned when a {{ $schema.Name }} entity is not found.
+	Err{{ $schema.Name }}NotFound = fmt.Errorf("{{ lower $schema.Name }} not found")
+)
+{{- end }}
 
 
 {{- if $schema.IsEnum }}
@@ -211,7 +218,7 @@ func New{{ $schema.Name }}(
 	}
 
 {{- if $schema.HasDomainEvents }}
-	{{ lower $schema.Name }}.addEvent(domainevents.New{{ $schema.Name }}CreatedEvent(id))
+	{{ lower $schema.Name }}.addEvent(New{{ $schema.Name }}CreatedEvent(id))
 {{- end }}
 
 	return {{ lower $schema.Name }}, nil

@@ -9,8 +9,7 @@ import (
 
 	"github.com/google/uuid"
 
-	domainevents "github.com/archesai/archesai/apps/studio/generated/core/events"
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/archesai/archesai/apps/studio/generated/core/repositories"
 	"github.com/archesai/archesai/pkg/events"
 )
@@ -53,7 +52,7 @@ func NewUpdateRunCommandHandler(
 }
 
 // Handle executes the update run command.
-func (h *UpdateRunCommandHandler) Handle(ctx context.Context, cmd *UpdateRunCommand) (*models.Run, error) {
+func (h *UpdateRunCommandHandler) Handle(ctx context.Context, cmd *UpdateRunCommand) (*core.Run, error) {
 	// Fetch existing run
 	existing, err := h.repo.Get(ctx, cmd.ID)
 	if err != nil {
@@ -71,7 +70,7 @@ func (h *UpdateRunCommandHandler) Handle(ctx context.Context, cmd *UpdateRunComm
 	}
 
 	// Publish domain event
-	event := domainevents.NewRunUpdatedEvent(updated.ID)
+	event := core.NewRunUpdatedEvent(updated.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 		// FIXME: Implement logging

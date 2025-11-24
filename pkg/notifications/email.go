@@ -6,7 +6,7 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/pkg/auth"
 )
 
 // EmailSender interface for sending emails.
@@ -29,7 +29,7 @@ func NewEmailDeliverer(sender EmailSender) *EmailDeliverer {
 // Deliver sends the magic link via email.
 func (d *EmailDeliverer) Deliver(
 	_ context.Context,
-	token *models.MagicLinkToken,
+	token *auth.MagicLinkToken,
 	baseURL string,
 ) error {
 	magicLink := fmt.Sprintf("%s/auth/magic-link/verify?token=%s", baseURL, *token.Token)

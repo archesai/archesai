@@ -12,7 +12,7 @@ import (
 
 	commands "github.com/archesai/archesai/apps/studio/generated/application/commands/organization"
 	queries "github.com/archesai/archesai/apps/studio/generated/application/queries/organization"
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/archesai/archesai/pkg/server"
 )
 
@@ -73,7 +73,7 @@ type CreateOrganizationResponse interface {
 }
 
 type CreateOrganization201Response struct {
-	Data models.Organization `json:"data"`
+	Data core.Organization `json:"data"`
 }
 
 func (response CreateOrganization201Response) VisitCreateOrganizationResponse(w http.ResponseWriter) error {
@@ -232,7 +232,7 @@ type GetOrganizationResponse interface {
 }
 
 type GetOrganization200Response struct {
-	Data models.Organization `json:"data"`
+	Data core.Organization `json:"data"`
 }
 
 func (response GetOrganization200Response) VisitGetOrganizationResponse(w http.ResponseWriter) error {
@@ -410,8 +410,8 @@ type ListOrganizationsResponse interface {
 }
 
 type ListOrganizations200Response struct {
-	Data []models.Organization `json:"data"`
-	Meta models.PaginationMeta `json:"meta"`
+	Data []core.Organization `json:"data"`
+	Meta core.PaginationMeta `json:"meta"`
 }
 
 func (response ListOrganizations200Response) VisitListOrganizationsResponse(w http.ResponseWriter) error {
@@ -571,7 +571,7 @@ func (c *OrganizationController) ListOrganizations(w http.ResponseWriter, r *htt
 	}
 
 	// Convert pointer slice to value slice for response
-	data := make([]models.Organization, len(results))
+	data := make([]core.Organization, len(results))
 	for i, item := range results {
 		if item != nil {
 			data[i] = *item
@@ -580,7 +580,7 @@ func (c *OrganizationController) ListOrganizations(w http.ResponseWriter, r *htt
 
 	response := ListOrganizations200Response{
 		Data: data,
-		Meta: models.PaginationMeta{Total: int32(total)},
+		Meta: core.PaginationMeta{Total: int32(total)},
 	}
 	if err := response.VisitListOrganizationsResponse(w); err != nil {
 		fmt.Fprintf(w, "error writing response: %v", err)
@@ -610,7 +610,7 @@ type UpdateOrganizationResponse interface {
 }
 
 type UpdateOrganization200Response struct {
-	Data models.Organization `json:"data"`
+	Data core.Organization `json:"data"`
 }
 
 func (response UpdateOrganization200Response) VisitUpdateOrganizationResponse(w http.ResponseWriter) error {

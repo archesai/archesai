@@ -12,41 +12,55 @@ import (
 	"github.com/google/uuid"
 )
 
+const countInvitations = `-- name: CountInvitations :one
+SELECT
+  COUNT(*)
+FROM
+  invitation
+`
+
+func (q *Queries) CountInvitations(ctx context.Context) (int64, error) {
+	row := q.db.QueryRow(ctx, countInvitations)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createInvitation = `-- name: CreateInvitation :one
 INSERT INTO
-  invitation (
-    id,
-    organization_id,
-    inviter_id,
-    email,
-    role,
-    expires_at,
-    status
-  )
+  invitation (id, email, expires_at, inviter_id, organization_id, role, status)
 VALUES
-  ($1, $2, $3, $4, $5, $6, $7)
+  (
+    $1,
+    $2,
+    $3,
+    $4,
+    $5,
+    $6,
+    $7
+  )
 RETURNING
   id, created_at, updated_at, email, expires_at, inviter_id, organization_id, role, status
 `
 
 type CreateInvitationParams struct {
 	ID             uuid.UUID
-	OrganizationID uuid.UUID
-	InviterID      uuid.UUID
 	Email          string
-	Role           string
 	ExpiresAt      time.Time
+	InviterID      uuid.UUID
+	OrganizationID uuid.UUID
+	Role           string
 	Status         string
 }
 
 func (q *Queries) CreateInvitation(ctx context.Context, arg CreateInvitationParams) (Invitation, error) {
 	row := q.db.QueryRow(ctx, createInvitation,
 		arg.ID,
-		arg.OrganizationID,
-		arg.InviterID,
 		arg.Email,
-		arg.Role,
 		arg.ExpiresAt,
+		arg.InviterID,
+		arg.OrganizationID,
+		arg.Role,
 		arg.Status,
 	)
 	var i Invitation
@@ -76,21 +90,6 @@ type DeleteInvitationParams struct {
 
 func (q *Queries) DeleteInvitation(ctx context.Context, arg DeleteInvitationParams) error {
 	_, err := q.db.Exec(ctx, deleteInvitation, arg.ID)
-	return err
-}
-
-const deleteInvitationsByOrganization = `-- name: DeleteInvitationsByOrganization :exec
-DELETE FROM invitation
-WHERE
-  organization_id = $1
-`
-
-type DeleteInvitationsByOrganizationParams struct {
-	OrganizationID uuid.UUID
-}
-
-func (q *Queries) DeleteInvitationsByOrganization(ctx context.Context, arg DeleteInvitationsByOrganizationParams) error {
-	_, err := q.db.Exec(ctx, deleteInvitationsByOrganization, arg.OrganizationID)
 	return err
 }
 
@@ -132,19 +131,19 @@ SELECT
 FROM
   invitation
 WHERE
-  organization_id = $1
-  AND email = $2
+  email = $1 AND
+  organization_id = $2
 LIMIT
   1
 `
 
 type GetInvitationByEmailParams struct {
-	OrganizationID uuid.UUID
 	Email          string
+	OrganizationID uuid.UUID
 }
 
 func (q *Queries) GetInvitationByEmail(ctx context.Context, arg GetInvitationByEmailParams) (Invitation, error) {
-	row := q.db.QueryRow(ctx, getInvitationByEmail, arg.OrganizationID, arg.Email)
+	row := q.db.QueryRow(ctx, getInvitationByEmail, arg.Email, arg.OrganizationID)
 	var i Invitation
 	err := row.Scan(
 		&i.ID,
@@ -168,18 +167,18 @@ FROM
 ORDER BY
   created_at DESC
 LIMIT
-  $1
-OFFSET
   $2
+OFFSET
+  $1
 `
 
 type ListInvitationsParams struct {
-	Limit  int32
 	Offset int32
+	Limit  int32
 }
 
 func (q *Queries) ListInvitations(ctx context.Context, arg ListInvitationsParams) ([]Invitation, error) {
-	rows, err := q.db.Query(ctx, listInvitations, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listInvitations, arg.Offset, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
@@ -217,20 +216,14 @@ WHERE
   inviter_id = $1
 ORDER BY
   created_at DESC
-LIMIT
-  $2
-OFFSET
-  $3
 `
 
 type ListInvitationsByInviterParams struct {
 	InviterID uuid.UUID
-	Limit     int32
-	Offset    int32
 }
 
 func (q *Queries) ListInvitationsByInviter(ctx context.Context, arg ListInvitationsByInviterParams) ([]Invitation, error) {
-	rows, err := q.db.Query(ctx, listInvitationsByInviter, arg.InviterID, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listInvitationsByInviter, arg.InviterID)
 	if err != nil {
 		return nil, err
 	}
@@ -268,20 +261,14 @@ WHERE
   organization_id = $1
 ORDER BY
   created_at DESC
-LIMIT
-  $2
-OFFSET
-  $3
 `
 
 type ListInvitationsByOrganizationParams struct {
 	OrganizationID uuid.UUID
-	Limit          int32
-	Offset         int32
 }
 
 func (q *Queries) ListInvitationsByOrganization(ctx context.Context, arg ListInvitationsByOrganizationParams) ([]Invitation, error) {
-	rows, err := q.db.Query(ctx, listInvitationsByOrganization, arg.OrganizationID, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listInvitationsByOrganization, arg.OrganizationID)
 	if err != nil {
 		return nil, err
 	}
@@ -313,32 +300,37 @@ func (q *Queries) ListInvitationsByOrganization(ctx context.Context, arg ListInv
 const updateInvitation = `-- name: UpdateInvitation :one
 UPDATE invitation
 SET
-  email = COALESCE($2, email),
-  role = COALESCE($3, role),
-  expires_at = COALESCE($4, expires_at),
-  status = COALESCE($5, status),
-  updated_at = NOW()
+  email = COALESCE($1, email),
+  expires_at = COALESCE($2, expires_at),
+  inviter_id = COALESCE($3, inviter_id),
+  organization_id = COALESCE($4, organization_id),
+  role = COALESCE($5, role),
+  status = COALESCE($6, status)
 WHERE
-  id = $1
+  id = $7
 RETURNING
   id, created_at, updated_at, email, expires_at, inviter_id, organization_id, role, status
 `
 
 type UpdateInvitationParams struct {
-	ID        uuid.UUID
-	Email     *string
-	Role      *string
-	ExpiresAt *time.Time
-	Status    *string
+	Email          *string
+	ExpiresAt      *time.Time
+	InviterID      *uuid.UUID
+	OrganizationID *uuid.UUID
+	Role           *string
+	Status         *string
+	ID             uuid.UUID
 }
 
 func (q *Queries) UpdateInvitation(ctx context.Context, arg UpdateInvitationParams) (Invitation, error) {
 	row := q.db.QueryRow(ctx, updateInvitation,
-		arg.ID,
 		arg.Email,
-		arg.Role,
 		arg.ExpiresAt,
+		arg.InviterID,
+		arg.OrganizationID,
+		arg.Role,
 		arg.Status,
+		arg.ID,
 	)
 	var i Invitation
 	err := row.Scan(

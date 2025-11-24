@@ -7,7 +7,7 @@ import (
 	"log/slog"
 
 	commands "github.com/archesai/archesai/apps/studio/generated/application/commands/user"
-	domainevents "github.com/archesai/archesai/apps/studio/generated/core/events"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/archesai/archesai/apps/studio/generated/core/repositories"
 	"github.com/archesai/archesai/pkg/events"
 )
@@ -51,7 +51,7 @@ func (h *DeleteCurrentUserCommandHandler) Handle(
 	}
 
 	// Publish domain event
-	event := domainevents.NewUserDeletedEvent(user.ID)
+	event := core.NewUserDeletedEvent(user.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		slog.Error("failed to publish event", "error", err)
 	}

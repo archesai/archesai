@@ -8,8 +8,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
-	corerrors "github.com/archesai/archesai/pkg/errors"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -30,7 +29,7 @@ func NewPostgresUserRepository(db *pgxpool.Pool) *PostgresUserRepository {
 // User operations
 
 // Create creates a new user
-func (r *PostgresUserRepository) Create(ctx context.Context, entity *models.User) (*models.User, error) {
+func (r *PostgresUserRepository) Create(ctx context.Context, entity *core.User) (*core.User, error) {
 	params := CreateUserParams{
 		ID:            entity.ID,
 		Email:         entity.Email,
@@ -48,7 +47,7 @@ func (r *PostgresUserRepository) Create(ctx context.Context, entity *models.User
 }
 
 // Get retrieves a user by ID
-func (r *PostgresUserRepository) Get(ctx context.Context, id uuid.UUID) (*models.User, error) {
+func (r *PostgresUserRepository) Get(ctx context.Context, id uuid.UUID) (*core.User, error) {
 	params := GetUserParams{
 		ID: id,
 	}
@@ -56,7 +55,7 @@ func (r *PostgresUserRepository) Get(ctx context.Context, id uuid.UUID) (*models
 	result, err := r.queries.GetUser(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return nil, corerrors.ErrUserNotFound
+			return nil, core.ErrUserNotFound
 		}
 		return nil, fmt.Errorf("failed to get user: %w", err)
 	}
@@ -65,7 +64,7 @@ func (r *PostgresUserRepository) Get(ctx context.Context, id uuid.UUID) (*models
 }
 
 // Update updates an existing user
-func (r *PostgresUserRepository) Update(ctx context.Context, id uuid.UUID, entity *models.User) (*models.User, error) {
+func (r *PostgresUserRepository) Update(ctx context.Context, id uuid.UUID, entity *core.User) (*core.User, error) {
 
 	params := UpdateUserParams{
 		ID:            id,
@@ -78,7 +77,7 @@ func (r *PostgresUserRepository) Update(ctx context.Context, id uuid.UUID, entit
 	result, err := r.queries.UpdateUser(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return nil, corerrors.ErrUserNotFound
+			return nil, core.ErrUserNotFound
 		}
 		return nil, fmt.Errorf("failed to update user: %w", err)
 	}
@@ -95,7 +94,7 @@ func (r *PostgresUserRepository) Delete(ctx context.Context, id uuid.UUID) error
 	err := r.queries.DeleteUser(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return corerrors.ErrUserNotFound
+			return core.ErrUserNotFound
 		}
 		return fmt.Errorf("failed to delete user: %w", err)
 	}
@@ -103,7 +102,7 @@ func (r *PostgresUserRepository) Delete(ctx context.Context, id uuid.UUID) error
 }
 
 // List returns a paginated list of users
-func (r *PostgresUserRepository) List(ctx context.Context, limit, offset int32) ([]*models.User, int64, error) {
+func (r *PostgresUserRepository) List(ctx context.Context, limit, offset int32) ([]*core.User, int64, error) {
 	listParams := ListUsersParams{
 		Limit:  limit,
 		Offset: offset,
@@ -114,7 +113,7 @@ func (r *PostgresUserRepository) List(ctx context.Context, limit, offset int32) 
 		return nil, 0, fmt.Errorf("failed to list users: %w", err)
 	}
 
-	items := make([]*models.User, len(results))
+	items := make([]*core.User, len(results))
 	for i, result := range results {
 		items[i] = mapUserFromDB(&result)
 	}
@@ -127,7 +126,7 @@ func (r *PostgresUserRepository) List(ctx context.Context, limit, offset int32) 
 }
 
 // GetUserByEmail retrieves a single User by email
-func (r *PostgresUserRepository) GetUserByEmail(ctx context.Context, email string) (*models.User, error) {
+func (r *PostgresUserRepository) GetUserByEmail(ctx context.Context, email string) (*core.User, error) {
 	params := GetUserByEmailParams{
 		Email: email,
 	}
@@ -135,7 +134,7 @@ func (r *PostgresUserRepository) GetUserByEmail(ctx context.Context, email strin
 	result, err := r.queries.GetUserByEmail(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return nil, corerrors.ErrUserNotFound
+			return nil, core.ErrUserNotFound
 		}
 		return nil, fmt.Errorf("failed to GetUserByEmail: %w", err)
 	}
@@ -145,7 +144,7 @@ func (r *PostgresUserRepository) GetUserByEmail(ctx context.Context, email strin
 }
 
 // GetUserBySessionID retrieves a single User by sessionID
-func (r *PostgresUserRepository) GetUserBySessionID(ctx context.Context, sessionID string) (*models.User, error) {
+func (r *PostgresUserRepository) GetUserBySessionID(ctx context.Context, sessionID string) (*core.User, error) {
 	params := GetUserBySessionIDParams{
 		SessionID: uuid.MustParse(sessionID),
 	}
@@ -153,7 +152,7 @@ func (r *PostgresUserRepository) GetUserBySessionID(ctx context.Context, session
 	result, err := r.queries.GetUserBySessionID(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return nil, corerrors.ErrUserNotFound
+			return nil, core.ErrUserNotFound
 		}
 		return nil, fmt.Errorf("failed to GetUserBySessionID: %w", err)
 	}
@@ -162,12 +161,12 @@ func (r *PostgresUserRepository) GetUserBySessionID(ctx context.Context, session
 
 }
 
-func mapUserFromDB(db *User) *models.User {
+func mapUserFromDB(db *User) *core.User {
 	if db == nil {
 		return nil
 	}
 
-	result := &models.User{
+	result := &core.User{
 		ID:            db.ID,
 		CreatedAt:     db.CreatedAt,
 		UpdatedAt:     db.UpdatedAt,

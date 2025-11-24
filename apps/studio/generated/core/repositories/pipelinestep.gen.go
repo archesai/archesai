@@ -5,16 +5,16 @@ package repositories
 import (
 	"context"
 
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/google/uuid"
 )
 
 // PipelineStepRepository handles pipelinestep persistence
 type PipelineStepRepository interface {
 	// Basic CRUD operations (always included)
-	Create(ctx context.Context, entity *models.PipelineStep) (*models.PipelineStep, error)
-	Get(ctx context.Context, id uuid.UUID) (*models.PipelineStep, error)
-	Update(ctx context.Context, id uuid.UUID, entity *models.PipelineStep) (*models.PipelineStep, error)
+	Create(ctx context.Context, entity *core.PipelineStep) (*core.PipelineStep, error)
+	Get(ctx context.Context, id uuid.UUID) (*core.PipelineStep, error)
+	Update(ctx context.Context, id uuid.UUID, entity *core.PipelineStep) (*core.PipelineStep, error)
 	Delete(ctx context.Context, id uuid.UUID) error
-	List(ctx context.Context, limit, offset int32) ([]*models.PipelineStep, int64, error)
+	List(ctx context.Context, limit, offset int32) ([]*core.PipelineStep, int64, error)
 }

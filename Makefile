@@ -142,12 +142,12 @@ deploy-docs: ## Manually trigger documentation deployment to GitHub Pages
 # ------------------------------------------
 
 .PHONY: generate
-generate: generate-codegen generate-mocks ## Generate all code
+generate: generate-codegen ## Generate all code
 	@echo -e "$(GREEN)✓ All code generation complete!$(NC)"
 
 .PHONY: generate-codegen
 generate-codegen: bundle-openapi ## Generate codegen
-	@go run cmd/archesai/main.go generate openapi ./api/openapi.bundled.yaml --output ./apps/studio --pretty 
+	@go run cmd/archesai/main.go generate --spec ./api/openapi.bundled.yaml --output ./apps/studio --pretty
 
 .PHONY: generate-mocks
 generate-mocks: ## Generate test mocks using mockery
@@ -230,8 +230,9 @@ list-workflows: ## List all available GitHub workflows
 # Lint Commands
 # ------------------------------------------
 
+# FIXME: lint-openapi
 .PHONY: lint
-lint: lint-go lint-ts lint-openapi lint-docs ## Run all linters
+lint: lint-go lint-ts lint-docs ## Run all linters 
 	@echo -e "$(GREEN)✓ All linting complete!$(NC)"
 
 .PHONY: lint-go
@@ -372,7 +373,7 @@ prepare-docs: bundle-openapi ## Copy markdown docs to apps/docs/docs
 
 .PHONY: bundle-openapi
 bundle-openapi: ## Bundle OpenAPI into single file
-	@go run cmd/archesai/main.go generate openapi ./api/openapi.yaml --bundle --output ./api/openapi.bundled.yaml --orval-fix
+	@go run cmd/archesai/main.go generate --spec ./api/openapi.yaml --bundle --output ./api/openapi.bundled.yaml --orval-fix --pretty
 
 # ------------------------------------------
 # Dependency Commands

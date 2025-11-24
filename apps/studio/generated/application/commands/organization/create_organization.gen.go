@@ -9,8 +9,7 @@ import (
 
 	"github.com/google/uuid"
 
-	domainevents "github.com/archesai/archesai/apps/studio/generated/core/events"
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/archesai/archesai/apps/studio/generated/core/repositories"
 	"github.com/archesai/archesai/pkg/events"
 )
@@ -53,9 +52,9 @@ func NewCreateOrganizationCommandHandler(
 }
 
 // Handle executes the create organization command.
-func (h *CreateOrganizationCommandHandler) Handle(ctx context.Context, cmd *CreateOrganizationCommand) (*models.Organization, error) {
+func (h *CreateOrganizationCommandHandler) Handle(ctx context.Context, cmd *CreateOrganizationCommand) (*core.Organization, error) {
 	// Create the organization entity
-	entity := &models.Organization{
+	entity := &core.Organization{
 		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
@@ -68,8 +67,8 @@ func (h *CreateOrganizationCommandHandler) Handle(ctx context.Context, cmd *Crea
 		return nil, fmt.Errorf("failed to create organization: %w", err)
 	}
 
-	// Publish domain event
-	event := domainevents.NewOrganizationCreatedEvent(created.ID)
+	// Publish event
+	event := core.NewOrganizationCreatedEvent(created.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 		// FIXME: Implement logging

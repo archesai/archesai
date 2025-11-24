@@ -5,19 +5,19 @@ package repositories
 import (
 	"context"
 
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/google/uuid"
 )
 
 // ToolRepository handles tool persistence
 type ToolRepository interface {
 	// Basic CRUD operations (always included)
-	Create(ctx context.Context, entity *models.Tool) (*models.Tool, error)
-	Get(ctx context.Context, id uuid.UUID) (*models.Tool, error)
-	Update(ctx context.Context, id uuid.UUID, entity *models.Tool) (*models.Tool, error)
+	Create(ctx context.Context, entity *core.Tool) (*core.Tool, error)
+	Get(ctx context.Context, id uuid.UUID) (*core.Tool, error)
+	Update(ctx context.Context, id uuid.UUID, entity *core.Tool) (*core.Tool, error)
 	Delete(ctx context.Context, id uuid.UUID) error
-	List(ctx context.Context, limit, offset int32) ([]*models.Tool, int64, error)
+	List(ctx context.Context, limit, offset int32) ([]*core.Tool, int64, error)
 
 	// ListToolsByOrganization retrieves multiple tools by organizationID
-	ListToolsByOrganization(ctx context.Context, organizationID string) ([]*models.Tool, error)
+	ListToolsByOrganization(ctx context.Context, organizationID string) ([]*core.Tool, error)
 }

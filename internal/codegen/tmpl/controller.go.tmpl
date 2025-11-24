@@ -21,7 +21,7 @@ import (
 	{{- end }}
 	commands "{{ .OutputPath }}/generated/application/commands/{{ lower .Tag }}"
 	queries "{{ .OutputPath }}/generated/application/queries/{{ lower .Tag }}"
-	"{{ .OutputPath }}/generated/core/models"
+	"{{ .OutputPath }}/generated/core"
 )
 
 // {{ .Tag }}Controller handles HTTP requests for {{ lower .Tag }} endpoints.
@@ -473,7 +473,7 @@ func (c *{{ $.Tag }}Controller) {{ $operation.ID }}(w http.ResponseWriter, r *ht
 	{{- if $operation.XCodegenRepository }}
 		{{- $entityType = $operation.XCodegenRepository }}
 	{{- end }}
-	data := make([]models.{{ $entityType }}, len(results))
+	data := make([]core.{{ $entityType }}, len(results))
 	for i, item := range results {
 		if item != nil {
 			data[i] = *item
@@ -482,7 +482,7 @@ func (c *{{ $.Tag }}Controller) {{ $operation.ID }}(w http.ResponseWriter, r *ht
 
 	response := {{ $operation.ID }}200Response{
 		Data: data,
-		Meta: models.PaginationMeta{Total: int32(total)},
+		Meta: core.PaginationMeta{Total: int32(total)},
 	}
 	if err := response.Visit{{ $operation.ID }}Response(w); err != nil {
 		fmt.Fprintf(w, "error writing response: %v", err)

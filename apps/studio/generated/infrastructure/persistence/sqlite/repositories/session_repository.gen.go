@@ -7,7 +7,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/google/uuid"
 )
 
@@ -26,21 +26,21 @@ func NewSQLiteSessionRepository(db *sql.DB) *SQLiteSessionRepository {
 // Session operations
 
 // Create creates a new session
-func (r *SQLiteSessionRepository) Create(ctx context.Context, session *models.Session) (*models.Session, error) {
+func (r *SQLiteSessionRepository) Create(ctx context.Context, session *core.Session) (*core.Session, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per session
 	return nil, fmt.Errorf("CreateSession not yet implemented - requires custom mapping")
 }
 
 // Get retrieves a session by ID
-func (r *SQLiteSessionRepository) Get(ctx context.Context, id uuid.UUID) (*models.Session, error) {
+func (r *SQLiteSessionRepository) Get(ctx context.Context, id uuid.UUID) (*core.Session, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per session
 	return nil, fmt.Errorf("GetSession not yet implemented - requires custom mapping")
 }
 
 // Update updates an existing session
-func (r *SQLiteSessionRepository) Update(ctx context.Context, id uuid.UUID, session *models.Session) (*models.Session, error) {
+func (r *SQLiteSessionRepository) Update(ctx context.Context, id uuid.UUID, session *core.Session) (*core.Session, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per session
 	return nil, fmt.Errorf("UpdateSession not yet implemented - requires custom mapping")
@@ -54,7 +54,7 @@ func (r *SQLiteSessionRepository) Delete(ctx context.Context, id uuid.UUID) erro
 }
 
 // List returns a paginated list of sessions
-func (r *SQLiteSessionRepository) List(ctx context.Context, limit, offset int32) ([]*models.Session, int64, error) {
+func (r *SQLiteSessionRepository) List(ctx context.Context, limit, offset int32) ([]*core.Session, int64, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per session
 	return nil, 0, fmt.Errorf("ListSessions not yet implemented - requires custom mapping")

@@ -7,7 +7,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/google/uuid"
 )
 
@@ -26,21 +26,21 @@ func NewSQLiteExecutorRepository(db *sql.DB) *SQLiteExecutorRepository {
 // Executor operations
 
 // Create creates a new executor
-func (r *SQLiteExecutorRepository) Create(ctx context.Context, executor *models.Executor) (*models.Executor, error) {
+func (r *SQLiteExecutorRepository) Create(ctx context.Context, executor *core.Executor) (*core.Executor, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per executor
 	return nil, fmt.Errorf("CreateExecutor not yet implemented - requires custom mapping")
 }
 
 // Get retrieves a executor by ID
-func (r *SQLiteExecutorRepository) Get(ctx context.Context, id uuid.UUID) (*models.Executor, error) {
+func (r *SQLiteExecutorRepository) Get(ctx context.Context, id uuid.UUID) (*core.Executor, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per executor
 	return nil, fmt.Errorf("GetExecutor not yet implemented - requires custom mapping")
 }
 
 // Update updates an existing executor
-func (r *SQLiteExecutorRepository) Update(ctx context.Context, id uuid.UUID, executor *models.Executor) (*models.Executor, error) {
+func (r *SQLiteExecutorRepository) Update(ctx context.Context, id uuid.UUID, executor *core.Executor) (*core.Executor, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per executor
 	return nil, fmt.Errorf("UpdateExecutor not yet implemented - requires custom mapping")
@@ -54,7 +54,7 @@ func (r *SQLiteExecutorRepository) Delete(ctx context.Context, id uuid.UUID) err
 }
 
 // List returns a paginated list of executors
-func (r *SQLiteExecutorRepository) List(ctx context.Context, limit, offset int32) ([]*models.Executor, int64, error) {
+func (r *SQLiteExecutorRepository) List(ctx context.Context, limit, offset int32) ([]*core.Executor, int64, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per executor
 	return nil, 0, fmt.Errorf("ListExecutors not yet implemented - requires custom mapping")
@@ -63,7 +63,7 @@ func (r *SQLiteExecutorRepository) List(ctx context.Context, limit, offset int32
 // Additional methods
 
 // ListExecutorsByOrganization retrieves multiple executors by organizationID
-func (r *SQLiteExecutorRepository) ListExecutorsByOrganization(ctx context.Context, organizationID string) ([]*models.Executor, error) {
+func (r *SQLiteExecutorRepository) ListExecutorsByOrganization(ctx context.Context, organizationID string) ([]*core.Executor, error) {
 	// TODO: Implement ListExecutorsByOrganization
 	return nil, fmt.Errorf("ListExecutorsByOrganization not yet implemented - requires custom mapping")
 }

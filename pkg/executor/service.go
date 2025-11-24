@@ -10,8 +10,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
 )
 
 // ExecutorService defines operations for custom executors with generic input/output types
@@ -29,7 +27,7 @@ type ExecutorService[A any, B any] interface { //nolint:revive // stutters but n
 	BuildExecutor(ctx context.Context, executorID string) error
 
 	// GetExecutor returns the executor configuration (for debugging/testing)
-	GetExecutor(ctx context.Context, executorID string) (*models.Executor, error)
+	GetExecutor(ctx context.Context, executorID string) (*Executor, error)
 }
 
 // ExecuteResult contains the result of an executor execution
@@ -45,10 +43,10 @@ type executorService[A any, B any] struct {
 	builder *Builder
 
 	// Base images for each language
-	baseImages map[models.ExecutorLanguage]string
+	baseImages map[ExecutorLanguage]string
 
 	// Base dockerfile paths
-	dockerfiles map[models.ExecutorLanguage]string
+	dockerfiles map[ExecutorLanguage]string
 }
 
 // NewExecutorService creates a new executor service with generic types
@@ -59,15 +57,15 @@ func NewExecutorService[A any, B any](
 	return &executorService[A, B]{
 		repo:    repo,
 		builder: builder,
-		baseImages: map[models.ExecutorLanguage]string{
-			models.ExecutorLanguageNodejs: "archesai/runner-node:latest",
-			models.ExecutorLanguagePython: "archesai/runner-python:latest",
-			models.ExecutorLanguageGo:     "archesai/runner-go:latest",
+		baseImages: map[ExecutorLanguage]string{
+			ExecutorLanguageNodejs: "archesai/runner-node:latest",
+			ExecutorLanguagePython: "archesai/runner-python:latest",
+			ExecutorLanguageGo:     "archesai/runner-go:latest",
 		},
-		dockerfiles: map[models.ExecutorLanguage]string{
-			models.ExecutorLanguageNodejs: "./deployments/containers/runners/node/Dockerfile",
-			models.ExecutorLanguagePython: "./deployments/containers/runners/python/Dockerfile",
-			models.ExecutorLanguageGo:     "./deployments/containers/runners/go/Dockerfile",
+		dockerfiles: map[ExecutorLanguage]string{
+			ExecutorLanguageNodejs: "./deployments/containers/runners/node/Dockerfile",
+			ExecutorLanguagePython: "./deployments/containers/runners/python/Dockerfile",
+			ExecutorLanguageGo:     "./deployments/containers/runners/go/Dockerfile",
 		},
 	}
 }
@@ -299,7 +297,7 @@ func (s *executorService[A, B]) BuildExecutor(ctx context.Context, executorID st
 func (s *executorService[A, B]) GetExecutor(
 	ctx context.Context,
 	executorID string,
-) (*models.Executor, error) {
+) (*Executor, error) {
 	// Parse UUID
 	id, err := uuid.Parse(executorID)
 	if err != nil {
@@ -316,13 +314,13 @@ func (s *executorService[A, B]) GetExecutor(
 
 // Helper methods
 
-func (s *executorService[A, B]) getExecuteFileName(language models.ExecutorLanguage) string {
+func (s *executorService[A, B]) getExecuteFileName(language ExecutorLanguage) string {
 	switch language {
-	case models.ExecutorLanguageNodejs:
+	case ExecutorLanguageNodejs:
 		return "execute.ts"
-	case models.ExecutorLanguagePython:
+	case ExecutorLanguagePython:
 		return "execute.py"
-	case models.ExecutorLanguageGo:
+	case ExecutorLanguageGo:
 		return "execute.go"
 	default:
 		return "execute"
@@ -334,7 +332,7 @@ func (s *executorService[A, B]) getImageName(executorID string, version int32) s
 }
 
 func (s *executorService[A, B]) parseDependencies(
-	language models.ExecutorLanguage,
+	language ExecutorLanguage,
 	deps *string,
 ) string {
 	if deps == nil {
@@ -342,7 +340,7 @@ func (s *executorService[A, B]) parseDependencies(
 	}
 
 	switch language {
-	case models.ExecutorLanguageNodejs:
+	case ExecutorLanguageNodejs:
 		// Parse package.json and extract package names
 		var pkg map[string]any
 		if err := json.Unmarshal([]byte(*deps), &pkg); err == nil {
@@ -355,7 +353,7 @@ func (s *executorService[A, B]) parseDependencies(
 			}
 		}
 		return ""
-	case models.ExecutorLanguagePython:
+	case ExecutorLanguagePython:
 		// requirements.txt is already in the right format (one per line)
 		// Convert to space-separated for ADDITIONAL_PACKAGES
 		lines := strings.Split(*deps, "\n")
@@ -367,7 +365,7 @@ func (s *executorService[A, B]) parseDependencies(
 			}
 		}
 		return strings.Join(packages, " ")
-	case models.ExecutorLanguageGo:
+	case ExecutorLanguageGo:
 		// Go modules are more complex, return empty for now
 		return ""
 	default:

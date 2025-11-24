@@ -33,7 +33,7 @@
     "node": ">=25.2.0"
   },
   "name": "@archesai/archesai",
-  "packageManager": "pnpm@10.22.0",
+  "packageManager": "pnpm@10.23.0",
   "private": true,
   "type": "module",
   "version": "0.0.0"

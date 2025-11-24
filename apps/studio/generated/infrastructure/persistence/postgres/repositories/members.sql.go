@@ -11,28 +11,47 @@ import (
 	"github.com/google/uuid"
 )
 
+const countMembers = `-- name: CountMembers :one
+SELECT
+  COUNT(*)
+FROM
+  member
+`
+
+func (q *Queries) CountMembers(ctx context.Context) (int64, error) {
+	row := q.db.QueryRow(ctx, countMembers)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createMember = `-- name: CreateMember :one
 INSERT INTO
-  member (id, user_id, organization_id, role)
+  member (id, organization_id, role, user_id)
 VALUES
-  ($1, $2, $3, $4)
+  (
+    $1,
+    $2,
+    $3,
+    $4
+  )
 RETURNING
   id, created_at, updated_at, organization_id, role, user_id
 `
 
 type CreateMemberParams struct {
 	ID             uuid.UUID
-	UserID         uuid.UUID
 	OrganizationID uuid.UUID
 	Role           string
+	UserID         uuid.UUID
 }
 
 func (q *Queries) CreateMember(ctx context.Context, arg CreateMemberParams) (Member, error) {
 	row := q.db.QueryRow(ctx, createMember,
 		arg.ID,
-		arg.UserID,
 		arg.OrganizationID,
 		arg.Role,
+		arg.UserID,
 	)
 	var i Member
 	err := row.Scan(
@@ -58,21 +77,6 @@ type DeleteMemberParams struct {
 
 func (q *Queries) DeleteMember(ctx context.Context, arg DeleteMemberParams) error {
 	_, err := q.db.Exec(ctx, deleteMember, arg.ID)
-	return err
-}
-
-const deleteMembersByOrganization = `-- name: DeleteMembersByOrganization :exec
-DELETE FROM member
-WHERE
-  organization_id = $1
-`
-
-type DeleteMembersByOrganizationParams struct {
-	OrganizationID uuid.UUID
-}
-
-func (q *Queries) DeleteMembersByOrganization(ctx context.Context, arg DeleteMembersByOrganizationParams) error {
-	_, err := q.db.Exec(ctx, deleteMembersByOrganization, arg.OrganizationID)
 	return err
 }
 
@@ -111,8 +115,8 @@ SELECT
 FROM
   member
 WHERE
-  user_id = $1
-  AND organization_id = $2
+  user_id = $1 AND
+  organization_id = $2
 LIMIT
   1
 `
@@ -144,18 +148,18 @@ FROM
 ORDER BY
   created_at DESC
 LIMIT
-  $1
-OFFSET
   $2
+OFFSET
+  $1
 `
 
 type ListMembersParams struct {
-	Limit  int32
 	Offset int32
+	Limit  int32
 }
 
 func (q *Queries) ListMembers(ctx context.Context, arg ListMembersParams) ([]Member, error) {
-	rows, err := q.db.Query(ctx, listMembers, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listMembers, arg.Offset, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
@@ -190,20 +194,14 @@ WHERE
   organization_id = $1
 ORDER BY
   created_at DESC
-LIMIT
-  $2
-OFFSET
-  $3
 `
 
 type ListMembersByOrganizationParams struct {
 	OrganizationID uuid.UUID
-	Limit          int32
-	Offset         int32
 }
 
 func (q *Queries) ListMembersByOrganization(ctx context.Context, arg ListMembersByOrganizationParams) ([]Member, error) {
-	rows, err := q.db.Query(ctx, listMembersByOrganization, arg.OrganizationID, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listMembersByOrganization, arg.OrganizationID)
 	if err != nil {
 		return nil, err
 	}
@@ -238,20 +236,14 @@ WHERE
   user_id = $1
 ORDER BY
   created_at DESC
-LIMIT
-  $2
-OFFSET
-  $3
 `
 
 type ListMembersByUserParams struct {
 	UserID uuid.UUID
-	Limit  int32
-	Offset int32
 }
 
 func (q *Queries) ListMembersByUser(ctx context.Context, arg ListMembersByUserParams) ([]Member, error) {
-	rows, err := q.db.Query(ctx, listMembersByUser, arg.UserID, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listMembersByUser, arg.UserID)
 	if err != nil {
 		return nil, err
 	}
@@ -279,21 +271,30 @@ func (q *Queries) ListMembersByUser(ctx context.Context, arg ListMembersByUserPa
 
 const updateMember = `-- name: UpdateMember :one
 UPDATE member
-SET role = COALESCE($2, role),
-updated_at = NOW()
+SET
+  organization_id = COALESCE($1, organization_id),
+  role = COALESCE($2, role),
+  user_id = COALESCE($3, user_id)
 WHERE
-  id = $1
+  id = $4
 RETURNING
   id, created_at, updated_at, organization_id, role, user_id
 `
 
 type UpdateMemberParams struct {
-	ID   uuid.UUID
-	Role *string
+	OrganizationID *uuid.UUID
+	Role           *string
+	UserID         *uuid.UUID
+	ID             uuid.UUID
 }
 
 func (q *Queries) UpdateMember(ctx context.Context, arg UpdateMemberParams) (Member, error) {
-	row := q.db.QueryRow(ctx, updateMember, arg.ID, arg.Role)
+	row := q.db.QueryRow(ctx, updateMember,
+		arg.OrganizationID,
+		arg.Role,
+		arg.UserID,
+		arg.ID,
+	)
 	var i Member
 	err := row.Scan(
 		&i.ID,

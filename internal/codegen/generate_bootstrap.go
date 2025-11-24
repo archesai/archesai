@@ -155,7 +155,7 @@ func (g *Generator) GenerateBootstrap(
 		return tags[i].Name < tags[j].Name
 	})
 
-	outputPath := "github.com/archesai/archesai" + strings.TrimPrefix(g.outputDir, ".")
+	outputPath := "github.com/archesai/archesai" + strings.TrimPrefix(g.storage.BaseDir(), ".")
 
 	// Generate app.go
 	appData := map[string]any{
@@ -169,7 +169,12 @@ func (g *Generator) GenerateBootstrap(
 		return fmt.Errorf("failed to render app.go: %w", err)
 	}
 
-	appPath := filepath.Join(g.outputDir, "generated", "infrastructure", "bootstrap", "app.gen.go")
+	appPath := filepath.Join(
+		"generated",
+		"infrastructure",
+		"bootstrap",
+		"app.gen.go",
+	)
 	if err := g.storage.WriteFile(appPath, buf.Bytes(), 0644); err != nil {
 		return fmt.Errorf("failed to write app.go: %w", err)
 	}
@@ -181,7 +186,6 @@ func (g *Generator) GenerateBootstrap(
 	}
 
 	infraPath := filepath.Join(
-		g.outputDir,
 		"generated",
 		"infrastructure",
 		"bootstrap",

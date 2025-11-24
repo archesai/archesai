@@ -12,7 +12,7 @@ import (
 
 	commands "github.com/archesai/archesai/apps/studio/generated/application/commands/executor"
 	queries "github.com/archesai/archesai/apps/studio/generated/application/queries/executor"
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	customHandlers "github.com/archesai/archesai/apps/studio/handlers/executor"
 	"github.com/archesai/archesai/pkg/server"
 )
@@ -88,7 +88,7 @@ type CreateExecutorResponse interface {
 }
 
 type CreateExecutor201Response struct {
-	Data models.Executor `json:"data"`
+	Data core.Executor `json:"data"`
 }
 
 func (response CreateExecutor201Response) VisitCreateExecutorResponse(w http.ResponseWriter) error {
@@ -458,7 +458,7 @@ type GetExecutorResponse interface {
 }
 
 type GetExecutor200Response struct {
-	Data models.Executor `json:"data"`
+	Data core.Executor `json:"data"`
 }
 
 func (response GetExecutor200Response) VisitGetExecutorResponse(w http.ResponseWriter) error {
@@ -636,8 +636,8 @@ type ListExecutorsResponse interface {
 }
 
 type ListExecutors200Response struct {
-	Data []models.Executor     `json:"data"`
-	Meta models.PaginationMeta `json:"meta"`
+	Data []core.Executor     `json:"data"`
+	Meta core.PaginationMeta `json:"meta"`
 }
 
 func (response ListExecutors200Response) VisitListExecutorsResponse(w http.ResponseWriter) error {
@@ -797,7 +797,7 @@ func (c *ExecutorController) ListExecutors(w http.ResponseWriter, r *http.Reques
 	}
 
 	// Convert pointer slice to value slice for response
-	data := make([]models.Executor, len(results))
+	data := make([]core.Executor, len(results))
 	for i, item := range results {
 		if item != nil {
 			data[i] = *item
@@ -806,7 +806,7 @@ func (c *ExecutorController) ListExecutors(w http.ResponseWriter, r *http.Reques
 
 	response := ListExecutors200Response{
 		Data: data,
-		Meta: models.PaginationMeta{Total: int32(total)},
+		Meta: core.PaginationMeta{Total: int32(total)},
 	}
 	if err := response.VisitListExecutorsResponse(w); err != nil {
 		fmt.Fprintf(w, "error writing response: %v", err)
@@ -847,7 +847,7 @@ type UpdateExecutorResponse interface {
 }
 
 type UpdateExecutor200Response struct {
-	Data models.Executor `json:"data"`
+	Data core.Executor `json:"data"`
 }
 
 func (response UpdateExecutor200Response) VisitUpdateExecutorResponse(w http.ResponseWriter) error {

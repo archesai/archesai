@@ -12,7 +12,7 @@ import (
 
 	commands "github.com/archesai/archesai/apps/studio/generated/application/commands/pipeline"
 	queries "github.com/archesai/archesai/apps/studio/generated/application/queries/pipeline"
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	customHandlers "github.com/archesai/archesai/apps/studio/handlers/pipeline"
 	"github.com/archesai/archesai/pkg/server"
 )
@@ -90,7 +90,7 @@ type CreatePipelineResponse interface {
 }
 
 type CreatePipeline201Response struct {
-	Data models.Pipeline `json:"data"`
+	Data core.Pipeline `json:"data"`
 }
 
 func (response CreatePipeline201Response) VisitCreatePipelineResponse(w http.ResponseWriter) error {
@@ -258,7 +258,7 @@ type CreatePipelineStepResponse interface {
 }
 
 type CreatePipelineStep201Response struct {
-	Data models.PipelineStep `json:"data"`
+	Data core.PipelineStep `json:"data"`
 }
 
 func (response CreatePipelineStep201Response) VisitCreatePipelineStepResponse(w http.ResponseWriter) error {
@@ -451,7 +451,7 @@ type ValidatePipelineExecutionPlanResponse interface {
 }
 
 type ValidatePipelineExecutionPlan200Response struct {
-	Data models.Pipeline `json:"data"`
+	Data core.Pipeline `json:"data"`
 }
 
 func (response ValidatePipelineExecutionPlan200Response) VisitValidatePipelineExecutionPlanResponse(w http.ResponseWriter) error {
@@ -627,7 +627,7 @@ type GetPipelineResponse interface {
 }
 
 type GetPipeline200Response struct {
-	Data models.Pipeline `json:"data"`
+	Data core.Pipeline `json:"data"`
 }
 
 func (response GetPipeline200Response) VisitGetPipelineResponse(w http.ResponseWriter) error {
@@ -986,7 +986,7 @@ type GetPipelineStepsResponse interface {
 }
 
 type GetPipelineSteps200Response struct {
-	Data []models.PipelineStep `json:"data"`
+	Data []core.PipelineStep `json:"data"`
 }
 
 func (response GetPipelineSteps200Response) VisitGetPipelineStepsResponse(w http.ResponseWriter) error {
@@ -1167,8 +1167,8 @@ type ListPipelinesResponse interface {
 }
 
 type ListPipelines200Response struct {
-	Data []models.Pipeline     `json:"data"`
-	Meta models.PaginationMeta `json:"meta"`
+	Data []core.Pipeline     `json:"data"`
+	Meta core.PaginationMeta `json:"meta"`
 }
 
 func (response ListPipelines200Response) VisitListPipelinesResponse(w http.ResponseWriter) error {
@@ -1328,7 +1328,7 @@ func (c *PipelineController) ListPipelines(w http.ResponseWriter, r *http.Reques
 	}
 
 	// Convert pointer slice to value slice for response
-	data := make([]models.Pipeline, len(results))
+	data := make([]core.Pipeline, len(results))
 	for i, item := range results {
 		if item != nil {
 			data[i] = *item
@@ -1337,7 +1337,7 @@ func (c *PipelineController) ListPipelines(w http.ResponseWriter, r *http.Reques
 
 	response := ListPipelines200Response{
 		Data: data,
-		Meta: models.PaginationMeta{Total: int32(total)},
+		Meta: core.PaginationMeta{Total: int32(total)},
 	}
 	if err := response.VisitListPipelinesResponse(w); err != nil {
 		fmt.Fprintf(w, "error writing response: %v", err)
@@ -1367,7 +1367,7 @@ type UpdatePipelineResponse interface {
 }
 
 type UpdatePipeline200Response struct {
-	Data models.Pipeline `json:"data"`
+	Data core.Pipeline `json:"data"`
 }
 
 func (response UpdatePipeline200Response) VisitUpdatePipelineResponse(w http.ResponseWriter) error {

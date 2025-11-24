@@ -9,8 +9,7 @@ import (
 
 	"github.com/google/uuid"
 
-	domainevents "github.com/archesai/archesai/apps/studio/generated/core/events"
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/archesai/archesai/apps/studio/generated/core/repositories"
 	"github.com/archesai/archesai/pkg/events"
 )
@@ -59,7 +58,7 @@ func NewUpdateArtifactCommandHandler(
 }
 
 // Handle executes the update artifact command.
-func (h *UpdateArtifactCommandHandler) Handle(ctx context.Context, cmd *UpdateArtifactCommand) (*models.Artifact, error) {
+func (h *UpdateArtifactCommandHandler) Handle(ctx context.Context, cmd *UpdateArtifactCommand) (*core.Artifact, error) {
 	// Fetch existing artifact
 	existing, err := h.repo.Get(ctx, cmd.ID)
 	if err != nil {
@@ -77,7 +76,7 @@ func (h *UpdateArtifactCommandHandler) Handle(ctx context.Context, cmd *UpdateAr
 	}
 
 	// Publish domain event
-	event := domainevents.NewArtifactUpdatedEvent(updated.ID)
+	event := core.NewArtifactUpdatedEvent(updated.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 		// FIXME: Implement logging

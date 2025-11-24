@@ -9,8 +9,7 @@ import (
 
 	"github.com/google/uuid"
 
-	domainevents "github.com/archesai/archesai/apps/studio/generated/core/events"
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/archesai/archesai/apps/studio/generated/core/repositories"
 	"github.com/archesai/archesai/pkg/events"
 )
@@ -53,9 +52,9 @@ func NewCreatePipelineCommandHandler(
 }
 
 // Handle executes the create pipeline command.
-func (h *CreatePipelineCommandHandler) Handle(ctx context.Context, cmd *CreatePipelineCommand) (*models.Pipeline, error) {
+func (h *CreatePipelineCommandHandler) Handle(ctx context.Context, cmd *CreatePipelineCommand) (*core.Pipeline, error) {
 	// Create the pipeline entity
-	entity := &models.Pipeline{
+	entity := &core.Pipeline{
 		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
@@ -68,8 +67,8 @@ func (h *CreatePipelineCommandHandler) Handle(ctx context.Context, cmd *CreatePi
 		return nil, fmt.Errorf("failed to create pipeline: %w", err)
 	}
 
-	// Publish domain event
-	event := domainevents.NewPipelineCreatedEvent(created.ID)
+	// Publish event
+	event := core.NewPipelineCreatedEvent(created.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 		// FIXME: Implement logging

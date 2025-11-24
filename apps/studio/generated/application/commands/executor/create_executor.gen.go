@@ -9,8 +9,7 @@ import (
 
 	"github.com/google/uuid"
 
-	domainevents "github.com/archesai/archesai/apps/studio/generated/core/events"
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/archesai/archesai/apps/studio/generated/core/repositories"
 	"github.com/archesai/archesai/pkg/events"
 )
@@ -83,9 +82,9 @@ func NewCreateExecutorCommandHandler(
 }
 
 // Handle executes the create executor command.
-func (h *CreateExecutorCommandHandler) Handle(ctx context.Context, cmd *CreateExecutorCommand) (*models.Executor, error) {
+func (h *CreateExecutorCommandHandler) Handle(ctx context.Context, cmd *CreateExecutorCommand) (*core.Executor, error) {
 	// Create the executor entity
-	entity := &models.Executor{
+	entity := &core.Executor{
 		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
@@ -98,8 +97,8 @@ func (h *CreateExecutorCommandHandler) Handle(ctx context.Context, cmd *CreateEx
 		return nil, fmt.Errorf("failed to create executor: %w", err)
 	}
 
-	// Publish domain event
-	event := domainevents.NewExecutorCreatedEvent(created.ID)
+	// Publish event
+	event := core.NewExecutorCreatedEvent(created.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 		// FIXME: Implement logging

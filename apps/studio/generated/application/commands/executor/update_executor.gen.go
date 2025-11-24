@@ -9,8 +9,7 @@ import (
 
 	"github.com/google/uuid"
 
-	domainevents "github.com/archesai/archesai/apps/studio/generated/core/events"
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/archesai/archesai/apps/studio/generated/core/repositories"
 	"github.com/archesai/archesai/pkg/events"
 )
@@ -89,7 +88,7 @@ func NewUpdateExecutorCommandHandler(
 }
 
 // Handle executes the update executor command.
-func (h *UpdateExecutorCommandHandler) Handle(ctx context.Context, cmd *UpdateExecutorCommand) (*models.Executor, error) {
+func (h *UpdateExecutorCommandHandler) Handle(ctx context.Context, cmd *UpdateExecutorCommand) (*core.Executor, error) {
 	// Fetch existing executor
 	existing, err := h.repo.Get(ctx, cmd.ID)
 	if err != nil {
@@ -107,7 +106,7 @@ func (h *UpdateExecutorCommandHandler) Handle(ctx context.Context, cmd *UpdateEx
 	}
 
 	// Publish domain event
-	event := domainevents.NewExecutorUpdatedEvent(updated.ID)
+	event := core.NewExecutorUpdatedEvent(updated.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 		// FIXME: Implement logging

@@ -9,8 +9,7 @@ import (
 
 	"github.com/google/uuid"
 
-	domainevents "github.com/archesai/archesai/apps/studio/generated/core/events"
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/archesai/archesai/apps/studio/generated/core/repositories"
 	"github.com/archesai/archesai/pkg/events"
 )
@@ -56,7 +55,7 @@ func NewUpdateToolCommandHandler(
 }
 
 // Handle executes the update tool command.
-func (h *UpdateToolCommandHandler) Handle(ctx context.Context, cmd *UpdateToolCommand) (*models.Tool, error) {
+func (h *UpdateToolCommandHandler) Handle(ctx context.Context, cmd *UpdateToolCommand) (*core.Tool, error) {
 	// Fetch existing tool
 	existing, err := h.repo.Get(ctx, cmd.ID)
 	if err != nil {
@@ -74,7 +73,7 @@ func (h *UpdateToolCommandHandler) Handle(ctx context.Context, cmd *UpdateToolCo
 	}
 
 	// Publish domain event
-	event := domainevents.NewToolUpdatedEvent(updated.ID)
+	event := core.NewToolUpdatedEvent(updated.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 		// FIXME: Implement logging

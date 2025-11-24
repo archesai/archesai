@@ -9,8 +9,7 @@ import (
 
 	"github.com/google/uuid"
 
-	domainevents "github.com/archesai/archesai/apps/studio/generated/core/events"
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/archesai/archesai/apps/studio/generated/core/repositories"
 	"github.com/archesai/archesai/pkg/events"
 )
@@ -53,7 +52,7 @@ func NewUpdateLabelCommandHandler(
 }
 
 // Handle executes the update label command.
-func (h *UpdateLabelCommandHandler) Handle(ctx context.Context, cmd *UpdateLabelCommand) (*models.Label, error) {
+func (h *UpdateLabelCommandHandler) Handle(ctx context.Context, cmd *UpdateLabelCommand) (*core.Label, error) {
 	// Fetch existing label
 	existing, err := h.repo.Get(ctx, cmd.ID)
 	if err != nil {
@@ -71,7 +70,7 @@ func (h *UpdateLabelCommandHandler) Handle(ctx context.Context, cmd *UpdateLabel
 	}
 
 	// Publish domain event
-	event := domainevents.NewLabelUpdatedEvent(updated.ID)
+	event := core.NewLabelUpdatedEvent(updated.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 		// FIXME: Implement logging

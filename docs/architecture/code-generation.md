@@ -397,7 +397,7 @@ generation:
 Generate only specific components:
 
 ```bash
-archesai generate openapi api.yaml \
+archesai generate --spec api.yaml \
   --output ./app \
   --components models,controllers
 ```
@@ -407,7 +407,7 @@ archesai generate openapi api.yaml \
 Combine multiple OpenAPI specs:
 
 ```bash
-archesai generate openapi \
+archesai generate \
   --specs api.yaml,admin.yaml,internal.yaml \
   --output ./app
 ```
@@ -417,7 +417,7 @@ archesai generate openapi \
 Use project-specific templates:
 
 ```bash
-archesai generate openapi api.yaml \
+archesai generate --spec api.yaml \
   --output ./app \
   --templates ./my-templates
 ```
@@ -436,7 +436,7 @@ archesai generate openapi api.yaml \
 Enable verbose logging:
 
 ```bash
-archesai generate openapi api.yaml \
+archesai generate --spec api.yaml \
   --output ./app \
   --verbose
 ```

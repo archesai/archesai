@@ -42,7 +42,7 @@ Open-source code generation platform that transforms OpenAPI specifications into
 
 ```bash
 # Install Arches
-go install github.com/archesai/archesai/cmd/archesai@latest
+go install github.com/archesai/archesai/cmd/archesai@v0.20.0-rc.1
 
 # Create your OpenAPI specification
 cat > api.yaml << EOF
@@ -50,24 +50,83 @@ openapi: 3.1.0
 info:
   title: My API
   version: 1.0.0
+tags:
+  - name: User
+    description: User profile management
+components:
+  schemas:
+    User:
+      type: object
+      x-codegen-schema-type: entity
+      required:
+        - id
+        - name
+        - email
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    UserResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/User'
+      required:
+        - data
+      additionalProperties: false
 paths:
   /users:
     get:
-      summary: List users
+      operationId: GetUser
+      tags:
+        - User
+      summary: Get user
       responses:
         '200':
           description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/problem+json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  status:
+                    type: integer
+                  detail:
+                    type: string
 EOF
 
 # Generate application code
-archesai generate openapi api.yaml --output ./myapp
+archesai generate --spec api.yaml --output ./myapp
 
 # Start development server
 archesai dev
 
-# Open the platform UI
-open http://localhost:3000
 ```
+
+To see what is generaetd, a full example project is available in the [examples](./examples/basic/) directory.
 
 For detailed setup instructions, see [Getting Started](docs/getting-started.md).
 

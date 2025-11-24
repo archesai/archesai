@@ -9,8 +9,7 @@ import (
 
 	"github.com/google/uuid"
 
-	domainevents "github.com/archesai/archesai/apps/studio/generated/core/events"
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/archesai/archesai/apps/studio/generated/core/repositories"
 	"github.com/archesai/archesai/pkg/events"
 )
@@ -59,7 +58,7 @@ func NewUpdateInvitationCommandHandler(
 }
 
 // Handle executes the update invitation command.
-func (h *UpdateInvitationCommandHandler) Handle(ctx context.Context, cmd *UpdateInvitationCommand) (*models.Invitation, error) {
+func (h *UpdateInvitationCommandHandler) Handle(ctx context.Context, cmd *UpdateInvitationCommand) (*core.Invitation, error) {
 	// Fetch existing invitation
 	existing, err := h.repo.Get(ctx, cmd.ID)
 	if err != nil {
@@ -77,7 +76,7 @@ func (h *UpdateInvitationCommandHandler) Handle(ctx context.Context, cmd *Update
 	}
 
 	// Publish domain event
-	event := domainevents.NewInvitationUpdatedEvent(updated.ID)
+	event := core.NewInvitationUpdatedEvent(updated.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 		// FIXME: Implement logging

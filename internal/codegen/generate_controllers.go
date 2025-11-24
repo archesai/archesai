@@ -50,7 +50,7 @@ func (g *Generator) generateControllerForTag(
 		return getOperationOrder(operations[i]) < getOperationOrder(operations[j])
 	})
 
-	importPath := "github.com/archesai/archesai" + strings.TrimPrefix(g.outputDir, ".")
+	importPath := "github.com/archesai/archesai" + strings.TrimPrefix(g.storage.BaseDir(), ".")
 
 	// Check if any operations have custom handlers
 	hasCustom := false
@@ -76,7 +76,7 @@ func (g *Generator) generateControllerForTag(
 
 	// Write using storage
 	outputPath := filepath.Join(
-		g.outputDir, "generated", "adapters", "http", "controllers",
+		"generated", "adapters", "http", "controllers",
 		strings.ToLower(tag)+".gen.go",
 	)
 	return g.storage.WriteFile(outputPath, buf.Bytes(), 0644)

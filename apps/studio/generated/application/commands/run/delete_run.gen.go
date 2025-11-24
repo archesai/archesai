@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/uuid"
 
-	domainevents "github.com/archesai/archesai/apps/studio/generated/core/events"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/archesai/archesai/apps/studio/generated/core/repositories"
 	"github.com/archesai/archesai/pkg/events"
 )
@@ -55,7 +55,7 @@ func (h *DeleteRunCommandHandler) Handle(ctx context.Context, cmd *DeleteRunComm
 	}
 
 	// Publish domain event
-	event := domainevents.NewRunDeletedEvent(cmd.ID)
+	event := core.NewRunDeletedEvent(cmd.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 		// FIXME: Implement logging

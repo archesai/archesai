@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/archesai/archesai/apps/studio/generated/core/repositories"
 )
 
@@ -42,7 +42,7 @@ func NewGetAccountQueryHandler(repo repositories.AccountRepository) *GetAccountQ
 }
 
 // Handle executes the get auth query.
-func (h *GetAccountQueryHandler) Handle(ctx context.Context, query *GetAccountQuery) (*models.Account, error) {
+func (h *GetAccountQueryHandler) Handle(ctx context.Context, query *GetAccountQuery) (*core.Account, error) {
 	result, err := h.repo.Get(ctx, query.ID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get auth: %w", err)

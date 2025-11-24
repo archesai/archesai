@@ -70,19 +70,11 @@ archesai dev --tui
 
 ### `archesai generate`
 
-Generate code from specifications. This is the core command for code generation.
-
-#### `archesai generate openapi`
-
 Generate complete application code from an OpenAPI specification.
 
 ```bash
-archesai generate openapi [spec-path] [flags]
+archesai generate [flags]
 ```
-
-**Arguments:**
-
-- `spec-path` - Path to the OpenAPI specification file (YAML or JSON)
 
 **Required Flags:**
 
@@ -90,20 +82,28 @@ archesai generate openapi [spec-path] [flags]
 
 **Optional Flags:**
 
+- `--spec` - Path to OpenAPI specification file (default: `api/openapi.bundled.yaml`)
 - `--bundle` - Bundle OpenAPI spec into single file instead of generating code
 - `--orval-fix` - Apply fixes for Orval compatibility (only with --bundle)
+- `--dry-run` - Show what files would be generated without writing them
 
 **Example:**
 
 ```bash
-# Generate full application from OpenAPI spec
-archesai generate openapi api/openapi.yaml --output ./generated
+# Generate full application from OpenAPI spec (using default spec path)
+archesai generate --output ./generated
+
+# Generate from a specific OpenAPI spec
+archesai generate --spec api/openapi.yaml --output ./generated
+
+# Preview what would be generated without writing files
+archesai generate --spec api/openapi.yaml --output ./generated --dry-run
 
 # Bundle a multi-file OpenAPI spec into a single file
-archesai generate openapi api/openapi.yaml --bundle --output api/bundled.yaml
+archesai generate --spec api/openapi.yaml --bundle --output api/bundled.yaml
 
 # Bundle with Orval compatibility fixes
-archesai generate openapi api/openapi.yaml --bundle --orval-fix --output api/bundled.yaml
+archesai generate --spec api/openapi.yaml --bundle --orval-fix --output api/bundled.yaml
 ```
 
 **Generated Files:**
@@ -116,29 +116,6 @@ archesai generate openapi api/openapi.yaml --bundle --orval-fix --output api/bun
 - `client/` - TypeScript/JavaScript client SDK
 - `database/` - SQL migrations and schema
 - `bootstrap/` - Application initialization code
-
-#### `archesai generate jsonschema`
-
-Generate Go structs from JSON Schema files.
-
-```bash
-archesai generate jsonschema [spec-path] [flags]
-```
-
-**Arguments:**
-
-- `spec-path` - Path to the JSON Schema file
-
-**Required Flags:**
-
-- `--output` - Output file path for generated Go code
-
-**Example:**
-
-```bash
-# Generate Go structs from JSON Schema
-archesai generate jsonschema schemas/user.json --output models/user.go
-```
 
 ---
 
@@ -382,7 +359,7 @@ export ARCHES_REDIS_HOST=redis.example.com
 vim api/openapi.yaml
 
 # 2. Generate the application code
-archesai generate openapi api/openapi.yaml --output ./app
+archesai generate --spec api/openapi.yaml --output ./app
 
 # 3. Start development server
 archesai dev --tui
@@ -395,7 +372,7 @@ archesai dev --tui
 vim api/openapi.yaml
 
 # Regenerate code
-archesai generate openapi api/openapi.yaml --output ./app
+archesai generate --spec api/openapi.yaml --output ./app
 
 # Changes are automatically picked up by dev server
 ```

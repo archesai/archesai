@@ -8,8 +8,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
-	corerrors "github.com/archesai/archesai/pkg/errors"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -30,7 +29,7 @@ func NewPostgresSessionRepository(db *pgxpool.Pool) *PostgresSessionRepository {
 // Session operations
 
 // Create creates a new session
-func (r *PostgresSessionRepository) Create(ctx context.Context, entity *models.Session) (*models.Session, error) {
+func (r *PostgresSessionRepository) Create(ctx context.Context, entity *core.Session) (*core.Session, error) {
 	params := CreateSessionParams{
 		ID:         entity.ID,
 		AuthMethod: entity.AuthMethod,
@@ -58,7 +57,7 @@ func (r *PostgresSessionRepository) Create(ctx context.Context, entity *models.S
 }
 
 // Get retrieves a session by ID
-func (r *PostgresSessionRepository) Get(ctx context.Context, id uuid.UUID) (*models.Session, error) {
+func (r *PostgresSessionRepository) Get(ctx context.Context, id uuid.UUID) (*core.Session, error) {
 	params := GetSessionParams{
 		ID: id,
 	}
@@ -66,7 +65,7 @@ func (r *PostgresSessionRepository) Get(ctx context.Context, id uuid.UUID) (*mod
 	result, err := r.queries.GetSession(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return nil, corerrors.ErrSessionNotFound
+			return nil, core.ErrSessionNotFound
 		}
 		return nil, fmt.Errorf("failed to get session: %w", err)
 	}
@@ -75,7 +74,7 @@ func (r *PostgresSessionRepository) Get(ctx context.Context, id uuid.UUID) (*mod
 }
 
 // Update updates an existing session
-func (r *PostgresSessionRepository) Update(ctx context.Context, id uuid.UUID, entity *models.Session) (*models.Session, error) {
+func (r *PostgresSessionRepository) Update(ctx context.Context, id uuid.UUID, entity *core.Session) (*core.Session, error) {
 
 	params := UpdateSessionParams{
 		ID:         id,
@@ -94,7 +93,7 @@ func (r *PostgresSessionRepository) Update(ctx context.Context, id uuid.UUID, en
 	result, err := r.queries.UpdateSession(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return nil, corerrors.ErrSessionNotFound
+			return nil, core.ErrSessionNotFound
 		}
 		return nil, fmt.Errorf("failed to update session: %w", err)
 	}
@@ -111,7 +110,7 @@ func (r *PostgresSessionRepository) Delete(ctx context.Context, id uuid.UUID) er
 	err := r.queries.DeleteSession(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return corerrors.ErrSessionNotFound
+			return core.ErrSessionNotFound
 		}
 		return fmt.Errorf("failed to delete session: %w", err)
 	}
@@ -119,7 +118,7 @@ func (r *PostgresSessionRepository) Delete(ctx context.Context, id uuid.UUID) er
 }
 
 // List returns a paginated list of sessions
-func (r *PostgresSessionRepository) List(ctx context.Context, limit, offset int32) ([]*models.Session, int64, error) {
+func (r *PostgresSessionRepository) List(ctx context.Context, limit, offset int32) ([]*core.Session, int64, error) {
 	listParams := ListSessionsParams{
 		Limit:  limit,
 		Offset: offset,
@@ -130,7 +129,7 @@ func (r *PostgresSessionRepository) List(ctx context.Context, limit, offset int3
 		return nil, 0, fmt.Errorf("failed to list sessions: %w", err)
 	}
 
-	items := make([]*models.Session, len(results))
+	items := make([]*core.Session, len(results))
 	for i, result := range results {
 		items[i] = mapSessionFromDB(&result)
 	}
@@ -142,21 +141,21 @@ func (r *PostgresSessionRepository) List(ctx context.Context, limit, offset int3
 	return items, count, nil
 }
 
-func mapSessionFromDB(db *Session) *models.Session {
+func mapSessionFromDB(db *Session) *core.Session {
 	if db == nil {
 		return nil
 	}
 
-	result := &models.Session{
+	result := &core.Session{
 		ID:         db.ID,
 		CreatedAt:  db.CreatedAt,
 		UpdatedAt:  db.UpdatedAt,
 		AuthMethod: db.AuthMethod,
-		AuthProvider: func() *models.SessionAuthProvider {
+		AuthProvider: func() *core.SessionAuthProvider {
 			if db.AuthProvider == nil {
 				return nil
 			}
-			v := models.SessionAuthProvider(*db.AuthProvider)
+			v := core.SessionAuthProvider(*db.AuthProvider)
 			return &v
 		}(),
 		ExpiresAt:      db.ExpiresAt,

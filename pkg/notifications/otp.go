@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/pkg/auth"
 )
 
 // OTPDeliverer displays OTP codes (for development).
@@ -22,7 +22,7 @@ func NewOTPDeliverer() *OTPDeliverer {
 // Deliver displays the OTP code.
 func (d *OTPDeliverer) Deliver(
 	_ context.Context,
-	token *models.MagicLinkToken,
+	token *auth.MagicLinkToken,
 	_ string,
 ) error {
 	slog.Info("🔐 OTP Code Generated",

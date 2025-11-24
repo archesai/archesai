@@ -5,25 +5,25 @@ package repositories
 import (
 	"context"
 
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/google/uuid"
 )
 
 // MemberRepository handles member persistence
 type MemberRepository interface {
 	// Basic CRUD operations (always included)
-	Create(ctx context.Context, entity *models.Member) (*models.Member, error)
-	Get(ctx context.Context, id uuid.UUID) (*models.Member, error)
-	Update(ctx context.Context, id uuid.UUID, entity *models.Member) (*models.Member, error)
+	Create(ctx context.Context, entity *core.Member) (*core.Member, error)
+	Get(ctx context.Context, id uuid.UUID) (*core.Member, error)
+	Update(ctx context.Context, id uuid.UUID, entity *core.Member) (*core.Member, error)
 	Delete(ctx context.Context, id uuid.UUID) error
-	List(ctx context.Context, limit, offset int32) ([]*models.Member, int64, error)
+	List(ctx context.Context, limit, offset int32) ([]*core.Member, int64, error)
 
 	// ListMembersByOrganization retrieves multiple members by organizationID
-	ListMembersByOrganization(ctx context.Context, organizationID string) ([]*models.Member, error)
+	ListMembersByOrganization(ctx context.Context, organizationID string) ([]*core.Member, error)
 
 	// ListMembersByUser retrieves multiple members by userID
-	ListMembersByUser(ctx context.Context, userID string) ([]*models.Member, error)
+	ListMembersByUser(ctx context.Context, userID string) ([]*core.Member, error)
 
 	// GetMemberByUserAndOrganization retrieves a single member by userID and organizationID
-	GetMemberByUserAndOrganization(ctx context.Context, userID string, organizationID string) (*models.Member, error)
+	GetMemberByUserAndOrganization(ctx context.Context, userID string, organizationID string) (*core.Member, error)
 }

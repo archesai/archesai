@@ -13,8 +13,7 @@ import (
 	"fmt"
 	"time"
 
-	"{{ .OutputPath }}/generated/core/models"
-	corerrors "github.com/archesai/archesai/pkg/errors"
+	"{{ .OutputPath }}/generated/core"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -36,7 +35,7 @@ func NewPostgres{{ $entity.Name }}Repository(db *pgxpool.Pool) *Postgres{{ $enti
 // {{ $entity.Name }} operations
 
 // Create creates a new {{ lower $entity.Name }}
-func (r *Postgres{{ $entity.Name }}Repository) Create(ctx context.Context, entity *models.{{ $entity.Name }}) (*models.{{ $entity.Name }}, error) {
+func (r *Postgres{{ $entity.Name }}Repository) Create(ctx context.Context, entity *core.{{ $entity.Name }}) (*core.{{ $entity.Name }}, error) {
 	params := Create{{ $entity.Name }}Params{
 		ID: entity.ID,{{ range $entity.GetSortedProperties }}{{ $field := . }}{{ if not $field.IsSpecialField }}{{- $excluded := false }}{{- if and $entity.XCodegen $entity.XCodegen.Repository }}{{- $repo := $entity.XCodegen.Repository }}{{- if $repo.ExcludeFromCreate }}{{- range $repo.ExcludeFromCreate }}{{- if or (eq . $field.Name) (eq . (pascalCase $field.Name)) }}{{- $excluded = true }}{{- end }}{{- end }}{{- end }}{{- end }}{{- if not $excluded }}
 		{{ $field.Name }}: {{ $field.GetCreateParamValue "entity" $entity }},{{ end }}{{ end }}{{ end }}
@@ -51,7 +50,7 @@ func (r *Postgres{{ $entity.Name }}Repository) Create(ctx context.Context, entit
 }
 
 // Get retrieves a {{ lower $entity.Name }} by ID
-func (r *Postgres{{ $entity.Name }}Repository) Get(ctx context.Context, id uuid.UUID) (*models.{{ $entity.Name }}, error) {
+func (r *Postgres{{ $entity.Name }}Repository) Get(ctx context.Context, id uuid.UUID) (*core.{{ $entity.Name }}, error) {
 	params := Get{{ $entity.Name }}Params{
 		ID: id,
 	}
@@ -59,7 +58,7 @@ func (r *Postgres{{ $entity.Name }}Repository) Get(ctx context.Context, id uuid.
 	result, err := r.queries.Get{{ $entity.Name }}(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return nil, corerrors.Err{{ $entity.Name }}NotFound
+			return nil, core.Err{{ $entity.Name }}NotFound
 		}
 		return nil, fmt.Errorf("failed to get {{ lower $entity.Name }}: %w", err)
 	}
@@ -68,7 +67,7 @@ func (r *Postgres{{ $entity.Name }}Repository) Get(ctx context.Context, id uuid.
 }
 
 // Update updates an existing {{ lower $entity.Name }}
-func (r *Postgres{{ $entity.Name }}Repository) Update(ctx context.Context, id uuid.UUID, entity *models.{{ $entity.Name }}) (*models.{{ $entity.Name }}, error) {
+func (r *Postgres{{ $entity.Name }}Repository) Update(ctx context.Context, id uuid.UUID, entity *core.{{ $entity.Name }}) (*core.{{ $entity.Name }}, error) {
 {{ range $entity.GetSortedProperties }}{{- $field := . }}
 {{- if not $field.IsSpecialField }}
 {{- $excluded := false }}
@@ -95,7 +94,7 @@ func (r *Postgres{{ $entity.Name }}Repository) Update(ctx context.Context, id uu
 	result, err := r.queries.Update{{ $entity.Name }}(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return nil, corerrors.Err{{ $entity.Name }}NotFound
+			return nil, core.Err{{ $entity.Name }}NotFound
 		}
 		return nil, fmt.Errorf("failed to update {{ lower $entity.Name }}: %w", err)
 	}
@@ -112,7 +111,7 @@ func (r *Postgres{{ $entity.Name }}Repository) Delete(ctx context.Context, id uu
 	err := r.queries.Delete{{ $entity.Name }}(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return corerrors.Err{{ $entity.Name }}NotFound
+			return core.Err{{ $entity.Name }}NotFound
 		}
 		return fmt.Errorf("failed to delete {{ lower $entity.Name }}: %w", err)
 	}
@@ -120,7 +119,7 @@ func (r *Postgres{{ $entity.Name }}Repository) Delete(ctx context.Context, id uu
 }
 
 // List returns a paginated list of {{ lower $entity.Name }}s
-func (r *Postgres{{ $entity.Name }}Repository) List(ctx context.Context, limit, offset int32) ([]*models.{{ $entity.Name }}, int64, error) {
+func (r *Postgres{{ $entity.Name }}Repository) List(ctx context.Context, limit, offset int32) ([]*core.{{ $entity.Name }}, int64, error) {
 	listParams := List{{ $entity.Name }}sParams{
 		Limit:  limit,
 		Offset: offset,
@@ -131,7 +130,7 @@ func (r *Postgres{{ $entity.Name }}Repository) List(ctx context.Context, limit, 
 		return nil, 0, fmt.Errorf("failed to list {{ lower $entity.Name }}s: %w", err)
 	}
 
-	items := make([]*models.{{ $entity.Name }}, len(results))
+	items := make([]*core.{{ $entity.Name }}, len(results))
 	for i, result := range results {
 		items[i] = map{{ $entity.Name }}FromDB(&result)
 	}
@@ -147,7 +146,7 @@ func (r *Postgres{{ $entity.Name }}Repository) List(ctx context.Context, limit, 
 {{range $repo.AdditionalMethods}}
 {{- $additionalMethod := . }}
 // {{ $additionalMethod.Name }} retrieves {{if eq $additionalMethod.Returns "multiple" }}multiple {{ $entity.Name }}s{{ else }}a single {{ $entity.Name }}{{ end }}{{ if $additionalMethod.Params }} by {{ range $i, $param := $additionalMethod.Params }}{{ if $i }} and {{ end }}{{ $param.Name }}{{ end }}{{ end }}
-func (r *Postgres{{ $entity.Name }}Repository) {{ $additionalMethod.Name }}(ctx context.Context{{ if $additionalMethod.Params }}{{ range $i, $param := $additionalMethod.Params }}, {{ $param.Name }} {{ $param.Type }}{{ end }}{{ end }}) ({{ if eq $additionalMethod.Returns "single" }}*models.{{ $entity.Name }}{{ else if eq $additionalMethod.Returns "multiple" }}[]*models.{{ $entity.Name }}{{ end }}, error) {
+func (r *Postgres{{ $entity.Name }}Repository) {{ $additionalMethod.Name }}(ctx context.Context{{ if $additionalMethod.Params }}{{ range $i, $param := $additionalMethod.Params }}, {{ $param.Name }} {{ $param.Type }}{{ end }}{{ end }}) ({{ if eq $additionalMethod.Returns "single" }}*core.{{ $entity.Name }}{{ else if eq $additionalMethod.Returns "multiple" }}[]*core.{{ $entity.Name }}{{ end }}, error) {
 	{{- /* For nullable fields, we need to handle them carefully.
 	       The sqlc generates pointer types for nullable fields.
 	       We need to check if this field is nullable in the entity. */ -}}
@@ -196,11 +195,11 @@ func (r *Postgres{{ $entity.Name }}Repository) {{ $additionalMethod.Name }}(ctx 
 	result, err := r.queries.{{ $additionalMethod.Name }}(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
-			return nil, corerrors.Err{{$entity.Name}}NotFound
+			return nil, core.Err{{$entity.Name}}NotFound
 		}
 		return nil, fmt.Errorf("failed to {{ $additionalMethod.Name }}: %w", err)
 	}
-	{{ if eq $additionalMethod.Returns "multiple" }}items := make([]*models.{{ $entity.Name }}, len(result))
+	{{ if eq $additionalMethod.Returns "multiple" }}items := make([]*core.{{ $entity.Name }}, len(result))
 	for i, res := range result {
 		items[i] = map{{ $entity.Name }}FromDB(&res)
 	}
@@ -213,12 +212,12 @@ func (r *Postgres{{ $entity.Name }}Repository) {{ $additionalMethod.Name }}(ctx 
 {{ end }}
 {{ end }}
 
-func map{{ $entity.Name }}FromDB(db *{{ $entity.Name }}) *models.{{ $entity.Name }} {
+func map{{ $entity.Name }}FromDB(db *{{ $entity.Name }}) *core.{{ $entity.Name }} {
 	if db == nil {
 		return nil
 	}
 
-	result := &models.{{ $entity.Name }}{
+	result := &core.{{ $entity.Name }}{
 		ID:        db.ID,
 		CreatedAt: db.CreatedAt,
 		UpdatedAt: db.UpdatedAt,{{ range $entity.GetSortedProperties }}{{- $field := . }}{{if not $field.IsSpecialField }}

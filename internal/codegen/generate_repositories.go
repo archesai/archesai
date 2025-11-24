@@ -32,7 +32,12 @@ func (g *Generator) generateRepositoryForSchema(
 	schema *parsers.SchemaDef,
 ) error {
 
-	importPath := "github.com/archesai/archesai" + strings.TrimPrefix(g.outputDir, ".")
+	importPath := "github.com/archesai/archesai" + strings.TrimPrefix(g.storage.BaseDir(), ".")
+
+	// First, generate SQL queries for this schema
+	if err := g.generateSQLQueriesForSchema(schema, importPath); err != nil {
+		return fmt.Errorf("failed to generate SQL queries: %w", err)
+	}
 
 	// Generate repository interface
 	data := &RepositoriesTemplateData{
@@ -47,7 +52,7 @@ func (g *Generator) generateRepositoryForSchema(
 	}
 
 	outputPath := filepath.Join(
-		g.outputDir, "generated", "core", "repositories",
+		"generated", "core", "repositories",
 		strings.ToLower(schema.Name)+".gen.go",
 	)
 	if err := g.storage.WriteFile(outputPath, buf.Bytes(), 0644); err != nil {
@@ -67,25 +72,73 @@ func (g *Generator) generateRepositoryForSchema(
 	}
 
 	outputPath = filepath.Join(
-		g.outputDir, "generated", "infrastructure", "persistence", "postgres", "repositories",
+		"generated",
+		"infrastructure",
+		"persistence",
+		"postgres",
+		"repositories",
 		strings.ToLower(schema.Name)+"_repository.gen.go",
 	)
 	if err := g.storage.WriteFile(outputPath, buf.Bytes(), 0644); err != nil {
 		return fmt.Errorf("failed to write PostgreSQL repository: %w", err)
 	}
 
-	// SQLite
-	buf.Reset()
-	if err := g.renderer.Render(&buf, "repository_sqlite.go.tmpl", implData); err != nil {
-		return fmt.Errorf("failed to render SQLite repository: %w", err)
+	// SQLite FIXME: SQLite repository generation is currently disabled
+	// buf.Reset()
+	// if err := g.renderer.Render(&buf, "repository_sqlite.go.tmpl", implData); err != nil {
+	// 	return fmt.Errorf("failed to render SQLite repository: %w", err)
+	// }
+
+	// outputPath = filepath.Join(
+	// 	"generated", "infrastructure", "persistence", "sqlite", "repositories",
+	// 	strings.ToLower(schema.Name)+"_repository.gen.go",
+	// )
+	// if err := g.storage.WriteFile(outputPath, buf.Bytes(), 0644); err != nil {
+	// 	return fmt.Errorf("failed to write SQLite repository: %w", err)
+	// }
+
+	return nil
+}
+
+// generateSQLQueriesForSchema generates SQL query files for SQLC
+func (g *Generator) generateSQLQueriesForSchema(
+	schema *parsers.SchemaDef,
+	importPath string,
+) error {
+	data := &RepositoriesTemplateData{
+		Entity:     schema,
+		OutputPath: importPath,
 	}
 
-	outputPath = filepath.Join(
-		g.outputDir, "generated", "infrastructure", "persistence", "sqlite", "repositories",
-		strings.ToLower(schema.Name)+"_repository.gen.go",
+	// Generate PostgreSQL queries
+	var buf bytes.Buffer
+	if err := g.renderer.Render(&buf, "sql_queries.sql.tmpl", data); err != nil {
+		return fmt.Errorf("failed to render PostgreSQL queries: %w", err)
+	}
+
+	postgresPath := filepath.Join(
+		"generated",
+		"infrastructure",
+		"persistence",
+		"postgres",
+		"queries",
+		strings.ToLower(schema.Name)+"s.sql",
 	)
-	if err := g.storage.WriteFile(outputPath, buf.Bytes(), 0644); err != nil {
-		return fmt.Errorf("failed to write SQLite repository: %w", err)
+	if err := g.storage.WriteFile(postgresPath, buf.Bytes(), 0644); err != nil {
+		return fmt.Errorf("failed to write PostgreSQL queries: %w", err)
+	}
+
+	// Generate SQLite queries (using same template for now)
+	sqlitePath := filepath.Join(
+		"generated",
+		"infrastructure",
+		"persistence",
+		"sqlite",
+		"queries",
+		strings.ToLower(schema.Name)+"s.sql",
+	)
+	if err := g.storage.WriteFile(sqlitePath, buf.Bytes(), 0644); err != nil {
+		return fmt.Errorf("failed to write SQLite queries: %w", err)
 	}
 
 	return nil

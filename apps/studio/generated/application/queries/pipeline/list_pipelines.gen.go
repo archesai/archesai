@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/apps/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core"
 	"github.com/archesai/archesai/apps/studio/generated/core/repositories"
 )
 
@@ -39,7 +39,7 @@ func NewListPipelinesQueryHandler(repo repositories.PipelineRepository) *ListPip
 }
 
 // Handle executes the list pipelines query.
-func (h *ListPipelinesQueryHandler) Handle(ctx context.Context, query *ListPipelinesQuery) ([]*models.Pipeline, int64, error) {
+func (h *ListPipelinesQueryHandler) Handle(ctx context.Context, query *ListPipelinesQuery) ([]*core.Pipeline, int64, error) {
 	// TODO: Apply filters based on query parameters
 	results, total, err := h.repo.List(ctx, 100, 0)
 	if err != nil {

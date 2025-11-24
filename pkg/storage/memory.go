@@ -13,9 +13,10 @@ var _ Storage = (*MemoryStorage)(nil)
 
 // MemoryStorage implements Storage in memory (useful for testing)
 type MemoryStorage struct {
-	mu    sync.RWMutex
-	files map[string][]byte
-	dirs  map[string]bool
+	mu      sync.RWMutex
+	files   map[string][]byte
+	dirs    map[string]bool
+	baseDir string
 }
 
 // NewMemoryStorage creates a new MemoryStorage
@@ -259,6 +260,11 @@ func (m *MemoryStorage) GetFiles() map[string][]byte {
 		result[path] = dataCopy
 	}
 	return result
+}
+
+// BaseDir returns the base directory of the storage
+func (m *MemoryStorage) BaseDir() string {
+	return m.baseDir
 }
 
 // memFileInfo implements os.FileInfo for in-memory files
