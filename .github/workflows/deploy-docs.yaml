@@ -13,7 +13,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 1
 
@@ -30,7 +30,7 @@ jobs:
       - run: |
           make build-docs
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           repository: archesai/archesai.github.io
           token: ${{ secrets.DOCS_DEPLOY_TOKEN }}
