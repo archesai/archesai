@@ -355,6 +355,85 @@ func (e *{{ $schema.Name }}) ClearEvents() {
 func (e *{{ $schema.Name }}) addEvent(event events.Event) {
 	e.events = append(e.events, event)
 }
+
+// Event type constants for {{ $schema.Name }}.
+const (
+	Event{{ $schema.Name }}Created = "{{lower $schema.Name}}.created"
+	Event{{ $schema.Name }}Updated = "{{lower $schema.Name}}.updated"
+	Event{{ $schema.Name }}Deleted = "{{lower $schema.Name}}.deleted"
+)
+
+// {{ $schema.Name }}CreatedEvent represents a created event for {{ $schema.Name }}.
+type {{ $schema.Name }}CreatedEvent struct {
+	events.BaseEvent
+	{{ $schema.Name }}ID uuid.UUID `json:"{{lower $schema.Name}}_id"`
+}
+
+// New{{ $schema.Name }}CreatedEvent creates a new {{ $schema.Name }} created event.
+func New{{ $schema.Name }}CreatedEvent(id uuid.UUID) *{{ $schema.Name }}CreatedEvent {
+	return &{{ $schema.Name }}CreatedEvent{
+		BaseEvent: events.NewBaseEvent("{{lower $schema.Name}}", Event{{ $schema.Name }}Created),
+		{{ $schema.Name }}ID: id,
+	}
+}
+
+// EventType returns the type of this event.
+func (e *{{ $schema.Name }}CreatedEvent) EventType() string {
+	return Event{{ $schema.Name }}Created
+}
+
+// EventData returns the event data.
+func (e *{{ $schema.Name }}CreatedEvent) EventData() any {
+	return e
+}
+
+// {{ $schema.Name }}UpdatedEvent represents an updated event for {{ $schema.Name }}.
+type {{ $schema.Name }}UpdatedEvent struct {
+	events.BaseEvent
+	{{ $schema.Name }}ID uuid.UUID `json:"{{lower $schema.Name}}_id"`
+}
+
+// New{{ $schema.Name }}UpdatedEvent creates a new {{ $schema.Name }} updated event.
+func New{{ $schema.Name }}UpdatedEvent(id uuid.UUID) *{{ $schema.Name }}UpdatedEvent {
+	return &{{ $schema.Name }}UpdatedEvent{
+		BaseEvent: events.NewBaseEvent("{{lower $schema.Name}}", Event{{ $schema.Name }}Updated),
+		{{ $schema.Name }}ID: id,
+	}
+}
+
+// EventType returns the type of this event.
+func (e *{{ $schema.Name }}UpdatedEvent) EventType() string {
+	return Event{{ $schema.Name }}Updated
+}
+
+// EventData returns the event data.
+func (e *{{ $schema.Name }}UpdatedEvent) EventData() any {
+	return e
+}
+
+// {{ $schema.Name }}DeletedEvent represents a deleted event for {{ $schema.Name }}.
+type {{ $schema.Name }}DeletedEvent struct {
+	events.BaseEvent
+	{{ $schema.Name }}ID uuid.UUID `json:"{{lower $schema.Name}}_id"`
+}
+
+// New{{ $schema.Name }}DeletedEvent creates a new {{ $schema.Name }} deleted event.
+func New{{ $schema.Name }}DeletedEvent(id uuid.UUID) *{{ $schema.Name }}DeletedEvent {
+	return &{{ $schema.Name }}DeletedEvent{
+		BaseEvent: events.NewBaseEvent("{{lower $schema.Name}}", Event{{ $schema.Name }}Deleted),
+		{{ $schema.Name }}ID: id,
+	}
+}
+
+// EventType returns the type of this event.
+func (e *{{ $schema.Name }}DeletedEvent) EventType() string {
+	return Event{{ $schema.Name }}Deleted
+}
+
+// EventData returns the event data.
+func (e *{{ $schema.Name }}DeletedEvent) EventData() any {
+	return e
+}
 {{- end }}
 
 {{- end }}

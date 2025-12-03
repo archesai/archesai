@@ -1,0 +1,1151 @@
+openapi: 3.1.0
+x-project-name: github.com/archesai/archesai/pkg/storage
+info:
+  title: Arches Storage API
+  description: Storage schemas for Arches platform
+  version: v0.0.0
+tags:
+  - name: Storage
+    description: Storage management
+  - name: Health
+    description: Health check operations
+paths:
+  /artifacts/{id}:
+    $ref: '#/components/pathItems/artifacts_id'
+  /artifacts:
+    $ref: '#/components/pathItems/artifacts'
+  /labels/{id}:
+    $ref: '#/components/pathItems/labels_id'
+  /labels:
+    $ref: '#/components/pathItems/labels'
+  /health:
+    $ref: '#/components/pathItems/health'
+components:
+  parameters:
+    ArtifactsFilter:
+      in: query
+      name: filter
+      required: false
+      style: deepObject
+      explode: true
+      schema:
+        $ref: '#/components/schemas/FilterNode'
+      description: Filter by field values
+      example:
+        type: eq
+        field: mimeType
+        value: application/pdf
+    ArtifactsSort:
+      in: query
+      name: sort
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: array
+        maxItems: 10
+        items:
+          type: object
+          required:
+            - field
+            - order
+          properties:
+            field:
+              type: string
+              enum:
+                - createdAt
+                - id
+                - updatedAt
+                - credits
+                - description
+                - mimeType
+                - name
+                - organizationID
+                - previewImage
+                - producerID
+                - text
+                - url
+              example: createdAt
+            order:
+              type: string
+              enum:
+                - asc
+                - desc
+              example: asc
+      description: The sort parameter
+      example:
+        - field: createdAt
+          order: desc
+    LabelsFilter:
+      in: query
+      name: filter
+      required: false
+      style: deepObject
+      explode: true
+      schema:
+        $ref: '#/components/schemas/FilterNode'
+      description: Filter by field values
+      example:
+        type: eq
+        field: name
+        value: production
+    LabelsSort:
+      in: query
+      name: sort
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: array
+        maxItems: 10
+        items:
+          type: object
+          required:
+            - field
+            - order
+          properties:
+            field:
+              type: string
+              enum:
+                - createdAt
+                - id
+                - updatedAt
+                - name
+                - organizationID
+              example: createdAt
+            order:
+              type: string
+              enum:
+                - asc
+                - desc
+              example: asc
+      description: The sort parameter
+      example:
+        - field: createdAt
+          order: desc
+    PageQuery:
+      in: query
+      name: page
+      required: false
+      style: form
+      explode: true
+      schema:
+        $ref: '#/components/schemas/Page'
+      description: The page parameter
+      example:
+        limit: 10
+        offset: 0
+    ResourceID:
+      schema:
+        $ref: '#/components/schemas/UUID'
+      in: path
+      name: id
+      required: true
+      description: The unique identifier of the resource.
+  responses:
+    ArtifactListResponse:
+      description: Artifacts retrieved successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                maxItems: 10000
+                items:
+                  $ref: '#/components/schemas/Artifact'
+              meta:
+                $ref: '#/components/schemas/PaginationMeta'
+            required:
+              - data
+              - meta
+            additionalProperties: false
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    ArtifactResponse:
+      description: Artifact retrieved successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: '#/components/schemas/Artifact'
+            required:
+              - data
+            additionalProperties: false
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    LabelListResponse:
+      description: Labels retrieved successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                maxItems: 10000
+                items:
+                  $ref: '#/components/schemas/Label'
+              meta:
+                $ref: '#/components/schemas/PaginationMeta'
+            required:
+              - data
+              - meta
+            additionalProperties: false
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    LabelResponse:
+      description: Label retrieved successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: '#/components/schemas/Label'
+            required:
+              - data
+            additionalProperties: false
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    BadRequest:
+      description: 400 Bad Request
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    Conflict:
+      description: 409 Conflict
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    HealthResponse:
+      description: Health status retrieved successfully
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Health'
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    NoContent:
+      description: 204 No Content
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    NotFound:
+      description: 404 Not Found
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    TooManyRequests:
+      description: Too many requests - rate limit exceeded
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+        Retry-After:
+          $ref: '#/components/headers/RetryAfter'
+    Unauthorized:
+      description: 401 Unauthorized
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    UnprocessableEntity:
+      description: 422 Unprocessable Entity
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+  schemas:
+    Artifact:
+      description: Schema for Artifact entity
+      title: Artifact
+      x-codegen-schema-type: entity
+      x-codegen:
+        repository:
+          indices:
+            - organizationID
+            - producerID
+          excludeFromUpdate:
+            - OrganizationID
+            - ProducerID
+          relations:
+            - field: organizationID
+              references: organization
+              onDelete: CASCADE
+              onUpdate: CASCADE
+            - field: producerID
+              references: run
+              onDelete: SET_NULL
+              onUpdate: CASCADE
+          additionalMethods:
+            - name: ListArtifactsByOrganization
+              params:
+                - name: organizationID
+                  type: string
+                  format: uuid
+                  maxLength: 36
+              returns: multiple
+            - name: ListArtifactsByProducer
+              params:
+                - name: producerID
+                  type: string
+                  format: uuid
+                  maxLength: 36
+              returns: multiple
+      x-internal: storage
+      allOf:
+        - $ref: '#/components/schemas/Base'
+        - type: object
+          properties:
+            credits:
+              description: The number of credits required to access this artifact. This is used for metering and billing purposes.
+              type: integer
+              format: int32
+              minimum: 0
+              default: 0
+              maximum: 2147483647
+              example: 42
+            description:
+              description: The artifact's description
+              type:
+                - string
+                - 'null'
+              example: Example description text
+              minLength: 1
+              maxLength: 1000
+              pattern: ^[\w\s\-.,!?()@#+/':;]+$
+            mimeType:
+              description: The MIME type of the artifact, e.g. image/png
+              type: string
+              minLength: 1
+              example: image/png
+              default: application/octet-stream
+              maxLength: 255
+              pattern: ^[a-z]+/[a-z0-9\+\-\.]+$
+            name:
+              description: The name of the artifact, used for display purposes
+              type:
+                - string
+                - 'null'
+              example: Data Export Results
+              minLength: 1
+              maxLength: 255
+              pattern: ^[\w\s\-.,!?()@#+/']+$
+            organizationID:
+              description: The organization that owns this artifact
+              type: string
+              format: uuid
+              example: 550e8400-e29b-41d4-a716-446655440000
+              minLength: 36
+              maxLength: 36
+            previewImage:
+              description: The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI.
+              type:
+                - string
+                - 'null'
+              format: uri
+              example: https://example.com/preview.jpg
+              minLength: 1
+              maxLength: 2048
+            producerID:
+              description: The ID of the entity that produced this artifact
+              type:
+                - string
+                - 'null'
+              format: uuid
+              example: 550e8400-e29b-41d4-a716-446655440000
+              minLength: 36
+              maxLength: 36
+            text:
+              description: The artifact text
+              type:
+                - string
+                - 'null'
+              example: Processed data ready for analysis
+              minLength: 1
+              maxLength: 255
+              pattern: ^[\w\s\-.,!?()@#+/':;]+$
+            url:
+              description: The URL of the artifact if it's stored externally
+              type:
+                - string
+                - 'null'
+              format: uri
+              example: https://example.com/artifact.pdf
+              minLength: 1
+              maxLength: 2048
+          required:
+            - credits
+            - mimeType
+            - organizationID
+            - description
+            - name
+            - previewImage
+            - producerID
+            - text
+            - url
+      unevaluatedProperties: false
+    Label:
+      title: Label
+      description: Schema for Label entity
+      x-codegen-schema-type: entity
+      x-codegen:
+        repository:
+          excludeFromUpdate:
+            - OrganizationID
+          indices:
+            - organizationID
+            - name
+          relations:
+            - field: organizationID
+              references: organization
+              onDelete: CASCADE
+              onUpdate: CASCADE
+          additionalMethods:
+            - name: ListLabelsByOrganization
+              params:
+                - name: organizationID
+                  type: string
+                  format: uuid
+                  maxLength: 36
+              returns: multiple
+            - name: GetLabelByName
+              params:
+                - name: name
+                  type: string
+                - name: organizationID
+                  type: string
+                  format: uuid
+                  maxLength: 36
+              returns: single
+      x-internal: storage
+      allOf:
+        - $ref: '#/components/schemas/Base'
+        - type: object
+          properties:
+            name:
+              description: The name of the label
+              type: string
+              minLength: 1
+              example: Production
+              maxLength: 255
+              pattern: ^[\w\s\-.,!?()@#+/']+$
+            organizationID:
+              description: The organization this label belongs to
+              type: string
+              format: uuid
+              example: 550e8400-e29b-41d4-a716-446655440000
+              minLength: 36
+              maxLength: 36
+          required:
+            - name
+            - organizationID
+      unevaluatedProperties: false
+    Base:
+      title: Base
+      description: Base schema for all entities with common fields
+      x-internal: server
+      type: object
+      properties:
+        id:
+          description: Unique identifier for the resource
+          type: string
+          format: uuid
+          example: 550e8400-e29b-41d4-a716-446655440000
+          minLength: 36
+          maxLength: 36
+        createdAt:
+          description: The date and time when the resource was created
+          type: string
+          format: date-time
+          example: '2024-01-15T09:30:00Z'
+          minLength: 1
+          maxLength: 255
+        updatedAt:
+          description: The date and time when the resource was last updated
+          type: string
+          format: date-time
+          example: '2024-01-15T10:45:00Z'
+          minLength: 1
+          maxLength: 255
+      required:
+        - id
+        - createdAt
+        - updatedAt
+    FilterNode:
+      title: FilterNode
+      description: A recursive filter node that can be a condition or group
+      x-internal: server
+      x-codegen-schema-type: valueobject
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - and
+            - or
+            - eq
+            - ne
+            - gt
+            - gte
+            - lt
+            - lte
+            - contains
+            - startsWith
+            - endsWith
+          description: The type of filter operation
+          example: eq
+        field:
+          type: string
+          description: The field to filter on (for leaf conditions)
+          example: name
+          minLength: 1
+          maxLength: 255
+          pattern: ^[a-zA-Z_][a-zA-Z0-9_]*$
+        value:
+          description: The value to compare against (for leaf conditions)
+          oneOf:
+            - type: string
+              maxLength: 1000
+              pattern: ^[\w\s\-.,!?()@#+/':;]+$
+            - type: integer
+              format: int64
+              minimum: -9223372036854776000
+              maximum: 9223372036854776000
+            - type: boolean
+          example: example-value
+      required:
+        - type
+    Health:
+      title: Health
+      description: Health check response
+      x-internal: server
+      x-codegen-schema-type: valueobject
+      type: object
+      properties:
+        services:
+          type: object
+          properties:
+            database:
+              type: string
+              example: healthy
+              enum:
+                - healthy
+                - unhealthy
+                - degraded
+            email:
+              type: string
+              example: healthy
+              enum:
+                - healthy
+                - unhealthy
+                - degraded
+            redis:
+              type: string
+              example: healthy
+              enum:
+                - healthy
+                - unhealthy
+                - degraded
+          required:
+            - database
+            - email
+            - redis
+          additionalProperties: false
+        timestamp:
+          type: string
+          format: date-time
+          maxLength: 64
+          example: '2024-01-15T09:30:00Z'
+        uptime:
+          description: System uptime in seconds
+          type: integer
+          format: int64
+          minimum: 0
+          maximum: 9223372036854776000
+          example: 86400
+      required:
+        - services
+        - timestamp
+        - uptime
+      additionalProperties: false
+    Page:
+      description: Pagination parameters (limit & offset)
+      x-internal: server
+      type: object
+      title: Page
+      additionalProperties: false
+      properties:
+        limit:
+          description: Maximum number of items to return
+          type: integer
+          format: int32
+          minimum: 1
+          default: 10
+          maximum: 100
+          example: 10
+        offset:
+          description: Number of items to skip before starting to collect the result set
+          type: integer
+          format: int32
+          minimum: 0
+          default: 0
+          maximum: 9007199254740991
+          example: 0
+    PaginationMeta:
+      description: Pagination metadata
+      title: PaginationMeta
+      type: object
+      properties:
+        total:
+          description: Total number of items in the collection
+          type: integer
+          format: int32
+          minimum: 0
+          maximum: 2147483647
+          example: 42
+      required:
+        - total
+      additionalProperties: false
+      x-codegen-schema-type: valueobject
+    Problem:
+      title: Problem
+      description: RFC 7807 (Problem Details) compliant error response
+      x-internal: server
+      type: object
+      additionalProperties: false
+      required:
+        - status
+        - title
+      properties:
+        status:
+          type: integer
+          format: int32
+          description: HTTP status code
+          minimum: 100
+          maximum: 599
+          example: 400
+        type:
+          type: string
+          format: uri
+          description: URI identifying the problem type
+          default: about:blank
+          example: https://api.example.com/errors/validation-failed
+          minLength: 1
+          maxLength: 2048
+        title:
+          type: string
+          description: Short, human-readable summary
+          example: Validation Failed
+          minLength: 1
+          maxLength: 255
+          pattern: ^[\w\s\-.,!?()]+$
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence
+          example: The request body contains invalid fields
+          minLength: 1
+          maxLength: 255
+          pattern: ^[\w\s\-.,!?()]+$
+        instance:
+          type: string
+          format: uri
+          description: URI identifying the specific occurrence
+          example: https://api.example.com/auth/users/123
+          maxLength: 2048
+    UUID:
+      description: UUID identifier
+      x-internal: server
+      type: string
+      format: uuid
+      example: 550e8400-e29b-41d4-a716-446655440000
+      minLength: 36
+      maxLength: 36
+  headers:
+    RateLimitLimit:
+      description: The maximum number of requests allowed per time window
+      schema:
+        type: integer
+        example: 1000
+        format: int32
+        minimum: 1
+        maximum: 1000000
+      example: 1000
+    RateLimitRemaining:
+      description: The number of requests remaining in the current time window
+      schema:
+        type: integer
+        example: 999
+        format: int32
+        minimum: 0
+        maximum: 1000000
+      example: 999
+    RateLimitReset:
+      description: The time at which the current rate limit window resets (Unix timestamp)
+      schema:
+        type: integer
+        example: 1640995200
+        format: int64
+        minimum: 0
+        maximum: 9223372036854776000
+      example: 1640995200
+    RetryAfter:
+      description: Number of seconds to wait before making a new request
+      schema:
+        type: integer
+        example: 60
+        format: int32
+        minimum: 1
+        maximum: 3600
+      example: 60
+  pathItems:
+    artifacts_id:
+      get:
+        x-internal: storage
+        operationId: GetArtifact
+        summary: Find an artifact
+        tags:
+          - Artifact
+        description: Find an artifact
+        parameters:
+          - $ref: '#/components/parameters/ResourceID'
+        security:
+          - bearerAuth: []
+        responses:
+          '200':
+            $ref: '#/components/responses/ArtifactResponse'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+      patch:
+        x-internal: storage
+        operationId: UpdateArtifact
+        summary: Update an artifact
+        tags:
+          - Artifact
+        description: Update an artifact
+        requestBody:
+          description: Artifact update data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    description: The name of the artifact
+                    type: string
+                    minLength: 1
+                    maxLength: 255
+                    example: Example Name
+                    pattern: ^[\w\s\-.,!?()@#+/]*$
+                  text:
+                    description: The artifact text
+                    type: string
+                    maxLength: 1000
+                    example: example-string
+                    pattern: ^[\w\s\-.,!?()@#+/]*$
+                  url:
+                    description: The artifact URL
+                    type: string
+                    format: uri
+                    maxLength: 2048
+                    example: example-string
+        parameters:
+          - $ref: '#/components/parameters/ResourceID'
+        security:
+          - bearerAuth: []
+        responses:
+          '200':
+            $ref: '#/components/responses/ArtifactResponse'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+      delete:
+        x-internal: storage
+        operationId: DeleteArtifact
+        summary: Delete an artifact
+        tags:
+          - Artifact
+        description: Delete an artifact
+        parameters:
+          - $ref: '#/components/parameters/ResourceID'
+        security:
+          - bearerAuth: []
+        responses:
+          '204':
+            $ref: '#/components/responses/NoContent'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+    artifacts:
+      get:
+        x-internal: storage
+        operationId: ListArtifacts
+        summary: List artifacts
+        tags:
+          - Artifact
+        description: List artifacts
+        parameters:
+          - $ref: '#/components/parameters/ArtifactsFilter'
+          - $ref: '#/components/parameters/PageQuery'
+          - $ref: '#/components/parameters/ArtifactsSort'
+        security:
+          - bearerAuth: []
+        responses:
+          '200':
+            $ref: '#/components/responses/ArtifactListResponse'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+      post:
+        x-internal: storage
+        operationId: CreateArtifact
+        summary: Create a artifact
+        tags:
+          - Artifact
+        description: Create a artifact
+        requestBody:
+          description: Artifact creation request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    description: The name of the artifact
+                    type: string
+                    minLength: 1
+                    maxLength: 255
+                    example: Example Name
+                    pattern: ^[\w\s\-.,!?()@#+/]*$
+                  text:
+                    description: The artifact text
+                    type: string
+                    example: example-string
+                    minLength: 1
+                    maxLength: 1000
+                    pattern: ^[\w\s\-.,!?()@#+/]*$
+                required:
+                  - text
+          required: true
+        security:
+          - bearerAuth: []
+        responses:
+          '201':
+            $ref: '#/components/responses/ArtifactResponse'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+    labels_id:
+      get:
+        x-internal: storage
+        operationId: GetLabel
+        summary: Find a label
+        tags:
+          - Label
+        description: Find a label
+        parameters:
+          - $ref: '#/components/parameters/ResourceID'
+        security:
+          - bearerAuth: []
+        responses:
+          '200':
+            $ref: '#/components/responses/LabelResponse'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+      patch:
+        x-internal: storage
+        operationId: UpdateLabel
+        summary: Update a label
+        tags:
+          - Label
+        description: Update a label
+        requestBody:
+          description: Label update data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    description: The name of the label
+                    type: string
+                    minLength: 1
+                    example: Example Name
+                    maxLength: 255
+                    pattern: ^[\w\s\-.,!?()@#+/]*$
+        parameters:
+          - $ref: '#/components/parameters/ResourceID'
+        security:
+          - bearerAuth: []
+        responses:
+          '200':
+            $ref: '#/components/responses/LabelResponse'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+      delete:
+        x-internal: storage
+        operationId: DeleteLabel
+        summary: Delete a label
+        tags:
+          - Label
+        description: Delete a label
+        parameters:
+          - $ref: '#/components/parameters/ResourceID'
+        security:
+          - bearerAuth: []
+        responses:
+          '204':
+            $ref: '#/components/responses/NoContent'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+    labels:
+      get:
+        x-internal: storage
+        operationId: ListLabels
+        summary: List labels
+        tags:
+          - Label
+        description: List labels
+        parameters:
+          - $ref: '#/components/parameters/LabelsFilter'
+          - $ref: '#/components/parameters/PageQuery'
+          - $ref: '#/components/parameters/LabelsSort'
+        security:
+          - bearerAuth: []
+        responses:
+          '200':
+            $ref: '#/components/responses/LabelListResponse'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+      post:
+        x-internal: storage
+        operationId: CreateLabel
+        summary: Create a label
+        tags:
+          - Label
+        description: Create a label
+        requestBody:
+          description: Label creation request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    description: The name of the label
+                    type: string
+                    minLength: 1
+                    example: Example Name
+                    maxLength: 255
+                    pattern: ^[\w\s\-.,!?()@#+/]*$
+                required:
+                  - name
+          required: true
+        security:
+          - bearerAuth: []
+        responses:
+          '201':
+            $ref: '#/components/responses/LabelResponse'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+    health:
+      get:
+        x-internal: server
+        x-codegen-custom-handler: true
+        operationId: GetHealth
+        summary: Get health status
+        tags:
+          - Health
+        description: Check the health status of the application
+        responses:
+          '200':
+            $ref: '#/components/responses/HealthResponse'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+        security:
+          - {}

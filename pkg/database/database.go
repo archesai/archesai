@@ -161,3 +161,29 @@ func StartSQLite() (*Database, error) {
 
 	return db, nil
 }
+
+// Open opens a database connection based on the provided type and URL.
+// For SQLite, the URL should be a file path or ":memory:".
+// For PostgreSQL, the URL should be a connection string.
+func Open(dbType, url string) (*Database, error) {
+	t := ParseTypeFromString(dbType)
+
+	switch t {
+	case TypeSQLite:
+		sqlDB, err := sql.Open("sqlite", url)
+		if err != nil {
+			return nil, fmt.Errorf("failed to open SQLite database: %w", err)
+		}
+		return NewDatabase(sqlDB, nil, TypeSQLite), nil
+
+	case TypePostgreSQL:
+		sqlDB, err := sql.Open("pgx", url)
+		if err != nil {
+			return nil, fmt.Errorf("failed to open PostgreSQL database: %w", err)
+		}
+		return NewDatabase(sqlDB, nil, TypePostgreSQL), nil
+
+	default:
+		return nil, fmt.Errorf("unsupported database type: %s", dbType)
+	}
+}

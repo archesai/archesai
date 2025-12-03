@@ -1,18 +1,15 @@
 {
-  "extends": "./tools/tsconfig/src/base.json",
+  "extends": "./pkg/tsconfig/src/base.json",
   "files": [],
   "references": [
     {
-      "path": "./web/client"
+      "path": "./pkg/ui"
     },
     {
       "path": "./apps/docs"
     },
     {
-      "path": "./web/platform"
-    },
-    {
-      "path": "./web/ui"
+      "path": "./apps/studio"
     },
     {
       "path": "./deployments/containers/runners/node"

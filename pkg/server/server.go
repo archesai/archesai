@@ -16,8 +16,6 @@ import (
 	"os"
 	"os/signal"
 	"time"
-
-	"github.com/archesai/archesai/pkg/config"
 )
 
 // Server configuration constants.
@@ -74,16 +72,22 @@ const (
 	MiddlewarePriorityAuth = 10
 )
 
+// APIConfig holds the configuration for the API server.
+type APIConfig struct {
+	Port int
+	Cors string
+}
+
 // APIServer represents the API server.
 type APIServer struct {
 	mux    *http.ServeMux
 	server *http.Server
-	config *config.API
+	config *APIConfig
 }
 
 // NewAPIServer creates a new API server.
-func NewAPIServer(config *config.API) *APIServer {
-	addr := fmt.Sprintf(":%d", int(config.Port))
+func NewAPIServer(config *APIConfig) *APIServer {
+	addr := fmt.Sprintf(":%d", config.Port)
 	mux := http.NewServeMux()
 	apiServer := &APIServer{
 		server: &http.Server{

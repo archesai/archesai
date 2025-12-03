@@ -47,9 +47,25 @@ type SchemaDef struct {
 	// Extensions
 	XCodegen           *XCodegenExtension
 	XCodegenSchemaType XCodegenSchemaType
+	XInternal          string // When set (e.g., "server", "config"), this schema should be imported not generated
 
 	// Original OpenAPI schema reference
 	Schema *base.Schema
+}
+
+// IsInternal returns true if this schema should be imported from another package instead of generated.
+// If context is empty, it returns true whenever XInternal is set.
+// If context is provided, it returns true only when XInternal is set AND doesn't match the context.
+func (s *SchemaDef) IsInternal(context string) bool {
+	if s.XInternal == "" {
+		return false
+	}
+	// If no context provided, treat all internal schemas as internal
+	if context == "" {
+		return true
+	}
+	// Only internal if the internal tag doesn't match the current context
+	return s.XInternal != context
 }
 
 // IsEnum returns true if the schema is an enum
@@ -60,6 +76,15 @@ func (s *SchemaDef) IsEnum() bool {
 // HasDomainEvents returns true if the schema has domain events
 func (s *SchemaDef) HasDomainEvents() bool {
 	return s.XCodegenSchemaType == XCodegenSchemaTypeEntity
+}
+
+// HasProperty returns true if the schema has a property with the given name
+func (s *SchemaDef) HasProperty(name string) bool {
+	if s.Properties == nil {
+		return false
+	}
+	_, ok := s.Properties[name]
+	return ok
 }
 
 // GetRepositoryIndices returns the repository indices
@@ -416,7 +441,7 @@ func (s *SchemaDef) GetDBMapValue(dbVar string, parentSchema *SchemaDef) string 
 	fieldAccess := fmt.Sprintf("%s.%s", dbVar, s.Name)
 	enumType := ""
 	if parentSchema != nil && len(s.Enum) > 0 {
-		enumType = fmt.Sprintf("core.%s%s", parentSchema.Name, s.Name)
+		enumType = fmt.Sprintf("models.%s%s", parentSchema.Name, s.Name)
 	}
 
 	// Nullable enum - convert *string to *EnumType

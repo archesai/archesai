@@ -1,0 +1,46 @@
+openapi: 3.1.0
+x-project-name: github.com/archesai/archesai/pkg/server
+info:
+  title: Arches Server API
+  description: Server schemas for Arches platform
+  version: v0.0.0
+tags:
+  - name: Health
+    description: Health check operations
+paths:
+  /health:
+    $ref: paths/health.yaml
+components:
+  headers:
+    RateLimitLimit:
+      $ref: components/headers/RateLimitLimit.yaml
+    RateLimitRemaining:
+      $ref: components/headers/RateLimitRemaining.yaml
+    RateLimitReset:
+      $ref: components/headers/RateLimitReset.yaml
+    RetryAfter:
+      $ref: components/headers/RetryAfter.yaml
+  parameters:
+    PageQuery:
+      $ref: components/parameters/PageQuery.yaml
+    ResourceID:
+      $ref: components/parameters/ResourceID.yaml
+  responses:
+    BadRequest:
+      $ref: components/responses/BadRequest.yaml
+    Conflict:
+      $ref: components/responses/Conflict.yaml
+    HealthResponse:
+      $ref: components/responses/HealthResponse.yaml
+    InternalServerError:
+      $ref: components/responses/InternalServerError.yaml
+    NoContent:
+      $ref: components/responses/NoContent.yaml
+    NotFound:
+      $ref: components/responses/NotFound.yaml
+    TooManyRequests:
+      $ref: components/responses/TooManyRequests.yaml
+    Unauthorized:
+      $ref: components/responses/Unauthorized.yaml
+    UnprocessableEntity:
+      $ref: components/responses/UnprocessableEntity.yaml

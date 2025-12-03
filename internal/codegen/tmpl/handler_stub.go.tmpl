@@ -1,0 +1,48 @@
+{{- /*
+Template: handler_stub.go.tmpl
+Generates: User-editable custom handler stub (implements interface from .gen.go)
+Expected data: HandlerStubTemplateData
+Only generated for operations with x-codegen-custom-handler: true
+*/ -}}
+package application
+
+// NOTE: This file is user-editable. The generator will not overwrite it.
+
+import (
+	"context"
+	"fmt"
+
+	"github.com/google/uuid"
+)
+
+// Ensure {{ .Operation.ID }}HandlerImpl implements {{ .Operation.ID }}Handler
+var _ {{ .Operation.ID }}Handler = (*{{ .Operation.ID }}HandlerImpl)(nil)
+
+// {{ .Operation.ID }}HandlerImpl implements the {{ .Operation.ID }}Handler interface.
+type {{ .Operation.ID }}HandlerImpl struct {
+	// TODO: Add your dependencies here
+}
+
+// New{{ .Operation.ID }}Handler creates a new {{ .Operation.ID }} handler.
+func New{{ .Operation.ID }}Handler(
+	// TODO: Add your dependencies here
+) {{ .Operation.ID }}Handler {
+	return &{{ .Operation.ID }}HandlerImpl{
+		// TODO: Initialize dependencies
+	}
+}
+
+// Execute performs the {{ .Operation.ID }} operation.
+{{- $successResponse := .Operation.GetSuccessResponse }}
+{{- if and $successResponse (eq $successResponse.StatusCode "204") }}
+func (h *{{ .Operation.ID }}HandlerImpl) Execute(ctx context.Context, input *{{ .Operation.ID }}Input) error {
+	// TODO: Implement {{ .Operation.ID }} logic
+	return fmt.Errorf("not implemented")
+}
+{{- else }}
+func (h *{{ .Operation.ID }}HandlerImpl) Execute(ctx context.Context, input *{{ .Operation.ID }}Input) (*{{ .Operation.ID }}Output, error) {
+	// TODO: Implement {{ .Operation.ID }} logic
+	return nil, fmt.Errorf("not implemented")
+}
+{{- end }}
+

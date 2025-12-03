@@ -2,6 +2,7 @@ package parsers
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"sort"
@@ -14,9 +15,17 @@ import (
 	v3 "github.com/pb33f/libopenapi/datamodel/high/v3"
 )
 
+const (
+	boolTrueString = "true"
+)
+
 // OpenAPIParser wraps an OpenAPI document and provides parsing utilities
 type OpenAPIParser struct {
-	doc *v3.Document
+	doc             *v3.Document
+	lintEnabled     bool
+	specBytes       []byte
+	basePath        string
+	enabledIncludes []string // Names of enabled x-include-* extensions
 }
 
 // NewOpenAPIParser creates a new OpenAPIParser instance
@@ -24,11 +33,35 @@ func NewOpenAPIParser() *OpenAPIParser {
 	return &OpenAPIParser{}
 }
 
+// WithLinting enables strict linting that will block parsing on any violations
+func (p *OpenAPIParser) WithLinting() *OpenAPIParser {
+	p.lintEnabled = true
+	return p
+}
+
 // Parse parses an OpenAPI specification from bytes and returns the document
 func (p *OpenAPIParser) Parse(data []byte) (*v3.Document, error) {
+	// Store spec bytes for potential linting
+	p.specBytes = data
+
+	// Run linting if enabled (blocking on any violations)
+	if p.lintEnabled {
+		// Use basePath if available for better reference resolution
+		if p.basePath != "" {
+			if err := p.LintWithBasePath(data, p.basePath); err != nil {
+				return nil, err
+			}
+		} else {
+			if err := p.Lint(data); err != nil {
+				return nil, err
+			}
+		}
+	}
+
 	config := &datamodel.DocumentConfiguration{
 		AllowFileReferences:   true,
 		AllowRemoteReferences: true,
+		BasePath:              p.basePath,
 	}
 
 	doc, err := libopenapi.NewDocumentWithConfiguration(data, config)
@@ -45,31 +78,66 @@ func (p *OpenAPIParser) Parse(data []byte) (*v3.Document, error) {
 	return &v3Model.Model, nil
 }
 
-// ParseFile reads and parses an OpenAPI specification from a file
+// ParseFile reads and parses an OpenAPI specification from a file.
+// It automatically processes any x-include-* extensions to merge in referenced specs.
 func (p *OpenAPIParser) ParseFile(path string) (*v3.Document, error) {
-	data, err := os.ReadFile(path)
+	// Process x-include-* extensions first
+	merger := NewDefaultIncludeMerger()
+	mergedSpecPath, cleanup, enabledIncludes, err := merger.ProcessIncludes(path)
+	if err != nil {
+		return nil, fmt.Errorf("failed to process includes: %w", err)
+	}
+	defer cleanup()
+
+	// Store enabled includes for later use
+	p.enabledIncludes = enabledIncludes
+
+	data, err := os.ReadFile(mergedSpecPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read file: %w", err)
 	}
+	// Store base path for reference resolution during linting
+	p.basePath = filepath.Dir(mergedSpecPath)
 	return p.Parse(data)
 }
 
-// Bundle bundles an OpenAPI specification with external references into a single document
+// Bundle bundles an OpenAPI specification with external references into a single document.
+// It first processes any x-include-* extensions to merge in referenced specs, then bundles
+// all external $ref references into a single document.
 func (p *OpenAPIParser) Bundle(specPath, outputPath string, orvalFix bool) error {
-	// Read the spec file
-	specBytes, err := os.ReadFile(specPath)
+	// Process x-include-* extensions first
+	merger := NewDefaultIncludeMerger()
+	mergedSpecPath, cleanup, _, err := merger.ProcessIncludes(specPath)
+	if err != nil {
+		return fmt.Errorf("failed to process includes: %w", err)
+	}
+	defer cleanup()
+
+	// Read the (potentially merged) spec file
+	specBytes, err := os.ReadFile(mergedSpecPath)
 	if err != nil {
 		return fmt.Errorf("failed to read file: %w", err)
 	}
 
-	// Calculate base path from input spec directory
-	basePath := filepath.Dir(specPath)
+	// Calculate base path from the spec's directory
+	basePath := filepath.Dir(mergedSpecPath)
+
+	// Run linting if enabled (blocking on any violations)
+	if p.lintEnabled {
+		if err := p.LintWithBasePath(specBytes, basePath); err != nil {
+			return err
+		}
+	}
 
 	// Configure bundler
+	logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
+		Level: slog.LevelError,
+	}))
 	config := &datamodel.DocumentConfiguration{
 		BasePath:                basePath,
 		ExtractRefsSequentially: true,
 		AllowRemoteReferences:   true,
+		Logger:                  logger,
 		AllowFileReferences:     true,
 	}
 
@@ -79,6 +147,20 @@ func (p *OpenAPIParser) Bundle(specPath, outputPath string, orvalFix bool) error
 	})
 	if err != nil {
 		return fmt.Errorf("failed to bundle spec: %w", err)
+	}
+
+	// Remove duplicate component entries created by composed bundling.
+	// The bundler creates both "Foo: $ref: #/components/.../Foo__type" and "Foo__type: {...}".
+	// We keep only the actual definitions (with suffix) and rename them to remove the suffix.
+	bundled, err = cleanupComposedBundle(bundled)
+	if err != nil {
+		return fmt.Errorf("failed to cleanup bundled spec: %w", err)
+	}
+
+	// Inject default responses (e.g., 500 for all operations)
+	bundled, err = injectDefaults(bundled)
+	if err != nil {
+		return fmt.Errorf("failed to inject defaults: %w", err)
 	}
 
 	// Write bundled output
@@ -109,10 +191,31 @@ func (p *OpenAPIParser) Extract() (*SpecDef, error) {
 		return nil, fmt.Errorf("failed to extract component schemas: %w", err)
 	}
 
+	// Extract project name from x-project-name extension
+	projectName := p.extractProjectName()
+
 	return &SpecDef{
-		Operations: operations,
-		Schemas:    schemas,
+		Operations:  operations,
+		Schemas:     schemas,
+		Document:    p.doc,
+		ProjectName: projectName,
 	}, nil
+}
+
+// extractProjectName extracts the project name from the x-project-name extension
+func (p *OpenAPIParser) extractProjectName() string {
+	if p.doc == nil || p.doc.Extensions == nil {
+		return ""
+	}
+
+	if ext, ok := p.doc.Extensions.Get("x-project-name"); ok {
+		var projectName string
+		if err := ext.Decode(&projectName); err == nil {
+			return projectName
+		}
+	}
+
+	return ""
 }
 
 // extractOperations extracts all operations from the OpenAPI spec
@@ -187,6 +290,7 @@ func (p *OpenAPIParser) extractOperations() ([]OperationDef, error) {
 				Responses:             responses,
 				XCodegenCustomHandler: p.extractXCodegenCustomHandler(op),
 				XCodegenRepository:    p.extractXCodegenRepository(op),
+				XInternal:             p.extractXInternal(op),
 				RequestBody:           requestBody,
 			}
 
@@ -214,7 +318,7 @@ func (p *OpenAPIParser) extractXCodegenCustomHandler(op *v3.Operation) bool {
 		}
 		var strVal string
 		if err := val.Decode(&strVal); err == nil {
-			return strVal == "true"
+			return strVal == boolTrueString
 		}
 	}
 	return false
@@ -226,6 +330,21 @@ func (p *OpenAPIParser) extractXCodegenRepository(op *v3.Operation) string {
 		return ""
 	}
 	if val, ok := op.Extensions.Get("x-codegen-repository"); ok {
+		var strVal string
+		if err := val.Decode(&strVal); err == nil {
+			return strVal
+		}
+	}
+	return ""
+}
+
+// extractXInternal extracts the x-internal extension value (e.g., "server", "config")
+// When set, the operation should be imported from another package instead of generated
+func (p *OpenAPIParser) extractXInternal(op *v3.Operation) string {
+	if op.Extensions == nil {
+		return ""
+	}
+	if val, ok := op.Extensions.Get("x-internal"); ok {
 		var strVal string
 		if err := val.Decode(&strVal); err == nil {
 			return strVal
@@ -511,6 +630,9 @@ func (p *OpenAPIParser) extractComponentSchemas() ([]*SchemaDef, error) {
 	// Initialize results slice
 	results := []*SchemaDef{}
 
+	// Track processed schemas by title to avoid duplicates from ref resolution
+	processedTitles := make(map[string]bool)
+
 	// Process each schema
 	for schemaPair := p.doc.Components.Schemas.First(); schemaPair != nil; schemaPair = schemaPair.Next() {
 		schemaName := schemaPair.Key()
@@ -530,6 +652,12 @@ func (p *OpenAPIParser) extractComponentSchemas() ([]*SchemaDef, error) {
 		if schema.Title == "" {
 			schema.Title = schemaName
 		}
+
+		// Skip duplicates (can occur when refs resolve to same schema)
+		if processedTitles[schema.Title] {
+			continue
+		}
+		processedTitles[schema.Title] = true
 
 		jsonParser := NewJSONSchemaParser(p.doc)
 		processed, err := jsonParser.ParseBase(schema)

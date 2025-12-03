@@ -1,31 +1,23 @@
 # Test Coverage Report
 
-Generated: 2025-09-17 03:24:39 UTC
+Generated: 2025-12-03 09:09:44 UTC
 
 ## 📊 Summary
 
-**Total Coverage:** `8.2%` 🔴
+**Total Coverage:** `5.9%` 🔴
 
 > ⚠️ **Warning:** Coverage is below recommended threshold of 80%
 
 ## Coverage by Package
 
-| Package                          | Coverage | Status |
-| -------------------------------- | -------- | ------ |
-| `internal/accounts`              | 18.9%    | 🔴 Low |
-| `internal/artifacts`             | 19.9%    | 🔴 Low |
-| `internal/infrastructure/config` | 33.0%    | 🔴 Low |
-| `internal/health`                | 10.5%    | 🔴 Low |
-| `internal/labels`                | 19.8%    | 🔴 Low |
-| `internal/oauth`                 | 7.3%     | 🔴 Low |
-| `internal/organizations`         | 4.5%     | 🔴 Low |
-| `internal/pipelines`             | 17.8%    | 🔴 Low |
-| `internal/sessions`              | 32.2%    | 🔴 Low |
-| `internal/users`                 | 18.5%    | 🔴 Low |
+| Package        | Coverage | Status    |
+| -------------- | -------- | --------- |
+| `pkg/config`   | 75.9%    | 🟡 Medium |
+| `pkg/executor` | 47.4%    | 🟡 Medium |
 
 ## Coverage Trends
 
-```text
+```
 Legend: 🟢 >80% | 🟡 40-80% | 🔴 <40% | ⚫ 0%
 ```
 
@@ -34,10 +26,10 @@ Legend: 🟢 >80% | 🟡 40-80% | 🔴 <40% | ⚫ 0%
 The following critical files have 0% coverage and should be prioritized:
 
 - **`cmd/archesai/main.go`** - Main application entry point
-- **`internal/accounts/handler.gen.go`** -
-- **`internal/accounts/handler.gen.go`** -
-- **`internal/accounts/handler.gen.go`** -
-- **`internal/accounts/handler.gen.go`** -
+- **`internal/cli/completion.go`** -
+- **`internal/cli/config.go`** -
+- **`internal/cli/config.go`** -
+- **`internal/cli/dev.go`** -
 
 ## Recommendations
 
@@ -56,8 +48,8 @@ The following critical files have 0% coverage and should be prioritized:
 
 ## Test Execution Details
 
-- **Total Packages:** 11
-- **Packages with Tests:** 11
+- **Total Packages:** 5
+- **Packages with Tests:** 2
 - **Test Execution Time:** ~10s
 
 ---

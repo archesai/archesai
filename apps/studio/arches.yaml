@@ -1,0 +1,29 @@
+# yaml-language-server: $schema=api/components/schemas/config/Config.yaml
+api:
+  cors: https://platform.archesai.dev
+  docs: true
+  environment: development
+  host: 'moose'
+  port: 3001
+  validation: true
+  url: https://api.archesai.dev
+
+logging:
+  level: info
+  pretty: true
+
+auth:
+  enabled: false
+
+platform:
+  enabled: false
+  url: https://moose
+
+database:
+  maxConns: 25
+  minConns: 5
+  runMigrations: false
+  managed: false
+  type: postgresql
+  enabled: true
+  url: postgresql://admin:password@localhost:5432/archesai

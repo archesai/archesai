@@ -1,7 +1,7 @@
 {{- /*
-Template: controller.tmpl
-Generates: A single controller implementation
-Expected data: ControllersTemplateData
+Template: controller.go.tmpl
+Generates: Individual HTTP handler file for a single operation
+Expected data: HandlerControllerTemplateData
 */ -}}
 {{template "header" .}}
 package controllers
@@ -16,132 +16,61 @@ import (
 	"github.com/oapi-codegen/runtime"
 
 	"github.com/archesai/archesai/pkg/server"
-	{{- if .HasCustomHandlers }}
-	customHandlers "{{ .OutputPath }}/handlers/{{ lower .Tag }}"
-	{{- end }}
-	commands "{{ .OutputPath }}/generated/application/commands/{{ lower .Tag }}"
-	queries "{{ .OutputPath }}/generated/application/queries/{{ lower .Tag }}"
-	"{{ .OutputPath }}/generated/core"
+	"{{ .ProjectName }}/application"
+	"{{ .ProjectName }}/models"
 )
 
-// {{ .Tag }}Controller handles HTTP requests for {{ lower .Tag }} endpoints.
-type {{ .Tag }}Controller struct {
-    {{- range .Operations }}
-        {{- if ne .Method "GET" }}
-            {{- if .XCodegenCustomHandler }}
-    {{ camelCase .ID }}Handler *customHandlers.{{ pascalCase .ID }}CommandHandler
-            {{- else }}
-    {{ camelCase .ID }}Handler *commands.{{ pascalCase .ID }}CommandHandler
-            {{- end }}
-        {{- end }}
-    {{- end }}
-
-    {{- range .Operations }}
-        {{- if eq .Method "GET" }}
-            {{- if .XCodegenCustomHandler }}
-    {{ camelCase .ID }}Handler *customHandlers.{{ pascalCase .ID }}QueryHandler
-            {{- else }}
-    {{ camelCase .ID }}Handler *queries.{{ pascalCase .ID }}QueryHandler
-            {{- end }}
-        {{- end }}
-    {{- end }}
-}
-
-
-// New{{ .Tag }}Controller creates a new {{ lower .Tag }} controller with injected handlers.
-func New{{ .Tag }}Controller(
-    {{- range .Operations }}
-        {{- if ne .Method "GET" }}
-            {{- if .XCodegenCustomHandler }}
-    {{ camelCase .ID }}Handler *customHandlers.{{ pascalCase .ID }}CommandHandler,
-            {{- else }}
-    {{ camelCase .ID }}Handler *commands.{{ pascalCase .ID }}CommandHandler,
-            {{- end }}
-        {{- end }}
-    {{- end }}
-    {{- range .Operations }}
-        {{- if eq .Method "GET" }}
-            {{- if .XCodegenCustomHandler }}
-    {{ camelCase .ID }}Handler *customHandlers.{{ pascalCase .ID }}QueryHandler,
-            {{- else }}
-    {{ camelCase .ID }}Handler *queries.{{ pascalCase .ID }}QueryHandler,
-            {{- end }}
-        {{- end }}
-    {{- end }}
-) *{{ .Tag }}Controller {
-    return &{{ .Tag }}Controller{
-        {{- range .Operations }}
-            {{- if ne .Method "GET" }}
-        {{ camelCase .ID }}Handler: {{ camelCase .ID }}Handler,
-            {{- end }}
-        {{- end }}
-        {{- range .Operations }}
-            {{- if eq .Method "GET" }}
-        {{ camelCase .ID }}Handler: {{ camelCase .ID }}Handler,
-            {{- end }}
-        {{- end }}
-    }
-}
-
-// Register{{ .Tag }}Routes registers all HTTP routes for the {{ lower .Tag }} domain.
-func Register{{ .Tag }}Routes(mux *http.ServeMux, controller *{{ .Tag }}Controller) {
-{{- range .Operations }}
-{{- $operation := . }}
-	mux.HandleFunc("{{ $operation.Method }} {{ $operation.Path }}", controller.{{ $operation.ID }})
-{{- end }}
-}
-
-{{- range .Operations }}
-{{- $operation := . }}
 // ============================================================================
-// {{ $operation.ID }} - {{ $operation.Method }} {{ $operation.Path }}
+// {{ .Operation.ID }} - {{ .Operation.Method }} {{ .Operation.Path }}
 // ============================================================================
+
+// Handler type
+
+// {{ .Operation.ID }}HandlerHTTP wraps the user handler for HTTP
+type {{ .Operation.ID }}HandlerHTTP struct {
+	handler application.{{ .Operation.ID }}Handler
+}
+
+// New{{ .Operation.ID }}HandlerHTTP creates a new HTTP handler wrapper
+func New{{ .Operation.ID }}HandlerHTTP(handler application.{{ .Operation.ID }}Handler) *{{ .Operation.ID }}HandlerHTTP {
+	return &{{ .Operation.ID }}HandlerHTTP{handler: handler}
+}
+
+// Register{{ .Operation.ID }}Route registers the HTTP route for {{ .Operation.ID }}
+func Register{{ .Operation.ID }}Route(mux *http.ServeMux, handler *{{ .Operation.ID }}HandlerHTTP) {
+	mux.HandleFunc("{{ .Operation.Method }} {{ .Operation.Path }}", handler.ServeHTTP)
+}
 
 // Request types
 
-{{- if $operation.GetQueryParams }}
-// {{ $operation.ID }}Params defines parameters for {{ $operation.ID }}
-type {{ $operation.ID }}Params struct {
-{{- range $operation.GetQueryParams }}
+{{- if .Operation.GetQueryParams }}
+
+// {{ .Operation.ID }}Params defines query parameters for {{ .Operation.ID }}
+type {{ .Operation.ID }}Params struct {
+{{- range .Operation.GetQueryParams }}
 {{- $param := . }}
 	{{ $param.Name }} {{ $param.GoType }} `json:"{{ camelCase $param.Name }},omitempty"`
 {{- end }}
 }
 {{- end }}
 
-{{- if $operation.RequestBody }}
-// {{ $operation.ID }}RequestBody defines the request body for {{ $operation.ID }}
-type {{ $operation.ID }}RequestBody struct {
-{{- range $operation.RequestBody.GetSortedProperties }}
+{{- if .Operation.RequestBody }}
+
+// {{ .Operation.ID }}RequestBody defines the request body for {{ .Operation.ID }}
+type {{ .Operation.ID }}RequestBody struct {
+{{- range .Operation.RequestBody.GetSortedProperties }}
 {{- $field := . }}
 	{{ $field.Name }} {{ if .NeedsPointer }}*{{ end }}{{ $field.GoType }} `json:"{{ $field.JSONTag }}"`
 {{- end }}
 }
 {{- end }}
 
-type {{ $operation.ID }}Request struct {
-	{{- range $operation.GetPathParams }}
-	{{- $param := . }}
-	{{ $param.Name }} {{ $param.GoType }} `json:"{{ camelCase $param.Name }}"`
-	{{- end }}
-	{{- range $operation.GetHeaderParams }}
-	{{- $param := . }}
-	{{ $param.Name }} {{ $param.GoType }} `json:"{{ camelCase $param.Name }}"`
-	{{- end }}
-	{{- if $operation.GetQueryParams }}
-	Params {{ $operation.ID }}Params
-	{{- end }}
-	{{- if $operation.RequestBody }}
-	Body *{{ $operation.ID }}RequestBody
-	{{- end }}
-}
-
 // Response types
 
-type {{ $operation.ID }}Response interface {
-    Visit{{ $operation.ID }}Response(w http.ResponseWriter) error
+type {{ .Operation.ID }}Response interface {
+    Visit{{ .Operation.ID }}Response(w http.ResponseWriter) error
 }
-{{- range $operation.Responses }}
+{{- range .Operation.Responses }}
 {{- $response := . }}
 
 {{- /* Generate nested type definitions for inline object properties */ -}}
@@ -150,8 +79,8 @@ type {{ $operation.ID }}Response interface {
 {{- $field := . }}
 {{- if and (eq $field.Type "object") (gt (len $field.Properties) 0) }}
 
-// {{ $operation.ID }}{{ $response.StatusCode }}Response{{ $field.Name }} defines the {{ lower $field.Name }} structure
-type {{ $operation.ID }}{{ $response.StatusCode }}Response{{ $field.Name }} struct {
+// {{ $.Operation.ID }}{{ $response.StatusCode }}Response{{ $field.Name }} defines the {{ lower $field.Name }} structure
+type {{ $.Operation.ID }}{{ $response.StatusCode }}Response{{ $field.Name }} struct {
 {{- range $field.GetSortedProperties }}
 {{- $nestedField := . }}
     {{- if and (eq $nestedField.Type "array") $nestedField.Items (eq $nestedField.Items.Type "object") (gt (len $nestedField.Items.Properties) 0) }}
@@ -166,18 +95,21 @@ type {{ $operation.ID }}{{ $response.StatusCode }}Response{{ $field.Name }} stru
     {{- end }}
 {{- end }}
 }
-
 {{- end }}
 {{- end }}
 {{- end }}
 
-type {{ $operation.ID }}{{ $response.StatusCode }}Response struct {
+type {{ $.Operation.ID }}{{ $response.StatusCode }}Response struct {
 {{- if $response.IsSuccess }}
     {{- if eq $response.StatusCode "204" }}
     {{- else if $response.Properties }}
         {{- range $response.GetSortedProperties }}
             {{- $field := . }}
-    {{ $field.Name }} {{ $field.GoType }} `json:"{{ camelCase $field.JSONTag }}"`
+    {{- if and (eq $field.Type "object") (gt (len $field.Properties) 0) }}
+    {{ $field.Name }} {{ $.Operation.ID }}{{ $response.StatusCode }}Response{{ $field.Name }} `json:"{{ camelCase $field.JSONTag }}"`
+    {{- else }}
+    {{ $field.Name }} {{ if .NeedsPointer }}*{{ end }}{{ $field.GoType }} `json:"{{ camelCase $field.JSONTag }}"`
+    {{- end }}
         {{- end }}
     {{- end }}
 {{- else }}
@@ -185,337 +117,188 @@ type {{ $operation.ID }}{{ $response.StatusCode }}Response struct {
 {{- end }}
 }
 
-func (response {{ $operation.ID }}{{ $response.StatusCode }}Response) Visit{{ $operation.ID }}Response(w http.ResponseWriter) error {
+func (response {{ $.Operation.ID }}{{ $response.StatusCode }}Response) Visit{{ $.Operation.ID }}Response(w http.ResponseWriter) error {
 {{- if eq $response.StatusCode "204" }}
-    {{- /* Set headers for 204 No Content responses */ -}}
-    {{- range $response.GetSortedHeaders }}
-    {{- $header := . }}
-    w.Header().Set("{{ $header.Name }}", "") // TODO: Set actual value for {{ $header.Name }}
-    {{- end }}
     w.WriteHeader(204)
-
     return nil
 {{- else if not $response.IsSuccess }}
-    {{- /* For error responses, set headers from OpenAPI definition */ -}}
     {{- if $response.ContentType }}
     w.Header().Set("Content-Type", "{{ $response.ContentType }}")
     {{- end }}
-    {{- range $response.GetSortedHeaders }}
-    {{- $header := . }}
-    w.Header().Set("{{ $header.Name }}", "") // TODO: Set actual value for {{ $header.Name }}
-    {{- end }}
     w.WriteHeader({{ $response.StatusCode }})
-
     return json.NewEncoder(w).Encode(response.ProblemDetails)
 {{- else }}
-    {{- /* For success responses, set headers from OpenAPI definition */ -}}
     {{- if $response.ContentType }}
     w.Header().Set("Content-Type", "{{ $response.ContentType }}")
     {{- end }}
-    {{- range $response.GetSortedHeaders }}
-    {{- $header := . }}
-    w.Header().Set("{{ $header.Name }}", "") // TODO: Set actual value for {{ $header.Name }}
-    {{- end }}
     w.WriteHeader({{ $response.StatusCode }})
-
     return json.NewEncoder(w).Encode(response)
 {{- end }}
 }
 {{- end }}
 
-// Handler method
-
-// {{ $operation.ID }} handles the {{ $operation.Method }} {{ $operation.Path }} endpoint.
-func (c *{{ $.Tag }}Controller) {{ $operation.ID }}(w http.ResponseWriter, r *http.Request) {
+// ServeHTTP handles the {{ .Operation.Method }} {{ .Operation.Path }} endpoint.
+func (h *{{ .Operation.ID }}HandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	{{- if or $operation.GetPathParams $operation.GetHeaderParams $operation.GetQueryParams $operation.RequestBody }}
-	request := {{ $operation.ID }}Request{}
-	{{- end }}
-	{{- if or $operation.HasBearerAuth $operation.HasCookieAuth }}
+	{{- if or .Operation.HasBearerAuth .Operation.HasCookieAuth }}
 
 	// Extract session ID from context for authenticated operations
 	sessionID, ok := ctx.Value(server.SessionIDContextKey).(uuid.UUID)
 	if !ok {
-		errorResp := {{ $operation.ID }}401Response{
+		errorResp := {{ .Operation.ID }}401Response{
 			ProblemDetails: server.NewUnauthorizedResponse("session required", r.URL.Path),
 		}
-		if err := errorResp.Visit{{ $operation.ID }}Response(w); err != nil {
-			// Log error - response may have already been partially written
+		if err := errorResp.Visit{{ .Operation.ID }}Response(w); err != nil {
 			fmt.Fprintf(w, "error writing response: %v", err)
 		}
 		return
 	}
 	{{- end }}
 
-	{{- range $operation.GetPathParams }}
+	// Build input from request
+	input := &application.{{ .Operation.ID }}Input{}
+	{{- if or .Operation.HasBearerAuth .Operation.HasCookieAuth }}
+	input.SessionID = sessionID
+	{{- end }}
+
+	{{- range .Operation.GetPathParams }}
 	{{- $param := . }}
 
 	// Path parameter "{{ camelCase $param.Name }}"
 	var {{ camelCase $param.Name }} {{ $param.GoType }}
 	if err := runtime.BindStyledParameterWithOptions("simple", "{{ camelCase $param.Name }}", r.PathValue("{{ camelCase $param.Name }}"), &{{ camelCase $param.Name }}, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
-		errorResp := {{ $operation.ID }}400Response{
+		errorResp := {{ $.Operation.ID }}400Response{
 			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter {{ camelCase $param.Name }}: %s", err), r.URL.Path),
 		}
-		if err := errorResp.Visit{{ $operation.ID }}Response(w); err != nil {
+		if err := errorResp.Visit{{ $.Operation.ID }}Response(w); err != nil {
 			fmt.Fprintf(w, "error writing response: %v", err)
 		}
 		return
 	}
-	request.{{ $param.Name }} = {{ camelCase $param.Name }}
+	input.{{ $param.Name }} = {{ camelCase $param.Name }}
 	{{- end }}
 
-	{{- range $operation.GetHeaderParams }}
+	{{- range .Operation.GetHeaderParams }}
 	{{- $param := . }}
 
 	// Header parameter "{{ $param.Name }}"
 	{{ camelCase $param.Name }} := r.Header.Get("{{ $param.Name }}")
 	{{- if $param.Required }}
 	if {{ camelCase $param.Name }} == "" {
-		errorResp := {{ $operation.ID }}400Response{
+		errorResp := {{ $.Operation.ID }}400Response{
 			ProblemDetails: server.NewBadRequestResponse("Missing required header: {{ $param.Name }}", r.URL.Path),
 		}
-		if err := errorResp.Visit{{ $operation.ID }}Response(w); err != nil {
+		if err := errorResp.Visit{{ $.Operation.ID }}Response(w); err != nil {
 			fmt.Fprintf(w, "error writing response: %v", err)
 		}
 		return
 	}
 	{{- end }}
-	request.{{ $param.Name }} = {{ camelCase $param.Name }}
+	input.{{ $param.Name }} = {{ camelCase $param.Name }}
 	{{- end }}
 
-	{{- if $operation.GetQueryParams }}
+	{{- if .Operation.GetQueryParams }}
 
 	// Query parameters
-	var params {{ $operation.ID }}Params
-	{{- range $operation.GetQueryParams }}
+	{{- range .Operation.GetQueryParams }}
 	{{- $param := . }}
 
 	// {{ if $param.Required }}Required{{ else }}Optional{{ end }} query parameter "{{ lower $param.Name }}"
 	{{- if eq $param.Name "Filter" }}
-	if err := runtime.BindQueryParameter("deepObject", true, {{ if $param.Required }}true{{ else }}false{{ end }}, "filter", r.URL.Query(), &params.{{ $param.Name }}); err != nil {
-		errorResp := {{ $operation.ID }}400Response{
+	if err := runtime.BindQueryParameter("deepObject", true, {{ if $param.Required }}true{{ else }}false{{ end }}, "filter", r.URL.Query(), &input.{{ $param.Name }}); err != nil {
+		errorResp := {{ $.Operation.ID }}400Response{
 			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter filter: %s", err), r.URL.Path),
 		}
-		if err := errorResp.Visit{{ $operation.ID }}Response(w); err != nil {
+		if err := errorResp.Visit{{ $.Operation.ID }}Response(w); err != nil {
 			fmt.Fprintf(w, "error writing response: %v", err)
 		}
 		return
 	}
 	{{- else }}
-	if err := runtime.BindQueryParameter("form", true, {{ if $param.Required }}true{{ else }}false{{ end }}, "{{ lower $param.Name }}", r.URL.Query(), &params.{{ $param.Name }}); err != nil {
-		errorResp := {{ $operation.ID }}400Response{
+	if err := runtime.BindQueryParameter("form", true, {{ if $param.Required }}true{{ else }}false{{ end }}, "{{ lower $param.Name }}", r.URL.Query(), &input.{{ $param.Name }}); err != nil {
+		errorResp := {{ $.Operation.ID }}400Response{
 			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter {{ lower $param.Name }}: %s", err), r.URL.Path),
 		}
-		if err := errorResp.Visit{{ $operation.ID }}Response(w); err != nil {
+		if err := errorResp.Visit{{ $.Operation.ID }}Response(w); err != nil {
 			fmt.Fprintf(w, "error writing response: %v", err)
 		}
 		return
 	}
 	{{- end }}
 	{{- end }}
-	request.Params = params
 	{{- end }}
 
-	{{- if $operation.RequestBody }}
+	{{- if .Operation.RequestBody }}
 
 	// Request body
-	request.Body = &{{ $operation.ID }}RequestBody{}
-	if err := json.NewDecoder(r.Body).Decode(request.Body); err != nil {
-		errorResp := {{ $operation.ID }}400Response{
+	body := &{{ .Operation.ID }}RequestBody{}
+	if err := json.NewDecoder(r.Body).Decode(body); err != nil {
+		errorResp := {{ .Operation.ID }}400Response{
 			ProblemDetails: server.NewBadRequestResponse(err.Error(), r.URL.Path),
 		}
-		if err := errorResp.Visit{{ $operation.ID }}Response(w); err != nil {
+		if err := errorResp.Visit{{ .Operation.ID }}Response(w); err != nil {
 			fmt.Fprintf(w, "error writing response: %v", err)
 		}
 		return
 	}
+	{{- range .Operation.RequestBody.GetSortedProperties }}
+	input.{{ .Name }} = body.{{ .Name }}
+	{{- end }}
 	{{- end }}
 
-	// Determine which handler to call based on operation
-	{{- if ne $operation.Method "GET" }}
-	// Command handler
-
-	// Map request to command parameters
-	cmd := commands.New{{ pascalCase $operation.ID }}Command(
-		{{- if or $operation.HasBearerAuth $operation.HasCookieAuth }}
-		sessionID, // SessionID for authenticated operations
-		{{- end }}
-		{{- range $operation.GetPathParams }}
-		request.{{ .Name }}, // {{ .Name }}
-		{{- end }}
-		{{- range $operation.GetHeaderParams }}
-		request.{{ .Name }}, // {{ .Name }}
-		{{- end }}
-		{{- if $operation.RequestBody }}
-		{{- range $i, $field := $operation.RequestBody.GetSortedProperties }}
-		request.Body.{{ $field.Name }}, // {{ $field.Name }}
-		{{- end }}
-		{{- end }}
-	)
-
-	{{- $successResponse := $operation.GetSuccessResponse }}
+	// Execute handler
+	{{- $successResponse := .Operation.GetSuccessResponse }}
 	{{- if and $successResponse (eq $successResponse.StatusCode "204") }}
-	if err := c.{{ camelCase $operation.ID }}Handler.Handle(ctx, cmd); err != nil {
-		errorResp := {{ $operation.ID }}500Response{
+	if err := h.handler.Execute(ctx, input); err != nil {
+		errorResp := {{ .Operation.ID }}500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}
-		if err := errorResp.Visit{{ $operation.ID }}Response(w); err != nil {
+		if err := errorResp.Visit{{ .Operation.ID }}Response(w); err != nil {
 			fmt.Fprintf(w, "error writing response: %v", err)
 		}
 		return
 	}
 
-	response := {{ $operation.ID }}204Response{}
-	if err := response.Visit{{ $operation.ID }}Response(w); err != nil {
-		fmt.Fprintf(w, "error writing response: %v", err)
-	}
-	{{- else if and $successResponse (not $successResponse.Properties) (ne $successResponse.StatusCode "204") }}
-	{{- /* Success response exists but has no body properties (e.g., DELETE returning 200 with empty body or wrapper) */ -}}
-	result, err := c.{{ camelCase $operation.ID }}Handler.Handle(ctx, cmd)
-	if err != nil {
-		errorResp := {{ $operation.ID }}500Response{
-			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
-		}
-		if err := errorResp.Visit{{ $operation.ID }}Response(w); err != nil {
-			fmt.Fprintf(w, "error writing response: %v", err)
-		}
-		return
-	}
-
-	response := {{ $operation.ID }}{{ $successResponse.StatusCode }}Response{Data: *result}
-	if err := response.Visit{{ $operation.ID }}Response(w); err != nil {
+	response := {{ .Operation.ID }}204Response{}
+	if err := response.Visit{{ .Operation.ID }}Response(w); err != nil {
 		fmt.Fprintf(w, "error writing response: %v", err)
 	}
 	{{- else }}
-	{{- $has204 := false }}
-	{{- range $operation.Responses }}
-		{{- if eq .StatusCode "204" }}
-			{{- $has204 = true }}
-		{{- end }}
-	{{- end }}
-	{{- if $has204 }}
-	if _, err := c.{{ camelCase $operation.ID }}Handler.Handle(ctx, cmd); err != nil {
-		errorResp := {{ $operation.ID }}500Response{
-			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
-		}
-		if err := errorResp.Visit{{ $operation.ID }}Response(w); err != nil {
-			fmt.Fprintf(w, "error writing response: %v", err)
-		}
-		return
-	}
-
-	response := {{ $operation.ID }}204Response{}
-	if err := response.Visit{{ $operation.ID }}Response(w); err != nil {
-		fmt.Fprintf(w, "error writing response: %v", err)
-	}
-	{{- else }}
-	result, err := c.{{ camelCase $operation.ID }}Handler.Handle(ctx, cmd)
+	result, err := h.handler.Execute(ctx, input)
 	if err != nil {
-		errorResp := {{ $operation.ID }}500Response{
+		errorResp := {{ .Operation.ID }}500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}
-		if err := errorResp.Visit{{ $operation.ID }}Response(w); err != nil {
+		if err := errorResp.Visit{{ .Operation.ID }}Response(w); err != nil {
 			fmt.Fprintf(w, "error writing response: %v", err)
 		}
 		return
 	}
 	{{- $successCode := "200" }}
-	{{- range $operation.Responses }}
+	{{- range .Operation.Responses }}
 		{{- if and .IsSuccess (ne .StatusCode "204") }}
 			{{- $successCode = .StatusCode }}
 		{{- end }}
 	{{- end }}
-	{{- if $operation.XCodegenCustomHandler }}
 
-	// Custom handler - result type varies, response structure not standardized
-	// TODO: Implement proper type assertion and response mapping
-	_ = result
-	response := {{ $operation.ID }}{{ $successCode }}Response{}
-	if err := response.Visit{{ $operation.ID }}Response(w); err != nil {
-		fmt.Fprintf(w, "error writing response: %v", err)
-	}
+	// Map output to response
+	response := {{ .Operation.ID }}{{ $successCode }}Response{}
+	{{- if $successResponse }}
+	{{- if $successResponse.Properties }}
+	{{- range $successResponse.GetSortedProperties }}
+	{{- $field := . }}
+	{{- if and (eq $field.Type "object") (gt (len $field.Properties) 0) }}
+	response.{{ $field.Name }} = {{ $.Operation.ID }}{{ $successCode }}Response{{ $field.Name }}(result.{{ $field.Name }})
 	{{- else }}
+	response.{{ $field.Name }} = result.{{ $field.Name }}
+	{{- end }}
+	{{- end }}
+	{{- end }}
+	{{- end }}
 
-	response := {{ $operation.ID }}{{ $successCode }}Response{Data: *result}
-	if err := response.Visit{{ $operation.ID }}Response(w); err != nil {
+	if err := response.Visit{{ .Operation.ID }}Response(w); err != nil {
 		fmt.Fprintf(w, "error writing response: %v", err)
 	}
-	{{- end }}
-	{{- end }}
-	{{- end }}
-	{{- else }}
-	// Query handler
-	query := queries.New{{ $operation.ID }}Query(
-		{{- if or $operation.HasBearerAuth $operation.HasCookieAuth }}
-		sessionID, // SessionID for authenticated operations
-		{{- end }}
-		{{- range .GetPathParams }}
-		{{- $param := . }}
-		request.{{ $param.Name }}, // {{ $param.Name }}
-		{{- end }}
-	)
-	{{- if hasPrefix $operation.ID "List" }}
-	// TODO: Apply filters, pagination, sorting from request.Params
-
-	results, total, err := c.{{ camelCase $operation.ID }}Handler.Handle(ctx, query)
-	if err != nil {
-		errorResp := {{ $operation.ID }}500Response{
-			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
-		}
-		if err := errorResp.Visit{{ $operation.ID }}Response(w); err != nil {
-			fmt.Fprintf(w, "error writing response: %v", err)
-		}
-		return
-	}
-
-	// Convert pointer slice to value slice for response
-	{{- $entityType := $.Tag }}
-	{{- if $operation.XCodegenRepository }}
-		{{- $entityType = $operation.XCodegenRepository }}
-	{{- end }}
-	data := make([]core.{{ $entityType }}, len(results))
-	for i, item := range results {
-		if item != nil {
-			data[i] = *item
-		}
-	}
-
-	response := {{ $operation.ID }}200Response{
-		Data: data,
-		Meta: core.PaginationMeta{Total: int32(total)},
-	}
-	if err := response.Visit{{ $operation.ID }}Response(w); err != nil {
-		fmt.Fprintf(w, "error writing response: %v", err)
-	}
-	{{- else }}
-
-	result, err := c.{{ camelCase $operation.ID }}Handler.Handle(ctx, query)
-	if err != nil {
-		errorResp := {{ $operation.ID }}500Response{
-			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
-		}
-		if err := errorResp.Visit{{ $operation.ID }}Response(w); err != nil {
-			fmt.Fprintf(w, "error writing response: %v", err)
-		}
-		return
-	}
-	{{- if $operation.XCodegenCustomHandler }}
-
-	// Custom handler - result type varies, response structure not standardized
-	// TODO: Implement proper type assertion and response mapping
-	_ = result
-	response := {{ $operation.ID }}200Response{}
-	if err := response.Visit{{ $operation.ID }}Response(w); err != nil {
-		fmt.Fprintf(w, "error writing response: %v", err)
-	}
-	{{- else }}
-
-	response := {{ $operation.ID }}200Response{Data: *result}
-	if err := response.Visit{{ $operation.ID }}Response(w); err != nil {
-		fmt.Fprintf(w, "error writing response: %v", err)
-	}
-	{{- end }}
-	{{- end }}
 	{{- end }}
 }
-{{- end }}
+

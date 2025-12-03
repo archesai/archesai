@@ -1,0 +1,28 @@
+description: Authentication configuration for the API server
+x-internal: config
+type: object
+title: AuthConfig
+properties:
+  enabled:
+    description: Enable authentication
+    type: boolean
+    default: true
+    example: true
+  firebase:
+    $ref: ./ConfigAuthFirebase.yaml
+  local:
+    $ref: ./ConfigAuthLocal.yaml
+  magicLink:
+    $ref: ./ConfigAuthMagicLink.yaml
+  twitter:
+    $ref: ./ConfigAuthTwitter.yaml
+  google:
+    $ref: ./ConfigAuthGoogle.yaml
+  github:
+    $ref: ./ConfigAuthGithub.yaml
+  microsoft:
+    $ref: ./ConfigAuthMicrosoft.yaml
+required:
+  - enabled
+additionalProperties: false
+x-codegen-schema-type: valueobject

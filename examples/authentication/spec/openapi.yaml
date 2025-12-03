@@ -1,0 +1,7 @@
+openapi: 3.1.0
+x-project-name: github.com/archesai/examples/authentication
+x-include-server: true
+x-include-auth: true
+info:
+  title: My API
+  version: 1.0.0

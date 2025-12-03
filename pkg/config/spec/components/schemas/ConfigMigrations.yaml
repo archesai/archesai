@@ -1,0 +1,14 @@
+description: Database migration configuration
+x-internal: config
+type: object
+title: MigrationsConfig
+properties:
+  enabled:
+    description: Enable automatic DB migrations
+    type: boolean
+    default: false
+    example: true
+required:
+  - enabled
+additionalProperties: false
+x-codegen-schema-type: valueobject

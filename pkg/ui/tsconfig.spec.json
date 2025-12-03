@@ -1,0 +1,12 @@
+{
+  "extends": [
+    "../../pkg/tsconfig/src/base.json",
+    "../../pkg/tsconfig/src/react.json",
+    "../../pkg/tsconfig/src/spec.json"
+  ],
+  "references": [
+    {
+      "path": "./tsconfig.lib.json"
+    }
+  ]
+}

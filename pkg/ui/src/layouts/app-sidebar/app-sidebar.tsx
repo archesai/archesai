@@ -1,0 +1,128 @@
+import { OrganizationButton } from "@archesai/ui";
+import type { JSX, ReactNode } from "react";
+import { SearchIcon } from "#components/custom/icons";
+import { Label } from "#components/shadcn/label";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarInput,
+} from "#components/shadcn/sidebar";
+import { SidebarLinks } from "#layouts/app-sidebar/sidebar-links";
+import type { SiteRoute } from "#lib/site-config.interface";
+
+interface AppSidebarContainerProps {
+  siteRoutes: SiteRoute[]; // FIXME: non serializable
+  navigate: ({ to }: { to: string }) => void;
+  location: { pathname: string };
+}
+
+export function AppSidebarContainer({
+  siteRoutes,
+  location,
+  navigate,
+}: AppSidebarContainerProps) {
+  const handleNavigate = (href: string) => {
+    navigate({
+      to: href,
+    });
+  };
+
+  const handleSearch = (query: string) => {
+    // Implement search logic here
+    console.log("Search:", query);
+  };
+
+  return (
+    <AppSidebar
+      currentPath={location.pathname}
+      onNavigate={handleNavigate}
+      onSearch={handleSearch}
+      organizationSlot={<OrganizationButton />}
+      siteRoutes={siteRoutes}
+      userMenuSlot={<></>}
+    />
+  );
+}
+
+export interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
+  siteRoutes: SiteRoute[];
+  currentPath?: string;
+  onNavigate?: (href: string) => void;
+  organizationSlot?: ReactNode;
+  userMenuSlot?: ReactNode;
+  onSearch?: (query: string) => void;
+}
+
+export function AppSidebar({
+  siteRoutes,
+  currentPath,
+  onNavigate,
+  organizationSlot,
+  userMenuSlot,
+  onSearch,
+  ...props
+}: AppSidebarProps): JSX.Element {
+  return (
+    <Sidebar
+      {...props}
+      className="top-(--header-height) h-[calc(100svh-56px)]"
+      collapsible="icon"
+      variant="sidebar"
+    >
+      <SidebarHeader>
+        {/* {organizationSlot} */}
+        {onSearch && <SearchForm onSubmit={onSearch} />}
+      </SidebarHeader>
+      <SidebarContent>
+        <SidebarLinks
+          currentPath={currentPath}
+          onNavigate={onNavigate}
+          siteRoutes={siteRoutes}
+        />
+      </SidebarContent>
+      {userMenuSlot && <SidebarFooter>{userMenuSlot}</SidebarFooter>}
+    </Sidebar>
+  );
+}
+
+interface SearchFormProps
+  extends Omit<React.ComponentProps<"form">, "onSubmit"> {
+  onSubmit?: (query: string) => void;
+}
+
+export function SearchForm({
+  onSubmit,
+  ...props
+}: SearchFormProps): JSX.Element {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const query = formData.get("search") as string;
+    onSubmit?.(query);
+  };
+
+  return (
+    <form
+      {...props}
+      onSubmit={handleSubmit}
+    >
+      <div className="relative group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:justify-center">
+        <Label
+          className="sr-only"
+          htmlFor="search"
+        >
+          Search
+        </Label>
+        <SearchIcon className="pointer-events-none absolute top-2 left-2 size-4 text-muted-foreground" />
+        <SidebarInput
+          className="pl-8 group-data-[collapsible=icon]:hidden"
+          id="search"
+          name="search"
+          placeholder="Search the docs..."
+        />
+      </div>
+    </form>
+  );
+}

@@ -1,0 +1,43 @@
+version: '2'
+sql:
+  - engine: 'postgresql'
+    queries: './queries'
+    schema: './migrations'
+    gen:
+      go:
+        query_parameter_limit: 0
+        package: 'repositories'
+        emit_pointers_for_null_types: true
+        out: './repositories'
+        sql_package: 'pgx/v5'
+        emit_interface: true
+        output_files_suffix: '.gen.go'
+        output_db_file_name: db.gen.go
+        output_models_file_name: models.gen.go
+        output_querier_file_name: querier.gen.go
+        initialisms:
+          [
+            'id',
+            'ip',
+            'url',
+            'uuid',
+            'api',
+            'http',
+            'json',
+            'oauth',
+            'jwt',
+            'cpu',
+            'mb',
+          ]
+        overrides:
+          - db_type: 'uuid'
+            go_type: 'github.com/google/uuid.UUID'
+          - db_type: 'uuid'
+            go_type: '*github.com/google/uuid.UUID'
+            nullable: true
+          - db_type: 'timestamptz'
+            go_type: 'time.Time'
+          - db_type: 'timestamptz'
+            nullable: true
+            go_type:
+              type: '*time.Time'

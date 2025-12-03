@@ -1,0 +1,33 @@
+{
+  "dependencies": {
+    "@archesai/ui": "workspace:*",
+    "@tanstack/react-query": "catalog:tanstack",
+    "@tanstack/react-router": "catalog:tanstack",
+    "@tanstack/react-router-ssr-query": "catalog:tanstack",
+    "@tanstack/react-start": "catalog:tanstack",
+    "@tanstack/react-table": "catalog:tanstack",
+    "@xyflow/react": "catalog:",
+    "motion": "catalog:ui",
+    "react": "catalog:react19",
+    "react-dom": "catalog:react19",
+    "socket.io-client": "catalog:",
+    "zod": "catalog:"
+  },
+  "imports": {
+    "#*": "./src/*.tsx",
+    "#lib/*": "./src/lib/*.ts",
+    "#lib/client": "./src/lib/client/index.ts",
+    "#routeTree.gen": "./src/routeTree.gen.ts"
+  },
+  "name": "@archesai/studio",
+  "private": true,
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite dev",
+    "preview": "vite preview",
+    "typecheck": "tsc --build --emitDeclarationOnly"
+  },
+  "sideEffects": false,
+  "type": "module",
+  "version": "0.0.0"
+}

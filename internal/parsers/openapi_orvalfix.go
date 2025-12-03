@@ -117,3 +117,140 @@ func removeMapKey(node *yaml.Node, key string) {
 		}
 	}
 }
+
+// cleanupComposedBundle removes duplicate entries created by libopenapi's composed bundler.
+// The bundler creates both "Foo: $ref: #/components/.../Foo__suffix" and "Foo__suffix: {...}".
+// This function removes the reference entries and renames the suffixed entries to clean names,
+// also updating all $ref values throughout the document.
+func cleanupComposedBundle(data []byte) ([]byte, error) {
+	// Parse YAML
+	var rootNode yaml.Node
+	if err := yaml.Unmarshal(data, &rootNode); err != nil {
+		return nil, fmt.Errorf("failed to parse YAML: %w", err)
+	}
+
+	if rootNode.Kind != yaml.DocumentNode || len(rootNode.Content) == 0 {
+		return nil, fmt.Errorf("invalid YAML structure")
+	}
+
+	docNode := rootNode.Content[0]
+	if docNode.Kind != yaml.MappingNode {
+		return nil, fmt.Errorf("expected mapping node at root")
+	}
+
+	// Find components section
+	componentsNode := findMapValue(docNode, "components")
+	if componentsNode == nil || componentsNode.Kind != yaml.MappingNode {
+		return data, nil // No components, nothing to clean
+	}
+
+	// Component types that may have duplicates
+	componentTypes := []string{
+		"schemas",
+		"parameters",
+		"responses",
+		"headers",
+		"requestBodies",
+		"securitySchemes",
+		"pathItems",
+	}
+
+	for _, compType := range componentTypes {
+		sectionNode := findMapValue(componentsNode, compType)
+		if sectionNode == nil || sectionNode.Kind != yaml.MappingNode {
+			continue
+		}
+
+		cleanupComponentSection(sectionNode, compType)
+	}
+
+	// Update all $ref values throughout the document to remove suffixes
+	updateRefs(docNode)
+
+	// Marshal back
+	output, err := yaml.Marshal(&rootNode)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal YAML: %w", err)
+	}
+
+	return output, nil
+}
+
+// cleanupComponentSection removes reference entries and renames suffixed entries
+func cleanupComponentSection(sectionNode *yaml.Node, compType string) {
+	suffix := "__" + compType
+
+	// First pass: identify entries to remove (refs pointing to suffixed names)
+	var indicesToRemove []int
+	for i := 0; i < len(sectionNode.Content); i += 2 {
+		keyNode := sectionNode.Content[i]
+		valueNode := sectionNode.Content[i+1]
+
+		// Check if this is a reference to a suffixed version
+		if valueNode.Kind == yaml.MappingNode {
+			refNode := findMapValue(valueNode, "$ref")
+			if refNode != nil && refNode.Kind == yaml.ScalarNode {
+				// If ref points to same name with suffix, mark for removal
+				expectedRef := fmt.Sprintf("#/components/%s/%s%s", compType, keyNode.Value, suffix)
+				if refNode.Value == expectedRef {
+					indicesToRemove = append(indicesToRemove, i)
+				}
+			}
+		}
+	}
+
+	// Remove reference entries (in reverse order to preserve indices)
+	for i := len(indicesToRemove) - 1; i >= 0; i-- {
+		idx := indicesToRemove[i]
+		sectionNode.Content = append(sectionNode.Content[:idx], sectionNode.Content[idx+2:]...)
+	}
+
+	// Second pass: rename suffixed entries to clean names
+	for i := 0; i < len(sectionNode.Content); i += 2 {
+		keyNode := sectionNode.Content[i]
+		keyNode.Value = strings.TrimSuffix(keyNode.Value, suffix)
+	}
+}
+
+// updateRefs recursively updates all $ref values to remove __suffix patterns
+func updateRefs(node *yaml.Node) {
+	if node == nil {
+		return
+	}
+
+	switch node.Kind {
+	case yaml.MappingNode:
+		for i := 0; i < len(node.Content); i += 2 {
+			keyNode := node.Content[i]
+			valueNode := node.Content[i+1]
+
+			if keyNode.Value == "$ref" && valueNode.Kind == yaml.ScalarNode {
+				// Remove suffix from ref value
+				valueNode.Value = removeRefSuffix(valueNode.Value)
+			} else {
+				updateRefs(valueNode)
+			}
+		}
+	case yaml.SequenceNode:
+		for _, child := range node.Content {
+			updateRefs(child)
+		}
+	}
+}
+
+// removeRefSuffix removes __type suffixes from a $ref value
+func removeRefSuffix(ref string) string {
+	suffixes := []string{
+		"__schemas",
+		"__parameters",
+		"__responses",
+		"__headers",
+		"__requestBodies",
+		"__securitySchemes",
+		"__pathItems",
+	}
+	for _, suffix := range suffixes {
+		ref = strings.ReplaceAll(ref, suffix, "")
+	}
+	return ref
+}

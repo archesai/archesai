@@ -7,26 +7,6 @@
 // 3. Default values from OpenAPI specification
 package config
 
-import "github.com/archesai/archesai/apps/studio/generated/core"
-
-// Type aliases for convenience - avoiding stuttering names
-type (
-	// Config is the main configuration structure
-	Config = core.Config
-	// API configuration
-	API = core.APIConfig
-	// Auth configuration
-	Auth = core.AuthConfig
-	// AuthLocal configuration
-	AuthLocal = core.LocalAuthConfig
-	// Database configuration
-	Database = core.DatabaseConfig
-	// Redis configuration
-	Redis = core.RedisConfig
-	// Logging configuration
-	Logging = core.LoggingConfig
-)
-
 // Configuration constants.
 const (
 	// DefaultConfigName is the default config file name.
@@ -53,43 +33,17 @@ var ConfigFileNames = []string{
 	".archesai", // .archesai.yaml
 }
 
-// New returns the default configuration.
-func New() *Config {
-	return &Config{
-		API: &API{
-			Host:        "0.0.0.0",
-			Port:        8080,
-			Cors:        "*",
-			Docs:        true,
-			Environment: "development",
-			Validation:  true,
-		},
-		Database: &Database{
-			Enabled:       true,
-			URL:           "postgres://localhost/archesai",
-			Type:          "postgresql",
-			MaxConns:      25,
-			MinConns:      5,
-			RunMigrations: true,
-		},
-		Redis: &Redis{
-			Enabled: true,
-			Host:    "localhost",
-			Port:    6379,
-			Auth:    "password",
-		},
-		Auth: &Auth{
-			Enabled: true,
-			Local: &AuthLocal{
-				Enabled:         true,
-				JWTSecret:       "change-me-in-production",
-				AccessTokenTTL:  "15m",
-				RefreshTokenTTL: "7d",
-			},
-		},
-		Logging: &Logging{
-			Level:  "info",
-			Pretty: true,
-		},
-	}
+// Config is a constraint interface for configuration types.
+// Any struct with a Validate method can be used as a configuration.
+type Config interface {
+	// Validate checks if the configuration is valid.
+	Validate() error
+}
+
+// Parser handles loading and parsing of configuration.
+type Parser[C Config] struct{}
+
+// NewParser creates a new configuration parser for type C.
+func NewParser[C Config]() *Parser[C] {
+	return &Parser[C]{}
 }

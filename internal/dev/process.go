@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"strings"
 	"sync"
+	"syscall"
 	"time"
 )
 
@@ -98,8 +99,8 @@ func (p *Process) Start() error {
 	p.state = ProcessStateStarting
 	p.logger.Info("Starting process", "command", p.config.Command, "args", p.config.Args)
 
-	// Create the command
-	p.cmd = exec.CommandContext(p.ctx, p.config.Command, p.config.Args...)
+	// Create the command (don't use CommandContext as it sends SIGKILL on cancel)
+	p.cmd = exec.Command(p.config.Command, p.config.Args...)
 
 	if p.config.Dir != "" {
 		p.cmd.Dir = p.config.Dir
@@ -143,24 +144,24 @@ func (p *Process) Start() error {
 // Stop stops the process gracefully
 func (p *Process) Stop() error {
 	p.mu.Lock()
-	defer p.mu.Unlock()
-
 	if p.state != ProcessStateRunning {
+		p.mu.Unlock()
 		return fmt.Errorf("process %s is not running", p.config.Name)
 	}
 
 	p.state = ProcessStateStopping
 	p.logger.Info("Stopping process")
+	p.mu.Unlock()
 
-	// Cancel the context to signal shutdown
-	p.cancel()
+	// Send SIGINT first to allow graceful shutdown
+	if err := p.cmd.Process.Signal(syscall.SIGINT); err != nil {
+		// Process may have already exited
+		if !strings.Contains(err.Error(), "process already finished") {
+			p.logger.Debug("Failed to send SIGINT", "error", err)
+		}
+	}
 
-	// Give the process time to shutdown gracefully
-	done := make(chan error, 1)
-	go func() {
-		done <- p.cmd.Wait()
-	}()
-
+	// Wait for the process to exit (monitor goroutine will close doneCh)
 	select {
 	case <-time.After(5 * time.Second):
 		// Force kill if graceful shutdown doesn't work
@@ -171,14 +172,15 @@ func (p *Process) Stop() error {
 				return fmt.Errorf("failed to kill process: %w", err)
 			}
 		}
-	case err := <-done:
-		if err != nil && err.Error() != "signal: terminated" {
-			p.logger.Debug("Process exited with error", "error", err)
-		}
+		// Wait for monitor to finish
+		<-p.doneCh
+	case <-p.doneCh:
+		// Process exited normally
 	}
 
-	p.state = ProcessStateStopped
-	close(p.doneCh)
+	// Cancel context to clean up any remaining goroutines
+	p.cancel()
+
 	return nil
 }
 
@@ -228,6 +230,11 @@ func (p *Process) readOutput(pipe io.Reader, source string) {
 	for scanner.Scan() {
 		line := scanner.Text()
 
+		// Skip noisy shutdown messages from pnpm/npm
+		if p.GetState() == ProcessStateStopping && p.isShutdownNoise(line) {
+			continue
+		}
+
 		// Log to stdout/stderr normally
 		p.logger.Info(line, "source", source)
 
@@ -246,6 +253,23 @@ func (p *Process) readOutput(pipe io.Reader, source string) {
 	}
 }
 
+// isShutdownNoise returns true if the line is expected shutdown noise that can be ignored
+func (p *Process) isShutdownNoise(line string) bool {
+	noisePatterns := []string{
+		"ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL",
+		"Command failed with signal \"SIGINT\"",
+		"Command failed with signal \"SIGTERM\"",
+		"SIGINT",
+		"SIGTERM",
+	}
+	for _, pattern := range noisePatterns {
+		if strings.Contains(line, pattern) {
+			return true
+		}
+	}
+	return false
+}
+
 // monitor monitors the process and updates state
 func (p *Process) monitor() {
 	err := p.cmd.Wait()
@@ -254,19 +278,35 @@ func (p *Process) monitor() {
 	defer p.mu.Unlock()
 
 	if err != nil {
-		if p.state != ProcessStateStopping {
+		errStr := err.Error()
+		// Ignore expected exit signals during shutdown
+		isExpectedSignal := errStr == "signal: interrupt" ||
+			errStr == "signal: terminated" ||
+			errStr == "signal: killed"
+		if p.state == ProcessStateStopping && isExpectedSignal {
+			p.state = ProcessStateStopped
+		} else if p.state != ProcessStateStopping {
 			p.state = ProcessStateError
 			p.logger.Error("Process exited with error", "error", err)
-			p.errorCh <- fmt.Errorf("process exited: %w", err)
+			select {
+			case p.errorCh <- fmt.Errorf("process exited: %w", err):
+			default:
+			}
+		} else {
+			p.state = ProcessStateStopped
 		}
 	} else {
 		if p.state != ProcessStateStopping {
-			p.state = ProcessStateStopped
 			p.logger.Info("Process exited normally")
 		}
+		p.state = ProcessStateStopped
 	}
 
-	if p.state == ProcessStateStopping {
-		p.state = ProcessStateStopped
+	// Signal that monitor is done - use select to avoid panic if already closed
+	select {
+	case <-p.doneCh:
+		// Already closed
+	default:
+		close(p.doneCh)
 	}
 }

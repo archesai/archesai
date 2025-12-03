@@ -11,17 +11,12 @@ import (
 
 	"github.com/archesai/archesai/pkg/auth/oauth"
 	"github.com/archesai/archesai/pkg/cache"
-	"github.com/archesai/archesai/pkg/config"
-)
-
-const (
-	bindHost = "0.0.0.0"
 )
 
 // Service provides authentication functionality across all transport layers.
 // It implements the core services.AuthService interface.
 type Service struct {
-	config             *config.Config
+	config             *Config
 	sessionRepo        SessionRepository
 	userRepo           UserRepository
 	accountRepo        AccountRepository
@@ -46,7 +41,7 @@ type OTPDeliverer interface {
 
 // NewService creates a new authentication service.
 func NewService(
-	cfg *config.Config,
+	cfg *Config,
 	sessionRepo SessionRepository,
 	userRepo UserRepository,
 	accountRepo AccountRepository,
@@ -94,7 +89,7 @@ func NewService(
 	if cfg.Auth.Microsoft != nil && cfg.Auth.Microsoft.Enabled &&
 		cfg.Auth.Microsoft.ClientID != nil {
 		s.oauthProviders["microsoft"] = oauth.NewMicrosoftProvider(
-			cfg.Auth.Microsoft.ClientID.String(),
+			*cfg.Auth.Microsoft.ClientID,
 			*cfg.Auth.Microsoft.ClientSecret,
 			*cfg.Auth.Microsoft.RedirectURL,
 		)

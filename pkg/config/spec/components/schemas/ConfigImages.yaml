@@ -1,0 +1,28 @@
+description: Container image configuration
+x-internal: config
+type: object
+title: ImagesConfig
+properties:
+  imagePullSecrets:
+    description: List of Kubernetes secrets for pulling private images
+    type: array
+    items:
+      type: string
+      minLength: 1
+      example: regcred
+      maxLength: 255
+      pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+    default: []
+    maxItems: 1000
+  imageRegistry:
+    description: Custom container registry URL (leave empty for Docker Hub)
+    type: string
+    default: ''
+    example: gcr.io
+    maxLength: 2048
+    pattern: ^(|[a-z0-9]([-a-z0-9\.]*[a-z0-9])?(:[0-9]+)?)$
+required:
+  - imagePullSecrets
+  - imageRegistry
+additionalProperties: false
+x-codegen-schema-type: valueobject

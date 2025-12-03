@@ -1,0 +1,35 @@
+x-codegen-schema-type: entity
+x-codegen:
+  repository:
+    excludeFromCreate:
+      - CreatedAt
+      - UpdatedAt
+    excludeFromUpdate:
+      - CreatedAt
+      - UpdatedAt
+      - PipelineID
+title: PipelineStep
+description: Schema for PipelineStep entity
+x-internal: pipelines
+allOf:
+  - $ref: Base.yaml
+  - type: object
+    properties:
+      pipelineID:
+        description: The pipeline this step belongs to
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
+        maxLength: 36
+      toolID:
+        description: The tool used in this step
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
+        maxLength: 36
+    required:
+      - pipelineID
+      - toolID
+unevaluatedProperties: false

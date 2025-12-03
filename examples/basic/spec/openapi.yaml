@@ -1,0 +1,74 @@
+openapi: 3.1.0
+x-project-name: github.com/archesai/examples/basic
+x-include-server: true
+info:
+  title: My API
+  version: 1.0.0
+components:
+  schemas:
+    Base:
+      title: Base
+      description: Base schema for all entities with common fields
+      type: object
+      properties:
+        id:
+          description: Unique identifier for the resource
+          type: string
+          format: uuid
+        createdAt:
+          description: The date and time when the resource was created
+          type: string
+          format: date-time
+        updatedAt:
+          description: The date and time when the resource was last updated
+          type: string
+          format: date-time
+      required:
+        - id
+        - createdAt
+        - updatedAt
+    Todo:
+      title: Todo
+      x-codegen-schema-type: entity
+      allOf:
+        - $ref: '#/components/schemas/Base'
+        - type: object
+          required:
+            - title
+            - completed
+          properties:
+            title:
+              type: string
+            completed:
+              type: boolean
+  responses:
+    TodoListResponse:
+      description: A list of todo items
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Todo'
+    TodoResponse:
+      description: A single todo item
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: '#/components/schemas/Todo'
+paths:
+  /todos:
+    get:
+      operationId: GetTodo
+      tags:
+        - Todo
+      summary: Get todo items
+      responses:
+        '200':
+          $ref: '#/components/responses/TodoListResponse'

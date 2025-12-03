@@ -1,0 +1,19 @@
+description: Intelligence configuration (LLMs, embeddings, scraper, speech, etc.)
+x-internal: config
+type: object
+title: IntelligenceConfig
+properties:
+  embedding:
+    $ref: ./ConfigLLM.yaml
+  llm:
+    $ref: ./ConfigLLM.yaml
+  runpod:
+    $ref: ./ConfigRunPod.yaml
+  scraper:
+    $ref: ./ConfigScraper.yaml
+  speech:
+    $ref: ./ConfigSpeech.yaml
+  unstructured:
+    $ref: ./ConfigUnstructured.yaml
+additionalProperties: false
+x-codegen-schema-type: valueobject

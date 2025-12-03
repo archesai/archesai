@@ -1,0 +1,30 @@
+description: TLS configuration
+x-internal: config
+type: object
+title: TLSConfig
+properties:
+  enabled:
+    description: Enable TLS/SSL
+    type: boolean
+    default: true
+    example: true
+  issuer:
+    description: Cert-manager ClusterIssuer
+    type: string
+    default: letsencrypt-staging
+    minLength: 1
+    example: letsencrypt-prod
+    maxLength: 255
+    pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+  secretName:
+    description: Kubernetes secret name for TLS certificates
+    type: string
+    default: archesai-tls
+    minLength: 1
+    example: archesai-tls
+    maxLength: 255
+    pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+required:
+  - enabled
+additionalProperties: false
+x-codegen-schema-type: valueobject

@@ -1,0 +1,20 @@
+openapi: 3.1.0
+x-project-name: github.com/archesai/archesai/pkg/config
+x-include-server: true
+info:
+  title: Arches Configuration API
+  description: Configuration schemas for Arches platform
+  version: v0.0.0
+tags:
+  - name: Config
+    description: Configuration management
+paths:
+  /config:
+    $ref: paths/config.yaml
+components:
+  schemas:
+    Config:
+      $ref: components/schemas/Config.yaml
+  responses:
+    ConfigResponse:
+      $ref: components/responses/ConfigResponse.yaml

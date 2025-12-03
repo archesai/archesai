@@ -1,217 +1,203 @@
 package cli
 
-import (
-	"encoding/json"
-	"fmt"
-	"log/slog"
-	"os"
-	"path/filepath"
+// FIXME: Fix the config command implementation
+// var (
+// 	outputFormat string
+// )
 
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/spf13/cobra"
-	"go.yaml.in/yaml/v4"
+// // configCmd represents the config command.
+// var configCmd = &cobra.Command{
+// 	Use:   "config",
+// 	Short: "Manage Arches configuration",
+// 	Long: `Manage Arches configuration with various subcommands.
 
-	"github.com/archesai/archesai/internal/tui"
-	"github.com/archesai/archesai/pkg/config"
-)
+// This command allows you to:
+// - Show current configuration
+// - Validate configuration files
+// - Initialize default configuration
+// - Show environment variables`,
+// }
 
-var (
-	outputFormat string
-)
+// // configShowCmd shows the current configuration.
+// var configShowCmd = &cobra.Command{
+// 	Use:   "show",
+// 	Short: "Show current configuration",
+// 	Long:  `Display the current configuration with all applied defaults, environment variables, and config file values.`,
+// 	RunE: func(_ *cobra.Command, _ []string) error {
+// 		cfg, err := config.NewConfigParser(in)
+// 		if err != nil {
+// 			return fmt.Errorf("failed to load config: %w", err)
+// 		}
 
-// configCmd represents the config command.
-var configCmd = &cobra.Command{
-	Use:   "config",
-	Short: "Manage Arches configuration",
-	Long: `Manage Arches configuration with various subcommands.
+// 		switch outputFormat {
+// 		case "json":
+// 			encoder := json.NewEncoder(os.Stdout)
+// 			encoder.SetIndent("", "  ")
+// 			return encoder.Encode(cfg.Config)
+// 		case "yaml":
+// 			encoder := yaml.NewEncoder(os.Stdout)
+// 			encoder.SetIndent(2)
+// 			defer func() {
+// 				if err := encoder.Close(); err != nil {
+// 					fmt.Fprintf(os.Stderr, "Warning: failed to close encoder: %v\n", err)
+// 				}
+// 			}()
+// 			return encoder.Encode(cfg.Config)
+// 		case "tui":
+// 			model := tui.NewConfigModel()
+// 			program := tea.NewProgram(model, tea.WithAltScreen())
+// 			if _, err := program.Run(); err != nil {
+// 				return fmt.Errorf("error running config TUI: %w", err)
+// 			}
+// 			return nil
+// 		default:
+// 			return fmt.Errorf("unsupported output format: %s", outputFormat)
+// 		}
+// 	},
+// }
 
-This command allows you to:
-- Show current configuration
-- Validate configuration files
-- Initialize default configuration
-- Show environment variables`,
-}
+// // configValidateCmd validates the configuration.
+// var configValidateCmd = &cobra.Command{
+// 	Use:   "validate",
+// 	Short: "Validate configuration",
+// 	Long:  `Validate the current configuration for errors and consistency.`,
+// 	RunE: func(_ *cobra.Command, _ []string) error {
+// 		cfg, err := config.Load()
+// 		if err != nil {
+// 			return fmt.Errorf("configuration is invalid: %w", err)
+// 		}
 
-// configShowCmd shows the current configuration.
-var configShowCmd = &cobra.Command{
-	Use:   "show",
-	Short: "Show current configuration",
-	Long:  `Display the current configuration with all applied defaults, environment variables, and config file values.`,
-	RunE: func(_ *cobra.Command, _ []string) error {
-		cfg, err := config.Load()
-		if err != nil {
-			return fmt.Errorf("failed to load config: %w", err)
-		}
+// 		// TODO: Add more comprehensive validation logic
+// 		slog.Info("✓ Configuration is valid")
+// 		slog.Info("✓ Loaded", "source", getConfigSource(cfg))
+// 		return nil
+// 	},
+// }
 
-		switch outputFormat {
-		case "json":
-			encoder := json.NewEncoder(os.Stdout)
-			encoder.SetIndent("", "  ")
-			return encoder.Encode(cfg.Config)
-		case "yaml":
-			encoder := yaml.NewEncoder(os.Stdout)
-			encoder.SetIndent(2)
-			defer func() {
-				if err := encoder.Close(); err != nil {
-					fmt.Fprintf(os.Stderr, "Warning: failed to close encoder: %v\n", err)
-				}
-			}()
-			return encoder.Encode(cfg.Config)
-		case "tui":
-			model := tui.NewConfigModel()
-			program := tea.NewProgram(model, tea.WithAltScreen())
-			if _, err := program.Run(); err != nil {
-				return fmt.Errorf("error running config TUI: %w", err)
-			}
-			return nil
-		default:
-			return fmt.Errorf("unsupported output format: %s", outputFormat)
-		}
-	},
-}
+// // configInitCmd initializes a default configuration file.
+// var configInitCmd = &cobra.Command{
+// 	Use:   "init [path]",
+// 	Short: "Initialize default configuration",
+// 	Long:  `Create a default configuration file with all available options and their default values.`,
+// 	Args:  cobra.MaximumNArgs(1),
+// 	RunE: func(_ *cobra.Command, args []string) error {
+// 		// Determine output path
+// 		configPath := "config.yaml"
+// 		if len(args) > 0 {
+// 			configPath = args[0]
+// 		}
 
-// configValidateCmd validates the configuration.
-var configValidateCmd = &cobra.Command{
-	Use:   "validate",
-	Short: "Validate configuration",
-	Long:  `Validate the current configuration for errors and consistency.`,
-	RunE: func(_ *cobra.Command, _ []string) error {
-		cfg, err := config.Load()
-		if err != nil {
-			return fmt.Errorf("configuration is invalid: %w", err)
-		}
+// 		// Check if file exists
+// 		if _, err := os.Stat(configPath); err == nil {
+// 			return fmt.Errorf("config file %s already exists", configPath)
+// 		}
 
-		// TODO: Add more comprehensive validation logic
-		slog.Info("✓ Configuration is valid")
-		slog.Info("✓ Loaded", "source", getConfigSource(cfg))
-		return nil
-	},
-}
+// 		// Get default config
+// 		defaultConfig := config.New()
 
-// configInitCmd initializes a default configuration file.
-var configInitCmd = &cobra.Command{
-	Use:   "init [path]",
-	Short: "Initialize default configuration",
-	Long:  `Create a default configuration file with all available options and their default values.`,
-	Args:  cobra.MaximumNArgs(1),
-	RunE: func(_ *cobra.Command, args []string) error {
-		// Determine output path
-		configPath := "config.yaml"
-		if len(args) > 0 {
-			configPath = args[0]
-		}
+// 		// Create directory if needed
+// 		if err := os.MkdirAll(filepath.Dir(configPath), 0755); err != nil {
+// 			return fmt.Errorf("failed to create directory: %w", err)
+// 		}
 
-		// Check if file exists
-		if _, err := os.Stat(configPath); err == nil {
-			return fmt.Errorf("config file %s already exists", configPath)
-		}
+// 		// Write config file
+// 		file, err := os.Create(configPath)
+// 		if err != nil {
+// 			return fmt.Errorf("failed to create config file: %w", err)
+// 		}
+// 		defer func() {
+// 			if err := file.Close(); err != nil {
+// 				fmt.Fprintf(os.Stderr, "Warning: failed to close file: %v\n", err)
+// 			}
+// 		}()
 
-		// Get default config
-		defaultConfig := config.New()
+// 		encoder := yaml.NewEncoder(file)
+// 		encoder.SetIndent(2)
+// 		defer func() {
+// 			if err := encoder.Close(); err != nil {
+// 				fmt.Fprintf(os.Stderr, "Warning: failed to close encoder: %v\n", err)
+// 			}
+// 		}()
 
-		// Create directory if needed
-		if err := os.MkdirAll(filepath.Dir(configPath), 0755); err != nil {
-			return fmt.Errorf("failed to create directory: %w", err)
-		}
+// 		if err := encoder.Encode(defaultConfig); err != nil {
+// 			return fmt.Errorf("failed to write config: %w", err)
+// 		}
 
-		// Write config file
-		file, err := os.Create(configPath)
-		if err != nil {
-			return fmt.Errorf("failed to create config file: %w", err)
-		}
-		defer func() {
-			if err := file.Close(); err != nil {
-				fmt.Fprintf(os.Stderr, "Warning: failed to close file: %v\n", err)
-			}
-		}()
+// 		slog.Info("Created default configuration file", "path", configPath)
+// 		return nil
+// 	},
+// }
 
-		encoder := yaml.NewEncoder(file)
-		encoder.SetIndent(2)
-		defer func() {
-			if err := encoder.Close(); err != nil {
-				fmt.Fprintf(os.Stderr, "Warning: failed to close encoder: %v\n", err)
-			}
-		}()
+// // configEnvCmd shows environment variables.
+// var configEnvCmd = &cobra.Command{
+// 	Use:   "env",
+// 	Short: "Show environment variables",
+// 	Long:  `Display all Arches-related environment variables and their values.`,
+// 	RunE: func(_ *cobra.Command, _ []string) error {
+// 		envVars := []string{
+// 			"ARCHESAI_API_HOST",
+// 			"ARCHESAI_API_PORT",
+// 			"ARCHESAI_API_DOCS",
+// 			"ARCHESAI_API_VALIDATE",
+// 			"ARCHESAI_API_ENVIRONMENT",
+// 			"ARCHESAI_API_CORS_ORIGINS",
+// 			"ARCHESAI_AUTH_ENABLED",
+// 			"ARCHESAI_AUTH_LOCAL_ENABLED",
+// 			"ARCHESAI_AUTH_LOCAL_JWT_SECRET",
+// 			"ARCHESAI_AUTH_LOCAL_ACCESS_TOKEN_TTL",
+// 			"ARCHESAI_AUTH_LOCAL_REFRESH_TOKEN_TTL",
+// 			"ARCHESAI_DATABASE_ENABLED",
+// 			"ARCHESAI_DATABASE_URL",
+// 			"ARCHESAI_DATABASE_TYPE",
+// 			"ARCHESAI_DATABASE_MAX_CONNS",
+// 			"ARCHESAI_DATABASE_MIN_CONNS",
+// 			"ARCHESAI_DATABASE_CONN_MAX_LIFETIME",
+// 			"ARCHESAI_DATABASE_CONN_MAX_IDLE_TIME",
+// 			"ARCHESAI_DATABASE_HEALTH_CHECK_PERIOD",
+// 			"ARCHESAI_DATABASE_RUN_MIGRATIONS",
+// 			"ARCHESAI_LOGGING_LEVEL",
+// 			"ARCHESAI_LOGGING_PRETTY",
+// 		}
 
-		if err := encoder.Encode(defaultConfig); err != nil {
-			return fmt.Errorf("failed to write config: %w", err)
-		}
+// 		slog.Info("Arches Environment Variables:")
+// 		slog.Info("================================")
 
-		slog.Info("Created default configuration file", "path", configPath)
-		return nil
-	},
-}
+// 		found := false
+// 		for _, envVar := range envVars {
+// 			if value := os.Getenv(envVar); value != "" {
+// 				slog.Info("ENV", "key", envVar, "value", value)
+// 				found = true
+// 			}
+// 		}
 
-// configEnvCmd shows environment variables.
-var configEnvCmd = &cobra.Command{
-	Use:   "env",
-	Short: "Show environment variables",
-	Long:  `Display all Arches-related environment variables and their values.`,
-	RunE: func(_ *cobra.Command, _ []string) error {
-		envVars := []string{
-			"ARCHESAI_API_HOST",
-			"ARCHESAI_API_PORT",
-			"ARCHESAI_API_DOCS",
-			"ARCHESAI_API_VALIDATE",
-			"ARCHESAI_API_ENVIRONMENT",
-			"ARCHESAI_API_CORS_ORIGINS",
-			"ARCHESAI_AUTH_ENABLED",
-			"ARCHESAI_AUTH_LOCAL_ENABLED",
-			"ARCHESAI_AUTH_LOCAL_JWT_SECRET",
-			"ARCHESAI_AUTH_LOCAL_ACCESS_TOKEN_TTL",
-			"ARCHESAI_AUTH_LOCAL_REFRESH_TOKEN_TTL",
-			"ARCHESAI_DATABASE_ENABLED",
-			"ARCHESAI_DATABASE_URL",
-			"ARCHESAI_DATABASE_TYPE",
-			"ARCHESAI_DATABASE_MAX_CONNS",
-			"ARCHESAI_DATABASE_MIN_CONNS",
-			"ARCHESAI_DATABASE_CONN_MAX_LIFETIME",
-			"ARCHESAI_DATABASE_CONN_MAX_IDLE_TIME",
-			"ARCHESAI_DATABASE_HEALTH_CHECK_PERIOD",
-			"ARCHESAI_DATABASE_RUN_MIGRATIONS",
-			"ARCHESAI_LOGGING_LEVEL",
-			"ARCHESAI_LOGGING_PRETTY",
-		}
+// 		if !found {
+// 			slog.Info("No Arches environment variables are currently set.")
+// 		}
 
-		slog.Info("Arches Environment Variables:")
-		slog.Info("================================")
+// 		return nil
+// 	},
+// }
 
-		found := false
-		for _, envVar := range envVars {
-			if value := os.Getenv(envVar); value != "" {
-				slog.Info("ENV", "key", envVar, "value", value)
-				found = true
-			}
-		}
+// // getConfigSource returns a description of where the config was loaded from.
+// func getConfigSource(cfg *config.Configuration) string {
+// 	viper := cfg.GetViperInstance()
+// 	if viper.ConfigFileUsed() != "" {
+// 		return fmt.Sprintf("config file: %s", viper.ConfigFileUsed())
+// 	}
+// 	return "defaults and environment variables"
+// }
 
-		if !found {
-			slog.Info("No Arches environment variables are currently set.")
-		}
+// func init() {
+// 	// Add config command to root
+// 	rootCmd.AddCommand(configCmd)
 
-		return nil
-	},
-}
+// 	// Add subcommands
+// 	configCmd.AddCommand(configShowCmd)
+// 	configCmd.AddCommand(configValidateCmd)
+// 	configCmd.AddCommand(configInitCmd)
+// 	configCmd.AddCommand(configEnvCmd)
 
-// getConfigSource returns a description of where the config was loaded from.
-func getConfigSource(cfg *config.Configuration) string {
-	viper := cfg.GetViperInstance()
-	if viper.ConfigFileUsed() != "" {
-		return fmt.Sprintf("config file: %s", viper.ConfigFileUsed())
-	}
-	return "defaults and environment variables"
-}
-
-func init() {
-	// Add config command to root
-	rootCmd.AddCommand(configCmd)
-
-	// Add subcommands
-	configCmd.AddCommand(configShowCmd)
-	configCmd.AddCommand(configValidateCmd)
-	configCmd.AddCommand(configInitCmd)
-	configCmd.AddCommand(configEnvCmd)
-
-	// Add flags
-	configShowCmd.Flags().
-		StringVarP(&outputFormat, "output", "o", "yaml", "Output format (yaml, json, tui)")
-}
+// 	// Add flags
+// 	configShowCmd.Flags().
+// 		StringVarP(&outputFormat, "output", "o", "yaml", "Output format (yaml, json, tui)")
+// }

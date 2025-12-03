@@ -299,8 +299,8 @@ Organization:
 The generator uses Go templates located in `internal/codegen/templates/`:
 
 - `repository.go.tmpl` - Repository interface template
-- `repository_postgres.go.tmpl` - PostgreSQL implementation
-- `repository_sqlite.go.tmpl` - SQLite implementation
+- `postgres.go.tmpl` - PostgreSQL implementation
+- `sqlite.go.tmpl` - SQLite implementation
 - `service.go.tmpl` - Service interface template
 - `handler.go.tmpl` - HTTP handler template
 - `events.go.tmpl` - Event publisher interface
