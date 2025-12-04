@@ -1,0 +1,52 @@
+title: Health
+description: Health check response
+x-internal: server
+x-codegen-schema-type: valueobject
+type: object
+properties:
+  services:
+    type: object
+    properties:
+      database:
+        type: string
+        example: healthy
+        enum:
+          - healthy
+          - unhealthy
+          - degraded
+      email:
+        type: string
+        example: healthy
+        enum:
+          - healthy
+          - unhealthy
+          - degraded
+      redis:
+        type: string
+        example: healthy
+        enum:
+          - healthy
+          - unhealthy
+          - degraded
+    required:
+      - database
+      - email
+      - redis
+    additionalProperties: false
+  timestamp:
+    type: string
+    format: date-time
+    maxLength: 64
+    example: '2024-01-15T09:30:00Z'
+  uptime:
+    description: System uptime in seconds
+    type: integer
+    format: int64
+    minimum: 0
+    maximum: 9223372036854775807
+    example: 86400
+required:
+  - services
+  - timestamp
+  - uptime
+additionalProperties: false

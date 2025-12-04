@@ -1,0 +1,1124 @@
+openapi: 3.2.0
+x-project-name: github.com/archesai/archesai/pkg/executor
+info:
+  title: Arches Executor API
+  description: The Arches Executor API
+  version: v0.0.0
+tags:
+  - name: Executor
+    description: Custom executor management
+  - name: Health
+    description: Health check operations
+components:
+  parameters:
+    ExecutorsFilter:
+      in: query
+      name: filter
+      required: false
+      style: deepObject
+      explode: true
+      schema:
+        $ref: '#/components/schemas/FilterNode'
+      description: Filter by field values
+      example:
+        type: eq
+        field: language
+        value: nodejs
+    ExecutorsSort:
+      in: query
+      name: sort
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: array
+        maxItems: 10
+        items:
+          type: object
+          required:
+            - field
+            - order
+          properties:
+            field:
+              type: string
+              enum:
+                - createdAt
+                - id
+                - updatedAt
+                - name
+                - description
+                - language
+                - organizationID
+                - isActive
+                - version
+              example: createdAt
+            order:
+              type: string
+              enum:
+                - asc
+                - desc
+              example: asc
+      description: The sort parameter
+      example:
+        - field: createdAt
+          order: desc
+    PageQuery:
+      in: query
+      name: page
+      required: false
+      style: form
+      explode: true
+      schema:
+        $ref: '#/components/schemas/Page'
+      description: The page parameter
+      example:
+        limit: 10
+        offset: 0
+    ResourceID:
+      schema:
+        $ref: '#/components/schemas/UUID'
+      in: path
+      name: id
+      required: true
+      description: The unique identifier of the resource.
+  responses:
+    ExecutorListResponse:
+      description: Executors retrieved successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                maxItems: 10000
+                items:
+                  $ref: '#/components/schemas/Executor'
+              meta:
+                $ref: '#/components/schemas/PaginationMeta'
+            required:
+              - data
+              - meta
+            additionalProperties: false
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    ExecutorResponse:
+      description: Executor retrieved successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: '#/components/schemas/Executor'
+            required:
+              - data
+            additionalProperties: false
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    SuccessfulExecutionResponse:
+      description: Successful execution
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  output:
+                    description: Execution result (matches executor's output schema)
+                    type: object
+                    example:
+                      doubled: 84
+                  executionTimeMs:
+                    description: Execution time in milliseconds
+                    type: integer
+                    format: int64
+                    minimum: 0
+                    maximum: 600000
+                    example: 1234
+                  logs:
+                    description: Execution logs from stderr
+                    type: string
+                    maxLength: 1000000
+                    pattern: ^[\s\S]*$
+                    example: "Container started\nExecution completed"
+                required:
+                  - output
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    BadRequest:
+      description: 400 Bad Request
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    Conflict:
+      description: 409 Conflict
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    HealthResponse:
+      description: Health status retrieved successfully
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Health'
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    NoContent:
+      description: 204 No Content
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    NotFound:
+      description: 404 Not Found
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    TooManyRequests:
+      description: Too many requests - rate limit exceeded
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+        Retry-After:
+          $ref: '#/components/headers/RetryAfter'
+    Unauthorized:
+      description: 401 Unauthorized
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    UnprocessableEntity:
+      description: 422 Unprocessable Entity
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+  schemas:
+    Executor:
+      description: Schema for Executor entity
+      title: Executor
+      x-codegen-schema-type: entity
+      x-codegen:
+        repository:
+          excludeFromUpdate:
+            - OrganizationID
+            - Version
+          indices:
+            - organizationID
+            - language
+          relations:
+            - field: organizationID
+              references: organization
+              onDelete: CASCADE
+              onUpdate: CASCADE
+          additionalMethods:
+            - name: ListExecutorsByOrganization
+              params:
+                - name: organizationID
+                  type: string
+                  format: uuid
+                  maxLength: 36
+              returns: multiple
+      x-internal: executor
+      allOf:
+        - $ref: '#/components/schemas/Base'
+        - type: object
+          properties:
+            organizationID:
+              description: The organization that owns this executor
+              type: string
+              format: uuid
+              example: 550e8400-e29b-41d4-a716-446655440000
+              minLength: 36
+              maxLength: 36
+            name:
+              description: The name of the executor
+              type: string
+              minLength: 1
+              maxLength: 255
+              pattern: ^[\w\s\-.,!?()@#+/']+$
+              example: Custom Data Transformer
+            description:
+              description: The executor description
+              type: string
+              maxLength: 1000
+              pattern: ^[\w\s\-.,!?()@#+/':;]*$
+              example: Transforms data using custom business logic
+            language:
+              description: The programming language for the executor
+              type: string
+              enum:
+                - nodejs
+                - python
+                - go
+              example: nodejs
+            executeCode:
+              description: The custom execute function code
+              type: string
+              maxLength: 100000
+              pattern: ^[\s\S]*$
+              example: |
+                export async function executeFunction(input: unknown): Promise<any> {
+                  return { result: "processed" };
+                }
+            dependencies:
+              description: Dependencies configuration (package.json for Node, requirements.txt for Python, go.mod for Go)
+              type:
+                - string
+                - 'null'
+              maxLength: 50000
+              pattern: ^[\s\S]*$
+              example: |
+                {
+                  "dependencies": {
+                    "lodash": "4.17.21"
+                  }
+                }
+            schemaIn:
+              description: JSON Schema for input validation
+              type:
+                - string
+                - 'null'
+              maxLength: 10000
+              pattern: ^[\s\S]*$
+              example: |
+                {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "number"
+                    }
+                  },
+                  "required": ["value"]
+                }
+            schemaOut:
+              description: JSON Schema for output validation
+              type:
+                - string
+                - 'null'
+              maxLength: 10000
+              pattern: ^[\s\S]*$
+              example: |
+                {
+                  "type": "object",
+                  "properties": {
+                    "doubled": {
+                      "type": "number"
+                    }
+                  },
+                  "required": ["doubled"]
+                }
+            extraFiles:
+              description: Additional files to mount in the executor (stored as JSON array)
+              type:
+                - string
+                - 'null'
+              maxLength: 100000
+              pattern: ^[\s\S]*$
+              example: |
+                [
+                  {
+                    "path": "config/settings.json",
+                    "content": "{\"key\": \"value\"}"
+                  }
+                ]
+            timeout:
+              description: Execution timeout in seconds
+              type: integer
+              format: int32
+              minimum: 1
+              maximum: 300
+              default: 30
+            memoryMB:
+              description: Memory limit in megabytes
+              type: integer
+              format: int32
+              minimum: 128
+              maximum: 4096
+              default: 256
+            cpuShares:
+              description: CPU shares (relative weight)
+              type: integer
+              format: int32
+              minimum: 128
+              maximum: 2048
+              default: 512
+            env:
+              description: Environment variables (stored as JSON array)
+              type:
+                - string
+                - 'null'
+              maxLength: 10000
+              pattern: ^[\s\S]*$
+              example: |
+                ["NODE_ENV=production", "DEBUG=false"]
+            isActive:
+              description: Whether the executor is active and can be used
+              type: boolean
+              default: true
+            version:
+              description: Version number for cache busting
+              type: integer
+              format: int32
+              minimum: 1
+              maximum: 2147483647
+              default: 1
+          required:
+            - organizationID
+            - name
+            - description
+            - language
+            - executeCode
+            - timeout
+            - memoryMB
+            - cpuShares
+            - isActive
+            - version
+      unevaluatedProperties: false
+    Base:
+      title: Base
+      description: Base schema for all entities with common fields
+      x-internal: server
+      type: object
+      properties:
+        id:
+          description: Unique identifier for the resource
+          type: string
+          format: uuid
+          example: 550e8400-e29b-41d4-a716-446655440000
+          minLength: 36
+          maxLength: 36
+        createdAt:
+          description: The date and time when the resource was created
+          type: string
+          format: date-time
+          example: '2024-01-15T09:30:00Z'
+          minLength: 1
+          maxLength: 255
+        updatedAt:
+          description: The date and time when the resource was last updated
+          type: string
+          format: date-time
+          example: '2024-01-15T10:45:00Z'
+          minLength: 1
+          maxLength: 255
+      required:
+        - id
+        - createdAt
+        - updatedAt
+    FilterNode:
+      title: FilterNode
+      description: A recursive filter node that can be a condition or group
+      x-internal: server
+      x-codegen-schema-type: valueobject
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - and
+            - or
+            - eq
+            - ne
+            - gt
+            - gte
+            - lt
+            - lte
+            - contains
+            - startsWith
+            - endsWith
+          description: The type of filter operation
+          example: eq
+        field:
+          type: string
+          description: The field to filter on (for leaf conditions)
+          example: name
+          minLength: 1
+          maxLength: 255
+          pattern: ^[a-zA-Z_][a-zA-Z0-9_]*$
+        value:
+          description: The value to compare against (for leaf conditions)
+          oneOf:
+            - type: string
+              maxLength: 1000
+              pattern: ^[\w\s\-.,!?()@#+/':;]+$
+            - type: integer
+              format: int64
+              minimum: -9223372036854776000
+              maximum: 9223372036854776000
+            - type: boolean
+          example: example-value
+      required:
+        - type
+    Health:
+      title: Health
+      description: Health check response
+      x-internal: server
+      x-codegen-schema-type: valueobject
+      type: object
+      properties:
+        services:
+          type: object
+          properties:
+            database:
+              type: string
+              example: healthy
+              enum:
+                - healthy
+                - unhealthy
+                - degraded
+            email:
+              type: string
+              example: healthy
+              enum:
+                - healthy
+                - unhealthy
+                - degraded
+            redis:
+              type: string
+              example: healthy
+              enum:
+                - healthy
+                - unhealthy
+                - degraded
+          required:
+            - database
+            - email
+            - redis
+          additionalProperties: false
+        timestamp:
+          type: string
+          format: date-time
+          maxLength: 64
+          example: '2024-01-15T09:30:00Z'
+        uptime:
+          description: System uptime in seconds
+          type: integer
+          format: int64
+          minimum: 0
+          maximum: 9223372036854776000
+          example: 86400
+      required:
+        - services
+        - timestamp
+        - uptime
+      additionalProperties: false
+    Page:
+      description: Pagination parameters (limit & offset)
+      x-internal: server
+      type: object
+      title: Page
+      additionalProperties: false
+      properties:
+        limit:
+          description: Maximum number of items to return
+          type: integer
+          format: int32
+          minimum: 1
+          default: 10
+          maximum: 100
+          example: 10
+        offset:
+          description: Number of items to skip before starting to collect the result set
+          type: integer
+          format: int32
+          minimum: 0
+          default: 0
+          maximum: 9007199254740991
+          example: 0
+    PaginationMeta:
+      description: Pagination metadata
+      title: PaginationMeta
+      type: object
+      properties:
+        total:
+          description: Total number of items in the collection
+          type: integer
+          format: int32
+          minimum: 0
+          maximum: 2147483647
+          example: 42
+      required:
+        - total
+      additionalProperties: false
+      x-codegen-schema-type: valueobject
+    Problem:
+      title: Problem
+      description: RFC 7807 (Problem Details) compliant error response
+      x-internal: server
+      type: object
+      additionalProperties: false
+      required:
+        - status
+        - title
+      properties:
+        status:
+          type: integer
+          format: int32
+          description: HTTP status code
+          minimum: 100
+          maximum: 599
+          example: 400
+        type:
+          type: string
+          format: uri
+          description: URI identifying the problem type
+          default: about:blank
+          example: https://api.example.com/errors/validation-failed
+          minLength: 1
+          maxLength: 2048
+        title:
+          type: string
+          description: Short, human-readable summary
+          example: Validation Failed
+          minLength: 1
+          maxLength: 255
+          pattern: ^[\w\s\-.,!?()]+$
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence
+          example: The request body contains invalid fields
+          minLength: 1
+          maxLength: 255
+          pattern: ^[\w\s\-.,!?()]+$
+        instance:
+          type: string
+          format: uri
+          description: URI identifying the specific occurrence
+          example: https://api.example.com/auth/users/123
+          maxLength: 2048
+    UUID:
+      description: UUID identifier
+      x-internal: server
+      type: string
+      format: uuid
+      example: 550e8400-e29b-41d4-a716-446655440000
+      minLength: 36
+      maxLength: 36
+  headers:
+    RateLimitLimit:
+      description: The maximum number of requests allowed per time window
+      schema:
+        type: integer
+        example: 1000
+        format: int32
+        minimum: 1
+        maximum: 1000000
+      example: 1000
+    RateLimitRemaining:
+      description: The number of requests remaining in the current time window
+      schema:
+        type: integer
+        example: 999
+        format: int32
+        minimum: 0
+        maximum: 1000000
+      example: 999
+    RateLimitReset:
+      description: The time at which the current rate limit window resets (Unix timestamp)
+      schema:
+        type: integer
+        example: 1640995200
+        format: int64
+        minimum: 0
+        maximum: 9223372036854776000
+      example: 1640995200
+    RetryAfter:
+      description: Number of seconds to wait before making a new request
+      schema:
+        type: integer
+        example: 60
+        format: int32
+        minimum: 1
+        maximum: 3600
+      example: 60
+  pathItems:
+    executors:
+      get:
+        x-internal: executor
+        operationId: ListExecutors
+        summary: List executors
+        tags:
+          - Executor
+        description: List custom executors for the organization
+        parameters:
+          - $ref: '#/components/parameters/ExecutorsFilter'
+          - $ref: '#/components/parameters/PageQuery'
+          - $ref: '#/components/parameters/ExecutorsSort'
+        security:
+          - bearerAuth: []
+        responses:
+          '200':
+            $ref: '#/components/responses/ExecutorListResponse'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+      post:
+        x-internal: executor
+        operationId: CreateExecutor
+        summary: Create an executor
+        tags:
+          - Executor
+        description: Create a custom executor
+        requestBody:
+          description: Executor creation request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    description: The name of the executor
+                    type: string
+                    minLength: 1
+                    maxLength: 255
+                    pattern: ^[\w\s\-.,!?()@#+/']+$
+                    example: Custom Data Transformer
+                  description:
+                    description: The executor description
+                    type: string
+                    maxLength: 1000
+                    pattern: ^[\w\s\-.,!?()@#+/':;]*$
+                    example: Transforms data using custom business logic
+                  language:
+                    description: The programming language for the executor
+                    type: string
+                    enum:
+                      - nodejs
+                      - python
+                      - go
+                    example: nodejs
+                  executeCode:
+                    description: The custom execute function code
+                    type: string
+                    maxLength: 100000
+                    pattern: ^[\s\S]*$
+                    example: |
+                      export async function executeFunction(input: unknown): Promise<any> {
+                        return { result: "processed" };
+                      }
+                  dependencies:
+                    description: Dependencies configuration
+                    type: string
+                    maxLength: 50000
+                    pattern: ^[\s\S]*$
+                    example: |
+                      {
+                        "dependencies": {
+                          "lodash": "4.17.21"
+                        }
+                      }
+                  schemaIn:
+                    description: Input JSON Schema
+                    type: string
+                    maxLength: 10000
+                    pattern: ^[\s\S]*$
+                    example: |
+                      {
+                        "type": "object",
+                        "properties": {
+                          "value": {
+                            "type": "number"
+                          }
+                        },
+                        "required": ["value"]
+                      }
+                  schemaOut:
+                    description: Output JSON Schema
+                    type: string
+                    maxLength: 10000
+                    pattern: ^[\s\S]*$
+                    example: |
+                      {
+                        "type": "object",
+                        "properties": {
+                          "doubled": {
+                            "type": "number"
+                          }
+                        },
+                        "required": ["doubled"]
+                      }
+                  extraFiles:
+                    description: Additional files to mount
+                    type: string
+                    maxLength: 100000
+                    pattern: ^[\s\S]*$
+                    example: |
+                      [
+                        {
+                          "path": "config/settings.json",
+                          "content": "{\"key\": \"value\"}"
+                        }
+                      ]
+                  timeout:
+                    description: Execution timeout in seconds
+                    type: integer
+                    format: int32
+                    minimum: 1
+                    maximum: 300
+                    default: 30
+                  memoryMB:
+                    description: Memory limit in megabytes
+                    type: integer
+                    format: int32
+                    minimum: 128
+                    maximum: 4096
+                    default: 256
+                  cpuShares:
+                    description: CPU shares (relative weight)
+                    type: integer
+                    format: int32
+                    minimum: 128
+                    maximum: 2048
+                    default: 512
+                  env:
+                    description: Environment variables as JSON array
+                    type: string
+                    maxLength: 10000
+                    pattern: ^[\s\S]*$
+                    example: '["NODE_ENV=production", "DEBUG=false"]'
+                required:
+                  - name
+                  - description
+                  - language
+                  - executeCode
+          required: true
+        security:
+          - bearerAuth: []
+        responses:
+          '201':
+            $ref: '#/components/responses/ExecutorResponse'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+    executors_id:
+      get:
+        x-internal: executor
+        operationId: GetExecutor
+        summary: Find an executor
+        tags:
+          - Executor
+        description: Find an executor by ID
+        parameters:
+          - $ref: '#/components/parameters/ResourceID'
+        security:
+          - bearerAuth: []
+        responses:
+          '200':
+            $ref: '#/components/responses/ExecutorResponse'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+      patch:
+        x-internal: executor
+        operationId: UpdateExecutor
+        summary: Update an executor
+        tags:
+          - Executor
+        description: Update an executor
+        requestBody:
+          description: Executor update data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    description: The name of the executor
+                    type: string
+                    minLength: 1
+                    maxLength: 255
+                    pattern: ^[\w\s\-.,!?()@#+/']+$
+                    example: Custom Data Transformer
+                  description:
+                    description: The executor description
+                    type: string
+                    maxLength: 1000
+                    pattern: ^[\w\s\-.,!?()@#+/':;]*$
+                    example: Transforms data using custom business logic
+                  language:
+                    description: The programming language for the executor
+                    type: string
+                    enum:
+                      - nodejs
+                      - python
+                      - go
+                    example: nodejs
+                  executeCode:
+                    description: The custom execute function code
+                    type: string
+                    maxLength: 100000
+                    pattern: ^[\s\S]*$
+                  dependencies:
+                    description: Dependencies configuration
+                    type: string
+                    maxLength: 50000
+                    pattern: ^[\s\S]*$
+                  schemaIn:
+                    description: Input JSON Schema
+                    type: string
+                    maxLength: 10000
+                    pattern: ^[\s\S]*$
+                  schemaOut:
+                    description: Output JSON Schema
+                    type: string
+                    maxLength: 10000
+                    pattern: ^[\s\S]*$
+                  extraFiles:
+                    description: Additional files to mount
+                    type: string
+                    maxLength: 100000
+                    pattern: ^[\s\S]*$
+                  timeout:
+                    description: Execution timeout in seconds
+                    type: integer
+                    format: int32
+                    minimum: 1
+                    maximum: 300
+                  memoryMB:
+                    description: Memory limit in megabytes
+                    type: integer
+                    format: int32
+                    minimum: 128
+                    maximum: 4096
+                  cpuShares:
+                    description: CPU shares (relative weight)
+                    type: integer
+                    format: int32
+                    minimum: 128
+                    maximum: 2048
+                  env:
+                    description: Environment variables as JSON array
+                    type: string
+                    maxLength: 10000
+                    pattern: ^[\s\S]*$
+                  isActive:
+                    description: Whether the executor is active
+                    type: boolean
+        parameters:
+          - $ref: '#/components/parameters/ResourceID'
+        security:
+          - bearerAuth: []
+        responses:
+          '200':
+            $ref: '#/components/responses/ExecutorResponse'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+      delete:
+        x-internal: executor
+        operationId: DeleteExecutor
+        summary: Delete an executor
+        tags:
+          - Executor
+        description: Delete an executor
+        parameters:
+          - $ref: '#/components/parameters/ResourceID'
+        security:
+          - bearerAuth: []
+        responses:
+          '204':
+            $ref: '#/components/responses/NoContent'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+    executors_id_execute:
+      post:
+        x-internal: executor
+        x-codegen-custom-handler: true
+        operationId: ExecuteExecutor
+        summary: Execute a custom executor
+        tags:
+          - Executor
+        description: Run the executor with provided input
+        parameters:
+          - $ref: '#/components/parameters/ResourceID'
+        requestBody:
+          description: Execution request with input data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  input:
+                    description: Input data for the executor (must match executor's input schema)
+                    type: object
+                    example:
+                      value: 42
+                required:
+                  - input
+          required: true
+        security:
+          - bearerAuth: []
+        responses:
+          '200':
+            $ref: '#/components/responses/SuccessfulExecutionResponse'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+    health:
+      get:
+        x-internal: server
+        x-codegen-custom-handler: true
+        operationId: GetHealth
+        summary: Get health status
+        tags:
+          - Health
+        description: Check the health status of the application
+        responses:
+          '200':
+            $ref: '#/components/responses/HealthResponse'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+        security:
+          - {}
+paths:
+  /executors:
+    $ref: '#/components/pathItems/executors'
+  /executors/{id}:
+    $ref: '#/components/pathItems/executors_id'
+  /executors/{id}/execute:
+    $ref: '#/components/pathItems/executors_id_execute'
+  /health:
+    $ref: '#/components/pathItems/health'

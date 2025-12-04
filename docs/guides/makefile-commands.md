@@ -8,14 +8,13 @@ Run `make help` to see all available commands.
 Usage: make [target]
 
 Available targets:
-  build                      Build all binaries
-  build-api                  Build archesai server binary
+  build                      Build archesai binary
   build-docs                 Build documentation site
-  build-platform             Build platform assets
   build-runner-go            Build Go runner container
   build-runner-node          Build Node runner base container
   build-runner-python        Build Python runner container
   build-runners              Build all runner containers
+  build-studio               Build studio app
   bundle-openapi             Bundle OpenAPI into single file
   check-deps                 Check for required dependencies
   clean                      Clean all build artifacts
@@ -33,10 +32,8 @@ Available targets:
   deps-update                Update all dependencies
   deps-update-go             Update Go dependencies
   deps-update-ts             Update Node.js dependencies
-  dev-all                    Run all services with hot reload
-  dev-api                    Run API server with hot reload
   dev-docs                   Run documentation with hot reload
-  dev-platform               Run platform with hot reload
+  dev-studio                 Run API server with hot reload
   docker-run                 Build and run with Docker Compose
   docker-stop                Stop Docker Compose services
   f                          Shortcut for format
@@ -46,8 +43,8 @@ Available targets:
   format-ts                  Format Node.js/TypeScript code
   g                          Shortcut for generate
   generate                   Generate all code
-  generate-codegen           Generate codegen
-  generate-mocks             Generate test mocks using mockery
+  generate-packages          Generate all packages
+  generate-studio            Generate codegen
   help                       Show this help message
   install-tools              Install required development tools
   lint                       Run all linters
@@ -58,7 +55,7 @@ Available targets:
   lint-typecheck             Run TypeScript type checking
   list-workflows             List all available GitHub workflows
   pre-commit                 Run all pre-commit checks
-  prepare-docs               Copy markdown docs to apps/docs/docs
+  prepare-docs               Copy markdown docs to apps/docs/docs FIXME: bundle-openapi
   release-check              Check if ready for release
   release-clean              Clean release artifacts
   release-draft              Create a draft release on GitHub (requires gh CLI)
@@ -68,12 +65,8 @@ Available targets:
   release-snapshot           Create a snapshot release (test GoReleaser config)
   release-tag                Create and push a new release tag (usage: make release-tag VERSION=v1.0.0)
   release-test               Test release configuration without publishing
-  run-api                    Run the API server (production mode)
-  run-config-show            Launch the configuration wizard
   run-docs                   Run documentation site (production build)
-  run-platform               Run the platform UI (production build)
-  run-tui                    Launch the TUI interface
-  run-worker                 Run the background worker
+  run-studio                 Run the API server (production mode)
   run-workflow               Run GitHub workflow locally with act (usage: make run-workflow workflow=update-docs)
   skaffold-delete            Delete Skaffold deployment
   skaffold-dev               Run with Skaffold in dev mode

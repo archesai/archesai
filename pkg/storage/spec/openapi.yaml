@@ -1,0 +1,43 @@
+openapi: 3.1.0
+x-project-name: github.com/archesai/archesai/pkg/storage
+x-include-server: true
+info:
+  title: Arches Storage API
+  description: Storage schemas for Arches platform
+  version: v0.0.0
+tags:
+  - name: Storage
+    description: Storage management
+paths:
+  /artifacts/{id}:
+    $ref: paths/artifacts_id.yaml
+  /artifacts:
+    $ref: paths/artifacts.yaml
+  /labels/{id}:
+    $ref: paths/labels_id.yaml
+  /labels:
+    $ref: paths/labels.yaml
+components:
+  parameters:
+    ArtifactsFilter:
+      $ref: 'components/parameters/ArtifactsFilter.yaml'
+    ArtifactsSort:
+      $ref: 'components/parameters/ArtifactsSort.yaml'
+    LabelsFilter:
+      $ref: 'components/parameters/LabelsFilter.yaml'
+    LabelsSort:
+      $ref: 'components/parameters/LabelsSort.yaml'
+  responses:
+    ArtifactListResponse:
+      $ref: 'components/responses/ArtifactListResponse.yaml'
+    ArtifactResponse:
+      $ref: 'components/responses/ArtifactResponse.yaml'
+    LabelListResponse:
+      $ref: 'components/responses/LabelListResponse.yaml'
+    LabelResponse:
+      $ref: 'components/responses/LabelResponse.yaml'
+  schemas:
+    Artifact:
+      $ref: 'components/schemas/Artifact.yaml'
+    Label:
+      $ref: 'components/schemas/Label.yaml'

@@ -191,6 +191,13 @@ func (p *JSONSchemaParser) buildBasicSchemaDef(
 				result.XCodegen = &xcodegen
 			}
 		}
+		// Extract x-internal extension - marks schema as imported from another package
+		if ext, ok := schema.Extensions.Get("x-internal"); ok {
+			var xinternal string
+			if err := ext.Decode(&xinternal); err == nil {
+				result.XInternal = xinternal
+			}
+		}
 	}
 
 	return result
@@ -404,13 +411,13 @@ func (p *JSONSchemaParser) resolvePropertyType(
 	// Response schemas always qualify model types
 	isResponseSchema := currentSchemaName != "" && strings.HasSuffix(currentSchemaName, "Response")
 	if isResponseSchema {
-		goType = "core." + actualTypeName
+		goType = "models." + actualTypeName
 	} else if string(currentSchemaType) == targetPackage {
 		// Within the same package, no qualification needed
 		goType = actualTypeName
 	} else {
 		// Different package, always qualify
-		goType = "core." + actualTypeName
+		goType = "models." + actualTypeName
 	}
 
 	// Copy type info from resolved schema

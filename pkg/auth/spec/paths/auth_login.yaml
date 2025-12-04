@@ -1,0 +1,54 @@
+post:
+  x-internal: auth
+  operationId: Login
+  summary: Login
+  tags:
+    - Auth
+  description: Authenticate user and create a session
+  security:
+    - {}
+  x-public-endpoint: true
+  x-codegen-custom-handler: true
+  requestBody:
+    description: User login credentials
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            email:
+              description: The email address associated with the account
+              type: string
+              format: email
+              example: user@example.com
+              minLength: 1
+              maxLength: 255
+            password:
+              description: The password for the account
+              type: string
+              minLength: 1
+              maxLength: 72
+              example: secure-password-123
+              pattern: ^[\w\s\-.,!?()@#+/]*$
+            rememberMe:
+              description: Whether to create a long-lived session
+              type: boolean
+              default: false
+              example: true
+          required:
+            - email
+            - password
+    required: true
+  responses:
+    '201':
+      $ref: ../components/responses/SessionCreated.yaml
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '422':
+      $ref: ../components/responses/UnprocessableEntity.yaml
+    '429':
+      $ref: ../components/responses/TooManyRequests.yaml
+    '500':
+      $ref: ../components/responses/InternalServerError.yaml

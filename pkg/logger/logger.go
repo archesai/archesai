@@ -33,8 +33,8 @@ func NewDefault(cfg Config) *slog.Logger {
 func NewPretty(cfg Config) *slog.Logger {
 	level := parseLevel(cfg.Level)
 	handler := log.NewWithOptions(os.Stdout, log.Options{
-		ReportTimestamp: true,
-		ReportCaller:    true,
+		ReportTimestamp: level == slog.LevelDebug,
+		ReportCaller:    level == slog.LevelDebug,
 		TimeFormat:      time.Kitchen,
 		Level:           log.Level(level),
 	})

@@ -93,7 +93,7 @@ func (m *MigrationRunner) Up() error {
 
 	// If no migration files exist, nothing to do
 	if len(files) == 0 {
-		slog.Info("No migrations to apply")
+		slog.Debug("No migrations to apply")
 		return nil
 	}
 

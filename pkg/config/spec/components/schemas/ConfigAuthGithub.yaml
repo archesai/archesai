@@ -1,0 +1,46 @@
+description: GitHub OAuth configuration
+x-internal: config
+type: object
+title: GitHubAuthConfig
+properties:
+  enabled:
+    description: Enable GitHub OAuth
+    type: boolean
+    default: false
+    example: false
+  clientId:
+    description: GitHub OAuth App client ID
+    type: string
+    minLength: 1
+    maxLength: 255
+    pattern: ^[\w\.\-]+$
+    example: Iv1.abc123def456ghi7
+  clientSecret:
+    description: GitHub OAuth App client secret
+    type: string
+    minLength: 1
+    maxLength: 255
+    pattern: ^[\w\-]+$
+    example: abc123def456ghi789jkl012mno345pqr678stu901
+  redirectUrl:
+    description: OAuth callback URL
+    type: string
+    format: uri
+    example: http://localhost:8080/auth/oauth/github/callback
+    maxLength: 2048
+  scopes:
+    description: OAuth scopes to request
+    type: array
+    items:
+      type: string
+      maxLength: 255
+      pattern: ^[\w\s\-:]+$
+    default:
+      - user:email
+    example:
+      - read:user
+    maxItems: 1000
+required:
+  - enabled
+additionalProperties: false
+x-codegen-schema-type: valueobject

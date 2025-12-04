@@ -35,17 +35,7 @@
     <file>.markdownlint.json</file>
     <file>biome.json</file>
   </root-files>
-  <dir name="api" type="api-spec" purpose="API definitions" files="2" dirs="2" patterns="*.yaml">
-    <dir name="components" purpose="Reusable components" dirs="4">
-      <dir name="headers" files="5" patterns="*.yaml"/>
-      <dir name="parameters" files="29" patterns="*.yaml"/>
-      <dir name="responses" files="42" patterns="*.yaml"/>
-      <dir name="schemas" files="22" dirs="1" patterns="*.yaml">
-        <dir name="config" purpose="Configuration management" files="37" patterns="*.yaml"/>
-      </dir>
-    </dir>
-    <dir name="paths" files="47" patterns="*.yaml"/>
-  </dir>
+  <dir name="api" type="api-spec" purpose="API definitions" files="2" patterns="*.yaml"/>
   <dir name="assets" purpose="Static assets" files="13"/>
   <dir name="cmd" dirs="1">
     <dir name="archesai" files="1" key-files="main.go"/>
@@ -54,7 +44,7 @@
     <dir name="containers" dirs="1">
       <dir name="runners" dirs="3">
         <dir name="go" type="go-module" files="6" key-files="main.go,go.mod,Dockerfile"/>
-        <dir name="node" type="npm-package" files="6" dirs="3" key-files="package.json,Dockerfile"/>
+        <dir name="node" type="npm-package" files="6" dirs="2" key-files="package.json,Dockerfile"/>
         <dir name="python" type="container" files="5" key-files="Dockerfile"/>
       </dir>
     </dir>
@@ -104,11 +94,11 @@
   </dir>
   <dir name="internal" dirs="6">
     <dir name="cli" files="6"/>
-    <dir name="codegen" files="13" dirs="1">
-      <dir name="tmpl" files="14"/>
+    <dir name="codegen" files="16" dirs="1">
+      <dir name="tmpl" files="17"/>
     </dir>
     <dir name="dev" files="3"/>
-    <dir name="parsers" files="13"/>
+    <dir name="parsers" files="20"/>
     <dir name="testutil" type="testing" purpose="Testing utilities" files="1"/>
     <dir name="tui" files="2"/>
   </dir>
@@ -129,12 +119,10 @@
     </dir>
   </dir>
   <dir name="web" purpose="Web applications" dirs="3">
-    <dir name="client" type="npm-package" purpose="Client SDK" files="5" dirs="3" key-files="package.json">
-      <dir name="src" files="3" dirs="1" key-files="index.ts">
-        <dir name="generated" type="generated" files="2" dirs="15"/>
-      </dir>
+    <dir name="client" type="npm-package" purpose="Client SDK" files="5" dirs="2" key-files="package.json">
+      <dir name="src" files="3" key-files="index.ts"/>
     </dir>
-    <dir name="platform" type="npm-package" purpose="Platform UI" files="7" dirs="4" key-files="package.json,Dockerfile">
+    <dir name="platform" type="npm-package" purpose="Platform UI" files="7" dirs="3" key-files="package.json,Dockerfile">
       <dir name="public" files="1"/>
       <dir name="src" files="2" dirs="5" patterns="*.tsx">
         <dir name="components" purpose="Reusable components" files="6" dirs="6" patterns="*.tsx"/>
@@ -144,7 +132,7 @@
         <dir name="styles" files="1"/>
       </dir>
     </dir>
-    <dir name="ui" type="npm-package" purpose="UI components" files="6" dirs="3" key-files="package.json">
+    <dir name="ui" type="npm-package" purpose="UI components" files="6" dirs="2" key-files="package.json">
       <dir name="src" files="1" dirs="7" key-files="index.ts">
         <dir name="components" purpose="Reusable components" files="1" dirs="5" key-files="index.ts"/>
         <dir name="hooks" files="4" patterns="*.tsx"/>

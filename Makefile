@@ -34,23 +34,18 @@ help: ## Show this help message
 # Build Commands
 # ------------------------------------------
 
-BINARY_PATH := ./tmp
+BINARY_PATH := ./bin
 
 .PHONY: build
-build: build-api build-platform ## Build all binaries
-	@echo -e "$(GREEN)✓ All builds complete!$(NC)"
-
-.PHONY: build-api
-build-api: ## Build archesai server binary
-	@echo -e "$(YELLOW)▶ Building archesai server...$(NC)"
+build: ## Build archesai binary
+	@echo -e "$(YELLOW)▶ Building archesai...$(NC)"
 	@go build -o $(BINARY_PATH)/archesai  cmd/archesai/main.go
 	@echo -e "$(GREEN)✓ archesai built: $(BINARY_PATH)/archesai $(NC)"
 
-.PHONY: build-platform
-build-platform: ## Build platform assets
-	@echo -e "$(YELLOW)▶ Building platform assets...$(NC)"
-	@cd web/platform && pnpm build
-	@echo -e "$(GREEN)✓ Platform assets built!$(NC)"
+.PHONY: build-studio
+build-studio: ## Build studio app
+	@echo -e "$(YELLOW)▶ Building studio app...$(NC)"
+	@echo -e "$(RED)▶ NOT IMPLEMENTED ...$(NC)"
 
 .PHONY: build-docs
 build-docs: prepare-docs ## Build documentation site
@@ -62,68 +57,30 @@ build-docs: prepare-docs ## Build documentation site
 # Run Commands (Production-like)
 # ------------------------------------------
 
-.PHONY: run-api
-run-api: ## Run the API server (production mode)
+.PHONY: run-studio
+run-studio: build ## Run the API server (production mode)
 	@echo -e "$(YELLOW)▶ Starting API server...$(NC)"
 	@go run cmd/archesai/main.go api
-
-.PHONY: run-platform
-run-platform: build-platform ## Run the platform UI (production build)
-	@echo -e "$(YELLOW)▶ Starting platform server...$(NC)"
-	@pnpm -F @archesai/platform start
 
 .PHONY: run-docs
 run-docs: prepare-docs ## Run documentation site (production build)
 	@echo -e "$(YELLOW)▶ Starting documentation server...$(NC)"
 	@pnpm -F @archesai/docs start
 
-.PHONY: run-worker
-run-worker: ## Run the background worker
-	@echo -e "$(YELLOW)▶ Starting worker...$(NC)"
-	@go run cmd/archesai/main.go worker
-
-.PHONY: run-tui
-run-tui: ## Launch the TUI interface
-	@echo -e "$(YELLOW)▶ Launching TUI...$(NC)"
-	@go run cmd/archesai/main.go tui
-
-.PHONY: run-config-show
-run-config-show: ## Launch the configuration wizard
-	@echo -e "$(YELLOW)▶ Launching configuration wizard...$(NC)"
-	@go run cmd/archesai/main.go config show
-
 # ------------------------------------------
 # Development Commands (Hot Reload)
 # ------------------------------------------
 
-.PHONY: dev-api
-dev-api: ## Run API server with hot reload
+.PHONY: dev-studio
+dev-studio: ## Run API server with hot reload
 	@echo -e "$(YELLOW)▶ Starting API server with hot reload on port 3001...$(NC)"
 	@echo -e "$(YELLOW)Press Ctrl+C to stop$(NC)"
 	@go tool -modfile=tools.mod air
-
-.PHONY: dev-platform
-dev-platform: ## Run platform with hot reload
-	@echo -e "$(YELLOW)▶ Starting platform with hot reload...$(NC)"
-	@pnpm -F @archesai/platform dev
 
 .PHONY: dev-docs
 dev-docs: prepare-docs ## Run documentation with hot reload
 	@echo -e "$(YELLOW)▶ Starting documentation with hot reload...$(NC)"
 	@pnpm -F @archesai/docs dev
-
-.PHONY: dev-all
-dev-all: ## Run all services with hot reload
-	@echo -e "$(BLUE)🚀 Starting all development services...$(NC)"
-	@echo -e "$(CYAN)  API:      http://localhost:3001$(NC)"
-	@echo -e "$(CYAN)  Platform: http://localhost:3000$(NC)"
-	@echo -e "$(CYAN)  Docs:     http://localhost:3002$(NC)"
-	@echo -e "$(GRAY)Press Ctrl+C to stop all services$(NC)"
-	@trap 'echo -e "\n$(YELLOW)Stopping all services...$(NC)"; kill 0' INT; \
-	(make dev-api &) && \
-	(make dev-platform &) && \
-	(make dev-docs &) && \
-	wait
 
 # ------------------------------------------
 # Deployment Commands
@@ -142,16 +99,25 @@ deploy-docs: ## Manually trigger documentation deployment to GitHub Pages
 # ------------------------------------------
 
 .PHONY: generate
-generate: generate-codegen ## Generate all code
-	@echo -e "$(GREEN)✓ All code generation complete!$(NC)"
+generate: generate-packages ## Generate all code
+	@$(MAKE) generate-studio
 
-.PHONY: generate-codegen
-generate-codegen: bundle-openapi ## Generate codegen
-	@go run cmd/archesai/main.go generate --spec ./api/openapi.bundled.yaml --output ./apps/studio --pretty
+generate-all: ## Regenerate example configurations
+	@$(MAKE) generate
+	@$(MAKE) generate-examples
 
-.PHONY: generate-mocks
-generate-mocks: ## Generate test mocks using mockery
-	@go tool -modfile=tools.mod mockery
+.PHONY: generate-packages
+generate-packages: ## Generate all packages
+	@go generate ./...
+	
+.PHONY: generate-studio
+generate-studio: ## Generate codegen
+	@go run cmd/archesai/main.go generate --spec ./api/openapi.yaml --output ./apps/studio --pretty --orval-fix --tui
+
+.PHONY: generate-examples ## Generate example configurations
+generate-examples:
+	@go run cmd/archesai/main.go generate --spec ./examples/basic/spec/openapi.yaml --output ./examples/basic --pretty --tui
+	@go run cmd/archesai/main.go generate --spec ./examples/authentication/spec/openapi.yaml --output ./examples/authentication --pretty --tui
 
 # ------------------------------------------
 # Test Commands
@@ -159,45 +125,31 @@ generate-mocks: ## Generate test mocks using mockery
 
 .PHONY: test
 test: ## Run all tests
-	@echo -e "$(YELLOW)▶ Running tests...$(NC)"
 	@go test -race -cover ./...
-	@echo -e "$(GREEN)✓ Tests complete!$(NC)"
 
 .PHONY: test-verbose
 test-verbose: ## Run all tests with verbose output
-	@echo -e "$(YELLOW)▶ Running tests (verbose)...$(NC)"
 	@go test -v -race -cover ./...
-	@echo -e "$(GREEN)✓ Tests complete!$(NC)"
 
 .PHONY: test-short
 test-short: ## Run short tests only (skip integration tests)
-	@echo -e "$(YELLOW)▶ Running short tests...$(NC)"
 	@go test -short -cover ./...
-	@echo -e "$(GREEN)✓ Short tests complete!$(NC)"
 
 .PHONY: test-coverage
 test-coverage: ## Generate test coverage report
-	@echo -e "$(YELLOW)▶ Generating coverage report...$(NC)"
 	@go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
 	@go tool cover -func=coverage.out
-	@echo -e "$(GREEN)✓ Coverage report generated!$(NC)"
 
 .PHONY: test-coverage-html
 test-coverage-html: test-coverage ## Generate HTML coverage report
-	@echo -e "$(YELLOW)▶ Generating HTML coverage report...$(NC)"
 	@go tool cover -html=coverage.out -o coverage.html
-	@echo -e "$(GREEN)✓ Coverage report: coverage.html$(NC)"
-	@echo -e "$(BLUE)Open coverage.html in your browser to view the report$(NC)"
 
 .PHONY: test-bench
 test-bench: ## Run benchmark tests
-	@echo -e "$(YELLOW)▶ Running benchmark tests...$(NC)"
 	@go test -bench=. -benchmem ./...
-	@echo -e "$(GREEN)✓ Benchmark tests complete!$(NC)"
 
 .PHONY: test-watch
 test-watch: ## Run tests in watch mode (requires fswatch)
-	@echo -e "$(YELLOW)▶ Running tests in watch mode...$(NC)"
 	@which fswatch > /dev/null || (echo "Please install fswatch first" && exit 1)
 	@fswatch -o . -e ".*" -i "\\.go$$" | xargs -n1 -I{} sh -c 'clear && make test'
 
@@ -230,9 +182,9 @@ list-workflows: ## List all available GitHub workflows
 # Lint Commands
 # ------------------------------------------
 
-# FIXME: lint-openapi
 .PHONY: lint
 lint: lint-go lint-ts lint-docs ## Run all linters 
+	@$(MAKE) lint-openapi
 	@echo -e "$(GREEN)✓ All linting complete!$(NC)"
 
 .PHONY: lint-go
@@ -263,15 +215,11 @@ lint-ts: lint-typecheck ## Run Node.js linter (includes typecheck)
 
 .PHONY: lint-openapi
 lint-openapi: ## Lint OpenAPI specification
-	@echo -e "$(YELLOW)▶ Linting OpenAPI spec...$(NC)"
-	@go tool -modfile=tools.mod vacuum lint ./api/openapi.yaml --details --no-banner --hard-mode --no-clip --all-results --pipeline-output --no-style
-	@echo -e "$(GREEN)✓ OpenAPI linting complete!$(NC)"
+	@go run cmd/archesai/main.go generate --spec ./api/openapi.yaml --output ./apps/studio --only bundle --lint
 
 .PHONY: lint-typecheck
 lint-typecheck: ## Run TypeScript type checking
-	@echo -e "$(YELLOW)▶ Type checking TypeScript...$(NC)"
 	@pnpm tsc --build --emitDeclarationOnly
-	@echo -e "$(GREEN)✓ TypeScript type checking complete!$(NC)"
 
 .PHONY: lint-docs
 lint-docs: ## Lint documentation with markdownlint
@@ -321,17 +269,13 @@ clean-ts: ## Clean distribution builds
 
 .PHONY: clean-go
 clean-go: ## Clean Go build artifacts
-	@echo -e "$(YELLOW)▶ Cleaning Go build artifacts...$(NC)"
-	@rm -rf ./bin $(BINARY_PATH)
-	@echo -e "$(GREEN)✓ Go build artifacts cleaned!$(NC)"
+	@rm -rf $(BINARY_PATH)
 
 .PHONY: clean-generated
 clean-generated: ## Clean all generated code
-	@echo -e "$(YELLOW)▶ Cleaning generated code...$(NC)"
-	@find . -type f -name "*.gen.go" -exec rm -f {} +
-	@find . -type f -name "mocks_test.go" -exec rm -f {} +
-	@rm -rf ./web/client/src/generated
-	@rm -f ./api/openapi.bundled.yaml
+	@find . -type f -name "*.gen.*" -not -path "./internal/codegen/tmpl/*" -not -path "./pkg/auth/repositories/*" -not -path "./pkg/auth/models/*" -exec rm -f {} +
+	@find . -type d -empty -delete 2>/dev/null || true
+	@rm -rf ./pkg/client/src/generated
 	@rm -f ./deployments/helm-minimal/values.schema.json
 	@echo -e "$(GREEN)✓ Generated code cleaned!$(NC)"
 
@@ -359,22 +303,21 @@ clean-go-deps: ## Clean Go module cache
 	@echo -e "$(GREEN)✓ Go module cache cleaned!$(NC)"
 
 .PHONY: prepare-docs
-prepare-docs: bundle-openapi ## Copy markdown docs to apps/docs/docs
+prepare-docs: bundle-openapi ## Copy markdown docs to apps/docs/docs FIXME: bundle-openapi
 	@echo -e "$(YELLOW)▶ Copying markdown docs to apps/docs...$(NC)"
 	@mkdir -p ./apps/docs/apis ./apps/docs/pages/documentation
 	@cp ./api/openapi.bundled.yaml ./apps/docs/apis/openapi.yaml
 	@cp -r ./docs/** ./apps/docs/pages
 	@echo -e "$(GREEN)✓ Docs copied!$(NC)"
 
-
 # ------------------------------------------
 # API/OpenAPI Commands
 # ------------------------------------------
 
 .PHONY: bundle-openapi
-bundle-openapi: ## Bundle OpenAPI into single file
-	@go run cmd/archesai/main.go generate --spec ./api/openapi.yaml --bundle --output ./api/openapi.bundled.yaml --orval-fix --pretty
-
+bundle-openapi:  ## Bundle OpenAPI into single file
+	@go run cmd/archesai/main.go generate --spec ./api/openapi.yaml --output ./apps/studio --only bundle
+	
 # ------------------------------------------
 # Dependency Commands
 # ------------------------------------------

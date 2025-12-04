@@ -1,0 +1,36 @@
+description: Successful execution
+content:
+  application/json:
+    schema:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            output:
+              description: Execution result (matches executor's output schema)
+              type: object
+              example:
+                doubled: 84
+            executionTimeMs:
+              description: Execution time in milliseconds
+              type: integer
+              format: int64
+              minimum: 0
+              maximum: 600000
+              example: 1234
+            logs:
+              description: Execution logs from stderr
+              type: string
+              maxLength: 1000000
+              pattern: ^[\s\S]*$
+              example: "Container started\nExecution completed"
+          required:
+            - output
+headers:
+  X-RateLimit-Limit:
+    $ref: ../headers/RateLimitLimit.yaml
+  X-RateLimit-Remaining:
+    $ref: ../headers/RateLimitRemaining.yaml
+  X-RateLimit-Reset:
+    $ref: ../headers/RateLimitReset.yaml

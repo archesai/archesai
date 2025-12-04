@@ -1,0 +1,33 @@
+description: Email configuration for sending emails
+x-internal: config
+type: object
+title: EmailConfig
+properties:
+  enabled:
+    description: Enable email functionality
+    type: boolean
+    default: false
+    example: true
+  service:
+    description: Email service provider (e.g., "gmail", "sendgrid", etc.)
+    type: string
+    pattern: ^[\w\-]+$
+    example: sendgrid
+    maxLength: 255
+  user:
+    description: Username for the email service
+    type: string
+    format: email
+    pattern: ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
+    example: user@example.com
+    maxLength: 255
+  password:
+    description: Password for the email service
+    type: string
+    pattern: ^[\w\s\-.,!?()@#+/=]*$
+    example: secret-password-123
+    maxLength: 255
+required:
+  - enabled
+additionalProperties: false
+x-codegen-schema-type: valueobject

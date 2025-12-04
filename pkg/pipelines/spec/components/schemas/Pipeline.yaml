@@ -1,0 +1,54 @@
+description: Schema for Pipeline entity
+title: Pipeline
+x-codegen-schema-type: entity
+x-codegen:
+  repository:
+    excludeFromUpdate:
+      - OrganizationID
+    indices:
+      - organizationID
+    relations:
+      - field: organizationID
+        references: organization
+        onDelete: CASCADE
+        onUpdate: CASCADE
+    additionalMethods:
+      - name: ListPipelinesByOrganization
+        params:
+          - name: organizationID
+            type: string
+            format: uuid
+            maxLength: 36
+        returns: multiple
+x-internal: pipelines
+allOf:
+  - $ref: Base.yaml
+  - type: object
+    properties:
+      organizationID:
+        description: The organization identifier
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
+        maxLength: 36
+      name:
+        description: The pipeline's display name
+        type: [string, 'null']
+        minLength: 1
+        maxLength: 255
+        example: Data Processing Pipeline
+        pattern: ^[\w\s\-.,!?()@#+/']+$
+      description:
+        description: Detailed description of the pipeline's purpose
+        type: [string, 'null']
+        maxLength: 1000
+        pattern: ^[\w\s\-.,!?()@#+/':;]+$
+        example:
+          Processes incoming data through validation, transformation, and storage
+          steps
+    required:
+      - organizationID
+      - name
+      - description
+unevaluatedProperties: false

@@ -1,0 +1,4278 @@
+openapi: 3.2.0
+x-project-name: github.com/archesai/archesai/pkg/auth
+info:
+  title: Arches Auth API
+  description: The Arches Auth API
+  version: v0.0.0
+security:
+  - bearerAuth: []
+  - sessionCookie: []
+tags:
+  - name: APIKey
+    description: API key management
+  - name: Auth
+    description: Authentication and authorization operations
+  - name: Invitation
+    description: Organization invitation management
+  - name: Member
+    description: Organization member management
+  - name: OAuth
+    description: OAuth provider integration
+  - name: Organization
+    description: Organization management
+  - name: Session
+    description: User session management
+  - name: Token
+    description: API token management
+  - name: User
+    description: User profile management
+  - name: Health
+    description: Health check operations
+paths:
+  /auth/login:
+    $ref: '#/components/pathItems/auth_login'
+  /auth/logout:
+    $ref: '#/components/pathItems/auth_logout'
+  /auth/logout-all:
+    $ref: '#/components/pathItems/auth_logout-all'
+  /auth/register:
+    $ref: '#/components/pathItems/auth_register'
+  /auth/magic-links/request:
+    $ref: '#/components/pathItems/auth_magic-links_request'
+  /auth/magic-links/verify:
+    $ref: '#/components/pathItems/auth_magic-links_verify'
+  /auth/forgot-password:
+    $ref: '#/components/pathItems/auth_forgot-password'
+  /auth/reset-password:
+    $ref: '#/components/pathItems/auth_reset-password'
+  /auth/change-email:
+    $ref: '#/components/pathItems/auth_change-email'
+  /auth/confirm-email:
+    $ref: '#/components/pathItems/auth_confirm-email'
+  /auth/request-verification:
+    $ref: '#/components/pathItems/auth_request-verification'
+  /auth/verify-email:
+    $ref: '#/components/pathItems/auth_verify-email'
+  /auth/link:
+    $ref: '#/components/pathItems/auth_link'
+  /auth/oauth/{provider}/authorize:
+    $ref: '#/components/pathItems/auth_oauth_provider_authorize'
+  /auth/oauth/{provider}/callback:
+    $ref: '#/components/pathItems/auth_oauth_provider_callback'
+  /auth/accounts:
+    $ref: '#/components/pathItems/auth_accounts'
+  /auth/accounts/{id}:
+    $ref: '#/components/pathItems/auth_accounts_id'
+  /auth/sessions:
+    $ref: '#/components/pathItems/auth_sessions'
+  /auth/sessions/{id}:
+    $ref: '#/components/pathItems/auth_sessions_id'
+  /auth/me:
+    $ref: '#/components/pathItems/auth_me'
+  /users:
+    $ref: '#/components/pathItems/users'
+  /users/{id}:
+    $ref: '#/components/pathItems/users_id'
+  /api-keys:
+    $ref: '#/components/pathItems/api-keys'
+  /api-keys/{id}:
+    $ref: '#/components/pathItems/api-keys_id'
+  /organizations:
+    $ref: '#/components/pathItems/organizations'
+  /organizations/{id}:
+    $ref: '#/components/pathItems/organizations_id'
+  /organizations/{organizationID}/members:
+    $ref: '#/components/pathItems/organizations_organizationID_members'
+  /organizations/{organizationID}/members/{id}:
+    $ref: '#/components/pathItems/organizations_organizationID_members_id'
+  /organizations/{organizationID}/invitations:
+    $ref: '#/components/pathItems/organizations_organizationID_invitations'
+  /organizations/{organizationID}/invitations/{id}:
+    $ref: '#/components/pathItems/organizations_organizationID_invitations_id'
+  /health:
+    $ref: '#/components/pathItems/health'
+components:
+  headers:
+    SetCookie:
+      description: Session cookies for authentication
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 4096
+        pattern: ^[\w\-=;,. ]+$
+    RateLimitLimit:
+      description: The maximum number of requests allowed per time window
+      schema:
+        type: integer
+        example: 1000
+        format: int32
+        minimum: 1
+        maximum: 1000000
+      example: 1000
+    RateLimitRemaining:
+      description: The number of requests remaining in the current time window
+      schema:
+        type: integer
+        example: 999
+        format: int32
+        minimum: 0
+        maximum: 1000000
+      example: 999
+    RateLimitReset:
+      description: The time at which the current rate limit window resets (Unix timestamp)
+      schema:
+        type: integer
+        example: 1640995200
+        format: int64
+        minimum: 0
+        maximum: 9223372036854776000
+      example: 1640995200
+    RetryAfter:
+      description: Number of seconds to wait before making a new request
+      schema:
+        type: integer
+        example: 60
+        format: int32
+        minimum: 1
+        maximum: 3600
+      example: 60
+  parameters:
+    AccountsFilter:
+      in: query
+      name: filter
+      required: false
+      style: deepObject
+      explode: true
+      schema:
+        $ref: '#/components/schemas/FilterNode'
+      description: Filter by field values
+      example:
+        type: eq
+        field: providerID
+        value: google
+    AccountsSort:
+      in: query
+      name: sort
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: array
+        maxItems: 10
+        items:
+          type: object
+          required:
+            - field
+            - order
+          properties:
+            field:
+              type: string
+              enum:
+                - createdAt
+                - id
+                - updatedAt
+                - accessToken
+                - accessTokenExpiresAt
+                - accountID
+                - idToken
+                - providerID
+                - refreshToken
+                - refreshTokenExpiresAt
+                - scope
+                - userID
+              example: createdAt
+            order:
+              type: string
+              enum:
+                - asc
+                - desc
+              example: asc
+      description: The sort parameter
+      example:
+        - field: createdAt
+          order: desc
+    APIKeysFilter:
+      in: query
+      name: filter
+      required: false
+      style: deepObject
+      explode: true
+      schema:
+        $ref: '#/components/schemas/FilterNode'
+      description: Filter by field values
+      example:
+        type: eq
+        field: userID
+        value: 550e8400-e29b-41d4-a716-446655440000
+    APIKeysSort:
+      in: query
+      name: sort
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: array
+        maxItems: 10
+        items:
+          type: object
+          required:
+            - field
+            - order
+          properties:
+            field:
+              type: string
+              enum:
+                - createdAt
+                - id
+                - updatedAt
+                - userID
+                - organizationID
+                - keyHash
+                - name
+                - prefix
+                - rateLimit
+                - lastUsedAt
+                - expiresAt
+              example: createdAt
+            order:
+              type: string
+              enum:
+                - asc
+                - desc
+              example: desc
+      description: The sort parameter
+      example:
+        - field: createdAt
+          order: desc
+    InvitationsFilter:
+      in: query
+      name: filter
+      required: false
+      style: deepObject
+      explode: true
+      schema:
+        $ref: '#/components/schemas/FilterNode'
+      description: Filter by field values
+      example:
+        type: eq
+        field: status
+        value: PENDING
+    InvitationsSort:
+      in: query
+      name: sort
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: array
+        maxItems: 10
+        items:
+          type: object
+          required:
+            - field
+            - order
+          properties:
+            field:
+              type: string
+              enum:
+                - createdAt
+                - id
+                - updatedAt
+                - email
+                - expiresAt
+                - inviterID
+                - organizationID
+                - role
+                - status
+              example: createdAt
+            order:
+              type: string
+              enum:
+                - asc
+                - desc
+              example: asc
+      description: The sort parameter
+      example:
+        - field: createdAt
+          order: desc
+    MembersFilter:
+      in: query
+      name: filter
+      required: false
+      style: deepObject
+      explode: true
+      schema:
+        $ref: '#/components/schemas/FilterNode'
+      description: Filter by field values
+      example:
+        type: eq
+        field: role
+        value: ADMIN
+    MembersSort:
+      in: query
+      name: sort
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: array
+        maxItems: 10
+        items:
+          type: object
+          required:
+            - field
+            - order
+          properties:
+            field:
+              type: string
+              enum:
+                - createdAt
+                - id
+                - updatedAt
+                - organizationID
+                - role
+                - userID
+              example: createdAt
+            order:
+              type: string
+              enum:
+                - asc
+                - desc
+              example: asc
+      description: The sort parameter
+      example:
+        - field: createdAt
+          order: desc
+    OrganizationID:
+      schema:
+        $ref: '#/components/schemas/UUID'
+      in: path
+      name: organizationID
+      required: true
+      description: The unique identifier of the organization.
+    OrganizationsFilter:
+      in: query
+      name: filter
+      required: false
+      style: deepObject
+      explode: true
+      schema:
+        $ref: '#/components/schemas/FilterNode'
+      description: Filter by field values
+      example:
+        type: eq
+        field: name
+        value: Example Organization
+    OrganizationsSort:
+      in: query
+      name: sort
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: array
+        maxItems: 10
+        items:
+          type: object
+          required:
+            - field
+            - order
+          properties:
+            field:
+              type: string
+              enum:
+                - createdAt
+                - id
+                - updatedAt
+                - billingEmail
+                - credits
+                - logo
+                - metadata
+                - name
+                - plan
+                - slug
+                - stripeCustomerIdentifier
+              example: createdAt
+            order:
+              type: string
+              enum:
+                - asc
+                - desc
+              example: asc
+      description: The sort parameter
+      example:
+        - field: createdAt
+          order: desc
+    SessionsFilter:
+      in: query
+      name: filter
+      required: false
+      style: deepObject
+      explode: true
+      schema:
+        $ref: '#/components/schemas/FilterNode'
+      description: Filter by field values
+      example:
+        type: eq
+        field: userID
+        value: 550e8400-e29b-41d4-a716-446655440000
+    SessionsSort:
+      in: query
+      name: sort
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: array
+        maxItems: 10
+        items:
+          type: object
+          required:
+            - field
+            - order
+          properties:
+            field:
+              type: string
+              enum:
+                - createdAt
+                - id
+                - updatedAt
+                - organizationID
+                - expiresAt
+                - ipAddress
+                - token
+                - userAgent
+                - userID
+              example: createdAt
+            order:
+              type: string
+              enum:
+                - asc
+                - desc
+              example: asc
+      description: The sort parameter
+      example:
+        - field: createdAt
+          order: desc
+    UsersFilter:
+      in: query
+      name: filter
+      required: false
+      style: deepObject
+      explode: true
+      schema:
+        $ref: '#/components/schemas/FilterNode'
+      description: Filter by field values
+      example:
+        type: eq
+        field: email
+        value: user@example.com
+    UsersSort:
+      in: query
+      name: sort
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: array
+        maxItems: 10
+        items:
+          type: object
+          required:
+            - field
+            - order
+          properties:
+            field:
+              type: string
+              enum:
+                - createdAt
+                - id
+                - updatedAt
+                - email
+                - emailVerified
+                - image
+                - name
+              example: createdAt
+            order:
+              type: string
+              enum:
+                - asc
+                - desc
+              example: asc
+      description: The sort parameter
+      example:
+        - field: createdAt
+          order: desc
+    PageQuery:
+      in: query
+      name: page
+      required: false
+      style: form
+      explode: true
+      schema:
+        $ref: '#/components/schemas/Page'
+      description: The page parameter
+      example:
+        limit: 10
+        offset: 0
+    ResourceID:
+      schema:
+        $ref: '#/components/schemas/UUID'
+      in: path
+      name: id
+      required: true
+      description: The unique identifier of the resource.
+  responses:
+    AccountListResponse:
+      description: Accounts retrieved successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                maxItems: 10000
+                items:
+                  $ref: '#/components/schemas/Account'
+              meta:
+                $ref: '#/components/schemas/PaginationMeta'
+            required:
+              - data
+              - meta
+            additionalProperties: false
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    AccountResponse:
+      description: Account retrieved successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: '#/components/schemas/Account'
+            required:
+              - data
+            additionalProperties: false
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    APIKeyListResponse:
+      description: API keys retrieved successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                maxItems: 10000
+                items:
+                  $ref: '#/components/schemas/APIKey'
+              meta:
+                $ref: '#/components/schemas/PaginationMeta'
+            required:
+              - data
+              - meta
+            additionalProperties: false
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    APIKeyResponse:
+      description: API key retrieved successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: '#/components/schemas/APIKey'
+            required:
+              - data
+            additionalProperties: false
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    EmailVerificationResponse:
+      description: Email verified successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              session:
+                $ref: '#/components/schemas/Session'
+              user:
+                $ref: '#/components/schemas/User'
+            required:
+              - session
+              - user
+            additionalProperties: false
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    InvitationListResponse:
+      description: Invitations retrieved successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                maxItems: 10000
+                items:
+                  $ref: '#/components/schemas/Invitation'
+              meta:
+                $ref: '#/components/schemas/PaginationMeta'
+            required:
+              - data
+              - meta
+            additionalProperties: false
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    InvitationResponse:
+      description: Invitation retrieved successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: '#/components/schemas/Invitation'
+            required:
+              - data
+            additionalProperties: false
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    LogoutResponse:
+      description: Logout successful
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            required:
+              - message
+            properties:
+              message:
+                type: string
+                minLength: 1
+                maxLength: 255
+                example: Successfully logged out
+                pattern: ^[\w\s\-.,!?()]+$
+          example:
+            message: Successfully logged out
+      headers:
+        Set-Cookie:
+          $ref: '#/components/headers/SetCookie'
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    MemberListResponse:
+      description: Members retrieved successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                maxItems: 10000
+                items:
+                  $ref: '#/components/schemas/Member'
+              meta:
+                $ref: '#/components/schemas/PaginationMeta'
+            required:
+              - data
+              - meta
+            additionalProperties: false
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    MemberResponse:
+      description: Member retrieved successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: '#/components/schemas/Member'
+            required:
+              - data
+            additionalProperties: false
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    OrganizationListResponse:
+      description: Organizations retrieved successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                maxItems: 10000
+                items:
+                  $ref: '#/components/schemas/Organization'
+              meta:
+                $ref: '#/components/schemas/PaginationMeta'
+            required:
+              - data
+              - meta
+            additionalProperties: false
+          example:
+            data:
+              - id: 550e8400-e29b-41d4-a716-446655440000
+                name: Acme Corporation
+                slug: acme-corp
+                logo: https://example.com/org-logo.png
+                billingEmail: billing@acme.com
+                plan: STANDARD
+                credits: 1000
+                stripeCustomerIdentifier: cus_1234567890
+                createdAt: '2024-01-15T09:30:00Z'
+                updatedAt: '2024-01-15T09:30:00Z'
+            meta:
+              total: 1
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    OrganizationResponse:
+      description: Organization retrieved successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: '#/components/schemas/Organization'
+            required:
+              - data
+            additionalProperties: false
+          example:
+            data:
+              id: 550e8400-e29b-41d4-a716-446655440000
+              name: Acme Corporation
+              slug: acme-corp
+              logo: https://example.com/org-logo.png
+              billingEmail: billing@acme.com
+              plan: STANDARD
+              credits: 1000
+              stripeCustomerIdentifier: cus_1234567890
+              createdAt: '2024-01-15T09:30:00Z'
+              updatedAt: '2024-01-15T09:30:00Z'
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    SessionCreated:
+      description: Login successful
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Session'
+      headers:
+        Set-Cookie:
+          $ref: '#/components/headers/SetCookie'
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    SessionListResponse:
+      description: Sessions retrieved successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                maxItems: 10000
+                items:
+                  $ref: '#/components/schemas/Session'
+              meta:
+                $ref: '#/components/schemas/PaginationMeta'
+            required:
+              - data
+              - meta
+            additionalProperties: false
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    SessionResponse:
+      description: Session retrieved successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: '#/components/schemas/Session'
+            required:
+              - data
+            additionalProperties: false
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    UserListResponse:
+      description: Users retrieved successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                maxItems: 10000
+                items:
+                  $ref: '#/components/schemas/User'
+              meta:
+                $ref: '#/components/schemas/PaginationMeta'
+            required:
+              - data
+              - meta
+            additionalProperties: false
+          example:
+            data:
+              - id: 550e8400-e29b-41d4-a716-446655440001
+                name: John Doe
+                email: john@example.com
+                emailVerified: true
+                image: https://example.com/avatar.jpg
+                createdAt: '2024-01-15T09:30:00Z'
+                updatedAt: '2024-01-15T09:30:00Z'
+            meta:
+              total: 1
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    UserResponse:
+      description: User retrieved successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: '#/components/schemas/User'
+            required:
+              - data
+            additionalProperties: false
+          example:
+            data:
+              id: 550e8400-e29b-41d4-a716-446655440000
+              name: John Doe
+              email: user@example.com
+              emailVerified: true
+              image: https://example.com/avatar.jpg
+              createdAt: '2024-01-15T09:30:00Z'
+              updatedAt: '2024-01-15T09:30:00Z'
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    BadRequest:
+      description: 400 Bad Request
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    Conflict:
+      description: 409 Conflict
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    HealthResponse:
+      description: Health status retrieved successfully
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Health'
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    NoContent:
+      description: 204 No Content
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    NotFound:
+      description: 404 Not Found
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    TooManyRequests:
+      description: Too many requests - rate limit exceeded
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+        Retry-After:
+          $ref: '#/components/headers/RetryAfter'
+    Unauthorized:
+      description: 401 Unauthorized
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    UnprocessableEntity:
+      description: 422 Unprocessable Entity
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+  schemas:
+    Account:
+      description: Schema for Account entity (authentication provider account)
+      title: Account
+      x-codegen-schema-type: entity
+      x-codegen:
+        repository:
+          operations:
+            - create
+            - read
+            - update
+            - delete
+            - list
+          indices:
+            - userID
+          excludeFromUpdate:
+            - AccountIdentifier
+            - Provider
+            - UserID
+          relations:
+            - field: userID
+              references: user
+              onDelete: CASCADE
+              onUpdate: NO_ACTION
+          additionalMethods:
+            - name: GetAccountByProvider
+              params:
+                - name: provider
+                  type: string
+                - name: accountIdentifier
+                  type: string
+              returns: single
+            - name: ListAccountsByUserID
+              params:
+                - name: userID
+                  type: string
+                  format: uuid
+                  maxLength: 36
+              returns: multiple
+      x-internal: auth
+      allOf:
+        - $ref: '#/components/schemas/Base'
+        - type: object
+          properties:
+            accountIdentifier:
+              description: The unique identifier for the account from the provider
+              type: string
+              example: google123456789
+              minLength: 1
+              maxLength: 255
+              pattern: ^[a-zA-Z0-9_\-\.@]+$
+            userID:
+              description: The user ID this account belongs to
+              type: string
+              format: uuid
+              example: 550e8400-e29b-41d4-a716-446655440000
+              minLength: 36
+              maxLength: 36
+            provider:
+              description: The authentication provider identifier
+              type: string
+              enum:
+                - local
+                - google
+                - github
+                - microsoft
+                - apple
+              example: google
+            accessToken:
+              description: The OAuth access token
+              type:
+                - string
+                - 'null'
+              minLength: 1
+              example: ya29.a0AfH6SMBa...
+              x-sensitive: true
+              maxLength: 512
+              pattern: ^[A-Za-z0-9_\-\.]+$
+            accessTokenExpiresAt:
+              description: The access token expiration timestamp
+              type:
+                - string
+                - 'null'
+              format: date-time
+              minLength: 1
+              example: '2024-12-31T23:59:59Z'
+              maxLength: 255
+            refreshToken:
+              description: The OAuth refresh token
+              type:
+                - string
+                - 'null'
+              minLength: 1
+              example: 1//0fM8N5...
+              x-sensitive: true
+              maxLength: 512
+              pattern: ^[A-Za-z0-9_\-\./]+$
+            refreshTokenExpiresAt:
+              description: The refresh token expiration timestamp
+              type:
+                - string
+                - 'null'
+              format: date-time
+              minLength: 1
+              example: '2025-12-31T23:59:59Z'
+              maxLength: 255
+            idToken:
+              description: The OpenID Connect ID token
+              type:
+                - string
+                - 'null'
+              minLength: 1
+              example: eyJhbGciOiJSUzI1NiIs...
+              x-sensitive: true
+              maxLength: 2048
+              pattern: ^[A-Za-z0-9_\-\.]+$
+            scope:
+              description: The OAuth scope granted
+              type:
+                - string
+                - 'null'
+              minLength: 1
+              example: openid profile email
+              maxLength: 255
+              pattern: ^[\w\s\-:]+$
+          required:
+            - accessToken
+            - accessTokenExpiresAt
+            - accountIdentifier
+            - userID
+            - provider
+            - idToken
+            - refreshToken
+            - refreshTokenExpiresAt
+            - scope
+      unevaluatedProperties: false
+    APIKey:
+      x-codegen-schema-type: entity
+      x-codegen:
+        repository:
+          excludeFromCreate:
+            - CreatedAt
+            - UpdatedAt
+            - LastUsedAt
+          excludeFromUpdate:
+            - CreatedAt
+            - UpdatedAt
+            - UserID
+            - OrganizationID
+            - KeyHash
+            - Prefix
+            - LastUsedAt
+          relations:
+            - field: organizationID
+              references: organization
+              onDelete: CASCADE
+              onUpdate: NO_ACTION
+            - field: userID
+              references: user
+              onDelete: CASCADE
+              onUpdate: NO_ACTION
+          indices:
+            - organizationID
+            - userID
+            - keyHash
+            - lastUsedAt
+      x-internal: auth
+      title: APIKey
+      description: Schema for API Key entity
+      allOf:
+        - $ref: '#/components/schemas/Base'
+        - type: object
+          properties:
+            userID:
+              description: The user who owns this API key
+              type: string
+              format: uuid
+              example: 550e8400-e29b-41d4-a716-446655440000
+              minLength: 36
+              maxLength: 36
+            organizationID:
+              description: The organization this API key belongs to
+              type: string
+              format: uuid
+              example: 550e8400-e29b-41d4-a716-446655440000
+              minLength: 36
+              maxLength: 36
+            keyHash:
+              type: string
+              minLength: 1
+              example: hashedskliveabc123
+              description: Hashed version of the API key for secure storage
+              maxLength: 255
+              pattern: ^[a-zA-Z0-9]+$
+            name:
+              type:
+                - string
+                - 'null'
+              minLength: 1
+              example: Production API Key
+              maxLength: 255
+              pattern: ^[\w\s\-.,!?()@#+/']+$
+            prefix:
+              type:
+                - string
+                - 'null'
+              minLength: 1
+              example: sklive
+              maxLength: 255
+              pattern: ^[a-z]+$
+            scopes:
+              type: array
+              items:
+                type: string
+                maxLength: 255
+                pattern: ^[a-z]+:[a-z]+$
+              example:
+                - read:users
+                - write:workflows
+              maxItems: 1000
+              default: []
+            rateLimit:
+              type: integer
+              format: int32
+              minimum: 1
+              maximum: 2147483647
+              example: 1000
+              default: 60
+              description: Requests per minute allowed for this API key
+            lastUsedAt:
+              type:
+                - string
+                - 'null'
+              format: date-time
+              minLength: 1
+              example: '2024-01-15T09:30:00Z'
+              description: When this API key was last used
+              maxLength: 255
+            expiresAt:
+              type:
+                - string
+                - 'null'
+              format: date-time
+              minLength: 1
+              example: '2025-01-15T09:30:00Z'
+              description: When this API key expires
+              maxLength: 255
+          required:
+            - scopes
+            - rateLimit
+            - keyHash
+            - organizationID
+            - userID
+            - name
+            - prefix
+            - lastUsedAt
+            - expiresAt
+      unevaluatedProperties: false
+    Invitation:
+      title: Invitation
+      description: Schema for Invitation entity
+      x-codegen-schema-type: entity
+      x-codegen:
+        repository:
+          indices:
+            - organizationID
+            - inviterID
+          excludeFromUpdate:
+            - InviterID
+            - OrganizationID
+          relations:
+            - field: inviterID
+              references: user
+              onDelete: CASCADE
+              onUpdate: NO_ACTION
+            - field: organizationID
+              references: organization
+              onDelete: CASCADE
+              onUpdate: NO_ACTION
+          additionalMethods:
+            - name: ListInvitationsByOrganization
+              params:
+                - name: organizationID
+                  type: string
+                  format: uuid
+                  maxLength: 36
+              returns: multiple
+            - name: GetInvitationByEmail
+              params:
+                - name: email
+                  type: string
+                - name: organizationID
+                  type: string
+                  format: uuid
+                  maxLength: 36
+              returns: single
+            - name: ListInvitationsByInviter
+              params:
+                - name: inviterID
+                  type: string
+                  format: uuid
+                  maxLength: 36
+              returns: multiple
+      x-internal: auth
+      allOf:
+        - $ref: '#/components/schemas/Base'
+        - type: object
+          properties:
+            email:
+              description: The email of the invitated user
+              type: string
+              format: email
+              example: user@example.com
+              minLength: 1
+              maxLength: 255
+            expiresAt:
+              description: The date and time when the invitation expires
+              type: string
+              format: date-time
+              minLength: 1
+              example: '2023-12-31T23:59:59Z'
+              maxLength: 255
+            inviterID:
+              description: The ID of the user who sent this invitation
+              type: string
+              format: uuid
+              example: 550e8400-e29b-41d4-a716-446655440000
+              minLength: 36
+              maxLength: 36
+            organizationID:
+              description: The organization the user is being invited to join
+              type: string
+              format: uuid
+              example: 550e8400-e29b-41d4-a716-446655440000
+              minLength: 36
+              maxLength: 36
+            role:
+              description: The role of the invitation
+              type: string
+              enum:
+                - admin
+                - owner
+                - basic
+              example: admin
+              default: basic
+            status:
+              description: The status of the invitation, e.g., pending, accepted, declined
+              type: string
+              enum:
+                - pending
+                - accepted
+                - declined
+                - expired
+              example: pending
+              default: pending
+          required:
+            - email
+            - expiresAt
+            - inviterID
+            - organizationID
+            - role
+            - status
+      unevaluatedProperties: false
+    MagicLinkToken:
+      title: MagicLinkToken
+      x-codegen-schema-type: valueobject
+      description: Schema for MagicLinkToken entity
+      x-internal: auth
+      type: object
+      properties:
+        id:
+          description: Unique identifier for the magic link token
+          type: string
+          format: uuid
+          example: 550e8400-e29b-41d4-a716-446655440000
+          minLength: 36
+          maxLength: 36
+        userID:
+          description: User ID if token is for existing user
+          type:
+            - string
+            - 'null'
+          format: uuid
+          example: 550e8400-e29b-41d4-a716-446655440000
+          minLength: 36
+          maxLength: 36
+        token:
+          description: The raw magic link token
+          type: string
+          minLength: 32
+          example: abc123def456789ghi012jkl345mno678pqr901stu234
+          maxLength: 512
+          pattern: ^[a-zA-Z0-9]+$
+        tokenHash:
+          description: SHA256 hash of the magic link token
+          type: string
+          minLength: 64
+          maxLength: 64
+          example: a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3
+          pattern: ^[a-f0-9]{64}$
+        code:
+          description: Optional 6-digit OTP code
+          type:
+            - string
+            - 'null'
+          minLength: 6
+          maxLength: 6
+          pattern: ^[0-9]{6}$
+          example: '123456'
+        identifier:
+          description: Email or username for authentication
+          type: string
+          format: email
+          minLength: 1
+          example: user@example.com
+          maxLength: 255
+        deliveryMethod:
+          description: How the magic link was delivered
+          type:
+            - string
+            - 'null'
+          enum:
+            - email
+            - console
+            - webhook
+            - otp
+            - file
+          example: email
+        expiresAt:
+          description: When the token expires
+          type: string
+          format: date-time
+          minLength: 1
+          example: '2023-10-05T14:48:00Z'
+          maxLength: 512
+        usedAt:
+          description: When the token was used (null if unused)
+          type:
+            - string
+            - 'null'
+          format: date-time
+          example: '2023-10-05T14:48:00Z'
+          minLength: 1
+          maxLength: 512
+        ipAddress:
+          description: IP address of the request
+          type:
+            - string
+            - 'null'
+          format: ipv4
+          minLength: 7
+          maxLength: 45
+          example: 192.168.1.1
+        userAgent:
+          description: User agent of the request
+          type:
+            - string
+            - 'null'
+          minLength: 1
+          maxLength: 512
+          pattern: ^[\w\s\-.,!?()@#+/\(\):;]+$
+          example: Mozilla/5.0
+        createdAt:
+          description: When the token was created
+          type:
+            - string
+            - 'null'
+          format: date-time
+          minLength: 1
+          example: '2023-10-05T14:48:00Z'
+          maxLength: 512
+      required:
+        - id
+        - tokenHash
+        - identifier
+        - expiresAt
+        - createdAt
+      additionalProperties: false
+    Member:
+      title: Member
+      description: Schema for Member entity
+      x-codegen-schema-type: entity
+      x-codegen:
+        repository:
+          indices:
+            - organizationID
+            - userID
+          excludeFromUpdate:
+            - OrganizationID
+            - UserID
+          relations:
+            - field: organizationID
+              references: organization
+              onDelete: CASCADE
+              onUpdate: NO_ACTION
+            - field: userID
+              references: user
+              onDelete: CASCADE
+              onUpdate: NO_ACTION
+          additionalMethods:
+            - name: ListMembersByOrganization
+              params:
+                - name: organizationID
+                  type: string
+                  format: uuid
+                  maxLength: 36
+              returns: multiple
+            - name: ListMembersByUser
+              params:
+                - name: userID
+                  type: string
+                  format: uuid
+                  maxLength: 36
+              returns: multiple
+            - name: GetMemberByUserAndOrganization
+              params:
+                - name: userID
+                  type: string
+                  format: uuid
+                  maxLength: 36
+                - name: organizationID
+                  type: string
+                  format: uuid
+                  maxLength: 36
+              returns: single
+      x-internal: auth
+      allOf:
+        - $ref: '#/components/schemas/Base'
+        - type: object
+          properties:
+            organizationID:
+              description: The organization this member belongs to
+              type: string
+              format: uuid
+              example: 550e8400-e29b-41d4-a716-446655440000
+              minLength: 36
+              maxLength: 36
+            role:
+              description: The role of the member
+              type: string
+              enum:
+                - admin
+                - owner
+                - basic
+              example: admin
+              default: basic
+            userID:
+              description: The user who is a member of the organization
+              type: string
+              format: uuid
+              example: 550e8400-e29b-41d4-a716-446655440000
+              minLength: 36
+              maxLength: 36
+          required:
+            - organizationID
+            - role
+            - userID
+      unevaluatedProperties: false
+    Organization:
+      title: Organization
+      description: Schema for Organization entity
+      x-codegen-schema-type: entity
+      x-codegen:
+        repository:
+          excludeFromUpdate:
+            - Slug
+            - StripeCustomerIdentifier
+          indices:
+            - slug
+            - stripeCustomerIdentifier
+          additionalMethods:
+            - name: GetOrganizationBySlug
+              params:
+                - name: slug
+                  type: string
+              returns: single
+            - name: GetOrganizationByStripeCustomerID
+              params:
+                - name: stripeCustomerIdentifier
+                  type: string
+              returns: single
+      x-internal: auth
+      allOf:
+        - $ref: '#/components/schemas/Base'
+        - type: object
+          properties:
+            name:
+              description: The organization's display name
+              type: string
+              minLength: 1
+              maxLength: 255
+              example: Acme Corporation
+              pattern: ^[\w\s\-.,!?()@#+/'&]+$
+            slug:
+              description: URL-friendly unique identifier for the organization
+              type: string
+              pattern: ^[a-z0-9]+(?:-[a-z0-9]+)*$
+              minLength: 3
+              maxLength: 50
+              example: acme-corp
+            logo:
+              description: The organization's logo URL
+              type:
+                - string
+                - 'null'
+              format: uri
+              minLength: 1
+              example: https://example.com/org-logo.png
+              maxLength: 2048
+            billingEmail:
+              description: Email address for billing communications
+              type:
+                - string
+                - 'null'
+              format: email
+              minLength: 5
+              example: billing@acme.com
+              maxLength: 255
+            plan:
+              description: The current subscription plan
+              type: string
+              enum:
+                - FREE
+                - BASIC
+                - STANDARD
+                - PREMIUM
+                - UNLIMITED
+              default: FREE
+              example: STANDARD
+            credits:
+              description: Available credits for this organization
+              type: integer
+              format: int32
+              minimum: 0
+              maximum: 2147483647
+              default: 0
+              example: 1000
+            stripeCustomerIdentifier:
+              description: Stripe customer identifier
+              type: string
+              minLength: 1
+              example: cus_1234567890
+              x-sensitive: true
+              maxLength: 255
+              pattern: ^cus_[a-zA-Z0-9]+$
+          required:
+            - name
+            - slug
+            - plan
+            - credits
+            - stripeCustomerIdentifier
+            - logo
+            - billingEmail
+      unevaluatedProperties: false
+    Session:
+      x-codegen-schema-type: entity
+      x-codegen:
+        repository:
+          excludeFromUpdate:
+            - IPAddress
+            - UserID
+            - UserAgent
+            - Token
+          relations:
+            - field: userID
+              references: user
+              onDelete: CASCADE
+              onUpdate: NO_ACTION
+          indices:
+            - userID
+            - token
+      x-internal: auth
+      description: Schema for Session entity
+      title: Session
+      allOf:
+        - $ref: '#/components/schemas/Base'
+        - type: object
+          properties:
+            organizationID:
+              description: The organization ID for this session (nullable for users without org)
+              type:
+                - string
+                - 'null'
+              format: uuid
+              example: 550e8400-e29b-41d4-a716-446655440000
+              minLength: 36
+              maxLength: 36
+            authMethod:
+              description: The authentication method used (magic_link, oauth_google, oauth_github, etc.)
+              type:
+                - string
+                - 'null'
+              minLength: 1
+              maxLength: 100
+              example: magic_link
+              pattern: ^[a-z_]+$
+            authProvider:
+              description: The authentication provider (google, github, microsoft, local)
+              type:
+                - string
+                - 'null'
+              enum:
+                - local
+                - google
+                - github
+                - microsoft
+                - apple
+              example: local
+            expiresAt:
+              description: The expiration date of the session
+              type: string
+              minLength: 1
+              format: date-time
+              example: '2023-10-05T14:48:00Z'
+              maxLength: 255
+            ipAddress:
+              description: The IP address of the session
+              type:
+                - string
+                - 'null'
+              format: ipv4
+              example: 192.168.1.1
+              minLength: 7
+              maxLength: 45
+            token:
+              description: The session token
+              type: string
+              minLength: 1
+              example: eyJhbGciOiJIUzI1NiIs...
+              maxLength: 512
+              pattern: ^[A-Za-z0-9_\-\.]+$
+            userAgent:
+              description: The user agent of the session
+              type:
+                - string
+                - 'null'
+              example: Mozilla/5.0 (Windows NT 10.0; Win64; x64)
+              minLength: 1
+              maxLength: 255
+              pattern: ^[\w\s\-.,!?()@#+/\(\):;]+$
+            userID:
+              description: The user who owns this session
+              type: string
+              format: uuid
+              example: 550e8400-e29b-41d4-a716-446655440000
+              minLength: 36
+              maxLength: 36
+          required:
+            - expiresAt
+            - token
+            - userID
+            - organizationID
+            - authMethod
+            - authProvider
+            - ipAddress
+            - userAgent
+      unevaluatedProperties: false
+      example:
+        id: 550e8400-e29b-41d4-a716-446655440000
+        createdAt: '2023-10-05T14:48:00Z'
+        updatedAt: '2023-10-05T14:48:00Z'
+        organizationID: 550e8400-e29b-41d4-a716-446655440000
+        authMethod: magic_link
+        authProvider: local
+        expiresAt: '2023-10-05T14:48:00Z'
+        ipAddress:
+    User:
+      description: Schema for User entity
+      title: User
+      x-codegen-schema-type: entity
+      x-codegen:
+        repository:
+          indices:
+            - email
+          additionalMethods:
+            - name: GetUserByEmail
+              params:
+                - name: email
+                  type: string
+              returns: single
+            - name: GetUserBySessionID
+              params:
+                - name: sessionID
+                  type: string
+                  format: uuid
+                  maxLength: 36
+              returns: single
+      x-internal: auth
+      allOf:
+        - $ref: '#/components/schemas/Base'
+        - type: object
+          properties:
+            email:
+              description: The user's email address
+              type: string
+              format: email
+              minLength: 5
+              maxLength: 255
+              example: user@example.com
+            emailVerified:
+              description: Whether the user's email has been verified
+              type: boolean
+              default: false
+              example: true
+            image:
+              description: The user's avatar image URL
+              type:
+                - string
+                - 'null'
+              minLength: 5
+              maxLength: 2048
+              format: uri
+              example: https://example.com/avatar.jpg
+            name:
+              description: The user's display name
+              type: string
+              minLength: 1
+              maxLength: 255
+              example: John Doe
+              pattern: ^[\w\s\-.,!?()@#+/']+$
+          required:
+            - email
+            - emailVerified
+            - name
+            - image
+      unevaluatedProperties: false
+    Base:
+      title: Base
+      description: Base schema for all entities with common fields
+      x-internal: server
+      type: object
+      properties:
+        id:
+          description: Unique identifier for the resource
+          type: string
+          format: uuid
+          example: 550e8400-e29b-41d4-a716-446655440000
+          minLength: 36
+          maxLength: 36
+        createdAt:
+          description: The date and time when the resource was created
+          type: string
+          format: date-time
+          example: '2024-01-15T09:30:00Z'
+          minLength: 1
+          maxLength: 255
+        updatedAt:
+          description: The date and time when the resource was last updated
+          type: string
+          format: date-time
+          example: '2024-01-15T10:45:00Z'
+          minLength: 1
+          maxLength: 255
+      required:
+        - id
+        - createdAt
+        - updatedAt
+    FilterNode:
+      title: FilterNode
+      description: A recursive filter node that can be a condition or group
+      x-internal: server
+      x-codegen-schema-type: valueobject
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - and
+            - or
+            - eq
+            - ne
+            - gt
+            - gte
+            - lt
+            - lte
+            - contains
+            - startsWith
+            - endsWith
+          description: The type of filter operation
+          example: eq
+        field:
+          type: string
+          description: The field to filter on (for leaf conditions)
+          example: name
+          minLength: 1
+          maxLength: 255
+          pattern: ^[a-zA-Z_][a-zA-Z0-9_]*$
+        value:
+          description: The value to compare against (for leaf conditions)
+          oneOf:
+            - type: string
+              maxLength: 1000
+              pattern: ^[\w\s\-.,!?()@#+/':;]+$
+            - type: integer
+              format: int64
+              minimum: -9223372036854776000
+              maximum: 9223372036854776000
+            - type: boolean
+          example: example-value
+      required:
+        - type
+    Health:
+      title: Health
+      description: Health check response
+      x-internal: server
+      x-codegen-schema-type: valueobject
+      type: object
+      properties:
+        services:
+          type: object
+          properties:
+            database:
+              type: string
+              example: healthy
+              enum:
+                - healthy
+                - unhealthy
+                - degraded
+            email:
+              type: string
+              example: healthy
+              enum:
+                - healthy
+                - unhealthy
+                - degraded
+            redis:
+              type: string
+              example: healthy
+              enum:
+                - healthy
+                - unhealthy
+                - degraded
+          required:
+            - database
+            - email
+            - redis
+          additionalProperties: false
+        timestamp:
+          type: string
+          format: date-time
+          maxLength: 64
+          example: '2024-01-15T09:30:00Z'
+        uptime:
+          description: System uptime in seconds
+          type: integer
+          format: int64
+          minimum: 0
+          maximum: 9223372036854776000
+          example: 86400
+      required:
+        - services
+        - timestamp
+        - uptime
+      additionalProperties: false
+    Page:
+      description: Pagination parameters (limit & offset)
+      x-internal: server
+      type: object
+      title: Page
+      additionalProperties: false
+      properties:
+        limit:
+          description: Maximum number of items to return
+          type: integer
+          format: int32
+          minimum: 1
+          default: 10
+          maximum: 100
+          example: 10
+        offset:
+          description: Number of items to skip before starting to collect the result set
+          type: integer
+          format: int32
+          minimum: 0
+          default: 0
+          maximum: 9007199254740991
+          example: 0
+    PaginationMeta:
+      description: Pagination metadata
+      title: PaginationMeta
+      type: object
+      properties:
+        total:
+          description: Total number of items in the collection
+          type: integer
+          format: int32
+          minimum: 0
+          maximum: 2147483647
+          example: 42
+      required:
+        - total
+      additionalProperties: false
+      x-codegen-schema-type: valueobject
+    Problem:
+      title: Problem
+      description: RFC 7807 (Problem Details) compliant error response
+      x-internal: server
+      type: object
+      additionalProperties: false
+      required:
+        - status
+        - title
+      properties:
+        status:
+          type: integer
+          format: int32
+          description: HTTP status code
+          minimum: 100
+          maximum: 599
+          example: 400
+        type:
+          type: string
+          format: uri
+          description: URI identifying the problem type
+          default: about:blank
+          example: https://api.example.com/errors/validation-failed
+          minLength: 1
+          maxLength: 2048
+        title:
+          type: string
+          description: Short, human-readable summary
+          example: Validation Failed
+          minLength: 1
+          maxLength: 255
+          pattern: ^[\w\s\-.,!?()]+$
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence
+          example: The request body contains invalid fields
+          minLength: 1
+          maxLength: 255
+          pattern: ^[\w\s\-.,!?()]+$
+        instance:
+          type: string
+          format: uri
+          description: URI identifying the specific occurrence
+          example: https://api.example.com/auth/users/123
+          maxLength: 2048
+    UUID:
+      description: UUID identifier
+      x-internal: server
+      type: string
+      format: uuid
+      example: 550e8400-e29b-41d4-a716-446655440000
+      minLength: 36
+      maxLength: 36
+  securitySchemes:
+    bearerAuth:
+      description: API Token for authenticated requests
+      scheme: bearer
+      type: http
+    sessionCookie:
+      description: Session cookie for authenticated requests
+      type: apiKey
+      name: __Secure-better-auth.session_token
+      in: cookie
+  pathItems:
+    auth_login:
+      post:
+        x-internal: auth
+        operationId: Login
+        x-public-endpoint: true
+        summary: Login
+        x-codegen-custom-handler: true
+        tags:
+          - Auth
+        description: Authenticate user and create a session
+        security:
+          - {}
+        requestBody:
+          description: User login credentials
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  email:
+                    description: The email address associated with the account
+                    type: string
+                    format: email
+                    example: user@example.com
+                    minLength: 1
+                    maxLength: 255
+                  password:
+                    description: The password for the account
+                    type: string
+                    minLength: 1
+                    maxLength: 72
+                    example: secure-password-123
+                    pattern: ^[\w\s\-.,!?()@#+/]*$
+                  rememberMe:
+                    description: Whether to create a long-lived session
+                    type: boolean
+                    default: false
+                    example: true
+                required:
+                  - email
+                  - password
+          required: true
+        responses:
+          '201':
+            $ref: '#/components/responses/SessionCreated'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+    auth_logout:
+      post:
+        x-internal: auth
+        operationId: Logout
+        x-codegen-custom-handler: true
+        summary: Logout
+        tags:
+          - Auth
+        description: Logout from current session
+        security:
+          - bearerAuth: []
+          - sessionCookie: []
+        responses:
+          '200':
+            $ref: '#/components/responses/LogoutResponse'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+    auth_logout-all:
+      post:
+        x-internal: auth
+        operationId: LogoutAll
+        x-codegen-custom-handler: true
+        summary: Logout all sessions
+        tags:
+          - Auth
+        description: Logout from all sessions across all devices
+        security:
+          - bearerAuth: []
+          - sessionCookie: []
+        responses:
+          '200':
+            $ref: '#/components/responses/LogoutResponse'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+    auth_register:
+      post:
+        x-internal: auth
+        operationId: Register
+        x-public-endpoint: true
+        summary: Register
+        x-codegen-custom-handler: true
+        tags:
+          - Auth
+        description: Register a new user account with email and password
+        security:
+          - {}
+        requestBody:
+          description: User registration details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  email:
+                    description: The email address for the new account
+                    type: string
+                    format: email
+                    pattern: ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
+                    example: user@example.com
+                    minLength: 1
+                    maxLength: 255
+                  name:
+                    description: The name of the user
+                    type: string
+                    minLength: 1
+                    maxLength: 255
+                    example: John Doe
+                    pattern: ^[\w\s\-.,!?()@#+/]*$
+                  password:
+                    description: The password for the account
+                    type: string
+                    minLength: 8
+                    maxLength: 72
+                    example: secure-password-123
+                    pattern: ^[\w\s\-.,!?()@#+/]*$
+                required:
+                  - email
+                  - name
+                  - password
+          required: true
+        responses:
+          '201':
+            $ref: '#/components/responses/SessionCreated'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '409':
+            $ref: '#/components/responses/Conflict'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+    auth_magic-links_request:
+      post:
+        x-internal: auth
+        operationId: RequestMagicLink
+        x-public-endpoint: true
+        summary: Request a magic link
+        x-codegen-custom-handler: true
+        description: Request a magic link to be sent via email or generate an OTP code
+        tags:
+          - Auth
+        security:
+          - {}
+        requestBody:
+          description: Magic link authentication request
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  identifier:
+                    description: Email address or username
+                    type: string
+                    minLength: 1
+                    maxLength: 255
+                    example: user@example.com
+                    pattern: ^[\w\s\-.,!?()@#+/]*$
+                  deliveryMethod:
+                    description: How to deliver the magic link
+                    type: string
+                    enum:
+                      - email
+                      - console
+                      - otp
+                      - webhook
+                    default: email
+                    example: email
+                  redirectUrl:
+                    description: URL to redirect to after successful authentication
+                    type: string
+                    format: uri
+                    minLength: 1
+                    maxLength: 2048
+                    example: https://app.archesai.com/dashboard
+                required:
+                  - identifier
+        responses:
+          '200':
+            description: Magic link requested successfully
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      minLength: 1
+                      maxLength: 500
+                      example: Magic link sent to user@example.com
+                      pattern: ^[\w\s\-.,!?()@]+$
+                    otpCode:
+                      description: OTP code (only returned if deliveryMethod is 'otp')
+                      type: string
+                      minLength: 6
+                      maxLength: 6
+                      example: '123456'
+                      pattern: ^[A-Za-z0-9_-]+$
+                    expiresIn:
+                      description: Token expiry in seconds
+                      type: integer
+                      format: int32
+                      minimum: 1
+                      maximum: 2147483647
+                      example: 900
+                    token:
+                      $ref: '#/components/schemas/MagicLinkToken'
+                example:
+                  message: Magic link sent to user@example.com
+                  expiresIn: 900
+            headers:
+              Set-Cookie:
+                $ref: '#/components/headers/SetCookie'
+              X-RateLimit-Limit:
+                $ref: '#/components/headers/RateLimitLimit'
+              X-RateLimit-Remaining:
+                $ref: '#/components/headers/RateLimitRemaining'
+              X-RateLimit-Reset:
+                $ref: '#/components/headers/RateLimitReset'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+    auth_magic-links_verify:
+      post:
+        x-internal: auth
+        operationId: VerifyMagicLink
+        x-public-endpoint: true
+        summary: Verify a magic link token
+        x-codegen-custom-handler: true
+        description: Verify a magic link token or OTP code and create a session
+        tags:
+          - Auth
+        security:
+          - {}
+        requestBody:
+          description: Magic link verification request
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    description: Magic link token from URL
+                    type: string
+                    minLength: 32
+                    maxLength: 512
+                    example: abc123def456789ghi012jkl345mno678pqr901stu234
+                    pattern: ^[A-Za-z0-9_-]+$
+                  code:
+                    description: OTP code (alternative to token)
+                    type: string
+                    minLength: 6
+                    maxLength: 6
+                    pattern: ^[0-9]{6}$
+                    example: '123456'
+                  identifier:
+                    description: Required when using OTP code
+                    type: string
+                    minLength: 1
+                    maxLength: 255
+                    example: user@example.com
+                    pattern: ^[\w\s\-.,!?()@#+/]*$
+        responses:
+          '201':
+            $ref: '#/components/responses/SessionCreated'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+    auth_forgot-password:
+      post:
+        x-internal: auth
+        x-codegen-custom-handler: true
+        operationId: RequestPasswordReset
+        x-public-endpoint: true
+        summary: Request password reset
+        tags:
+          - Auth
+        description: This endpoint will request a password reset link
+        security:
+          - {}
+        requestBody:
+          description: Password reset request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  email:
+                    description: The e-mail to send the password reset token to
+                    type: string
+                    format: email
+                    minLength: 1
+                    maxLength: 255
+                    example: user@example.com
+                required:
+                  - email
+          required: true
+        responses:
+          '204':
+            $ref: '#/components/responses/NoContent'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+    auth_reset-password:
+      post:
+        x-internal: auth
+        operationId: ConfirmPasswordReset
+        x-public-endpoint: true
+        summary: Verify password reset
+        x-codegen-custom-handler: true
+        tags:
+          - Auth
+        description: This endpoint will verify your password change with a token
+        security:
+          - {}
+        requestBody:
+          description: Password reset confirmation request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  newPassword:
+                    description: The new password
+                    type: string
+                    minLength: 8
+                    maxLength: 72
+                    example: secure-new-password-123
+                    pattern: ^[\w\s\-.,!?()@#+/]*$
+                  token:
+                    description: The password reset token
+                    type: string
+                    minLength: 1
+                    maxLength: 512
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+                    pattern: ^[A-Za-z0-9_-]+$
+                required:
+                  - newPassword
+                  - token
+          required: true
+        responses:
+          '204':
+            $ref: '#/components/responses/NoContent'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+    auth_change-email:
+      post:
+        x-internal: auth
+        x-codegen-custom-handler: true
+        operationId: RequestEmailChange
+        summary: Request e-mail change
+        tags:
+          - Auth
+        description: This endpoint will request your e-mail change with a token
+        requestBody:
+          description: Email change request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  newEmail:
+                    description: The e-mail to send the confirmation token to
+                    type: string
+                    format: email
+                    example: user@example.com
+                    minLength: 1
+                    maxLength: 255
+                  userID:
+                    description: The user ID of the user requesting the email change
+                    type: string
+                    format: uuid
+                    example: 550e8400-e29b-41d4-a716-446655440000
+                    minLength: 36
+                    maxLength: 36
+                required:
+                  - newEmail
+                  - userID
+          required: true
+        responses:
+          '204':
+            $ref: '#/components/responses/NoContent'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+    auth_confirm-email:
+      post:
+        x-internal: auth
+        x-codegen-custom-handler: true
+        operationId: ConfirmEmailChange
+        summary: Verify e-mail change
+        tags:
+          - Auth
+        description: This endpoint will verify your e-mail change with a token
+        requestBody:
+          description: Email change confirmation request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  newEmail:
+                    description: The e-mail to send the confirmation token to
+                    type: string
+                    format: email
+                    maxLength: 255
+                    example: user@example.com
+                    minLength: 1
+                  token:
+                    description: The password reset token
+                    type: string
+                    minLength: 1
+                    maxLength: 512
+                    example: example-string
+                    pattern: ^[A-Za-z0-9_-]+$
+                  userID:
+                    description: The user ID of the user requesting the email change
+                    type: string
+                    format: uuid
+                    example: 550e8400-e29b-41d4-a716-446655440000
+                    minLength: 36
+                    maxLength: 36
+                required:
+                  - newEmail
+                  - token
+                  - userID
+          required: true
+        responses:
+          '204':
+            $ref: '#/components/responses/NoContent'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+    auth_request-verification:
+      post:
+        x-internal: auth
+        operationId: RequestEmailVerification
+        x-codegen-custom-handler: true
+        summary: Request e-mail verification
+        tags:
+          - Auth
+        description: This endpoint will send an e-mail verification link to you. ADMIN ONLY.
+        security:
+          - bearerAuth: []
+        responses:
+          '204':
+            $ref: '#/components/responses/NoContent'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+    auth_verify-email:
+      post:
+        x-internal: auth
+        operationId: ConfirmEmailVerification
+        x-codegen-custom-handler: true
+        summary: Confirm e-mail verification
+        tags:
+          - Auth
+        description: This endpoint will confirm your e-mail with a token
+        requestBody:
+          description: Email verification request with token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    description: The email verification token
+                    type: string
+                    minLength: 1
+                    maxLength: 512
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+                    pattern: ^[A-Za-z0-9_-]+$
+                required:
+                  - token
+          required: true
+        responses:
+          '200':
+            $ref: '#/components/responses/EmailVerificationResponse'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+    auth_link:
+      post:
+        x-internal: auth
+        x-codegen-custom-handler: true
+        operationId: LinkAccount
+        summary: Link authentication provider
+        tags:
+          - Auth
+        description: Link an additional authentication provider to the current user account
+        security:
+          - bearerAuth: []
+          - sessionCookie: []
+        requestBody:
+          description: Account linking request
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - provider
+                properties:
+                  provider:
+                    description: The authentication provider to link
+                    type: string
+                    enum:
+                      - google
+                      - github
+                      - microsoft
+                      - apple
+                    example: github
+                  redirectUrl:
+                    description: URL to redirect to after successful linking
+                    type: string
+                    format: uri
+                    maxLength: 2048
+                    example: https://app.archesai.com/settings/security
+        responses:
+          '200':
+            description: Provider linking initiated
+            content:
+              application/json:
+                schema:
+                  type: object
+                  additionalProperties: false
+                  required:
+                    - authorizationUrl
+                  properties:
+                    authorizationUrl:
+                      description: URL to redirect the user to for provider authorization
+                      type: string
+                      format: uri
+                      minLength: 1
+                      maxLength: 2048
+                      example: https://github.com/login/oauth/authorize?client_id=...
+                example:
+                  authorizationUrl: https://github.com/login/oauth/authorize?client_id=abc123
+            headers:
+              X-RateLimit-Limit:
+                description: The maximum number of requests allowed per time window
+                schema:
+                  type: integer
+                  example: 1000
+                  format: int32
+                  minimum: 1
+                  maximum: 1000000
+                example: 1000
+              X-RateLimit-Remaining:
+                description: The number of requests remaining in the current time window
+                schema:
+                  type: integer
+                  example: 999
+                  format: int32
+                  minimum: 0
+                  maximum: 1000000
+                example: 999
+              X-RateLimit-Reset:
+                description: The time at which the current rate limit window resets (Unix timestamp)
+                schema:
+                  type: integer
+                  example: 1640995200
+                  format: int64
+                  minimum: 0
+                  maximum: 9223372036854776000
+                example: 1640995200
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '409':
+            $ref: '#/components/responses/Conflict'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+    auth_oauth_provider_authorize:
+      get:
+        x-internal: auth
+        operationId: OauthAuthorize
+        x-codegen-custom-handler: true
+        summary: Start OAuth authorization flow
+        tags:
+          - Auth
+        description: Redirect user to OAuth provider authorization page
+        parameters:
+          - schema:
+              type: string
+              enum:
+                - google
+                - github
+                - microsoft
+              example: google
+            in: path
+            name: provider
+            required: true
+            description: The OAuth provider to use for authorization
+          - schema:
+              type: string
+              format: uri
+              maxLength: 2048
+              example: http://localhost:3000/auth/callback
+            in: query
+            name: redirect_uri
+            required: false
+            description: Where to redirect after authorization (optional, uses default if not provided)
+          - schema:
+              type: string
+              maxLength: 255
+              pattern: ^[\w\s\-.,!?()@#+/:]*$
+              example: read:user
+            in: query
+            name: scope
+            required: false
+            description: OAuth scopes to request (optional, uses default if not provided)
+          - schema:
+              type: string
+              maxLength: 255
+              pattern: ^[\w\-]+$
+              example: random_state_123
+            in: query
+            name: state
+            required: false
+            description: State parameter for CSRF protection
+        responses:
+          '200':
+            description: Authorization URL generated successfully
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    authorizationUrl:
+                      type: string
+                      minLength: 1
+                      example: https://accounts.google.com/oauth/authorize?client_id=...
+                      description: URL to redirect user for OAuth authorization
+                      maxLength: 2048
+                      format: uri
+                  required:
+                    - authorizationUrl
+            headers:
+              X-RateLimit-Limit:
+                $ref: '#/components/headers/RateLimitLimit'
+              X-RateLimit-Remaining:
+                $ref: '#/components/headers/RateLimitRemaining'
+              X-RateLimit-Reset:
+                $ref: '#/components/headers/RateLimitReset'
+          '302':
+            description: Redirect to OAuth provider
+            headers:
+              Location:
+                description: The OAuth provider authorization URL
+                schema:
+                  type: string
+                  format: uri
+                  maxLength: 2048
+                  example: https://accounts.google.com/oauth/authorize?client_id=...
+                example: https://accounts.google.com/oauth/authorize?client_id=...
+              X-RateLimit-Limit:
+                $ref: '#/components/headers/RateLimitLimit'
+              X-RateLimit-Remaining:
+                $ref: '#/components/headers/RateLimitRemaining'
+              X-RateLimit-Reset:
+                $ref: '#/components/headers/RateLimitReset'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+    auth_oauth_provider_callback:
+      get:
+        x-internal: auth
+        operationId: OauthCallback
+        x-codegen-custom-handler: true
+        summary: Handle OAuth callback
+        tags:
+          - Auth
+        description: Handle the callback from OAuth provider and complete authentication
+        parameters:
+          - schema:
+              type: string
+              enum:
+                - google
+                - github
+                - microsoft
+              example: google
+            in: path
+            name: provider
+            required: true
+            description: The OAuth provider handling the callback
+          - schema:
+              type: string
+              maxLength: 1024
+              pattern: ^[\w\-]+$
+              example: authorization_code_123
+            in: query
+            name: code
+            required: false
+            description: Authorization code from OAuth provider
+          - schema:
+              type: string
+              maxLength: 255
+              pattern: ^[\w\-]+$
+              example: random_state_123
+            in: query
+            name: state
+            required: false
+            description: State parameter for CSRF protection
+          - schema:
+              type: string
+              maxLength: 100
+              pattern: ^[\w\-_]+$
+              example: access_denied
+            in: query
+            name: error
+            required: false
+            description: Error code if authorization failed
+          - schema:
+              type: string
+              maxLength: 500
+              pattern: ^[\w\s\-.,!?()@#+/]*$
+              example: The user denied the request
+            in: query
+            name: error_description
+            required: false
+            description: Human-readable error description
+        responses:
+          '200':
+            $ref: '#/components/responses/SessionCreated'
+          '302':
+            description: Redirect to frontend with authentication result
+            headers:
+              Set-Cookie:
+                description: Session cookies for authentication
+                schema:
+                  type: string
+                  minLength: 1
+                  maxLength: 4096
+                  pattern: ^[\w\-=;,. ]+$
+              Location:
+                description: Redirect URL to frontend
+                schema:
+                  type: string
+                  format: uri
+                  maxLength: 2048
+                  example: http://localhost:3000/auth/success
+                example: http://localhost:3000/auth/success
+              X-RateLimit-Limit:
+                $ref: '#/components/headers/RateLimitLimit'
+              X-RateLimit-Remaining:
+                $ref: '#/components/headers/RateLimitRemaining'
+              X-RateLimit-Reset:
+                $ref: '#/components/headers/RateLimitReset'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+    auth_accounts:
+      get:
+        x-internal: auth
+        operationId: ListAccounts
+        x-codegen-repository: Account
+        summary: List linked accounts
+        tags:
+          - Auth
+        description: List all linked authentication providers for the current user
+        security:
+          - bearerAuth: []
+          - sessionCookie: []
+        responses:
+          '200':
+            $ref: '#/components/responses/AccountListResponse'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+    auth_accounts_id:
+      get:
+        x-internal: auth
+        operationId: GetAccount
+        x-codegen-repository: Account
+        summary: Find an account
+        tags:
+          - Auth
+        parameters:
+          - in: path
+            name: id
+            required: true
+            schema:
+              description: UUID identifier
+              type: string
+              format: uuid
+              example: 550e8400-e29b-41d4-a716-446655440000
+              minLength: 36
+              maxLength: 36
+            description: The unique identifier of the resource
+        security:
+          - bearerAuth: []
+        responses:
+          '200':
+            $ref: '#/components/responses/AccountResponse'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+        description: Get an account
+      patch:
+        x-internal: auth
+        x-codegen-custom-handler: true
+        operationId: UpdateAccount
+        summary: Update an account
+        tags:
+          - Auth
+        parameters:
+          - in: path
+            name: id
+            required: true
+            schema:
+              description: UUID identifier
+              type: string
+              format: uuid
+              example: 550e8400-e29b-41d4-a716-446655440000
+              minLength: 36
+              maxLength: 36
+            description: The unique identifier of the resource
+        security:
+          - bearerAuth: []
+        requestBody:
+          description: Account update request
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                maxProperties: 3
+                properties:
+                  provider:
+                    type: string
+                    maxLength: 255
+                    description: The account provider
+                    example: google
+                    pattern: ^[a-z][a-z0-9-]*$
+                  providerAccountIdentifier:
+                    type: string
+                    maxLength: 255
+                    description: The provider account ID
+                    example: user1234567890
+                    pattern: ^[a-z][a-z0-9-]*$
+                  type:
+                    type: string
+                    maxLength: 255
+                    description: The account type
+                    example: oauth
+                    pattern: ^[\w\s\-.,!?()@#+/]*$
+        responses:
+          '200':
+            $ref: '#/components/responses/AccountResponse'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+        description: Update an account
+      delete:
+        x-internal: auth
+        x-codegen-custom-handler: true
+        operationId: DeleteAccount
+        summary: Delete an account
+        tags:
+          - Auth
+        parameters:
+          - in: path
+            name: id
+            required: true
+            schema:
+              description: UUID identifier
+              type: string
+              format: uuid
+              example: 550e8400-e29b-41d4-a716-446655440000
+              minLength: 36
+              maxLength: 36
+            description: The unique identifier of the resource
+        security:
+          - bearerAuth: []
+        responses:
+          '204':
+            $ref: '#/components/responses/NoContent'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+        description: Delete an account
+    auth_sessions:
+      get:
+        x-internal: auth
+        operationId: ListSessions
+        x-codegen-repository: Session
+        summary: List sessions
+        tags:
+          - Auth
+        description: List all active sessions for the current user
+        security:
+          - bearerAuth: []
+          - sessionCookie: []
+        parameters:
+          - $ref: '#/components/parameters/PageQuery'
+          - $ref: '#/components/parameters/SessionsSort'
+        responses:
+          '200':
+            $ref: '#/components/responses/SessionListResponse'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+    auth_sessions_id:
+      get:
+        x-internal: auth
+        operationId: GetSession
+        x-codegen-repository: Session
+        summary: Find a session
+        tags:
+          - Auth
+        description: Find a session
+        parameters:
+          - $ref: '#/components/parameters/ResourceID'
+        security:
+          - bearerAuth: []
+        responses:
+          '200':
+            $ref: '#/components/responses/SessionResponse'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+      patch:
+        x-internal: auth
+        x-codegen-custom-handler: true
+        operationId: UpdateSession
+        summary: Update Session
+        tags:
+          - Auth
+        description: This endpoint will update the active organization for the current session
+        requestBody:
+          description: Session update data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  organizationID:
+                    description: The organization ID to set as active for this session
+                    type: string
+                    format: uuid
+                    example: 550e8400-e29b-41d4-a716-446655440000
+                    minLength: 36
+                    maxLength: 36
+                required:
+                  - organizationID
+          required: true
+        parameters:
+          - $ref: '#/components/parameters/ResourceID'
+        responses:
+          '200':
+            $ref: '#/components/responses/SessionResponse'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+      delete:
+        x-internal: auth
+        x-codegen-custom-handler: true
+        operationId: DeleteSession
+        summary: Delete session (Logout)
+        tags:
+          - Auth
+        description: Delete a specific session (logout from that session)
+        parameters:
+          - $ref: '#/components/parameters/ResourceID'
+        security:
+          - bearerAuth: []
+        responses:
+          '204':
+            $ref: '#/components/responses/NoContent'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+    auth_me:
+      get:
+        x-internal: auth
+        x-codegen-custom-handler: true
+        operationId: GetCurrentUser
+        summary: Get current user
+        tags:
+          - User
+        description: Get the currently authenticated user's profile
+        security:
+          - bearerAuth: []
+          - sessionCookie: []
+        responses:
+          '200':
+            $ref: '#/components/responses/UserResponse'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+      patch:
+        x-internal: auth
+        x-codegen-custom-handler: true
+        operationId: UpdateCurrentUser
+        summary: Update current user
+        tags:
+          - User
+        description: Update the currently authenticated user's profile
+        security:
+          - bearerAuth: []
+          - sessionCookie: []
+        requestBody:
+          description: User profile update data
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    description: The user's display name
+                    type: string
+                    minLength: 1
+                    maxLength: 255
+                    example: John Doe
+                    pattern: ^[\w\s\-.,!?()@#+/]*$
+                  image:
+                    description: The user's avatar image URL
+                    type: string
+                    minLength: 5
+                    maxLength: 2048
+                    format: uri
+                    example: https://example.com/avatar.jpg
+        responses:
+          '200':
+            $ref: '#/components/responses/UserResponse'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+      delete:
+        x-internal: auth
+        x-codegen-custom-handler: true
+        operationId: DeleteCurrentUser
+        summary: Delete current user
+        tags:
+          - User
+        description: Delete the currently authenticated user's account (cascades to all sessions and accounts)
+        security:
+          - bearerAuth: []
+          - sessionCookie: []
+        parameters:
+          - name: X-Confirm
+            in: header
+            required: true
+            description: Confirmation header to prevent accidental deletion
+            schema:
+              type: string
+              enum:
+                - DELETE_MY_ACCOUNT
+              example: DELETE_MY_ACCOUNT
+        responses:
+          '204':
+            $ref: '#/components/responses/NoContent'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+    users:
+      get:
+        x-internal: auth
+        operationId: ListUsers
+        summary: List users
+        tags:
+          - User
+        description: List users
+        parameters:
+          - $ref: '#/components/parameters/UsersFilter'
+          - $ref: '#/components/parameters/PageQuery'
+          - $ref: '#/components/parameters/UsersSort'
+        security:
+          - bearerAuth: []
+        responses:
+          '200':
+            $ref: '#/components/responses/UserListResponse'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+    users_id:
+      get:
+        x-internal: auth
+        operationId: GetUser
+        summary: Get a user
+        tags:
+          - User
+        description: Get a user
+        parameters:
+          - $ref: '#/components/parameters/ResourceID'
+        security:
+          - bearerAuth: []
+        responses:
+          '200':
+            $ref: '#/components/responses/UserResponse'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+      patch:
+        x-internal: auth
+        operationId: UpdateUser
+        summary: Update an user
+        tags:
+          - User
+        description: Update an user
+        requestBody:
+          description: User update data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  email:
+                    description: The user's e-mail
+                    type: string
+                    format: email
+                    minLength: 1
+                    example: user@example.com
+                    maxLength: 255
+                  image:
+                    description: The user's avatar image URL
+                    type: string
+                    format: uri
+                    maxLength: 2048
+                    example: https://example.com/avatar.jpg
+                    pattern: ^https?://[\w\-\.]+[\w\-\./:?#@!$&'()*+,;=]*$
+        parameters:
+          - $ref: '#/components/parameters/ResourceID'
+        security:
+          - bearerAuth: []
+        responses:
+          '200':
+            $ref: '#/components/responses/UserResponse'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+      delete:
+        x-internal: auth
+        operationId: DeleteUser
+        summary: Delete a user
+        tags:
+          - User
+        description: Delete a user
+        parameters:
+          - $ref: '#/components/parameters/ResourceID'
+        security:
+          - bearerAuth: []
+        responses:
+          '204':
+            $ref: '#/components/responses/NoContent'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+    api-keys:
+      get:
+        x-internal: auth
+        operationId: ListAPIKeys
+        summary: List API keys
+        tags:
+          - APIKey
+        description: List API keys for the authenticated user
+        parameters:
+          - $ref: '#/components/parameters/APIKeysFilter'
+          - $ref: '#/components/parameters/PageQuery'
+          - $ref: '#/components/parameters/APIKeysSort'
+        security:
+          - bearerAuth: []
+          - sessionCookie: []
+        responses:
+          '200':
+            $ref: '#/components/responses/APIKeyListResponse'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+      post:
+        x-internal: auth
+        operationId: CreateAPIKey
+        summary: Create an API key
+        tags:
+          - APIKey
+        description: Create a new API key for the authenticated user
+        security:
+          - bearerAuth: []
+          - sessionCookie: []
+        requestBody:
+          description: API key creation data
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    description: A friendly name for the API key
+                    type: string
+                    minLength: 1
+                    maxLength: 255
+                    example: Production API Key
+                    pattern: ^[\w\s\-.,!?()@#+/']+$
+                  organizationID:
+                    description: The organization this API key belongs to
+                    type: string
+                    format: uuid
+                    example: 550e8400-e29b-41d4-a716-446655440000
+                  scopes:
+                    description: List of scopes for the API key
+                    type: array
+                    items:
+                      type: string
+                      maxLength: 255
+                      pattern: ^[a-z]+:[a-z]+$
+                    example:
+                      - read:users
+                      - write:workflows
+                    maxItems: 1000
+                    default: []
+                  rateLimit:
+                    description: Requests per minute allowed for this API key
+                    type: integer
+                    format: int32
+                    minimum: 1
+                    maximum: 2147483647
+                    example: 1000
+                    default: 60
+                  expiresAt:
+                    description: When this API key expires
+                    type: string
+                    format: date-time
+                    example: '2025-01-15T09:30:00Z'
+                required:
+                  - organizationID
+        responses:
+          '201':
+            $ref: '#/components/responses/APIKeyResponse'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+    api-keys_id:
+      get:
+        x-internal: auth
+        operationId: GetAPIKey
+        summary: Get an API key
+        tags:
+          - APIKey
+        description: Get an API key by ID
+        parameters:
+          - $ref: '#/components/parameters/ResourceID'
+        security:
+          - bearerAuth: []
+          - sessionCookie: []
+        responses:
+          '200':
+            $ref: '#/components/responses/APIKeyResponse'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+      patch:
+        x-internal: auth
+        operationId: UpdateAPIKey
+        summary: Update an API key
+        tags:
+          - APIKey
+        description: Update an API key
+        parameters:
+          - $ref: '#/components/parameters/ResourceID'
+        security:
+          - bearerAuth: []
+          - sessionCookie: []
+        requestBody:
+          description: API key update data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    description: A friendly name for the API key
+                    type: string
+                    minLength: 1
+                    maxLength: 255
+                    example: Production API Key
+                    pattern: ^[\w\s\-.,!?()@#+/']+$
+                  scopes:
+                    description: List of scopes for the API key
+                    type: array
+                    items:
+                      type: string
+                      maxLength: 255
+                      pattern: ^[a-z]+:[a-z]+$
+                    example:
+                      - read:users
+                      - write:workflows
+                    maxItems: 1000
+                  rateLimit:
+                    description: Requests per minute allowed for this API key
+                    type: integer
+                    format: int32
+                    minimum: 1
+                    maximum: 2147483647
+                    example: 1000
+                  expiresAt:
+                    description: When this API key expires
+                    type: string
+                    format: date-time
+                    example: '2025-01-15T09:30:00Z'
+        responses:
+          '200':
+            $ref: '#/components/responses/APIKeyResponse'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+      delete:
+        x-internal: auth
+        operationId: DeleteAPIKey
+        summary: Delete an API key
+        tags:
+          - APIKey
+        description: Delete an API key
+        parameters:
+          - $ref: '#/components/parameters/ResourceID'
+        security:
+          - bearerAuth: []
+          - sessionCookie: []
+        responses:
+          '204':
+            $ref: '#/components/responses/NoContent'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+    organizations:
+      get:
+        x-internal: auth
+        operationId: ListOrganizations
+        summary: List organizations
+        tags:
+          - Organization
+        description: List organizations
+        parameters:
+          - $ref: '#/components/parameters/OrganizationsFilter'
+          - $ref: '#/components/parameters/PageQuery'
+          - $ref: '#/components/parameters/OrganizationsSort'
+        security:
+          - bearerAuth: []
+        responses:
+          '200':
+            $ref: '#/components/responses/OrganizationListResponse'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+      post:
+        x-internal: auth
+        operationId: CreateOrganization
+        summary: Create an organization
+        tags:
+          - Organization
+        description: Create an organization
+        requestBody:
+          description: Organization creation request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  billingEmail:
+                    description: The billing email to use for the organization
+                    type: string
+                    example: example@archesai.com
+                    minLength: 1
+                    maxLength: 255
+                    format: email
+                  organizationID:
+                    description: UUID identifier
+                    type: string
+                    format: uuid
+                    example: 550e8400-e29b-41d4-a716-446655440000
+                    minLength: 36
+                    maxLength: 36
+                required:
+                  - billingEmail
+                  - organizationID
+          required: true
+        security:
+          - bearerAuth: []
+        responses:
+          '201':
+            $ref: '#/components/responses/OrganizationResponse'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+    organizations_id:
+      get:
+        x-internal: auth
+        operationId: GetOrganization
+        summary: Get an organization
+        tags:
+          - Organization
+        description: Get an organization
+        parameters:
+          - $ref: '#/components/parameters/ResourceID'
+        security:
+          - bearerAuth: []
+        responses:
+          '200':
+            $ref: '#/components/responses/OrganizationResponse'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+      patch:
+        x-internal: auth
+        operationId: UpdateOrganization
+        summary: Update an organization
+        tags:
+          - Organization
+        description: Update an organization
+        requestBody:
+          description: Organization update data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  billingEmail:
+                    description: The billing email to use for the organization
+                    type: string
+                    example: example@archesai.com
+                    format: email
+                    maxLength: 255
+                  organizationID:
+                    description: UUID identifier
+                    type: string
+                    format: uuid
+                    example: 550e8400-e29b-41d4-a716-446655440000
+                    minLength: 36
+                    maxLength: 36
+        parameters:
+          - $ref: '#/components/parameters/ResourceID'
+        security:
+          - bearerAuth: []
+        responses:
+          '200':
+            $ref: '#/components/responses/OrganizationResponse'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+      delete:
+        x-internal: auth
+        operationId: DeleteOrganization
+        summary: Delete an organization
+        tags:
+          - Organization
+        description: Delete an organization
+        parameters:
+          - $ref: '#/components/parameters/ResourceID'
+        security:
+          - bearerAuth: []
+        responses:
+          '204':
+            $ref: '#/components/responses/NoContent'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+    organizations_organizationID_members:
+      get:
+        x-internal: auth
+        operationId: ListMembers
+        summary: List members
+        tags:
+          - Member
+        description: List members
+        parameters:
+          - in: path
+            name: organizationID
+            required: true
+            schema:
+              type: string
+              format: uuid
+              maxLength: 36
+            description: Organization ID
+          - $ref: '#/components/parameters/MembersFilter'
+          - $ref: '#/components/parameters/PageQuery'
+          - $ref: '#/components/parameters/MembersSort'
+        security:
+          - bearerAuth: []
+        responses:
+          '200':
+            $ref: '#/components/responses/MemberListResponse'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+      post:
+        x-internal: auth
+        operationId: CreateMember
+        summary: Create a member
+        tags:
+          - Member
+        description: Create a member
+        parameters:
+          - in: path
+            name: organizationID
+            required: true
+            schema:
+              type: string
+              format: uuid
+              maxLength: 36
+            description: Organization ID
+        requestBody:
+          description: Member creation request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  role:
+                    description: The role of the member
+                    type: string
+                    enum:
+                      - admin
+                      - owner
+                      - member
+                    example: admin
+                required:
+                  - role
+          required: true
+        security:
+          - bearerAuth: []
+        responses:
+          '201':
+            $ref: '#/components/responses/MemberResponse'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+    organizations_organizationID_members_id:
+      get:
+        x-internal: auth
+        operationId: GetMember
+        summary: Get a member
+        tags:
+          - Member
+        description: Get a member
+        parameters:
+          - $ref: '#/components/parameters/OrganizationID'
+          - $ref: '#/components/parameters/ResourceID'
+        security:
+          - bearerAuth: []
+        responses:
+          '200':
+            $ref: '#/components/responses/MemberResponse'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+      patch:
+        x-internal: auth
+        operationId: UpdateMember
+        summary: Update a member
+        tags:
+          - Member
+        description: Update a member
+        requestBody:
+          description: Member update data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  role:
+                    description: The role of the member
+                    type: string
+                    enum:
+                      - admin
+                      - owner
+                      - member
+                    example: admin
+        parameters:
+          - $ref: '#/components/parameters/OrganizationID'
+          - $ref: '#/components/parameters/ResourceID'
+        security:
+          - bearerAuth: []
+        responses:
+          '200':
+            $ref: '#/components/responses/MemberResponse'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+      delete:
+        x-internal: auth
+        operationId: DeleteMember
+        summary: Delete a member
+        tags:
+          - Member
+        description: Delete a member
+        parameters:
+          - $ref: '#/components/parameters/OrganizationID'
+          - $ref: '#/components/parameters/ResourceID'
+        security:
+          - bearerAuth: []
+        responses:
+          '204':
+            $ref: '#/components/responses/NoContent'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+    organizations_organizationID_invitations:
+      get:
+        x-internal: auth
+        operationId: ListInvitations
+        summary: List invitations
+        tags:
+          - Invitation
+        description: List invitations
+        parameters:
+          - $ref: '#/components/parameters/OrganizationID'
+          - $ref: '#/components/parameters/InvitationsFilter'
+          - $ref: '#/components/parameters/PageQuery'
+          - $ref: '#/components/parameters/InvitationsSort'
+        security:
+          - bearerAuth: []
+        responses:
+          '200':
+            $ref: '#/components/responses/InvitationListResponse'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+      post:
+        x-internal: auth
+        operationId: CreateInvitation
+        summary: Create an invitation
+        tags:
+          - Invitation
+        description: Create an invitation
+        parameters:
+          - $ref: '#/components/parameters/OrganizationID'
+        requestBody:
+          description: Invitation creation request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  email:
+                    description: The email of the invitated user
+                    type: string
+                    example: example-string
+                    minLength: 1
+                    maxLength: 255
+                    pattern: ^[\w\s\-.,!?()@#+/]*$
+                  role:
+                    description: The role of the invitation
+                    type: string
+                    enum:
+                      - admin
+                      - owner
+                      - member
+                    example: admin
+                required:
+                  - email
+                  - role
+          required: true
+        security:
+          - bearerAuth: []
+        responses:
+          '201':
+            $ref: '#/components/responses/InvitationResponse'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+    organizations_organizationID_invitations_id:
+      get:
+        x-internal: auth
+        operationId: GetInvitation
+        summary: Get an invitation
+        tags:
+          - Invitation
+        description: Get an invitation
+        parameters:
+          - $ref: '#/components/parameters/OrganizationID'
+          - $ref: '#/components/parameters/ResourceID'
+        security:
+          - bearerAuth: []
+        responses:
+          '200':
+            $ref: '#/components/responses/InvitationResponse'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+      patch:
+        x-internal: auth
+        operationId: UpdateInvitation
+        summary: Update an invitation
+        tags:
+          - Invitation
+        description: Update an invitation
+        requestBody:
+          description: Invitation update data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  email:
+                    description: The email of the invitated user
+                    type: string
+                    example: example-string
+                    maxLength: 255
+                    pattern: ^[\w\s\-.,!?()@#+/]*$
+                  role:
+                    description: The role of the invitation
+                    type: string
+                    enum:
+                      - admin
+                      - owner
+                      - member
+                    example: admin
+        parameters:
+          - $ref: '#/components/parameters/OrganizationID'
+          - $ref: '#/components/parameters/ResourceID'
+        security:
+          - bearerAuth: []
+        responses:
+          '200':
+            $ref: '#/components/responses/InvitationResponse'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+      delete:
+        x-internal: auth
+        operationId: DeleteInvitation
+        summary: Delete an invitation
+        tags:
+          - Invitation
+        description: Delete an invitation
+        parameters:
+          - $ref: '#/components/parameters/OrganizationID'
+          - $ref: '#/components/parameters/ResourceID'
+        security:
+          - bearerAuth: []
+        responses:
+          '204':
+            $ref: '#/components/responses/NoContent'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '422':
+            $ref: '#/components/responses/UnprocessableEntity'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+    health:
+      get:
+        x-internal: server
+        x-codegen-custom-handler: true
+        operationId: GetHealth
+        summary: Get health status
+        tags:
+          - Health
+        description: Check the health status of the application
+        responses:
+          '200':
+            $ref: '#/components/responses/HealthResponse'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+        security:
+          - {}

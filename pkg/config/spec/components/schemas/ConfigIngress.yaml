@@ -1,0 +1,24 @@
+description: Ingress configuration
+x-internal: config
+type: object
+title: IngressConfig
+properties:
+  enabled:
+    description: Enable ingress
+    type: boolean
+    default: false
+    example: true
+  domain:
+    description: Primary domain name for ingress routing
+    type: string
+    format: hostname
+    default: archesai.dev
+    minLength: 1
+    example: archesai.dev
+    maxLength: 255
+  tls:
+    $ref: ./ConfigTLS.yaml
+required:
+  - enabled
+additionalProperties: false
+x-codegen-schema-type: valueobject

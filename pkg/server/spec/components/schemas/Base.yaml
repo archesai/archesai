@@ -1,0 +1,30 @@
+title: Base
+description: Base schema for all entities with common fields
+x-internal: server
+type: object
+properties:
+  id:
+    description: Unique identifier for the resource
+    type: string
+    format: uuid
+    example: 550e8400-e29b-41d4-a716-446655440000
+    minLength: 36
+    maxLength: 36
+  createdAt:
+    description: The date and time when the resource was created
+    type: string
+    format: date-time
+    example: '2024-01-15T09:30:00Z'
+    minLength: 1
+    maxLength: 255
+  updatedAt:
+    description: The date and time when the resource was last updated
+    type: string
+    format: date-time
+    example: '2024-01-15T10:45:00Z'
+    minLength: 1
+    maxLength: 255
+required:
+  - id
+  - createdAt
+  - updatedAt

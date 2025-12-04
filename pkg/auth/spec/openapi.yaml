@@ -1,0 +1,187 @@
+openapi: 3.2.0
+x-project-name: github.com/archesai/archesai/pkg/auth
+x-include-server: true
+info:
+  title: Arches Auth API
+  description: The Arches Auth API
+  version: v0.0.0
+security:
+  - bearerAuth: []
+  - sessionCookie: []
+tags:
+  - name: APIKey
+    description: API key management
+  - name: Auth
+    description: Authentication and authorization operations
+  - name: Invitation
+    description: Organization invitation management
+  - name: Member
+    description: Organization member management
+  - name: OAuth
+    description: OAuth provider integration
+  - name: Organization
+    description: Organization management
+  - name: Session
+    description: User session management
+  - name: Token
+    description: API token management
+  - name: User
+    description: User profile management
+paths:
+  /auth/login:
+    $ref: paths/auth_login.yaml
+  /auth/logout:
+    $ref: paths/auth_logout.yaml
+  /auth/logout-all:
+    $ref: paths/auth_logout-all.yaml
+  /auth/register:
+    $ref: paths/auth_register.yaml
+  /auth/magic-links/request:
+    $ref: paths/auth_magic-links_request.yaml
+  /auth/magic-links/verify:
+    $ref: paths/auth_magic-links_verify.yaml
+  /auth/forgot-password:
+    $ref: paths/auth_forgot-password.yaml
+  /auth/reset-password:
+    $ref: paths/auth_reset-password.yaml
+  /auth/change-email:
+    $ref: paths/auth_change-email.yaml
+  /auth/confirm-email:
+    $ref: paths/auth_confirm-email.yaml
+  /auth/request-verification:
+    $ref: paths/auth_request-verification.yaml
+  /auth/verify-email:
+    $ref: paths/auth_verify-email.yaml
+  /auth/link:
+    $ref: paths/auth_link.yaml
+  /auth/oauth/{provider}/authorize:
+    $ref: paths/auth_oauth_provider_authorize.yaml
+  /auth/oauth/{provider}/callback:
+    $ref: paths/auth_oauth_provider_callback.yaml
+  /auth/accounts:
+    $ref: paths/auth_accounts.yaml
+  /auth/accounts/{id}:
+    $ref: paths/auth_accounts_id.yaml
+  /auth/sessions:
+    $ref: paths/auth_sessions.yaml
+  /auth/sessions/{id}:
+    $ref: paths/auth_sessions_id.yaml
+  /auth/me:
+    $ref: paths/auth_me.yaml
+  /users:
+    $ref: paths/users.yaml
+  /users/{id}:
+    $ref: paths/users_id.yaml
+  /api-keys:
+    $ref: paths/api-keys.yaml
+  /api-keys/{id}:
+    $ref: paths/api-keys_id.yaml
+  /organizations:
+    $ref: paths/organizations.yaml
+  /organizations/{id}:
+    $ref: paths/organizations_id.yaml
+  /organizations/{organizationID}/members:
+    $ref: paths/organizations_organizationID_members.yaml
+  /organizations/{organizationID}/members/{id}:
+    $ref: paths/organizations_organizationID_members_id.yaml
+  /organizations/{organizationID}/invitations:
+    $ref: paths/organizations_organizationID_invitations.yaml
+  /organizations/{organizationID}/invitations/{id}:
+    $ref: paths/organizations_organizationID_invitations_id.yaml
+components:
+  headers:
+    SetCookie:
+      $ref: components/headers/SetCookie.yaml
+  parameters:
+    AccountsFilter:
+      $ref: components/parameters/AccountsFilter.yaml
+    AccountsSort:
+      $ref: components/parameters/AccountsSort.yaml
+    APIKeysFilter:
+      $ref: components/parameters/APIKeysFilter.yaml
+    APIKeysSort:
+      $ref: components/parameters/APIKeysSort.yaml
+    InvitationsFilter:
+      $ref: components/parameters/InvitationsFilter.yaml
+    InvitationsSort:
+      $ref: components/parameters/InvitationsSort.yaml
+    MembersFilter:
+      $ref: components/parameters/MembersFilter.yaml
+    MembersSort:
+      $ref: components/parameters/MembersSort.yaml
+    OrganizationID:
+      $ref: components/parameters/OrganizationID.yaml
+    OrganizationsFilter:
+      $ref: components/parameters/OrganizationsFilter.yaml
+    OrganizationsSort:
+      $ref: components/parameters/OrganizationsSort.yaml
+    SessionsFilter:
+      $ref: components/parameters/SessionsFilter.yaml
+    SessionsSort:
+      $ref: components/parameters/SessionsSort.yaml
+    UsersFilter:
+      $ref: components/parameters/UsersFilter.yaml
+    UsersSort:
+      $ref: components/parameters/UsersSort.yaml
+  responses:
+    AccountListResponse:
+      $ref: components/responses/AccountListResponse.yaml
+    AccountResponse:
+      $ref: components/responses/AccountResponse.yaml
+    APIKeyListResponse:
+      $ref: components/responses/APIKeyListResponse.yaml
+    APIKeyResponse:
+      $ref: components/responses/APIKeyResponse.yaml
+    EmailVerificationResponse:
+      $ref: components/responses/EmailVerificationResponse.yaml
+    InvitationListResponse:
+      $ref: components/responses/InvitationListResponse.yaml
+    InvitationResponse:
+      $ref: components/responses/InvitationResponse.yaml
+    LogoutResponse:
+      $ref: components/responses/LogoutResponse.yaml
+    MemberListResponse:
+      $ref: components/responses/MemberListResponse.yaml
+    MemberResponse:
+      $ref: components/responses/MemberResponse.yaml
+    OrganizationListResponse:
+      $ref: components/responses/OrganizationListResponse.yaml
+    OrganizationResponse:
+      $ref: components/responses/OrganizationResponse.yaml
+    SessionCreated:
+      $ref: components/responses/SessionCreated.yaml
+    SessionListResponse:
+      $ref: components/responses/SessionListResponse.yaml
+    SessionResponse:
+      $ref: components/responses/SessionResponse.yaml
+    UserListResponse:
+      $ref: components/responses/UserListResponse.yaml
+    UserResponse:
+      $ref: components/responses/UserResponse.yaml
+  schemas:
+    Account:
+      $ref: components/schemas/Account.yaml
+    APIKey:
+      $ref: components/schemas/APIKey.yaml
+    Invitation:
+      $ref: components/schemas/Invitation.yaml
+    MagicLinkToken:
+      $ref: components/schemas/MagicLinkToken.yaml
+    Member:
+      $ref: components/schemas/Member.yaml
+    Organization:
+      $ref: components/schemas/Organization.yaml
+    Session:
+      $ref: components/schemas/Session.yaml
+    User:
+      $ref: components/schemas/User.yaml
+  securitySchemes:
+    bearerAuth:
+      description: API Token for authenticated requests
+      scheme: bearer
+      type: http
+    sessionCookie:
+      description: Session cookie for authenticated requests
+      type: apiKey
+      name: __Secure-better-auth.session_token
+      in: cookie

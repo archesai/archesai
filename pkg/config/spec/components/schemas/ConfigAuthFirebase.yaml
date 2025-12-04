@@ -1,0 +1,33 @@
+description: Firebase authentication configuration
+x-internal: config
+type: object
+title: FirebaseAuthConfig
+properties:
+  enabled:
+    description: Enable Firebase authentication
+    type: boolean
+    default: false
+    example: true
+  clientEmail:
+    description: Firebase service account client email address
+    type: string
+    format: email
+    example: firebase@project.iam.gserviceaccount.com
+    maxLength: 255
+    pattern: ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
+  privateKey:
+    description: Firebase service account private key (PEM format)
+    type: string
+    minLength: 1
+    maxLength: 10000
+    pattern: ^[\w\s\-.,!?()@#+/=\n\r]*$
+  projectID:
+    description: Firebase project ID for authentication
+    type: string
+    maxLength: 255
+    pattern: ^[\w\-]+$
+    example: example-id-123
+required:
+  - enabled
+additionalProperties: false
+x-codegen-schema-type: valueobject

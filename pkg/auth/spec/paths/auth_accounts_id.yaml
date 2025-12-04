@@ -1,0 +1,139 @@
+get:
+  x-internal: auth
+  operationId: GetAccount
+  x-codegen-repository: Account
+  summary: Find an account
+  tags:
+    - Auth
+  parameters:
+    - in: path
+      name: id
+      required: true
+      schema:
+        description: UUID identifier
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
+        maxLength: 36
+      description: The unique identifier of the resource
+  security:
+    - bearerAuth: []
+  responses:
+    '200':
+      $ref: ../components/responses/AccountResponse.yaml
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '404':
+      $ref: ../components/responses/NotFound.yaml
+    '422':
+      $ref: ../components/responses/UnprocessableEntity.yaml
+    '429':
+      $ref: ../components/responses/TooManyRequests.yaml
+    '500':
+      $ref: ../components/responses/InternalServerError.yaml
+  description: Get an account
+patch:
+  x-internal: auth
+  x-codegen-custom-handler: true
+  operationId: UpdateAccount
+  summary: Update an account
+  tags:
+    - Auth
+  parameters:
+    - in: path
+      name: id
+      required: true
+      schema:
+        description: UUID identifier
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
+        maxLength: 36
+      description: The unique identifier of the resource
+  security:
+    - bearerAuth: []
+  requestBody:
+    description: Account update request
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          additionalProperties: false
+          maxProperties: 3
+          properties:
+            provider:
+              type: string
+              maxLength: 255
+              description: The account provider
+              example: google
+              pattern: ^[a-z][a-z0-9-]*$
+            providerAccountIdentifier:
+              type: string
+              maxLength: 255
+              description: The provider account ID
+              example: user1234567890
+              pattern: ^[a-z][a-z0-9-]*$
+            type:
+              type: string
+              maxLength: 255
+              description: The account type
+              example: oauth
+              pattern: ^[\w\s\-.,!?()@#+/]*$
+  responses:
+    '200':
+      $ref: ../components/responses/AccountResponse.yaml
+    '404':
+      $ref: ../components/responses/NotFound.yaml
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '422':
+      $ref: ../components/responses/UnprocessableEntity.yaml
+    '429':
+      $ref: ../components/responses/TooManyRequests.yaml
+    '500':
+      $ref: ../components/responses/InternalServerError.yaml
+  description: Update an account
+delete:
+  x-internal: auth
+  x-codegen-custom-handler: true
+  operationId: DeleteAccount
+  summary: Delete an account
+  tags:
+    - Auth
+  parameters:
+    - in: path
+      name: id
+      required: true
+      schema:
+        description: UUID identifier
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
+        maxLength: 36
+      description: The unique identifier of the resource
+  security:
+    - bearerAuth: []
+  responses:
+    '204':
+      $ref: ../components/responses/NoContent.yaml
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '404':
+      $ref: ../components/responses/NotFound.yaml
+    '422':
+      $ref: ../components/responses/UnprocessableEntity.yaml
+    '429':
+      $ref: ../components/responses/TooManyRequests.yaml
+    '500':
+      $ref: ../components/responses/InternalServerError.yaml
+  description: Delete an account

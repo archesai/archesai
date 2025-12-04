@@ -1,0 +1,23 @@
+description: Grafana monitoring dashboard configuration
+x-internal: config
+type: object
+title: GrafanaConfig
+properties:
+  enabled:
+    description: Enable Grafana
+    type: boolean
+    default: false
+    example: true
+  managed:
+    description: Use managed Grafana deployment
+    type: boolean
+    default: false
+    example: true
+  image:
+    $ref: ./ConfigImage.yaml
+  resources:
+    $ref: ./ConfigResource.yaml
+required:
+  - enabled
+additionalProperties: false
+x-codegen-schema-type: valueobject

@@ -15,5 +15,11 @@
   "tailwindCSS.experimental.configFile": {
     "./web/platform/src/styles/globals.css": "./web/platform/src/**",
     "./web/ui/src/styles/globals.css": "./web/ui/src/**"
+  },
+  "yaml.schemas": {
+    "https://www.schemastore.org/sqlc-2.0.json": [
+      "file:///home/jonathan/Projects/archesai/apps/studio/infrastructure/postgres/sqlc.gen.yaml",
+      "file:///home/jonathan/Projects/archesai/examples/auth/infrastructure/postgres/sqlc.gen.yaml"
+    ]
   }
 }

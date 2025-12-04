@@ -15,6 +15,22 @@ type OperationDef struct {
 	RequestBody           *RequestBodyDef // Processed request body schema
 	XCodegenCustomHandler bool            // Whether this operation has a custom handler implementation
 	XCodegenRepository    string          // Custom repository name from x-codegen-repository extension
+	XInternal             string          // When set (e.g., "server", "config"), this operation should be imported not generated
+}
+
+// IsInternal returns true if this operation should be imported from another package instead of generated.
+// If context is empty, it returns true whenever XInternal is set.
+// If context is provided, it returns true only when XInternal is set AND doesn't match the context.
+func (o *OperationDef) IsInternal(context string) bool {
+	if o.XInternal == "" {
+		return false
+	}
+	// If no context provided, treat all internal operations as internal
+	if context == "" {
+		return true
+	}
+	// Only internal if the internal tag doesn't match the current context
+	return o.XInternal != context
 }
 
 // ParamDef represents a parameter in an operation

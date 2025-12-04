@@ -1,0 +1,31 @@
+description: Large Language Model configuration
+x-internal: config
+type: object
+title: LLMConfig
+properties:
+  type:
+    description: LLM provider type
+    type: string
+    enum:
+      - ollama
+      - openai
+    default: ollama
+    example: ollama
+  endpoint:
+    description: LLM service endpoint URL
+    type: string
+    format: uri
+    minLength: 1
+    example: http://localhost:11434
+    maxLength: 2048
+  token:
+    description: Authentication token for LLM service
+    type: string
+    minLength: 1
+    example: sk-...
+    maxLength: 512
+    pattern: ^[a-zA-Z0-9_\-\.]+$
+required:
+  - type
+additionalProperties: false
+x-codegen-schema-type: valueobject

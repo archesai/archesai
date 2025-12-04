@@ -1,7 +1,7 @@
 {
   "extends": [
-    "../../../../tools/tsconfig/src/base.json",
-    "../../../../tools/tsconfig/src/spec.json"
+    "../../../../pkg/tsconfig/src/base.json",
+    "../../../../pkg/tsconfig/src/spec.json"
   ],
   "references": [
     {

@@ -9,16 +9,16 @@ import (
 )
 
 // Configuration wraps the Config for easy access.
-type Configuration struct {
-	*Config
-	v *viper.Viper
+type Configuration[C Config] struct {
+	Config *C
+	v      *viper.Viper
 }
 
 // Load reads configuration from environment variables and returns a Configuration.
-func Load() (*Configuration, error) {
+func (p *Parser[C]) Load() (*Configuration[C], error) {
 	// Setup Viper and populate with defaults
 	v := viper.New()
-	setupViper(v)
+	setupViper[C](v)
 
 	// Try to read config file with multiple possible names
 	var configFound bool
@@ -37,21 +37,21 @@ func Load() (*Configuration, error) {
 	_ = configFound
 
 	// Start with default config
-	config := New()
+	config := new(C)
 
 	// Unmarshal from viper, which will override defaults with any configured values
 	if err := v.Unmarshal(config); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal config: %w", err)
 	}
 
-	return &Configuration{
+	return &Configuration[C]{
 		Config: config,
 		v:      v,
 	}, nil
 }
 
 // setupViper configures viper for reading config.
-func setupViper(v *viper.Viper) {
+func setupViper[C Config](v *viper.Viper) {
 	// Try multiple config file names in order of priority
 	v.SetConfigType(DefaultConfigType)
 	for _, path := range ConfigPaths {
@@ -66,7 +66,7 @@ func setupViper(v *viper.Viper) {
 	v.AutomaticEnv()
 
 	// Set defaults from struct
-	setDefaultsFromStruct(v)
+	setDefaultsFromStruct[C](v)
 
 	// Explicitly bind environment variables for nested config
 	// This is needed because AutomaticEnv doesn't work with nested structs
@@ -80,8 +80,8 @@ func setupViper(v *viper.Viper) {
 }
 
 // setDefaultsFromStruct uses reflection to set viper defaults from a struct with default values.
-func setDefaultsFromStruct(v *viper.Viper) {
-	defaults := New()
+func setDefaultsFromStruct[C Config](v *viper.Viper) {
+	defaults := new(C)
 	setStructDefaults(v, defaults, "")
 }
 
@@ -138,6 +138,6 @@ func setStructDefaults(v *viper.Viper, data any, prefix string) {
 }
 
 // GetViperInstance returns the underlying viper instance for advanced usage.
-func (c *Configuration) GetViperInstance() *viper.Viper {
+func (c *Configuration[C]) GetViperInstance() *viper.Viper {
 	return c.v
 }
