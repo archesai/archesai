@@ -43,7 +43,7 @@ func (m *ResultModel) AddItem(label, value, status string) *ResultModel {
 		Value:  value,
 		Status: status,
 	})
-	if status == "error" {
+	if status == StatusError {
 		m.success = false
 	}
 	return m
@@ -57,7 +57,7 @@ func (m *ResultModel) AddItemWithDetails(label, value, status, details string) *
 		Status:  status,
 		Details: details,
 	})
-	if status == "error" {
+	if status == StatusError {
 		m.success = false
 	}
 	return m
@@ -85,7 +85,7 @@ func (m ResultModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
-		case "q", "ctrl+c", "enter", " ":
+		case "q", KeyQuit, KeyEnter, " ":
 			return m, tea.Quit
 		}
 
@@ -118,7 +118,7 @@ func (m ResultModel) View() string {
 
 		if item.Details != "" {
 			detailStyle := m.styles.Muted
-			if item.Status == "error" {
+			if item.Status == StatusError {
 				detailStyle = m.styles.Error
 			}
 			sb.WriteString(fmt.Sprintf("       %s\n", detailStyle.Render(item.Details)))
@@ -205,7 +205,7 @@ func (m SummaryModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
-		case "q", "ctrl+c", "enter", " ":
+		case "q", KeyQuit, KeyEnter, " ":
 			return m, tea.Quit
 		}
 
@@ -230,11 +230,11 @@ func (m SummaryModel) View() string {
 		for i, c := range m.counts {
 			var style lipgloss.Style
 			switch c.Status {
-			case "success":
+			case StatusSuccess:
 				style = m.styles.Success
-			case "warning":
+			case StatusWarning:
 				style = m.styles.Warning
-			case "error":
+			case StatusError:
 				style = m.styles.Error
 			default:
 				style = m.styles.Info
@@ -302,7 +302,7 @@ func (m TableModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
-		case "q", "ctrl+c", "enter", " ":
+		case "q", KeyQuit, KeyEnter, " ":
 			return m, tea.Quit
 		}
 

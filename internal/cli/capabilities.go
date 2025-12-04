@@ -14,6 +14,8 @@ import (
 	"github.com/archesai/archesai/internal/tui"
 )
 
+const statusInstalled = "installed"
+
 var (
 	capabilitiesJSON bool
 	capabilitiesAll  bool
@@ -130,7 +132,7 @@ func outputTUI(result capabilities.CheckResult) error {
 		}
 		version := cap.Version
 		if version == "" && cap.Found {
-			version = "installed"
+			version = statusInstalled
 		} else if version == "" {
 			version = "-"
 		}
@@ -166,7 +168,7 @@ func outputTUI(result capabilities.CheckResult) error {
 			}
 			version := cap.Version
 			if version == "" && cap.Found {
-				version = "installed"
+				version = statusInstalled
 			} else if version == "" {
 				version = "-"
 			}
@@ -277,7 +279,7 @@ func printCapability(c capabilities.Capability) {
 
 	version := c.Version
 	if version == "" && c.Found {
-		version = "installed"
+		version = statusInstalled
 	} else if version == "" {
 		version = "-"
 	}

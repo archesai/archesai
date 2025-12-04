@@ -3,6 +3,27 @@ package tui
 
 import "github.com/charmbracelet/lipgloss"
 
+// Status string constants used throughout TUI components.
+const (
+	StatusSuccess    = "success"
+	StatusDone       = "done"
+	StatusCompleted  = "completed"
+	StatusWarning    = "warning"
+	StatusWarn       = "warn"
+	StatusError      = "error"
+	StatusFailed     = "failed"
+	StatusInfo       = "info"
+	StatusRunning    = "running"
+	StatusInProgress = "in_progress"
+	StatusPending    = "pending"
+)
+
+// Key string constants for keyboard handling.
+const (
+	KeyQuit  = "ctrl+c"
+	KeyEnter = "enter"
+)
+
 // Colors defines the color palette for TUI components.
 type Colors struct {
 	Primary   lipgloss.Color
@@ -192,15 +213,15 @@ func (s Styles) WithColors(colors Colors) Styles {
 // RenderIcon returns a styled icon based on status.
 func (s Styles) RenderIcon(status string) string {
 	switch status {
-	case "success", "done", "completed":
+	case StatusSuccess, StatusDone, StatusCompleted:
 		return s.Success.Render(s.IconSuccess)
-	case "warning", "warn":
+	case StatusWarning, StatusWarn:
 		return s.Warning.Render(s.IconWarning)
-	case "error", "failed":
+	case StatusError, StatusFailed:
 		return s.Error.Render(s.IconError)
-	case "info":
+	case StatusInfo:
 		return s.Info.Render(s.IconInfo)
-	case "running", "in_progress":
+	case StatusRunning, StatusInProgress:
 		return s.Info.Render(s.IconRunning)
 	default:
 		return s.Muted.Render(s.IconPending)
@@ -212,13 +233,13 @@ func (s Styles) RenderStatus(status, text string) string {
 	icon := s.RenderIcon(status)
 	var style lipgloss.Style
 	switch status {
-	case "success", "done", "completed":
+	case StatusSuccess, StatusDone, StatusCompleted:
 		style = s.Success
-	case "warning", "warn":
+	case StatusWarning, StatusWarn:
 		style = s.Warning
-	case "error", "failed":
+	case StatusError, StatusFailed:
 		style = s.Error
-	case "info", "running", "in_progress":
+	case StatusInfo, StatusRunning, StatusInProgress:
 		style = s.Info
 	default:
 		style = s.Muted

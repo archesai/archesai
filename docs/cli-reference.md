@@ -8,8 +8,6 @@ Complete reference for all `archesai` CLI commands.
 # Install from source
 go install github.com/archesai/archesai/cmd/archesai@latest
 
-# Or build locally
-make build
 ```
 
 The binary will be available as `archesai`.
@@ -106,16 +104,21 @@ archesai generate --spec api/openapi.yaml --bundle --output api/bundled.yaml
 archesai generate --spec api/openapi.yaml --bundle --orval-fix --output api/bundled.yaml
 ```
 
-**Generated Files:**
+**Generated Structure:**
 
-- `models/` - Data models and types
-- `repositories/` - Database access layer
-- `controllers/` - HTTP controllers
-- `handlers/` - Business logic handlers
-- `events/` - Event definitions
-- `client/` - TypeScript/JavaScript client SDK
-- `database/` - SQL migrations and schema
-- `bootstrap/` - Application initialization code
+```text
+output/
+├── main.gen.go              # Entry point
+├── spec/                    # OpenAPI spec (bundled)
+├── models/                  # Go structs from schemas
+├── controllers/             # HTTP request handlers
+├── application/             # Application layer (use cases)
+├── repositories/            # Repository interfaces
+├── bootstrap/               # App init, routes, DI container
+└── infrastructure/
+    ├── postgres/            # PostgreSQL migrations, queries, repos
+    └── sqlite/              # SQLite migrations, queries, repos
+```
 
 ---
 
@@ -268,39 +271,6 @@ archesai completion powershell | Out-String | Invoke-Expression
 
 ---
 
-## Planned Commands
-
-These commands are planned but not yet implemented. See [ROADMAP.md](ROADMAP.md) for details.
-
-### `archesai new` (Coming Soon)
-
-Create a new Arches project from templates.
-
-```bash
-# Planned syntax
-archesai new [project-name] [flags]
-```
-
-### `archesai init` (Coming Soon)
-
-Initialize Arches in an existing project.
-
-```bash
-# Planned syntax
-archesai init [flags]
-```
-
-### `archesai deploy` (Coming Soon)
-
-Deploy application to cloud platforms.
-
-```bash
-# Planned syntax
-archesai deploy [platform] [flags]
-```
-
----
-
 ## Configuration File
 
 Arches uses a YAML configuration file (`.archesai.yaml` by default).
@@ -431,6 +401,6 @@ archesai config show
 ## See Also
 
 - [Getting Started](getting-started.md) - Quick start guide
-- [Development Guide](guides/development.md) - Development workflow
 - [Code Generation](guides/code-generation.md) - How code generation works
-- [Makefile Commands](guides/makefile-commands.md) - Development commands
+- [Configuration](configuration.md) - Configuration options
+- [Contributing](contributing.md) - Development workflow

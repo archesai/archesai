@@ -24,13 +24,14 @@ type Step struct {
 // StepStatus represents the status of a step.
 type StepStatus int
 
+// Step status constants.
 const (
-	StepPending StepStatus = iota
-	StepRunning
-	StepSuccess
-	StepWarning
-	StepError
-	StepSkipped
+	StepPending StepStatus = iota // Step has not started
+	StepRunning                   // Step is currently running
+	StepSuccess                   // Step completed successfully
+	StepWarning                   // Step completed with warnings
+	StepError                     // Step failed with an error
+	StepSkipped                   // Step was skipped
 )
 
 func (s StepStatus) String() string {
@@ -124,7 +125,7 @@ func (m StepsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
-		case "q", "ctrl+c":
+		case "q", KeyQuit:
 			return m, tea.Quit
 		}
 

@@ -70,10 +70,10 @@ const config: ZudokuConfig = {
       alt: "Arches AI",
       href: "/getting-started",
       src: {
-        dark: "/large-logo-white.svg",
-        light: "/large-logo.svg",
+        dark: "/small-logo-white.svg",
+        light: "/small-logo.svg",
       },
-      width: "130px",
+      width: "32px",
     },
     logoUrl: "/large-logo.svg",
     showPoweredBy: false,

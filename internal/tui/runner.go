@@ -161,67 +161,67 @@ func (r *Runner) Steps(
 
 // Print outputs styled text without running a full TUI.
 func (r *Runner) Print(text string) {
-	fmt.Fprintln(r.output, text)
+	_, _ = fmt.Fprintln(r.output, text)
 }
 
 // PrintSuccess outputs a success message.
 func (r *Runner) PrintSuccess(text string) {
-	fmt.Fprintln(r.output, r.styles.RenderStatus("success", text))
+	_, _ = fmt.Fprintln(r.output, r.styles.RenderStatus("success", text))
 }
 
 // PrintError outputs an error message.
 func (r *Runner) PrintError(text string) {
-	fmt.Fprintln(r.output, r.styles.RenderStatus("error", text))
+	_, _ = fmt.Fprintln(r.output, r.styles.RenderStatus("error", text))
 }
 
 // PrintWarning outputs a warning message.
 func (r *Runner) PrintWarning(text string) {
-	fmt.Fprintln(r.output, r.styles.RenderStatus("warning", text))
+	_, _ = fmt.Fprintln(r.output, r.styles.RenderStatus("warning", text))
 }
 
 // PrintInfo outputs an info message.
 func (r *Runner) PrintInfo(text string) {
-	fmt.Fprintln(r.output, r.styles.RenderStatus("info", text))
+	_, _ = fmt.Fprintln(r.output, r.styles.RenderStatus("info", text))
 }
 
 // PrintTitle outputs a styled title.
 func (r *Runner) PrintTitle(text string) {
-	fmt.Fprintln(r.output, r.styles.Title.Render(text))
+	_, _ = fmt.Fprintln(r.output, r.styles.Title.Render(text))
 }
 
 // PrintMuted outputs muted text.
 func (r *Runner) PrintMuted(text string) {
-	fmt.Fprintln(r.output, r.styles.Muted.Render(text))
+	_, _ = fmt.Fprintln(r.output, r.styles.Muted.Render(text))
 }
 
 // PrintKeyValue outputs a key-value pair.
 func (r *Runner) PrintKeyValue(key, value string) {
-	fmt.Fprintln(r.output, r.styles.RenderKeyValue(key, value))
+	_, _ = fmt.Fprintln(r.output, r.styles.RenderKeyValue(key, value))
 }
 
 // PrintResult outputs a result display.
 func (r *Runner) PrintResult(result *ResultModel) {
-	fmt.Fprint(r.output, result.Render())
+	_, _ = fmt.Fprint(r.output, result.Render())
 }
 
 // PrintSummary outputs a summary display.
 func (r *Runner) PrintSummary(summary *SummaryModel) {
-	fmt.Fprint(r.output, summary.Render())
+	_, _ = fmt.Fprint(r.output, summary.Render())
 }
 
 // PrintTable outputs a table display.
 func (r *Runner) PrintTable(table *TableModel) {
-	fmt.Fprint(r.output, table.Render())
+	_, _ = fmt.Fprint(r.output, table.Render())
 }
 
 // PrintDivider outputs a horizontal divider.
 func (r *Runner) PrintDivider() {
-	fmt.Fprintln(r.output, r.styles.Muted.Render(strings.Repeat("─", 40)))
+	_, _ = fmt.Fprintln(r.output, r.styles.Muted.Render(strings.Repeat("─", 40)))
 }
 
 // PrintNewline outputs a blank line.
 func (r *Runner) PrintNewline() {
-	fmt.Fprintln(r.output)
+	_, _ = fmt.Fprintln(r.output)
 }
 
 // Styles returns the runner's styles for custom rendering.

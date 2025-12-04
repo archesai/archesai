@@ -94,7 +94,7 @@ func (m ProgressModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
-		case "q", "ctrl+c":
+		case "q", KeyQuit:
 			return m, tea.Quit
 		}
 
@@ -216,8 +216,8 @@ func NewFileProgress(showList bool) FileProgressModel {
 }
 
 // WithMaxShow sets max files to show in list.
-func (m FileProgressModel) WithMaxShow(max int) FileProgressModel {
-	m.maxShow = max
+func (m FileProgressModel) WithMaxShow(maxFiles int) FileProgressModel {
+	m.maxShow = maxFiles
 	return m
 }
 
@@ -237,7 +237,7 @@ func (m FileProgressModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
-		case "q", "ctrl+c":
+		case "q", KeyQuit:
 			return m, tea.Quit
 		}
 
@@ -266,7 +266,7 @@ func (m FileProgressModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// Count completed
 		m.current = 0
 		for _, f := range m.files {
-			if f.Status == "done" || f.Status == "error" {
+			if f.Status == StatusDone || f.Status == StatusError {
 				m.current++
 			}
 		}

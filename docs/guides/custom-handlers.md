@@ -1,302 +1,225 @@
-# Executor System
+# Custom Handlers
 
-A type-safe, generic executor system for running code either locally or in isolated Docker containers with JSON Schema validation.
+Generated handlers provide the basic structure. Add your business logic by editing files in the `handlers/` directory.
 
-## Overview
+## Handler Structure
 
-The executor package provides a flexible way to execute code with two execution modes:
-
-- **LocalExecutor**: Run code directly on the host (fast, no isolation)
-- **ContainerExecutor**: Run code in Docker containers (secure, isolated, multi-language)
-
-Both executors implement the same `Executor[A, B]` interface, ensuring type safety through generics
-and validating inputs/outputs using JSON Schema.
-
-## Features
-
-- **Type-safe execution** with Go generics
-- **JSON Schema validation** for inputs and outputs
-- **Multi-language support** (Python, Node.js, Go) - ContainerExecutor only
-- **Security isolation** (network disabled, read-only FS, resource limits) - ContainerExecutor only
-- **Resource management** (CPU, memory limits)
-- **Timeout control**
-- **Local execution** for fast, non-isolated operations
-
-## Choosing an Executor
-
-### Use LocalExecutor when
-
-- Running trusted code (your own functions)
-- Performance is critical (nanosecond execution vs seconds for containers)
-- Testing and development
-- Code doesn't need language/environment isolation
-- Docker isn't available or desired
-
-### Use ContainerExecutor when
-
-- Running untrusted or third-party code
-- Need multi-language support (Python, Node.js, Go)
-- Require security isolation
-- Need resource limits enforcement
-- Running external tools (e.g., Orval, code generators)
-
-## Usage
-
-### LocalExecutor Example
-
-For fast, local execution of trusted Go code:
+Generated handlers follow this pattern:
 
 ```go
-import (
-    "context"
-    "github.com/archesai/archesai/internal/infrastructure/executor"
-)
+// handlers/todo_handler.go
+package handlers
 
-// Define input/output types
-type Input struct {
-    Values []float64 `json:"values"`
+type TodoHandler struct {
+    repo repositories.TodoRepository
 }
 
-type Output struct {
-    Count int     `json:"count"`
-    Sum   float64 `json:"sum"`
-    Mean  float64 `json:"mean"`
+func NewTodoHandler(repo repositories.TodoRepository) *TodoHandler {
+    return &TodoHandler{repo: repo}
 }
 
-// Define execution function
-executeFunc := func(ctx context.Context, input Input) (Output, error) {
-    sum := 0.0
-    for _, v := range input.Values {
-        sum += v
+func (h *TodoHandler) Create(ctx context.Context, input *models.TodoInput) (*models.Todo, error) {
+    // Generated: basic create logic
+    todo := &models.Todo{
+        ID:        uuid.New(),
+        Title:     input.Title,
+        Completed: input.Completed,
+        CreatedAt: time.Now(),
     }
-    mean := sum / float64(len(input.Values))
-
-    return Output{
-        Count: len(input.Values),
-        Sum:   sum,
-        Mean:  mean,
-    }, nil
+    return todo, h.repo.Create(ctx, todo)
 }
-
-// Create local executor
-exec, err := executor.NewLocalExecutor[Input, Output](
-    executeFunc,
-    executor.LocalConfig{
-        Timeout: 10 * time.Second,
-        // Optional: schema validation
-        SchemaIn:  inputSchema,
-        SchemaOut: outputSchema,
-    },
-)
-if err != nil {
-    return err
-}
-
-// Execute (takes ~266 nanoseconds)
-ctx := context.Background()
-input := Input{Values: []float64{1, 2, 3, 4, 5}}
-output, err := exec.Execute(ctx, input)
-if err != nil {
-    return err
-}
-
-log.Infof("Sum: %f, Mean: %f", output.Sum, output.Mean)
 ```
 
-### ContainerExecutor Example
+## Adding Custom Logic
 
-For isolated, multi-language execution:
+### Validation
+
+Add validation before saving:
 
 ```go
-import (
-    "context"
-    "github.com/archesai/archesai/internal/infrastructure/executor"
+func (h *TodoHandler) Create(ctx context.Context, input *models.TodoInput) (*models.Todo, error) {
+    // Add validation
+    if len(input.Title) < 3 {
+        return nil, errors.New("title must be at least 3 characters")
+    }
+    if len(input.Title) > 200 {
+        return nil, errors.New("title must be less than 200 characters")
+    }
+
+    todo := &models.Todo{
+        ID:        uuid.New(),
+        Title:     input.Title,
+        Completed: input.Completed,
+        CreatedAt: time.Now(),
+    }
+    return todo, h.repo.Create(ctx, todo)
+}
+```
+
+### Business Rules
+
+Add domain-specific logic:
+
+```go
+func (h *TodoHandler) Complete(ctx context.Context, id uuid.UUID) (*models.Todo, error) {
+    todo, err := h.repo.Get(ctx, id)
+    if err != nil {
+        return nil, err
+    }
+
+    // Business rule: can't complete already completed todos
+    if todo.Completed {
+        return nil, errors.New("todo is already completed")
+    }
+
+    todo.Completed = true
+    todo.CompletedAt = time.Now()
+
+    if err := h.repo.Update(ctx, todo); err != nil {
+        return nil, err
+    }
+
+    return todo, nil
+}
+```
+
+### Adding Dependencies
+
+Inject additional services:
+
+```go
+type TodoHandler struct {
+    repo     repositories.TodoRepository
+    notifier NotificationService  // Add new dependency
+}
+
+func NewTodoHandler(
+    repo repositories.TodoRepository,
+    notifier NotificationService,
+) *TodoHandler {
+    return &TodoHandler{
+        repo:     repo,
+        notifier: notifier,
+    }
+}
+
+func (h *TodoHandler) Create(ctx context.Context, input *models.TodoInput) (*models.Todo, error) {
+    todo := &models.Todo{
+        ID:        uuid.New(),
+        Title:     input.Title,
+        CreatedAt: time.Now(),
+    }
+
+    if err := h.repo.Create(ctx, todo); err != nil {
+        return nil, err
+    }
+
+    // Notify after creation
+    h.notifier.Send(ctx, "New todo created: " + todo.Title)
+
+    return todo, nil
+}
+```
+
+## Custom Endpoints
+
+Add new endpoints by creating new handler methods:
+
+```go
+// handlers/todo_handler.go
+
+// GetStats returns todo statistics
+func (h *TodoHandler) GetStats(ctx context.Context) (*models.TodoStats, error) {
+    todos, err := h.repo.List(ctx, nil)
+    if err != nil {
+        return nil, err
+    }
+
+    stats := &models.TodoStats{
+        Total:     len(todos),
+        Completed: 0,
+        Pending:   0,
+    }
+
+    for _, t := range todos {
+        if t.Completed {
+            stats.Completed++
+        } else {
+            stats.Pending++
+        }
+    }
+
+    return stats, nil
+}
+```
+
+Then register the route in your controller:
+
+```go
+// controllers/todo_controller.go
+
+func (c *TodoController) RegisterRoutes(e *echo.Echo) {
+    g := e.Group("/todos")
+    g.GET("", c.List)
+    g.POST("", c.Create)
+    g.GET("/:id", c.Get)
+    g.DELETE("/:id", c.Delete)
+    g.GET("/stats", c.GetStats)  // Add new route
+}
+```
+
+## Error Handling
+
+Use typed errors for better error responses:
+
+```go
+var (
+    ErrTodoNotFound = errors.New("todo not found")
+    ErrTodoAlreadyCompleted = errors.New("todo already completed")
 )
 
-// Define input/output types
-type Input struct {
-    Values []float64 `json:"values"`
-}
-
-type Output struct {
-    Count int     `json:"count"`
-    Sum   float64 `json:"sum"`
-    Mean  float64 `json:"mean"`
-}
-
-// Create container executor
-config := executor.Config{
-    Image:       "archesai/runner-python:latest",
-    DisableNet:  true,
-    ReadOnlyFS:  true,
-    MemoryBytes: 256 * 1024 * 1024, // 256MB
-    Timeout:     10 * time.Second,
-    SchemaIn:    inputSchema,  // JSON Schema bytes
-    SchemaOut:   outputSchema, // JSON Schema bytes
-}
-
-exec, err := executor.NewContainerExecutor[Input, Output](config)
-if err != nil {
-    return err
-}
-
-// Execute
-ctx := context.Background()
-input := Input{Values: []float64{1, 2, 3, 4, 5}}
-output, err := exec.Execute(ctx, input)
-if err != nil {
-    return err
-}
-
-log.Infof("Sum: %f, Mean: %f", output.Sum, output.Mean)
-```
-
-## Building Containers
-
-Build the runner containers using Make:
-
-```bash
-# Build all runner containers
-make build-runners
-
-# Build individual runners
-make build-runner-python
-make build-runner-node
-make build-runner-go
-
-# Build generator containers (e.g., orval)
-make build-generator-orval
-```
-
-## Testing
-
-Run the executor tests:
-
-```bash
-# Run all executor tests (includes local and container tests)
-go test -v ./internal/infrastructure/executor -timeout 60s
-
-# Run only local executor tests (fast, no Docker required)
-go test -v ./internal/infrastructure/executor -run TestLocal
-
-# Run only container tests (requires Docker)
-go test -v ./internal/infrastructure/executor -run TestNode
-
-# Skip integration tests (only runs local executor tests)
-go test -short ./internal/infrastructure/executor
-
-# Run benchmarks
-go test -bench=. ./internal/infrastructure/executor -benchmem
-```
-
-Performance comparison:
-
-- **LocalExecutor**: ~266 ns/op (without validation), ~5.2 µs/op (with validation)
-- **ContainerExecutor**: ~2-5 seconds/op (includes container startup)
-
-## Container Protocol
-
-Containers communicate via stdin/stdout using JSON:
-
-### Input (stdin)
-
-```json
-{
-  "schema_in": {
-    /* JSON Schema */
-  },
-  "schema_out": {
-    /* JSON Schema */
-  },
-  "input": {
-    /* actual input data */
-  }
+func (h *TodoHandler) Get(ctx context.Context, id uuid.UUID) (*models.Todo, error) {
+    todo, err := h.repo.Get(ctx, id)
+    if err != nil {
+        if errors.Is(err, sql.ErrNoRows) {
+            return nil, ErrTodoNotFound
+        }
+        return nil, err
+    }
+    return todo, nil
 }
 ```
 
-### Output (stdout)
+## Testing Handlers
 
-Success:
+Use generated mocks for testing:
 
-```json
-{
-  "ok": true,
-  "output": {
-    /* result data */
-  }
+```go
+func TestTodoHandler_Create(t *testing.T) {
+    mockRepo := mocks.NewMockTodoRepository(t)
+
+    handler := NewTodoHandler(mockRepo)
+
+    input := &models.TodoInput{
+        Title: "Test Todo",
+    }
+
+    mockRepo.EXPECT().
+        Create(mock.Anything, mock.AnythingOfType("*models.Todo")).
+        Return(nil)
+
+    todo, err := handler.Create(context.Background(), input)
+
+    assert.NoError(t, err)
+    assert.Equal(t, "Test Todo", todo.Title)
+    assert.False(t, todo.Completed)
 }
 ```
 
-Error:
+## Best Practices
 
-```json
-{
-  "ok": false,
-  "error": {
-    "message": "error description",
-    "code": "ERROR_CODE",
-    "details": "stack trace or details"
-  }
-}
-```
-
-## Security
-
-- **Network isolation**: `--network none`
-- **Read-only filesystem**: `--read-only`
-- **Non-root user**: Containers run as UID 1000
-- **Resource limits**: Memory and CPU limits enforced
-- **Timeouts**: Automatic termination on timeout
-
-## Creating Custom Runners
-
-### Option 1: Mount Custom Execute Module (Node.js)
-
-For quick prototyping or one-off executions, mount a custom `execute.js` to the base node runner:
-
-```javascript
-// my-execute.js
-export async function executeFunction(input) {
-  // Your custom logic here
-  return { result: input.value * 2 };
-}
-```
-
-```bash
-docker run -i --rm \
-  -v $(pwd)/my-execute.js:/app/execute.js \
-  archesai/runner-node:latest < input.json
-```
-
-### Option 2: Build Custom Generator Image
-
-For reusable generators, extend the base runner:
-
-```dockerfile
-# Dockerfile
-FROM archesai/runner-node:latest
-
-# Install additional dependencies
-RUN npm install --omit=dev your-package@version
-
-# Copy custom execute module
-COPY execute.js ./execute.js
-
-# Entrypoint inherited from base
-```
-
-```bash
-docker build -t my-custom-generator:latest .
-docker run -i --rm my-custom-generator:latest < input.json
-```
-
-### Option 3: Other Languages
-
-For Python or Go, implement the container protocol:
-
-1. Read JSON from stdin
-2. Parse request and validate schemas
-3. Execute your logic
-4. Return JSON response to stdout
-
-See the example runners in `deployments/containers/runners/` for reference implementations.
+1. **Keep handlers focused** - One responsibility per handler method
+2. **Validate early** - Check inputs before processing
+3. **Use typed errors** - Makes error handling cleaner
+4. **Inject dependencies** - Makes testing easier
+5. **Don't modify generated files** - They get overwritten on regeneration

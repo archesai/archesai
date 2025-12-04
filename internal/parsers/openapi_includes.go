@@ -41,6 +41,7 @@ func NewIncludeMerger() *IncludeMerger {
 	}
 }
 
+// NewDefaultIncludeMerger creates a new IncludeMerger with all standard includes registered.
 func NewDefaultIncludeMerger() *IncludeMerger {
 	merger := NewIncludeMerger()
 

@@ -26,64 +26,22 @@ export const docs: Navigation = [
           "/getting-started",
           "/guides/quickstart",
           "/cli-reference",
+          "/configuration",
           "/contributing",
         ],
         label: "Getting Started",
         type: "category",
       },
       {
-        icon: "layers",
-        items: [
-          "/architecture/overview",
-          "/architecture/system-design",
-          "/architecture/code-generation",
-          "/architecture/authentication",
-          "/architecture/project-layout",
-        ],
-        label: "Architecture",
-        type: "category",
-      },
-      {
         icon: "package",
-        items: [
-          "/features/overview",
-          "/features/auth",
-          "/features/organizations",
-          "/features/workflows",
-          "/features/content",
-          "/features/tui",
-        ],
+        items: ["/features/authentication", "/features/database"],
         label: "Features",
         type: "category",
       },
       {
         icon: "book-open",
-        items: [
-          "/guides/overview",
-          "/guides/development",
-          "/guides/code-generation",
-          "/guides/testing",
-          "/guides/custom-handlers",
-          "/guides/makefile-commands",
-        ],
+        items: ["/guides/code-generation", "/guides/custom-handlers"],
         label: "Guides",
-        type: "category",
-      },
-      {
-        icon: "rocket",
-        items: [
-          "/deployment/overview",
-          "/deployment/docker",
-          "/deployment/kubernetes",
-          "/deployment/production",
-        ],
-        label: "Deployment",
-        type: "category",
-      },
-      {
-        icon: "shield",
-        items: ["/security/overview", "/security/best-practices"],
-        label: "Security",
         type: "category",
       },
       {
@@ -101,7 +59,6 @@ export const docs: Navigation = [
       {
         icon: "code",
         items: [
-          "/api-reference/overview",
           {
             badge: {
               color: "green",

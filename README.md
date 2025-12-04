@@ -132,23 +132,17 @@ For detailed setup instructions, see [Getting Started](docs/getting-started.md).
 
 ## Documentation
 
-### Getting Started
-
-- [Quick Start Guide](docs/getting-started.md) - Get up and running quickly
-- [CLI Reference](docs/cli-reference.md) - Complete command documentation
-- [Development Guide](docs/guides/development.md) - Setup and development workflow
-
-### Architecture & Design
-
-- [System Design](docs/architecture/system-design.md) - Architecture patterns and decisions
-- [Code Generation](docs/guides/code-generation.md) - How the code generation works
-- [Authentication](docs/architecture/authentication.md) - Auth system design
-
-### Reference
-
-- [API Specification](api/openapi.yaml) - OpenAPI specification format
-- [Makefile Commands](docs/guides/makefile-commands.md) - Development commands
-- [Configuration](docs/guides/configuration.md) - Configuration options
+- [Getting Started](docs/getting-started.md) - Installation and first app
+- [Quickstart](docs/guides/quickstart.md) - 5-minute tutorial
+- [CLI Reference](docs/cli-reference.md) - Command documentation
+- [Configuration](docs/configuration.md) - Config options
+- [Code Generation](docs/guides/code-generation.md) - x-codegen extensions
+- [Custom Handlers](docs/guides/custom-handlers.md) - Adding business logic
+- [Database](docs/features/database.md) - Multi-database support and migrations
+- [Authentication](docs/features/authentication.md) - Auth system
+- [Troubleshooting](docs/troubleshooting/common-issues.md) - Common issues
+- [Contributing](docs/contributing.md) - Development guide
+- [Roadmap](docs/ROADMAP.md) - Planned features
 
 ## ✨ Features
 
@@ -157,12 +151,13 @@ For detailed setup instructions, see [Getting Started](docs/getting-started.md).
 From a single OpenAPI specification, Arches generates:
 
 - ✅ **Backend API** - Complete REST API with CRUD operations
-- ✅ **Database Layer** - Migrations, models, and type-safe queries
+- ✅ **Multi-Database Support** - PostgreSQL and SQLite implementations
+- ✅ **Automatic Migrations** - SQL migrations generated from your spec
+- ✅ **Schema Generation** - Database schemas from OpenAPI definitions
 - ✅ **Authentication** - JWT-based auth with role-based access control
 - ✅ **API Client** - Type-safe TypeScript/JavaScript SDK
 - ✅ **Docker Setup** - Containerization and orchestration configs
 - ✅ **Kubernetes Manifests** - Production-ready K8s deployments
-- ✅ **Database Migrations** - Auto-generated SQL migrations
 - ✅ **Bootstrap Code** - Application initialization and configuration
 
 ### Current Capabilities

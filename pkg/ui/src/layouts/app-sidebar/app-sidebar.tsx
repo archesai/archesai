@@ -41,7 +41,7 @@ export function AppSidebarContainer({
       onSearch={handleSearch}
       organizationSlot={<OrganizationButton />}
       siteRoutes={siteRoutes}
-      userMenuSlot={<></>}
+      userMenuSlot={null}
     />
   );
 }

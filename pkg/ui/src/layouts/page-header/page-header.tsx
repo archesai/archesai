@@ -31,7 +31,7 @@ export function PageHeaderContainer({
       }
       commandMenu={<CommandMenu siteRoutes={siteRoutes} />}
       themeToggle={<ThemeToggle />}
-      userMenu={<></>}
+      userMenu={null}
     />
   );
 }

@@ -12,16 +12,17 @@ import (
 // SpinnerStyle defines spinner animation styles.
 type SpinnerStyle int
 
+// Spinner animation style constants.
 const (
-	SpinnerDot SpinnerStyle = iota
-	SpinnerLine
-	SpinnerMiniDot
-	SpinnerJump
-	SpinnerPulse
-	SpinnerPoints
-	SpinnerGlobe
-	SpinnerMoon
-	SpinnerMonkey
+	SpinnerDot     SpinnerStyle = iota // Dot animation (default)
+	SpinnerLine                        // Line animation
+	SpinnerMiniDot                     // Mini dot animation
+	SpinnerJump                        // Jump animation
+	SpinnerPulse                       // Pulse animation
+	SpinnerPoints                      // Points animation
+	SpinnerGlobe                       // Globe animation
+	SpinnerMoon                        // Moon phases animation
+	SpinnerMonkey                      // Monkey animation
 )
 
 // SpinnerModel is a simple spinner with a message.
@@ -107,7 +108,7 @@ func (m SpinnerModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
-		case "q", "ctrl+c":
+		case "q", KeyQuit:
 			return m, tea.Quit
 		}
 
@@ -212,7 +213,7 @@ func (m MultiSpinnerModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
-		case "q", "ctrl+c":
+		case "q", KeyQuit:
 			return m, tea.Quit
 		}
 
@@ -235,7 +236,7 @@ func (m MultiSpinnerModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// Check if all done
 		allDone := true
 		for _, item := range m.spinners {
-			if item.status != "success" && item.status != "error" {
+			if item.status != StatusSuccess && item.status != StatusError {
 				allDone = false
 				break
 			}
@@ -252,7 +253,7 @@ func (m MultiSpinnerModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case spinner.TickMsg:
 		cmds := make([]tea.Cmd, len(m.spinners))
 		for i := range m.spinners {
-			if m.spinners[i].status == "running" {
+			if m.spinners[i].status == StatusRunning {
 				m.spinners[i].spinner, cmds[i] = m.spinners[i].spinner.Update(msg)
 			}
 		}
@@ -268,20 +269,20 @@ func (m MultiSpinnerModel) View() string {
 
 	for _, item := range m.spinners {
 		switch item.status {
-		case "success":
-			sb.WriteString(m.styles.RenderStatus("success", item.message))
+		case StatusSuccess:
+			sb.WriteString(m.styles.RenderStatus(StatusSuccess, item.message))
 			if item.result != "" {
 				sb.WriteString(" " + m.styles.Muted.Render(item.result))
 			}
-		case "error":
-			sb.WriteString(m.styles.RenderStatus("error", item.message))
+		case StatusError:
+			sb.WriteString(m.styles.RenderStatus(StatusError, item.message))
 			if item.result != "" {
 				sb.WriteString(" " + m.styles.Error.Render(item.result))
 			}
-		case "running":
+		case StatusRunning:
 			sb.WriteString(fmt.Sprintf("%s %s", item.spinner.View(), item.message))
 		default: // pending
-			sb.WriteString(m.styles.RenderStatus("pending", item.message))
+			sb.WriteString(m.styles.RenderStatus(StatusPending, item.message))
 		}
 		sb.WriteString("\n")
 	}

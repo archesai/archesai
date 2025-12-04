@@ -1,474 +1,192 @@
-# Contributing to Arches
+# Contributing
 
-Thank you for your interest in contributing to Arches! This document provides guidelines and
-instructions for contributing to the project.
+Guide for contributing to the Arches codebase.
 
-## Code of Conduct
+## Prerequisites
 
-By participating in this project, you agree to abide by our Code of Conduct:
+- Go 1.22+
+- Node.js 20+ with pnpm
+- PostgreSQL 15+
+- Docker (optional)
+- Make
 
-- **Be respectful**: Treat all contributors with respect
-- **Be constructive**: Provide helpful feedback and suggestions
-- **Be inclusive**: Welcome contributors of all backgrounds and experience levels
-- **Be professional**: Keep discussions focused on the project
+## Setup
 
-## Getting Started
+```bash
+# Clone the repo
+git clone https://github.com/archesai/archesai.git
+cd archesai
 
-### Prerequisites
+# Install dependencies
+make deps
 
-Before contributing, ensure you have:
+# Setup database
+docker run -d \
+  --name postgres \
+  -e POSTGRES_PASSWORD=postgres \
+  -e POSTGRES_DB=archesdb \
+  -p 5432:5432 \
+  postgres:15
 
-- Go 1.21+ installed
-- PostgreSQL 15+ with pgvector extension
-- Node.js 20+ and pnpm 8+
-- Git configured with your GitHub account
-- Make installed for running build commands
+# Generate code
+make generate
 
-### Setting Up Your Development Environment
+# Run tests
+make test
+```
 
-1. **Fork the repository** on GitHub
+## Development Commands
 
-2. **Clone your fork**:
+```bash
+# Start dev server with hot reload
+make dev-all
 
-   ```bash
-   git clone https://github.com/YOUR_USERNAME/archesai.git
-   cd archesai
-   ```
+# Run linters
+make lint
 
-3. **Add upstream remote**:
+# Format code
+make format
 
-   ```bash
-   git remote add upstream https://github.com/archesai/archesai.git
-   ```
+# Run tests
+make test
+make test-short    # Skip integration tests
+make test-verbose  # Verbose output
 
-4. **Set up the project**:
+# Generate code
+make generate
+make clean-generated  # Clean and regenerate
+```
 
-   ```bash
-   # Copy environment variables
-   cp .env.example .env
+## Project Structure
 
-   # Install dependencies
-   make tools
-   go mod download
-   pnpm install
+```text
+archesai/
+├── cmd/archesai/      # CLI entry point
+├── internal/          # Internal packages
+│   ├── core/          # Domain models and events
+│   ├── codegen/       # Code generation
+│   └── ...
+├── api/               # OpenAPI specifications
+├── web/platform/      # Frontend (React + TypeScript)
+└── docs/              # Documentation
+```
 
-   # Set up database
-   createdb archesai
-   psql archesai -c "CREATE EXTENSION IF NOT EXISTS vector;"
-   make migrate-up
-
-   # Generate code
-   make generate
-   ```
-
-5. **Verify setup**:
-
-   ```bash
-   make test
-   make lint
-   ```
-
-## Development Workflow
-
-### Branch Naming
-
-Use descriptive branch names:
-
-- `feature/add-webhook-support`
-- `fix/auth-token-expiry`
-- `docs/update-api-guide`
-- `refactor/optimize-queries`
-- `test/add-workflow-tests`
+## Workflow
 
 ### Making Changes
 
-1. **Create a branch**:
+1. Create a branch:
 
    ```bash
-   git checkout -b feature/your-feature-name
+   git checkout -b feature/your-feature
    ```
 
-2. **Make your changes** following our coding standards
+2. Make changes
 
-3. **Generate code if needed**:
+3. Generate code if you modified OpenAPI or SQL:
 
    ```bash
-   make generate # After API or database changes
+   make generate
    ```
 
-4. **Run tests**:
+4. Run tests and lint:
 
    ```bash
    make test
-   ```
-
-5. **Lint your code**:
-
-   ```bash
    make lint
    ```
 
-6. **Format your code**:
+5. Commit with conventional commit format:
 
    ```bash
-   make format
-   ```
-
-7. **Commit your changes**:
-
-   ```bash
-   git add .
    git commit -m "feat: add new feature"
    ```
 
-### Commit Message Format
+### Commit Format
 
-We follow [Conventional Commits](https://www.conventionalcommits.org/):
+Use [Conventional Commits](https://www.conventionalcommits.org/):
 
-```text
-<type>(<scope>): <subject>
-
-<body>
-
-<footer>
-```
-
-Types:
-
-- `feat`: New feature
-- `fix`: Bug fix
-- `docs`: Documentation changes
-- `style`: Code style changes (formatting, etc.)
-- `refactor`: Code refactoring
-- `test`: Adding or updating tests
-- `chore`: Maintenance tasks
-- `perf`: Performance improvements
+- `feat:` - New feature
+- `fix:` - Bug fix
+- `docs:` - Documentation
+- `refactor:` - Code refactoring
+- `test:` - Tests
+- `chore:` - Maintenance
 
 Examples:
 
 ```text
 feat(auth): add refresh token rotation
-fix(workflows): resolve DAG cycle detection bug
-docs(api): update authentication examples
-refactor(database): optimize artifact queries
+fix(codegen): resolve type mapping for arrays
+docs: update getting started guide
 ```
 
-### Submitting a Pull Request
+### Pull Requests
 
-1. **Push to your fork**:
+1. Push your branch:
 
    ```bash
-   git push origin feature/your-feature-name
+   git push origin feature/your-feature
    ```
 
-2. **Create a Pull Request** on GitHub
+2. Open a PR on GitHub
 
-3. **Fill out the PR template** with:
+3. Fill out the PR template:
    - Description of changes
-   - Related issue numbers
+   - Related issues
    - Testing performed
-   - Screenshots (if UI changes)
 
-4. **Wait for review** - maintainers will review your PR
+## Code Style
 
-5. **Address feedback** - make requested changes and push updates
+### Go
 
-## Coding Standards
-
-### Go Code
-
-- Follow [Effective Go](https://go.dev/doc/effective_go) guidelines
+- Follow [Effective Go](https://go.dev/doc/effective_go)
 - Use `gofmt` for formatting
-- Write descriptive variable and function names
-- Add comments for exported functions
 - Handle errors explicitly
-- Use interfaces for dependency injection
 - Write table-driven tests
 
-Example:
-
 ```go
-// CreateUser creates a new user account with the provided details.
-// It returns an error if the email is already registered.
-func (s *AuthService) CreateUser(ctx context.Context, req CreateUserRequest) (*User, error) {
-    // Validate request
-    if err := req.Validate(); err != nil {
-        return nil, fmt.Errorf("invalid request: %w", err)
-    }
-
-    // Check if user exists
-    existing, _ := s.repo.GetUserByEmail(ctx, req.Email)
-    if existing != nil {
-        return nil, ErrUserExists
-    }
-
-    // Create user
-    user := &User{
-        ID:    uuid.New(),
-        Email: req.Email,
-        Name:  req.Name,
-    }
-
-    if err := s.repo.CreateUser(ctx, user); err != nil {
-        return nil, fmt.Errorf("failed to create user: %w", err)
-    }
-
-    return user, nil
-}
-```
-
-### TypeScript/React Code
-
-- Use TypeScript for all new code
-- Follow React best practices and hooks
-- Use functional components
-- Implement proper error boundaries
-- Write meaningful component and prop names
-- Add JSDoc comments for complex functions
-
-Example:
-
-```typescript
-/**
- * WorkflowEditor component for creating and editing workflow DAGs
- */
-export const WorkflowEditor: React.FC<WorkflowEditorProps> = ({ workflow, onSave, readonly = false }) => {
-  const [nodes, setNodes] = useState<Node[]>(workflow?.nodes || []);
-  const [edges, setEdges] = useState<Edge[]>(workflow?.edges || []);
-
-  const handleNodeAdd = useCallback((node: Node) => {
-    setNodes((prev) => [...prev, node]);
-  }, []);
-
-  // ... rest of component
-};
-```
-
-### SQL Queries
-
-- Use lowercase for SQL keywords
-- Use snake_case for column names
-- Add comments for complex queries
-- Use parameterized queries (never concatenate)
-- Follow SQLC conventions
-
-Example:
-
-```sql
--- name: GetUserByEmail :one
--- GetUserByEmail retrieves a user by their email address
-select
-  id,
-  email,
-  name,
-  email_verified,
-  created_at,
-  updated_at
-from
-  users
-where
-  email = $1
-limit
-  1;
-```
-
-### API Design
-
-- Follow RESTful principles
-- Use proper HTTP status codes
-- Implement pagination for list endpoints
-- Use consistent error responses
-- Document all endpoints in OpenAPI
-
-## Testing Guidelines
-
-### Go Tests
-
-Write table-driven tests:
-
-```go
-func TestCreateUser(t *testing.T) {
+func TestSomething(t *testing.T) {
     tests := []struct {
         name    string
-        input   CreateUserRequest
-        want    *User
-        wantErr error
+        input   string
+        want    string
+        wantErr bool
     }{
-        {
-            name: "valid user",
-            input: CreateUserRequest{
-                Email: "test@example.com",
-                Name:  "Test User",
-            },
-            want: &User{
-                Email: "test@example.com",
-                Name:  "Test User",
-            },
-            wantErr: nil,
-        },
-        {
-            name: "duplicate email",
-            input: CreateUserRequest{
-                Email: "existing@example.com",
-                Name:  "Test User",
-            },
-            want:    nil,
-            wantErr: ErrUserExists,
-        },
+        {"valid input", "foo", "bar", false},
+        {"empty input", "", "", true},
     }
 
     for _, tt := range tests {
         t.Run(tt.name, func(t *testing.T) {
-            // Test implementation
+            got, err := Something(tt.input)
+            if (err != nil) != tt.wantErr {
+                t.Errorf("error = %v, wantErr %v", err, tt.wantErr)
+            }
+            if got != tt.want {
+                t.Errorf("got = %v, want %v", got, tt.want)
+            }
         })
     }
 }
 ```
 
-### TypeScript Tests
+### TypeScript
 
-Use Vitest for unit tests:
+- Use TypeScript for all frontend code
+- Use functional components with hooks
+- Follow existing patterns in the codebase
 
-```typescript
-describe('WorkflowEditor', () => {
-  it('should render workflow nodes', () => {
-    const workflow = {
-      nodes: [{ id: '1', type: 'input', data: {} }],
-      edges: [],
-    };
+## Adding Features
 
-    const { getByTestId } = render(
-      <WorkflowEditor workflow={workflow} onSave={jest.fn()} />
-    );
-
-    expect(getByTestId('node-1')).toBeInTheDocument();
-  });
-});
-```
-
-## Documentation
-
-### Code Documentation
-
-- Add package-level documentation
-- Document all exported functions and types
-- Include examples for complex functionality
-- Keep documentation up to date with code changes
-
-### README Updates
-
-Update the README when:
-
-- Adding new features
-- Changing setup procedures
-- Modifying configuration options
-- Adding new dependencies
-
-### API Documentation
-
-- Update OpenAPI spec for API changes
-- Add x-codegen annotations for code generation
-- Include request/response examples
-- Document error responses
-- Add descriptions for all parameters
-- Define repository operations needed
-
-## Architecture Guidelines
-
-### Hexagonal Architecture
-
-Follow the hexagonal architecture pattern:
-
-1. **Domain Layer** (Core):
-   - Business logic
-   - Domain entities
-   - Use cases
-   - Port interfaces
-
-2. **Infrastructure Layer** (Adapters):
-   - Database implementations
-   - External service clients
-   - File system operations
-
-3. **Application Layer** (Handlers):
-   - HTTP handlers
-   - Middleware
-   - Request/response mapping
-
-### Adding New Features
-
-When adding a new feature:
-
-1. **Define the API** in `api/openapi.yaml` with x-codegen annotations
-2. **Create database migration** if needed
-3. **Write SQL queries** in `queries/` for complex operations
-4. **Generate code**: `make generate` (creates repository, service, server)
-5. **Implement business logic** in `service.go`
-6. **Wire dependencies** in application bootstrap
-7. **Write tests** using generated mocks
-8. **Update documentation**
-
-The unified code generator handles most boilerplate:
-
-- Repository interfaces and implementations (PostgreSQL/SQLite)
-- Service interfaces and HTTP servers
-- Test mocks for all interfaces
-- Type definitions from OpenAPI
-
-## Review Process
-
-### What We Look For
-
-- **Code quality**: Clean, maintainable, efficient code
-- **Tests**: Adequate test coverage for new functionality
-- **Documentation**: Clear comments and updated docs
-- **Architecture**: Follows project patterns and conventions
-- **Performance**: No significant performance regressions
-- **Security**: No security vulnerabilities introduced
-
-### Review Timeline
-
-- Initial review: Within 2-3 business days
-- Follow-up reviews: Within 1-2 business days
-- Small fixes: Usually same day
+1. Define the API in `api/openapi.yaml` with x-codegen annotations
+2. Generate code: `make generate`
+3. Implement business logic in handler files
+4. Write tests
+5. Update documentation if needed
 
 ## Getting Help
 
-### Resources
-
-- [Development Guide](guides/development.md)
-- [Architecture Documentation](architecture/system-design.md)
-- [API Documentation](api-reference/overview.md)
-- [Project Issues](https://github.com/archesai/archesai/issues)
-
-### Communication
-
-- **GitHub Issues**: Bug reports and feature requests
-- **GitHub Discussions**: General questions and discussions
-- **Pull Requests**: Code contributions and reviews
-
-## Release Process
-
-### Versioning
-
-We use [Semantic Versioning](https://semver.org/):
-
-- MAJOR: Breaking changes
-- MINOR: New features (backward compatible)
-- PATCH: Bug fixes (backward compatible)
-
-### Release Cycle
-
-- **Patch releases**: As needed for critical fixes
-- **Minor releases**: Monthly
-- **Major releases**: Quarterly or as needed
-
-## Recognition
-
-Contributors are recognized in:
-
-- Release notes
-- Contributors file
-- Project documentation
-
-Thank you for contributing to Arches! Your efforts help make the project better for everyone.
+- Check existing issues: [GitHub Issues](https://github.com/archesai/archesai/issues)
+- Open a new issue for bugs or feature requests
+- Email: <support@archesai.com>
