@@ -19,20 +19,18 @@ import (
 // GetLabel - GET /labels/{id}
 // ============================================================================
 
-// Handler type
-
-// GetLabelHandlerHTTP wraps the user handler for HTTP
-type GetLabelHandlerHTTP struct {
-	handler application.GetLabelHandler
+// GetLabelHandler is the HTTP handler for GetLabel.
+type GetLabelHandler struct {
+	getLabel application.GetLabel
 }
 
-// NewGetLabelHandlerHTTP creates a new HTTP handler wrapper
-func NewGetLabelHandlerHTTP(handler application.GetLabelHandler) *GetLabelHandlerHTTP {
-	return &GetLabelHandlerHTTP{handler: handler}
+// NewGetLabelHandler creates a new HTTP handler.
+func NewGetLabelHandler(getLabel application.GetLabel) *GetLabelHandler {
+	return &GetLabelHandler{getLabel: getLabel}
 }
 
-// RegisterGetLabelRoute registers the HTTP route for GetLabel
-func RegisterGetLabelRoute(mux *http.ServeMux, handler *GetLabelHandlerHTTP) {
+// RegisterGetLabelRoute registers the HTTP route for GetLabel.
+func RegisterGetLabelRoute(mux *http.ServeMux, handler *GetLabelHandler) {
 	mux.HandleFunc("GET /labels/{id}", handler.ServeHTTP)
 }
 
@@ -115,7 +113,7 @@ func (response GetLabel500Response) VisitGetLabelResponse(w http.ResponseWriter)
 }
 
 // ServeHTTP handles the GET /labels/{id} endpoint.
-func (h *GetLabelHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *GetLabelHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Build input from request
@@ -134,8 +132,8 @@ func (h *GetLabelHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 	}
 	input.ID = id
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.getLabel.Execute(ctx, input)
 	if err != nil {
 		errorResp := GetLabel500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

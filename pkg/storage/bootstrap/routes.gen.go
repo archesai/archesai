@@ -11,31 +11,31 @@ import (
 
 // HTTPHandlers holds all HTTP handlers for this package.
 type HTTPHandlers struct {
-	CreateArtifact *controllers.CreateArtifactHandlerHTTP
-	CreateLabel    *controllers.CreateLabelHandlerHTTP
-	DeleteArtifact *controllers.DeleteArtifactHandlerHTTP
-	DeleteLabel    *controllers.DeleteLabelHandlerHTTP
-	GetArtifact    *controllers.GetArtifactHandlerHTTP
-	GetLabel       *controllers.GetLabelHandlerHTTP
-	ListArtifacts  *controllers.ListArtifactsHandlerHTTP
-	ListLabels     *controllers.ListLabelsHandlerHTTP
-	UpdateArtifact *controllers.UpdateArtifactHandlerHTTP
-	UpdateLabel    *controllers.UpdateLabelHandlerHTTP
+	CreateArtifact *controllers.CreateArtifactHandler
+	CreateLabel    *controllers.CreateLabelHandler
+	DeleteArtifact *controllers.DeleteArtifactHandler
+	DeleteLabel    *controllers.DeleteLabelHandler
+	GetArtifact    *controllers.GetArtifactHandler
+	GetLabel       *controllers.GetLabelHandler
+	ListArtifacts  *controllers.ListArtifactsHandler
+	ListLabels     *controllers.ListLabelsHandler
+	UpdateArtifact *controllers.UpdateArtifactHandler
+	UpdateLabel    *controllers.UpdateLabelHandler
 }
 
 // NewHTTPHandlers creates all HTTP handlers from the given application handlers.
 func NewHTTPHandlers(appHandlers *ApplicationHandlers) *HTTPHandlers {
 	return &HTTPHandlers{
-		CreateArtifact: controllers.NewCreateArtifactHandlerHTTP(appHandlers.CreateArtifact),
-		CreateLabel:    controllers.NewCreateLabelHandlerHTTP(appHandlers.CreateLabel),
-		DeleteArtifact: controllers.NewDeleteArtifactHandlerHTTP(appHandlers.DeleteArtifact),
-		DeleteLabel:    controllers.NewDeleteLabelHandlerHTTP(appHandlers.DeleteLabel),
-		GetArtifact:    controllers.NewGetArtifactHandlerHTTP(appHandlers.GetArtifact),
-		GetLabel:       controllers.NewGetLabelHandlerHTTP(appHandlers.GetLabel),
-		ListArtifacts:  controllers.NewListArtifactsHandlerHTTP(appHandlers.ListArtifacts),
-		ListLabels:     controllers.NewListLabelsHandlerHTTP(appHandlers.ListLabels),
-		UpdateArtifact: controllers.NewUpdateArtifactHandlerHTTP(appHandlers.UpdateArtifact),
-		UpdateLabel:    controllers.NewUpdateLabelHandlerHTTP(appHandlers.UpdateLabel),
+		CreateArtifact: controllers.NewCreateArtifactHandler(appHandlers.CreateArtifact),
+		CreateLabel:    controllers.NewCreateLabelHandler(appHandlers.CreateLabel),
+		DeleteArtifact: controllers.NewDeleteArtifactHandler(appHandlers.DeleteArtifact),
+		DeleteLabel:    controllers.NewDeleteLabelHandler(appHandlers.DeleteLabel),
+		GetArtifact:    controllers.NewGetArtifactHandler(appHandlers.GetArtifact),
+		GetLabel:       controllers.NewGetLabelHandler(appHandlers.GetLabel),
+		ListArtifacts:  controllers.NewListArtifactsHandler(appHandlers.ListArtifacts),
+		ListLabels:     controllers.NewListLabelsHandler(appHandlers.ListLabels),
+		UpdateArtifact: controllers.NewUpdateArtifactHandler(appHandlers.UpdateArtifact),
+		UpdateLabel:    controllers.NewUpdateLabelHandler(appHandlers.UpdateLabel),
 	}
 }
 

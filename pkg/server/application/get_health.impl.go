@@ -1,4 +1,3 @@
-// Package application provides handler implementations for server operations.
 package application
 
 // NOTE: This file is user-editable. The generator will not overwrite it.
@@ -8,27 +7,27 @@ import (
 	"fmt"
 )
 
-// Ensure GetHealthHandlerImpl implements GetHealthHandler
-var _ GetHealthHandler = (*GetHealthHandlerImpl)(nil)
+// Ensure GetHealthImpl implements GetHealth
+var _ GetHealth = (*GetHealthImpl)(nil)
 
-// GetHealthHandlerImpl implements the GetHealthHandler interface.
-type GetHealthHandlerImpl struct {
+// GetHealthImpl implements the GetHealth interface.
+type GetHealthImpl struct {
 	// TODO: Add your dependencies here
 }
 
-// NewGetHealthHandler creates a new GetHealth handler.
-func NewGetHealthHandler(
+// NewGetHealth creates a new GetHealth implementation.
+func NewGetHealth(
 // TODO: Add your dependencies here
-) GetHealthHandler {
-	return &GetHealthHandlerImpl{
+) GetHealth {
+	return &GetHealthImpl{
 		// TODO: Initialize dependencies
 	}
 }
 
 // Execute performs the GetHealth operation.
-func (h *GetHealthHandlerImpl) Execute(
-	_ context.Context,
-	_ *GetHealthInput,
+func (h *GetHealthImpl) Execute(
+	ctx context.Context,
+	input *GetHealthInput,
 ) (*GetHealthOutput, error) {
 	// TODO: Implement GetHealth logic
 	return nil, fmt.Errorf("not implemented")

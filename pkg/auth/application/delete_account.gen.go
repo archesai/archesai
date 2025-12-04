@@ -18,7 +18,7 @@ type DeleteAccountInput struct {
 	ID        uuid.UUID
 }
 
-// DeleteAccountHandler defines the interface for the DeleteAccount operation.
-type DeleteAccountHandler interface {
+// DeleteAccount defines the interface for the DeleteAccount operation.
+type DeleteAccount interface {
 	Execute(ctx context.Context, input *DeleteAccountInput) error
 }

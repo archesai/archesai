@@ -22,30 +22,30 @@ type DeleteLabelInput struct {
 	ID uuid.UUID
 }
 
-// DeleteLabelHandler defines the interface for the DeleteLabel operation.
-type DeleteLabelHandler interface {
+// DeleteLabel defines the interface for the DeleteLabel operation.
+type DeleteLabel interface {
 	Execute(ctx context.Context, input *DeleteLabelInput) error
 }
 
-// DeleteLabelHandlerImpl is the default implementation of DeleteLabelHandler.
-type DeleteLabelHandlerImpl struct {
+// DeleteLabelImpl is the default implementation of DeleteLabel.
+type DeleteLabelImpl struct {
 	repo      repositories.LabelRepository
 	publisher events.Publisher
 }
 
-// NewDeleteLabelHandler creates a new DeleteLabel handler.
-func NewDeleteLabelHandler(
+// NewDeleteLabel creates a new DeleteLabel handler.
+func NewDeleteLabel(
 	repo repositories.LabelRepository,
 	publisher events.Publisher,
-) DeleteLabelHandler {
-	return &DeleteLabelHandlerImpl{
+) DeleteLabel {
+	return &DeleteLabelImpl{
 		repo:      repo,
 		publisher: publisher,
 	}
 }
 
 // Execute performs the DeleteLabel operation.
-func (h *DeleteLabelHandlerImpl) Execute(ctx context.Context, input *DeleteLabelInput) error {
+func (h *DeleteLabelImpl) Execute(ctx context.Context, input *DeleteLabelInput) error {
 	// Delete from repository
 	if err := h.repo.Delete(ctx, input.ID); err != nil {
 		return fmt.Errorf("failed to delete label: %w", err)

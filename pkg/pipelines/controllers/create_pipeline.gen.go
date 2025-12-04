@@ -16,20 +16,18 @@ import (
 // CreatePipeline - POST /pipelines
 // ============================================================================
 
-// Handler type
-
-// CreatePipelineHandlerHTTP wraps the user handler for HTTP
-type CreatePipelineHandlerHTTP struct {
-	handler application.CreatePipelineHandler
+// CreatePipelineHandler is the HTTP handler for CreatePipeline.
+type CreatePipelineHandler struct {
+	createPipeline application.CreatePipeline
 }
 
-// NewCreatePipelineHandlerHTTP creates a new HTTP handler wrapper
-func NewCreatePipelineHandlerHTTP(handler application.CreatePipelineHandler) *CreatePipelineHandlerHTTP {
-	return &CreatePipelineHandlerHTTP{handler: handler}
+// NewCreatePipelineHandler creates a new HTTP handler.
+func NewCreatePipelineHandler(createPipeline application.CreatePipeline) *CreatePipelineHandler {
+	return &CreatePipelineHandler{createPipeline: createPipeline}
 }
 
-// RegisterCreatePipelineRoute registers the HTTP route for CreatePipeline
-func RegisterCreatePipelineRoute(mux *http.ServeMux, handler *CreatePipelineHandlerHTTP) {
+// RegisterCreatePipelineRoute registers the HTTP route for CreatePipeline.
+func RegisterCreatePipelineRoute(mux *http.ServeMux, handler *CreatePipelineHandler) {
 	mux.HandleFunc("POST /pipelines", handler.ServeHTTP)
 }
 
@@ -108,7 +106,7 @@ func (response CreatePipeline500Response) VisitCreatePipelineResponse(w http.Res
 }
 
 // ServeHTTP handles the POST /pipelines endpoint.
-func (h *CreatePipelineHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *CreatePipelineHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Build input from request
@@ -128,8 +126,8 @@ func (h *CreatePipelineHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Req
 	input.Description = body.Description
 	input.Name = body.Name
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.createPipeline.Execute(ctx, input)
 	if err != nil {
 		errorResp := CreatePipeline500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

@@ -19,20 +19,18 @@ import (
 // UpdatePipeline - PATCH /pipelines/{id}
 // ============================================================================
 
-// Handler type
-
-// UpdatePipelineHandlerHTTP wraps the user handler for HTTP
-type UpdatePipelineHandlerHTTP struct {
-	handler application.UpdatePipelineHandler
+// UpdatePipelineHandler is the HTTP handler for UpdatePipeline.
+type UpdatePipelineHandler struct {
+	updatePipeline application.UpdatePipeline
 }
 
-// NewUpdatePipelineHandlerHTTP creates a new HTTP handler wrapper
-func NewUpdatePipelineHandlerHTTP(handler application.UpdatePipelineHandler) *UpdatePipelineHandlerHTTP {
-	return &UpdatePipelineHandlerHTTP{handler: handler}
+// NewUpdatePipelineHandler creates a new HTTP handler.
+func NewUpdatePipelineHandler(updatePipeline application.UpdatePipeline) *UpdatePipelineHandler {
+	return &UpdatePipelineHandler{updatePipeline: updatePipeline}
 }
 
-// RegisterUpdatePipelineRoute registers the HTTP route for UpdatePipeline
-func RegisterUpdatePipelineRoute(mux *http.ServeMux, handler *UpdatePipelineHandlerHTTP) {
+// RegisterUpdatePipelineRoute registers the HTTP route for UpdatePipeline.
+func RegisterUpdatePipelineRoute(mux *http.ServeMux, handler *UpdatePipelineHandler) {
 	mux.HandleFunc("PATCH /pipelines/{id}", handler.ServeHTTP)
 }
 
@@ -121,7 +119,7 @@ func (response UpdatePipeline500Response) VisitUpdatePipelineResponse(w http.Res
 }
 
 // ServeHTTP handles the PATCH /pipelines/{id} endpoint.
-func (h *UpdatePipelineHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *UpdatePipelineHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Build input from request
@@ -154,8 +152,8 @@ func (h *UpdatePipelineHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Req
 	input.Description = body.Description
 	input.Name = body.Name
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.updatePipeline.Execute(ctx, input)
 	if err != nil {
 		errorResp := UpdatePipeline500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

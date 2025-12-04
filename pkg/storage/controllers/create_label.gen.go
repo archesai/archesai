@@ -16,20 +16,18 @@ import (
 // CreateLabel - POST /labels
 // ============================================================================
 
-// Handler type
-
-// CreateLabelHandlerHTTP wraps the user handler for HTTP
-type CreateLabelHandlerHTTP struct {
-	handler application.CreateLabelHandler
+// CreateLabelHandler is the HTTP handler for CreateLabel.
+type CreateLabelHandler struct {
+	createLabel application.CreateLabel
 }
 
-// NewCreateLabelHandlerHTTP creates a new HTTP handler wrapper
-func NewCreateLabelHandlerHTTP(handler application.CreateLabelHandler) *CreateLabelHandlerHTTP {
-	return &CreateLabelHandlerHTTP{handler: handler}
+// NewCreateLabelHandler creates a new HTTP handler.
+func NewCreateLabelHandler(createLabel application.CreateLabel) *CreateLabelHandler {
+	return &CreateLabelHandler{createLabel: createLabel}
 }
 
-// RegisterCreateLabelRoute registers the HTTP route for CreateLabel
-func RegisterCreateLabelRoute(mux *http.ServeMux, handler *CreateLabelHandlerHTTP) {
+// RegisterCreateLabelRoute registers the HTTP route for CreateLabel.
+func RegisterCreateLabelRoute(mux *http.ServeMux, handler *CreateLabelHandler) {
 	mux.HandleFunc("POST /labels", handler.ServeHTTP)
 }
 
@@ -107,7 +105,7 @@ func (response CreateLabel500Response) VisitCreateLabelResponse(w http.ResponseW
 }
 
 // ServeHTTP handles the POST /labels endpoint.
-func (h *CreateLabelHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *CreateLabelHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Build input from request
@@ -126,8 +124,8 @@ func (h *CreateLabelHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Reques
 	}
 	input.Name = body.Name
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.createLabel.Execute(ctx, input)
 	if err != nil {
 		errorResp := CreateLabel500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

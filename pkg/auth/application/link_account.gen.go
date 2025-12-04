@@ -24,7 +24,7 @@ type LinkAccountOutput struct {
 	AuthorizationURL string `json:"authorizationURL"`
 }
 
-// LinkAccountHandler defines the interface for the LinkAccount operation.
-type LinkAccountHandler interface {
+// LinkAccount defines the interface for the LinkAccount operation.
+type LinkAccount interface {
 	Execute(ctx context.Context, input *LinkAccountInput) (*LinkAccountOutput, error)
 }

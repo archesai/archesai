@@ -17,20 +17,18 @@ import (
 // Logout - POST /auth/logout
 // ============================================================================
 
-// Handler type
-
-// LogoutHandlerHTTP wraps the user handler for HTTP
-type LogoutHandlerHTTP struct {
-	handler application.LogoutHandler
+// LogoutHandler is the HTTP handler for Logout.
+type LogoutHandler struct {
+	logout application.Logout
 }
 
-// NewLogoutHandlerHTTP creates a new HTTP handler wrapper
-func NewLogoutHandlerHTTP(handler application.LogoutHandler) *LogoutHandlerHTTP {
-	return &LogoutHandlerHTTP{handler: handler}
+// NewLogoutHandler creates a new HTTP handler.
+func NewLogoutHandler(logout application.Logout) *LogoutHandler {
+	return &LogoutHandler{logout: logout}
 }
 
-// RegisterLogoutRoute registers the HTTP route for Logout
-func RegisterLogoutRoute(mux *http.ServeMux, handler *LogoutHandlerHTTP) {
+// RegisterLogoutRoute registers the HTTP route for Logout.
+func RegisterLogoutRoute(mux *http.ServeMux, handler *LogoutHandler) {
 	mux.HandleFunc("POST /auth/logout", handler.ServeHTTP)
 }
 
@@ -93,7 +91,7 @@ func (response Logout500Response) VisitLogoutResponse(w http.ResponseWriter) err
 }
 
 // ServeHTTP handles the POST /auth/logout endpoint.
-func (h *LogoutHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *LogoutHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Extract session ID from context for authenticated operations
@@ -112,8 +110,8 @@ func (h *LogoutHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	input := &application.LogoutInput{}
 	input.SessionID = sessionID
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.logout.Execute(ctx, input)
 	if err != nil {
 		errorResp := Logout500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

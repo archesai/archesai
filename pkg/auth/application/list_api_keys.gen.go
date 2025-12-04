@@ -10,6 +10,7 @@ import (
 
 	"github.com/archesai/archesai/pkg/auth/models"
 	"github.com/archesai/archesai/pkg/auth/repositories"
+	servermodels "github.com/archesai/archesai/pkg/server/models"
 )
 
 // ============================================================================
@@ -26,31 +27,31 @@ type ListAPIKeysInput struct {
 
 // ListAPIKeysOutput represents the output for the ListAPIKeys operation.
 type ListAPIKeysOutput struct {
-	Data []models.APIKey       `json:"data"`
-	Meta models.PaginationMeta `json:"meta"`
+	Data []models.APIKey             `json:"data"`
+	Meta servermodels.PaginationMeta `json:"meta"`
 }
 
-// ListAPIKeysHandler defines the interface for the ListAPIKeys operation.
-type ListAPIKeysHandler interface {
+// ListAPIKeys defines the interface for the ListAPIKeys operation.
+type ListAPIKeys interface {
 	Execute(ctx context.Context, input *ListAPIKeysInput) (*ListAPIKeysOutput, error)
 }
 
-// ListAPIKeysHandlerImpl is the default implementation of ListAPIKeysHandler.
-type ListAPIKeysHandlerImpl struct {
+// ListAPIKeysImpl is the default implementation of ListAPIKeys.
+type ListAPIKeysImpl struct {
 	repo repositories.APIKeyRepository
 }
 
-// NewListAPIKeysHandler creates a new ListAPIKeys handler.
-func NewListAPIKeysHandler(
+// NewListAPIKeys creates a new ListAPIKeys handler.
+func NewListAPIKeys(
 	repo repositories.APIKeyRepository,
-) ListAPIKeysHandler {
-	return &ListAPIKeysHandlerImpl{
+) ListAPIKeys {
+	return &ListAPIKeysImpl{
 		repo: repo,
 	}
 }
 
 // Execute performs the ListAPIKeys operation.
-func (h *ListAPIKeysHandlerImpl) Execute(ctx context.Context, input *ListAPIKeysInput) (*ListAPIKeysOutput, error) {
+func (h *ListAPIKeysImpl) Execute(ctx context.Context, input *ListAPIKeysInput) (*ListAPIKeysOutput, error) {
 	// List from repository
 	results, total, err := h.repo.List(ctx, 100, 0) // TODO: Use pagination from input
 	if err != nil {

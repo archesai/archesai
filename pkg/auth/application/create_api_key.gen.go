@@ -33,30 +33,30 @@ type CreateAPIKeyOutput struct {
 	Data models.APIKey `json:"data"`
 }
 
-// CreateAPIKeyHandler defines the interface for the CreateAPIKey operation.
-type CreateAPIKeyHandler interface {
+// CreateAPIKey defines the interface for the CreateAPIKey operation.
+type CreateAPIKey interface {
 	Execute(ctx context.Context, input *CreateAPIKeyInput) (*CreateAPIKeyOutput, error)
 }
 
-// CreateAPIKeyHandlerImpl is the default implementation of CreateAPIKeyHandler.
-type CreateAPIKeyHandlerImpl struct {
+// CreateAPIKeyImpl is the default implementation of CreateAPIKey.
+type CreateAPIKeyImpl struct {
 	repo      repositories.APIKeyRepository
 	publisher events.Publisher
 }
 
-// NewCreateAPIKeyHandler creates a new CreateAPIKey handler.
-func NewCreateAPIKeyHandler(
+// NewCreateAPIKey creates a new CreateAPIKey handler.
+func NewCreateAPIKey(
 	repo repositories.APIKeyRepository,
 	publisher events.Publisher,
-) CreateAPIKeyHandler {
-	return &CreateAPIKeyHandlerImpl{
+) CreateAPIKey {
+	return &CreateAPIKeyImpl{
 		repo:      repo,
 		publisher: publisher,
 	}
 }
 
 // Execute performs the CreateAPIKey operation.
-func (h *CreateAPIKeyHandlerImpl) Execute(ctx context.Context, input *CreateAPIKeyInput) (*CreateAPIKeyOutput, error) {
+func (h *CreateAPIKeyImpl) Execute(ctx context.Context, input *CreateAPIKeyInput) (*CreateAPIKeyOutput, error) {
 	// Create entity
 	entity := &models.APIKey{
 		ID:        uuid.New(),

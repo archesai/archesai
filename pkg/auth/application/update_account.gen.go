@@ -28,7 +28,7 @@ type UpdateAccountOutput struct {
 	Data models.Account `json:"data"`
 }
 
-// UpdateAccountHandler defines the interface for the UpdateAccount operation.
-type UpdateAccountHandler interface {
+// UpdateAccount defines the interface for the UpdateAccount operation.
+type UpdateAccount interface {
 	Execute(ctx context.Context, input *UpdateAccountInput) (*UpdateAccountOutput, error)
 }

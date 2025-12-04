@@ -12,26 +12,25 @@ import (
 	"github.com/archesai/archesai/pkg/pipelines/application"
 	"github.com/archesai/archesai/pkg/pipelines/models"
 	"github.com/archesai/archesai/pkg/server"
+	servermodels "github.com/archesai/archesai/pkg/server/models"
 )
 
 // ============================================================================
 // ListTools - GET /tools
 // ============================================================================
 
-// Handler type
-
-// ListToolsHandlerHTTP wraps the user handler for HTTP
-type ListToolsHandlerHTTP struct {
-	handler application.ListToolsHandler
+// ListToolsHandler is the HTTP handler for ListTools.
+type ListToolsHandler struct {
+	listTools application.ListTools
 }
 
-// NewListToolsHandlerHTTP creates a new HTTP handler wrapper
-func NewListToolsHandlerHTTP(handler application.ListToolsHandler) *ListToolsHandlerHTTP {
-	return &ListToolsHandlerHTTP{handler: handler}
+// NewListToolsHandler creates a new HTTP handler.
+func NewListToolsHandler(listTools application.ListTools) *ListToolsHandler {
+	return &ListToolsHandler{listTools: listTools}
 }
 
-// RegisterListToolsRoute registers the HTTP route for ListTools
-func RegisterListToolsRoute(mux *http.ServeMux, handler *ListToolsHandlerHTTP) {
+// RegisterListToolsRoute registers the HTTP route for ListTools.
+func RegisterListToolsRoute(mux *http.ServeMux, handler *ListToolsHandler) {
 	mux.HandleFunc("GET /tools", handler.ServeHTTP)
 }
 
@@ -51,8 +50,8 @@ type ListToolsResponse interface {
 }
 
 type ListTools200Response struct {
-	Data []models.Tool         `json:"data"`
-	Meta models.PaginationMeta `json:"meta"`
+	Data []models.Tool               `json:"data"`
+	Meta servermodels.PaginationMeta `json:"meta"`
 }
 
 func (response ListTools200Response) VisitListToolsResponse(w http.ResponseWriter) error {
@@ -112,7 +111,7 @@ func (response ListTools500Response) VisitListToolsResponse(w http.ResponseWrite
 }
 
 // ServeHTTP handles the GET /tools endpoint.
-func (h *ListToolsHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *ListToolsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Build input from request
@@ -153,8 +152,8 @@ func (h *ListToolsHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.listTools.Execute(ctx, input)
 	if err != nil {
 		errorResp := ListTools500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

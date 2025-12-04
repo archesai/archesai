@@ -10,6 +10,7 @@ import (
 	"github.com/oapi-codegen/runtime"
 
 	"github.com/archesai/archesai/pkg/server"
+	servermodels "github.com/archesai/archesai/pkg/server/models"
 	"github.com/archesai/archesai/pkg/storage/application"
 	"github.com/archesai/archesai/pkg/storage/models"
 )
@@ -18,20 +19,18 @@ import (
 // ListLabels - GET /labels
 // ============================================================================
 
-// Handler type
-
-// ListLabelsHandlerHTTP wraps the user handler for HTTP
-type ListLabelsHandlerHTTP struct {
-	handler application.ListLabelsHandler
+// ListLabelsHandler is the HTTP handler for ListLabels.
+type ListLabelsHandler struct {
+	listLabels application.ListLabels
 }
 
-// NewListLabelsHandlerHTTP creates a new HTTP handler wrapper
-func NewListLabelsHandlerHTTP(handler application.ListLabelsHandler) *ListLabelsHandlerHTTP {
-	return &ListLabelsHandlerHTTP{handler: handler}
+// NewListLabelsHandler creates a new HTTP handler.
+func NewListLabelsHandler(listLabels application.ListLabels) *ListLabelsHandler {
+	return &ListLabelsHandler{listLabels: listLabels}
 }
 
-// RegisterListLabelsRoute registers the HTTP route for ListLabels
-func RegisterListLabelsRoute(mux *http.ServeMux, handler *ListLabelsHandlerHTTP) {
+// RegisterListLabelsRoute registers the HTTP route for ListLabels.
+func RegisterListLabelsRoute(mux *http.ServeMux, handler *ListLabelsHandler) {
 	mux.HandleFunc("GET /labels", handler.ServeHTTP)
 }
 
@@ -51,8 +50,8 @@ type ListLabelsResponse interface {
 }
 
 type ListLabels200Response struct {
-	Data []models.Label        `json:"data"`
-	Meta models.PaginationMeta `json:"meta"`
+	Data []models.Label              `json:"data"`
+	Meta servermodels.PaginationMeta `json:"meta"`
 }
 
 func (response ListLabels200Response) VisitListLabelsResponse(w http.ResponseWriter) error {
@@ -112,7 +111,7 @@ func (response ListLabels500Response) VisitListLabelsResponse(w http.ResponseWri
 }
 
 // ServeHTTP handles the GET /labels endpoint.
-func (h *ListLabelsHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *ListLabelsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Build input from request
@@ -153,8 +152,8 @@ func (h *ListLabelsHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.listLabels.Execute(ctx, input)
 	if err != nil {
 		errorResp := ListLabels500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

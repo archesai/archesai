@@ -18,20 +18,18 @@ import (
 // OauthAuthorize - GET /auth/oauth/{provider}/authorize
 // ============================================================================
 
-// Handler type
-
-// OauthAuthorizeHandlerHTTP wraps the user handler for HTTP
-type OauthAuthorizeHandlerHTTP struct {
-	handler application.OauthAuthorizeHandler
+// OauthAuthorizeHandler is the HTTP handler for OauthAuthorize.
+type OauthAuthorizeHandler struct {
+	oauthAuthorize application.OauthAuthorize
 }
 
-// NewOauthAuthorizeHandlerHTTP creates a new HTTP handler wrapper
-func NewOauthAuthorizeHandlerHTTP(handler application.OauthAuthorizeHandler) *OauthAuthorizeHandlerHTTP {
-	return &OauthAuthorizeHandlerHTTP{handler: handler}
+// NewOauthAuthorizeHandler creates a new HTTP handler.
+func NewOauthAuthorizeHandler(oauthAuthorize application.OauthAuthorize) *OauthAuthorizeHandler {
+	return &OauthAuthorizeHandler{oauthAuthorize: oauthAuthorize}
 }
 
-// RegisterOauthAuthorizeRoute registers the HTTP route for OauthAuthorize
-func RegisterOauthAuthorizeRoute(mux *http.ServeMux, handler *OauthAuthorizeHandlerHTTP) {
+// RegisterOauthAuthorizeRoute registers the HTTP route for OauthAuthorize.
+func RegisterOauthAuthorizeRoute(mux *http.ServeMux, handler *OauthAuthorizeHandler) {
 	mux.HandleFunc("GET /auth/oauth/{provider}/authorize", handler.ServeHTTP)
 }
 
@@ -130,7 +128,7 @@ func (response OauthAuthorize500Response) VisitOauthAuthorizeResponse(w http.Res
 }
 
 // ServeHTTP handles the GET /auth/oauth/{provider}/authorize endpoint.
-func (h *OauthAuthorizeHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *OauthAuthorizeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Extract session ID from context for authenticated operations
@@ -197,8 +195,8 @@ func (h *OauthAuthorizeHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.oauthAuthorize.Execute(ctx, input)
 	if err != nil {
 		errorResp := OauthAuthorize500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

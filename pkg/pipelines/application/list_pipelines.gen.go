@@ -8,6 +8,7 @@ import (
 
 	"github.com/archesai/archesai/pkg/pipelines/models"
 	"github.com/archesai/archesai/pkg/pipelines/repositories"
+	servermodels "github.com/archesai/archesai/pkg/server/models"
 )
 
 // ============================================================================
@@ -23,31 +24,31 @@ type ListPipelinesInput struct {
 
 // ListPipelinesOutput represents the output for the ListPipelines operation.
 type ListPipelinesOutput struct {
-	Data []models.Pipeline     `json:"data"`
-	Meta models.PaginationMeta `json:"meta"`
+	Data []models.Pipeline           `json:"data"`
+	Meta servermodels.PaginationMeta `json:"meta"`
 }
 
-// ListPipelinesHandler defines the interface for the ListPipelines operation.
-type ListPipelinesHandler interface {
+// ListPipelines defines the interface for the ListPipelines operation.
+type ListPipelines interface {
 	Execute(ctx context.Context, input *ListPipelinesInput) (*ListPipelinesOutput, error)
 }
 
-// ListPipelinesHandlerImpl is the default implementation of ListPipelinesHandler.
-type ListPipelinesHandlerImpl struct {
+// ListPipelinesImpl is the default implementation of ListPipelines.
+type ListPipelinesImpl struct {
 	repo repositories.PipelineRepository
 }
 
-// NewListPipelinesHandler creates a new ListPipelines handler.
-func NewListPipelinesHandler(
+// NewListPipelines creates a new ListPipelines handler.
+func NewListPipelines(
 	repo repositories.PipelineRepository,
-) ListPipelinesHandler {
-	return &ListPipelinesHandlerImpl{
+) ListPipelines {
+	return &ListPipelinesImpl{
 		repo: repo,
 	}
 }
 
 // Execute performs the ListPipelines operation.
-func (h *ListPipelinesHandlerImpl) Execute(ctx context.Context, input *ListPipelinesInput) (*ListPipelinesOutput, error) {
+func (h *ListPipelinesImpl) Execute(ctx context.Context, input *ListPipelinesInput) (*ListPipelinesOutput, error) {
 	// List from repository
 	results, total, err := h.repo.List(ctx, 100, 0) // TODO: Use pagination from input
 	if err != nil {

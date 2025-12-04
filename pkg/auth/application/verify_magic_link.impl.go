@@ -7,27 +7,27 @@ import (
 	"fmt"
 )
 
-// Ensure VerifyMagicLinkHandlerImpl implements VerifyMagicLinkHandler
-var _ VerifyMagicLinkHandler = (*VerifyMagicLinkHandlerImpl)(nil)
+// Ensure VerifyMagicLinkImpl implements VerifyMagicLink
+var _ VerifyMagicLink = (*VerifyMagicLinkImpl)(nil)
 
-// VerifyMagicLinkHandlerImpl implements the VerifyMagicLinkHandler interface.
-type VerifyMagicLinkHandlerImpl struct {
+// VerifyMagicLinkImpl implements the VerifyMagicLink interface.
+type VerifyMagicLinkImpl struct {
 	// TODO: Add your dependencies here
 }
 
-// NewVerifyMagicLinkHandler creates a new VerifyMagicLink handler.
-func NewVerifyMagicLinkHandler(
+// NewVerifyMagicLink creates a new VerifyMagicLink implementation.
+func NewVerifyMagicLink(
 // TODO: Add your dependencies here
-) VerifyMagicLinkHandler {
-	return &VerifyMagicLinkHandlerImpl{
+) VerifyMagicLink {
+	return &VerifyMagicLinkImpl{
 		// TODO: Initialize dependencies
 	}
 }
 
 // Execute performs the VerifyMagicLink operation.
-func (h *VerifyMagicLinkHandlerImpl) Execute(
-	_ context.Context,
-	_ *VerifyMagicLinkInput,
+func (h *VerifyMagicLinkImpl) Execute(
+	ctx context.Context,
+	input *VerifyMagicLinkInput,
 ) (*VerifyMagicLinkOutput, error) {
 	// TODO: Implement VerifyMagicLink logic
 	return nil, fmt.Errorf("not implemented")

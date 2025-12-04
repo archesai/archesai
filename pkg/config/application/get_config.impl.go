@@ -1,4 +1,3 @@
-// Package application provides handler implementations for config operations.
 package application
 
 // NOTE: This file is user-editable. The generator will not overwrite it.
@@ -8,27 +7,27 @@ import (
 	"fmt"
 )
 
-// Ensure GetConfigHandlerImpl implements GetConfigHandler
-var _ GetConfigHandler = (*GetConfigHandlerImpl)(nil)
+// Ensure GetConfigImpl implements GetConfig
+var _ GetConfig = (*GetConfigImpl)(nil)
 
-// GetConfigHandlerImpl implements the GetConfigHandler interface.
-type GetConfigHandlerImpl struct {
+// GetConfigImpl implements the GetConfig interface.
+type GetConfigImpl struct {
 	// TODO: Add your dependencies here
 }
 
-// NewGetConfigHandler creates a new GetConfig handler.
-func NewGetConfigHandler(
+// NewGetConfig creates a new GetConfig implementation.
+func NewGetConfig(
 // TODO: Add your dependencies here
-) GetConfigHandler {
-	return &GetConfigHandlerImpl{
+) GetConfig {
+	return &GetConfigImpl{
 		// TODO: Initialize dependencies
 	}
 }
 
 // Execute performs the GetConfig operation.
-func (h *GetConfigHandlerImpl) Execute(
-	_ context.Context,
-	_ *GetConfigInput,
+func (h *GetConfigImpl) Execute(
+	ctx context.Context,
+	input *GetConfigInput,
 ) (*GetConfigOutput, error) {
 	// TODO: Implement GetConfig logic
 	return nil, fmt.Errorf("not implemented")

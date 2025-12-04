@@ -13,26 +13,25 @@ import (
 	"github.com/archesai/archesai/pkg/auth/application"
 	"github.com/archesai/archesai/pkg/auth/models"
 	"github.com/archesai/archesai/pkg/server"
+	servermodels "github.com/archesai/archesai/pkg/server/models"
 )
 
 // ============================================================================
 // ListInvitations - GET /organizations/{organizationID}/invitations
 // ============================================================================
 
-// Handler type
-
-// ListInvitationsHandlerHTTP wraps the user handler for HTTP
-type ListInvitationsHandlerHTTP struct {
-	handler application.ListInvitationsHandler
+// ListInvitationsHandler is the HTTP handler for ListInvitations.
+type ListInvitationsHandler struct {
+	listInvitations application.ListInvitations
 }
 
-// NewListInvitationsHandlerHTTP creates a new HTTP handler wrapper
-func NewListInvitationsHandlerHTTP(handler application.ListInvitationsHandler) *ListInvitationsHandlerHTTP {
-	return &ListInvitationsHandlerHTTP{handler: handler}
+// NewListInvitationsHandler creates a new HTTP handler.
+func NewListInvitationsHandler(listInvitations application.ListInvitations) *ListInvitationsHandler {
+	return &ListInvitationsHandler{listInvitations: listInvitations}
 }
 
-// RegisterListInvitationsRoute registers the HTTP route for ListInvitations
-func RegisterListInvitationsRoute(mux *http.ServeMux, handler *ListInvitationsHandlerHTTP) {
+// RegisterListInvitationsRoute registers the HTTP route for ListInvitations.
+func RegisterListInvitationsRoute(mux *http.ServeMux, handler *ListInvitationsHandler) {
 	mux.HandleFunc("GET /organizations/{organizationID}/invitations", handler.ServeHTTP)
 }
 
@@ -52,8 +51,8 @@ type ListInvitationsResponse interface {
 }
 
 type ListInvitations200Response struct {
-	Data []models.Invitation   `json:"data"`
-	Meta models.PaginationMeta `json:"meta"`
+	Data []models.Invitation         `json:"data"`
+	Meta servermodels.PaginationMeta `json:"meta"`
 }
 
 func (response ListInvitations200Response) VisitListInvitationsResponse(w http.ResponseWriter) error {
@@ -113,7 +112,7 @@ func (response ListInvitations500Response) VisitListInvitationsResponse(w http.R
 }
 
 // ServeHTTP handles the GET /organizations/{organizationID}/invitations endpoint.
-func (h *ListInvitationsHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *ListInvitationsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Extract session ID from context for authenticated operations
@@ -180,8 +179,8 @@ func (h *ListInvitationsHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.listInvitations.Execute(ctx, input)
 	if err != nil {
 		errorResp := ListInvitations500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

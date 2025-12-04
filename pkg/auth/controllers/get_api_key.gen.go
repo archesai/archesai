@@ -19,20 +19,18 @@ import (
 // GetAPIKey - GET /api-keys/{id}
 // ============================================================================
 
-// Handler type
-
-// GetAPIKeyHandlerHTTP wraps the user handler for HTTP
-type GetAPIKeyHandlerHTTP struct {
-	handler application.GetAPIKeyHandler
+// GetAPIKeyHandler is the HTTP handler for GetAPIKey.
+type GetAPIKeyHandler struct {
+	getAPIKey application.GetAPIKey
 }
 
-// NewGetAPIKeyHandlerHTTP creates a new HTTP handler wrapper
-func NewGetAPIKeyHandlerHTTP(handler application.GetAPIKeyHandler) *GetAPIKeyHandlerHTTP {
-	return &GetAPIKeyHandlerHTTP{handler: handler}
+// NewGetAPIKeyHandler creates a new HTTP handler.
+func NewGetAPIKeyHandler(getAPIKey application.GetAPIKey) *GetAPIKeyHandler {
+	return &GetAPIKeyHandler{getAPIKey: getAPIKey}
 }
 
-// RegisterGetAPIKeyRoute registers the HTTP route for GetAPIKey
-func RegisterGetAPIKeyRoute(mux *http.ServeMux, handler *GetAPIKeyHandlerHTTP) {
+// RegisterGetAPIKeyRoute registers the HTTP route for GetAPIKey.
+func RegisterGetAPIKeyRoute(mux *http.ServeMux, handler *GetAPIKeyHandler) {
 	mux.HandleFunc("GET /api-keys/{id}", handler.ServeHTTP)
 }
 
@@ -115,7 +113,7 @@ func (response GetAPIKey500Response) VisitGetAPIKeyResponse(w http.ResponseWrite
 }
 
 // ServeHTTP handles the GET /api-keys/{id} endpoint.
-func (h *GetAPIKeyHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *GetAPIKeyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Extract session ID from context for authenticated operations
@@ -147,8 +145,8 @@ func (h *GetAPIKeyHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	}
 	input.ID = id
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.getAPIKey.Execute(ctx, input)
 	if err != nil {
 		errorResp := GetAPIKey500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

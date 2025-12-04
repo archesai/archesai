@@ -18,20 +18,18 @@ import (
 // ExecuteExecutor - POST /executors/{id}/execute
 // ============================================================================
 
-// Handler type
-
-// ExecuteExecutorHandlerHTTP wraps the user handler for HTTP
-type ExecuteExecutorHandlerHTTP struct {
-	handler application.ExecuteExecutorHandler
+// ExecuteExecutorHandler is the HTTP handler for ExecuteExecutor.
+type ExecuteExecutorHandler struct {
+	executeExecutor application.ExecuteExecutor
 }
 
-// NewExecuteExecutorHandlerHTTP creates a new HTTP handler wrapper
-func NewExecuteExecutorHandlerHTTP(handler application.ExecuteExecutorHandler) *ExecuteExecutorHandlerHTTP {
-	return &ExecuteExecutorHandlerHTTP{handler: handler}
+// NewExecuteExecutorHandler creates a new HTTP handler.
+func NewExecuteExecutorHandler(executeExecutor application.ExecuteExecutor) *ExecuteExecutorHandler {
+	return &ExecuteExecutorHandler{executeExecutor: executeExecutor}
 }
 
-// RegisterExecuteExecutorRoute registers the HTTP route for ExecuteExecutor
-func RegisterExecuteExecutorRoute(mux *http.ServeMux, handler *ExecuteExecutorHandlerHTTP) {
+// RegisterExecuteExecutorRoute registers the HTTP route for ExecuteExecutor.
+func RegisterExecuteExecutorRoute(mux *http.ServeMux, handler *ExecuteExecutorHandler) {
 	mux.HandleFunc("POST /executors/{id}/execute", handler.ServeHTTP)
 }
 
@@ -126,7 +124,7 @@ func (response ExecuteExecutor500Response) VisitExecuteExecutorResponse(w http.R
 }
 
 // ServeHTTP handles the POST /executors/{id}/execute endpoint.
-func (h *ExecuteExecutorHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *ExecuteExecutorHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Build input from request
@@ -158,8 +156,8 @@ func (h *ExecuteExecutorHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Re
 	}
 	input.Input = body.Input
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.executeExecutor.Execute(ctx, input)
 	if err != nil {
 		errorResp := ExecuteExecutor500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

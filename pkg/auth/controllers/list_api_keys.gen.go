@@ -13,26 +13,25 @@ import (
 	"github.com/archesai/archesai/pkg/auth/application"
 	"github.com/archesai/archesai/pkg/auth/models"
 	"github.com/archesai/archesai/pkg/server"
+	servermodels "github.com/archesai/archesai/pkg/server/models"
 )
 
 // ============================================================================
 // ListAPIKeys - GET /api-keys
 // ============================================================================
 
-// Handler type
-
-// ListAPIKeysHandlerHTTP wraps the user handler for HTTP
-type ListAPIKeysHandlerHTTP struct {
-	handler application.ListAPIKeysHandler
+// ListAPIKeysHandler is the HTTP handler for ListAPIKeys.
+type ListAPIKeysHandler struct {
+	listAPIKeys application.ListAPIKeys
 }
 
-// NewListAPIKeysHandlerHTTP creates a new HTTP handler wrapper
-func NewListAPIKeysHandlerHTTP(handler application.ListAPIKeysHandler) *ListAPIKeysHandlerHTTP {
-	return &ListAPIKeysHandlerHTTP{handler: handler}
+// NewListAPIKeysHandler creates a new HTTP handler.
+func NewListAPIKeysHandler(listAPIKeys application.ListAPIKeys) *ListAPIKeysHandler {
+	return &ListAPIKeysHandler{listAPIKeys: listAPIKeys}
 }
 
-// RegisterListAPIKeysRoute registers the HTTP route for ListAPIKeys
-func RegisterListAPIKeysRoute(mux *http.ServeMux, handler *ListAPIKeysHandlerHTTP) {
+// RegisterListAPIKeysRoute registers the HTTP route for ListAPIKeys.
+func RegisterListAPIKeysRoute(mux *http.ServeMux, handler *ListAPIKeysHandler) {
 	mux.HandleFunc("GET /api-keys", handler.ServeHTTP)
 }
 
@@ -52,8 +51,8 @@ type ListAPIKeysResponse interface {
 }
 
 type ListAPIKeys200Response struct {
-	Data []models.APIKey       `json:"data"`
-	Meta models.PaginationMeta `json:"meta"`
+	Data []models.APIKey             `json:"data"`
+	Meta servermodels.PaginationMeta `json:"meta"`
 }
 
 func (response ListAPIKeys200Response) VisitListAPIKeysResponse(w http.ResponseWriter) error {
@@ -113,7 +112,7 @@ func (response ListAPIKeys500Response) VisitListAPIKeysResponse(w http.ResponseW
 }
 
 // ServeHTTP handles the GET /api-keys endpoint.
-func (h *ListAPIKeysHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *ListAPIKeysHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Extract session ID from context for authenticated operations
@@ -167,8 +166,8 @@ func (h *ListAPIKeysHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.listAPIKeys.Execute(ctx, input)
 	if err != nil {
 		errorResp := ListAPIKeys500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

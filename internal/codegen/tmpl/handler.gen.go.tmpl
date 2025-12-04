@@ -16,6 +16,9 @@ import (
 	"{{ .ProjectName }}/models"
 	"{{ .ProjectName }}/repositories"
 	"github.com/archesai/archesai/pkg/events"
+{{- if .NeedsServerModels }}
+	servermodels "github.com/archesai/archesai/pkg/server/models"
+{{- end }}
 )
 
 // ============================================================================
@@ -89,35 +92,35 @@ type {{ .Operation.ID }}Output struct {
 {{- end }}
 {{- end }}
 
-// {{ .Operation.ID }}Handler defines the interface for the {{ .Operation.ID }} operation.
+// {{ .Operation.ID }} defines the interface for the {{ .Operation.ID }} operation.
 {{- if and $successResponse (eq $successResponse.StatusCode "204") }}
-type {{ .Operation.ID }}Handler interface {
+type {{ .Operation.ID }} interface {
 	Execute(ctx context.Context, input *{{ .Operation.ID }}Input) error
 }
 {{- else }}
-type {{ .Operation.ID }}Handler interface {
+type {{ .Operation.ID }} interface {
 	Execute(ctx context.Context, input *{{ .Operation.ID }}Input) (*{{ .Operation.ID }}Output, error)
 }
 {{- end }}
 
 {{- if not .Operation.XCodegenCustomHandler }}
 
-// {{ .Operation.ID }}HandlerImpl is the default implementation of {{ .Operation.ID }}Handler.
-type {{ .Operation.ID }}HandlerImpl struct {
+// {{ .Operation.ID }}Impl is the default implementation of {{ .Operation.ID }}.
+type {{ .Operation.ID }}Impl struct {
 	repo      repositories.{{ if .Operation.XCodegenRepository }}{{ .Operation.XCodegenRepository }}{{ else }}{{ .Operation.Tag }}{{ end }}Repository
 {{- if ne .Operation.Method "GET" }}
 	publisher events.Publisher
 {{- end }}
 }
 
-// New{{ .Operation.ID }}Handler creates a new {{ .Operation.ID }} handler.
-func New{{ .Operation.ID }}Handler(
+// New{{ .Operation.ID }} creates a new {{ .Operation.ID }} handler.
+func New{{ .Operation.ID }}(
 	repo repositories.{{ if .Operation.XCodegenRepository }}{{ .Operation.XCodegenRepository }}{{ else }}{{ .Operation.Tag }}{{ end }}Repository,
 {{- if ne .Operation.Method "GET" }}
 	publisher events.Publisher,
 {{- end }}
-) {{ .Operation.ID }}Handler {
-	return &{{ .Operation.ID }}HandlerImpl{
+) {{ .Operation.ID }} {
+	return &{{ .Operation.ID }}Impl{
 		repo: repo,
 {{- if ne .Operation.Method "GET" }}
 		publisher: publisher,
@@ -127,7 +130,7 @@ func New{{ .Operation.ID }}Handler(
 
 // Execute performs the {{ .Operation.ID }} operation.
 {{- if and $successResponse (eq $successResponse.StatusCode "204") }}
-func (h *{{ .Operation.ID }}HandlerImpl) Execute(ctx context.Context, input *{{ .Operation.ID }}Input) error {
+func (h *{{ .Operation.ID }}Impl) Execute(ctx context.Context, input *{{ .Operation.ID }}Input) error {
 {{- if eq .Operation.Method "DELETE" }}
 	// Delete from repository
 	if err := h.repo.Delete(ctx, input.ID); err != nil {
@@ -144,7 +147,7 @@ func (h *{{ .Operation.ID }}HandlerImpl) Execute(ctx context.Context, input *{{ 
 {{- end }}
 }
 {{- else }}
-func (h *{{ .Operation.ID }}HandlerImpl) Execute(ctx context.Context, input *{{ .Operation.ID }}Input) (*{{ .Operation.ID }}Output, error) {
+func (h *{{ .Operation.ID }}Impl) Execute(ctx context.Context, input *{{ .Operation.ID }}Input) (*{{ .Operation.ID }}Output, error) {
 {{- if eq .Operation.Method "GET" }}
 {{- if hasPrefix .Operation.ID "List" }}
 	// List from repository

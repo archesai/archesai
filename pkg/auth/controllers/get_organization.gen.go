@@ -19,20 +19,18 @@ import (
 // GetOrganization - GET /organizations/{id}
 // ============================================================================
 
-// Handler type
-
-// GetOrganizationHandlerHTTP wraps the user handler for HTTP
-type GetOrganizationHandlerHTTP struct {
-	handler application.GetOrganizationHandler
+// GetOrganizationHandler is the HTTP handler for GetOrganization.
+type GetOrganizationHandler struct {
+	getOrganization application.GetOrganization
 }
 
-// NewGetOrganizationHandlerHTTP creates a new HTTP handler wrapper
-func NewGetOrganizationHandlerHTTP(handler application.GetOrganizationHandler) *GetOrganizationHandlerHTTP {
-	return &GetOrganizationHandlerHTTP{handler: handler}
+// NewGetOrganizationHandler creates a new HTTP handler.
+func NewGetOrganizationHandler(getOrganization application.GetOrganization) *GetOrganizationHandler {
+	return &GetOrganizationHandler{getOrganization: getOrganization}
 }
 
-// RegisterGetOrganizationRoute registers the HTTP route for GetOrganization
-func RegisterGetOrganizationRoute(mux *http.ServeMux, handler *GetOrganizationHandlerHTTP) {
+// RegisterGetOrganizationRoute registers the HTTP route for GetOrganization.
+func RegisterGetOrganizationRoute(mux *http.ServeMux, handler *GetOrganizationHandler) {
 	mux.HandleFunc("GET /organizations/{id}", handler.ServeHTTP)
 }
 
@@ -115,7 +113,7 @@ func (response GetOrganization500Response) VisitGetOrganizationResponse(w http.R
 }
 
 // ServeHTTP handles the GET /organizations/{id} endpoint.
-func (h *GetOrganizationHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *GetOrganizationHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Extract session ID from context for authenticated operations
@@ -147,8 +145,8 @@ func (h *GetOrganizationHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Re
 	}
 	input.ID = id
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.getOrganization.Execute(ctx, input)
 	if err != nil {
 		errorResp := GetOrganization500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

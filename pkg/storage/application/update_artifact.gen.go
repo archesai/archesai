@@ -31,30 +31,30 @@ type UpdateArtifactOutput struct {
 	Data models.Artifact `json:"data"`
 }
 
-// UpdateArtifactHandler defines the interface for the UpdateArtifact operation.
-type UpdateArtifactHandler interface {
+// UpdateArtifact defines the interface for the UpdateArtifact operation.
+type UpdateArtifact interface {
 	Execute(ctx context.Context, input *UpdateArtifactInput) (*UpdateArtifactOutput, error)
 }
 
-// UpdateArtifactHandlerImpl is the default implementation of UpdateArtifactHandler.
-type UpdateArtifactHandlerImpl struct {
+// UpdateArtifactImpl is the default implementation of UpdateArtifact.
+type UpdateArtifactImpl struct {
 	repo      repositories.ArtifactRepository
 	publisher events.Publisher
 }
 
-// NewUpdateArtifactHandler creates a new UpdateArtifact handler.
-func NewUpdateArtifactHandler(
+// NewUpdateArtifact creates a new UpdateArtifact handler.
+func NewUpdateArtifact(
 	repo repositories.ArtifactRepository,
 	publisher events.Publisher,
-) UpdateArtifactHandler {
-	return &UpdateArtifactHandlerImpl{
+) UpdateArtifact {
+	return &UpdateArtifactImpl{
 		repo:      repo,
 		publisher: publisher,
 	}
 }
 
 // Execute performs the UpdateArtifact operation.
-func (h *UpdateArtifactHandlerImpl) Execute(ctx context.Context, input *UpdateArtifactInput) (*UpdateArtifactOutput, error) {
+func (h *UpdateArtifactImpl) Execute(ctx context.Context, input *UpdateArtifactInput) (*UpdateArtifactOutput, error) {
 	// Get existing entity
 	existing, err := h.repo.Get(ctx, input.ID)
 	if err != nil {

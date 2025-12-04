@@ -26,27 +26,27 @@ type GetArtifactOutput struct {
 	Data models.Artifact `json:"data"`
 }
 
-// GetArtifactHandler defines the interface for the GetArtifact operation.
-type GetArtifactHandler interface {
+// GetArtifact defines the interface for the GetArtifact operation.
+type GetArtifact interface {
 	Execute(ctx context.Context, input *GetArtifactInput) (*GetArtifactOutput, error)
 }
 
-// GetArtifactHandlerImpl is the default implementation of GetArtifactHandler.
-type GetArtifactHandlerImpl struct {
+// GetArtifactImpl is the default implementation of GetArtifact.
+type GetArtifactImpl struct {
 	repo repositories.ArtifactRepository
 }
 
-// NewGetArtifactHandler creates a new GetArtifact handler.
-func NewGetArtifactHandler(
+// NewGetArtifact creates a new GetArtifact handler.
+func NewGetArtifact(
 	repo repositories.ArtifactRepository,
-) GetArtifactHandler {
-	return &GetArtifactHandlerImpl{
+) GetArtifact {
+	return &GetArtifactImpl{
 		repo: repo,
 	}
 }
 
 // Execute performs the GetArtifact operation.
-func (h *GetArtifactHandlerImpl) Execute(ctx context.Context, input *GetArtifactInput) (*GetArtifactOutput, error) {
+func (h *GetArtifactImpl) Execute(ctx context.Context, input *GetArtifactInput) (*GetArtifactOutput, error) {
 	// Get from repository
 	result, err := h.repo.Get(ctx, input.ID)
 	if err != nil {

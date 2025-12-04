@@ -15,7 +15,7 @@ type RequestPasswordResetInput struct {
 	Email string
 }
 
-// RequestPasswordResetHandler defines the interface for the RequestPasswordReset operation.
-type RequestPasswordResetHandler interface {
+// RequestPasswordReset defines the interface for the RequestPasswordReset operation.
+type RequestPasswordReset interface {
 	Execute(ctx context.Context, input *RequestPasswordResetInput) error
 }

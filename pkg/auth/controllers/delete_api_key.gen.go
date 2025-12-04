@@ -18,20 +18,18 @@ import (
 // DeleteAPIKey - DELETE /api-keys/{id}
 // ============================================================================
 
-// Handler type
-
-// DeleteAPIKeyHandlerHTTP wraps the user handler for HTTP
-type DeleteAPIKeyHandlerHTTP struct {
-	handler application.DeleteAPIKeyHandler
+// DeleteAPIKeyHandler is the HTTP handler for DeleteAPIKey.
+type DeleteAPIKeyHandler struct {
+	deleteAPIKey application.DeleteAPIKey
 }
 
-// NewDeleteAPIKeyHandlerHTTP creates a new HTTP handler wrapper
-func NewDeleteAPIKeyHandlerHTTP(handler application.DeleteAPIKeyHandler) *DeleteAPIKeyHandlerHTTP {
-	return &DeleteAPIKeyHandlerHTTP{handler: handler}
+// NewDeleteAPIKeyHandler creates a new HTTP handler.
+func NewDeleteAPIKeyHandler(deleteAPIKey application.DeleteAPIKey) *DeleteAPIKeyHandler {
+	return &DeleteAPIKeyHandler{deleteAPIKey: deleteAPIKey}
 }
 
-// RegisterDeleteAPIKeyRoute registers the HTTP route for DeleteAPIKey
-func RegisterDeleteAPIKeyRoute(mux *http.ServeMux, handler *DeleteAPIKeyHandlerHTTP) {
+// RegisterDeleteAPIKeyRoute registers the HTTP route for DeleteAPIKey.
+func RegisterDeleteAPIKeyRoute(mux *http.ServeMux, handler *DeleteAPIKeyHandler) {
 	mux.HandleFunc("DELETE /api-keys/{id}", handler.ServeHTTP)
 }
 
@@ -112,7 +110,7 @@ func (response DeleteAPIKey500Response) VisitDeleteAPIKeyResponse(w http.Respons
 }
 
 // ServeHTTP handles the DELETE /api-keys/{id} endpoint.
-func (h *DeleteAPIKeyHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *DeleteAPIKeyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Extract session ID from context for authenticated operations
@@ -144,8 +142,8 @@ func (h *DeleteAPIKeyHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Reque
 	}
 	input.ID = id
 
-	// Execute handler
-	if err := h.handler.Execute(ctx, input); err != nil {
+	// Execute
+	if err := h.deleteAPIKey.Execute(ctx, input); err != nil {
 		errorResp := DeleteAPIKey500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

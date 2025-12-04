@@ -41,7 +41,7 @@ import (
 // HTTPHandlers holds all HTTP handlers for this package.
 type HTTPHandlers struct {
 {{- range .Operations }}
-	{{ .ID }} *controllers.{{ .ID }}HandlerHTTP
+	{{ .ID }} *controllers.{{ .ID }}Handler
 {{- end }}
 }
 
@@ -49,7 +49,7 @@ type HTTPHandlers struct {
 func NewHTTPHandlers(appHandlers *ApplicationHandlers) *HTTPHandlers {
 	return &HTTPHandlers{
 {{- range .Operations }}
-		{{ .ID }}: controllers.New{{ .ID }}HandlerHTTP(appHandlers.{{ .ID }}),
+		{{ .ID }}: controllers.New{{ .ID }}Handler(appHandlers.{{ .ID }}),
 {{- end }}
 	}
 }

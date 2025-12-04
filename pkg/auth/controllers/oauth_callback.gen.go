@@ -19,20 +19,18 @@ import (
 // OauthCallback - GET /auth/oauth/{provider}/callback
 // ============================================================================
 
-// Handler type
-
-// OauthCallbackHandlerHTTP wraps the user handler for HTTP
-type OauthCallbackHandlerHTTP struct {
-	handler application.OauthCallbackHandler
+// OauthCallbackHandler is the HTTP handler for OauthCallback.
+type OauthCallbackHandler struct {
+	oauthCallback application.OauthCallback
 }
 
-// NewOauthCallbackHandlerHTTP creates a new HTTP handler wrapper
-func NewOauthCallbackHandlerHTTP(handler application.OauthCallbackHandler) *OauthCallbackHandlerHTTP {
-	return &OauthCallbackHandlerHTTP{handler: handler}
+// NewOauthCallbackHandler creates a new HTTP handler.
+func NewOauthCallbackHandler(oauthCallback application.OauthCallback) *OauthCallbackHandler {
+	return &OauthCallbackHandler{oauthCallback: oauthCallback}
 }
 
-// RegisterOauthCallbackRoute registers the HTTP route for OauthCallback
-func RegisterOauthCallbackRoute(mux *http.ServeMux, handler *OauthCallbackHandlerHTTP) {
+// RegisterOauthCallbackRoute registers the HTTP route for OauthCallback.
+func RegisterOauthCallbackRoute(mux *http.ServeMux, handler *OauthCallbackHandler) {
 	mux.HandleFunc("GET /auth/oauth/{provider}/callback", handler.ServeHTTP)
 }
 
@@ -142,7 +140,7 @@ func (response OauthCallback500Response) VisitOauthCallbackResponse(w http.Respo
 }
 
 // ServeHTTP handles the GET /auth/oauth/{provider}/callback endpoint.
-func (h *OauthCallbackHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *OauthCallbackHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Extract session ID from context for authenticated operations
@@ -220,8 +218,8 @@ func (h *OauthCallbackHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.oauthCallback.Execute(ctx, input)
 	if err != nil {
 		errorResp := OauthCallback500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

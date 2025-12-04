@@ -7,25 +7,25 @@ import (
 	"fmt"
 )
 
-// Ensure DeleteSessionHandlerImpl implements DeleteSessionHandler
-var _ DeleteSessionHandler = (*DeleteSessionHandlerImpl)(nil)
+// Ensure DeleteSessionImpl implements DeleteSession
+var _ DeleteSession = (*DeleteSessionImpl)(nil)
 
-// DeleteSessionHandlerImpl implements the DeleteSessionHandler interface.
-type DeleteSessionHandlerImpl struct {
+// DeleteSessionImpl implements the DeleteSession interface.
+type DeleteSessionImpl struct {
 	// TODO: Add your dependencies here
 }
 
-// NewDeleteSessionHandler creates a new DeleteSession handler.
-func NewDeleteSessionHandler(
+// NewDeleteSession creates a new DeleteSession implementation.
+func NewDeleteSession(
 // TODO: Add your dependencies here
-) DeleteSessionHandler {
-	return &DeleteSessionHandlerImpl{
+) DeleteSession {
+	return &DeleteSessionImpl{
 		// TODO: Initialize dependencies
 	}
 }
 
 // Execute performs the DeleteSession operation.
-func (h *DeleteSessionHandlerImpl) Execute(_ context.Context, _ *DeleteSessionInput) error {
+func (h *DeleteSessionImpl) Execute(ctx context.Context, input *DeleteSessionInput) error {
 	// TODO: Implement DeleteSession logic
 	return fmt.Errorf("not implemented")
 }

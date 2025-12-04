@@ -26,7 +26,7 @@ type UpdateSessionOutput struct {
 	Data models.Session `json:"data"`
 }
 
-// UpdateSessionHandler defines the interface for the UpdateSession operation.
-type UpdateSessionHandler interface {
+// UpdateSession defines the interface for the UpdateSession operation.
+type UpdateSession interface {
 	Execute(ctx context.Context, input *UpdateSessionInput) (*UpdateSessionOutput, error)
 }

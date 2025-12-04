@@ -23,30 +23,30 @@ type DeleteUserInput struct {
 	ID        uuid.UUID
 }
 
-// DeleteUserHandler defines the interface for the DeleteUser operation.
-type DeleteUserHandler interface {
+// DeleteUser defines the interface for the DeleteUser operation.
+type DeleteUser interface {
 	Execute(ctx context.Context, input *DeleteUserInput) error
 }
 
-// DeleteUserHandlerImpl is the default implementation of DeleteUserHandler.
-type DeleteUserHandlerImpl struct {
+// DeleteUserImpl is the default implementation of DeleteUser.
+type DeleteUserImpl struct {
 	repo      repositories.UserRepository
 	publisher events.Publisher
 }
 
-// NewDeleteUserHandler creates a new DeleteUser handler.
-func NewDeleteUserHandler(
+// NewDeleteUser creates a new DeleteUser handler.
+func NewDeleteUser(
 	repo repositories.UserRepository,
 	publisher events.Publisher,
-) DeleteUserHandler {
-	return &DeleteUserHandlerImpl{
+) DeleteUser {
+	return &DeleteUserImpl{
 		repo:      repo,
 		publisher: publisher,
 	}
 }
 
 // Execute performs the DeleteUser operation.
-func (h *DeleteUserHandlerImpl) Execute(ctx context.Context, input *DeleteUserInput) error {
+func (h *DeleteUserImpl) Execute(ctx context.Context, input *DeleteUserInput) error {
 	// Delete from repository
 	if err := h.repo.Delete(ctx, input.ID); err != nil {
 		return fmt.Errorf("failed to delete user: %w", err)

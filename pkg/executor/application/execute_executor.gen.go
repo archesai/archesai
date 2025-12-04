@@ -30,7 +30,7 @@ type ExecuteExecutorOutput struct {
 	Data ExecuteExecutorOutputData `json:"data,omitempty"`
 }
 
-// ExecuteExecutorHandler defines the interface for the ExecuteExecutor operation.
-type ExecuteExecutorHandler interface {
+// ExecuteExecutor defines the interface for the ExecuteExecutor operation.
+type ExecuteExecutor interface {
 	Execute(ctx context.Context, input *ExecuteExecutorInput) (*ExecuteExecutorOutput, error)
 }

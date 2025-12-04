@@ -7,27 +7,27 @@ import (
 	"fmt"
 )
 
-// Ensure GetPipelineExecutionPlanHandlerImpl implements GetPipelineExecutionPlanHandler
-var _ GetPipelineExecutionPlanHandler = (*GetPipelineExecutionPlanHandlerImpl)(nil)
+// Ensure GetPipelineExecutionPlanImpl implements GetPipelineExecutionPlan
+var _ GetPipelineExecutionPlan = (*GetPipelineExecutionPlanImpl)(nil)
 
-// GetPipelineExecutionPlanHandlerImpl implements the GetPipelineExecutionPlanHandler interface.
-type GetPipelineExecutionPlanHandlerImpl struct {
+// GetPipelineExecutionPlanImpl implements the GetPipelineExecutionPlan interface.
+type GetPipelineExecutionPlanImpl struct {
 	// TODO: Add your dependencies here
 }
 
-// NewGetPipelineExecutionPlanHandler creates a new GetPipelineExecutionPlan handler.
-func NewGetPipelineExecutionPlanHandler(
+// NewGetPipelineExecutionPlan creates a new GetPipelineExecutionPlan implementation.
+func NewGetPipelineExecutionPlan(
 // TODO: Add your dependencies here
-) GetPipelineExecutionPlanHandler {
-	return &GetPipelineExecutionPlanHandlerImpl{
+) GetPipelineExecutionPlan {
+	return &GetPipelineExecutionPlanImpl{
 		// TODO: Initialize dependencies
 	}
 }
 
 // Execute performs the GetPipelineExecutionPlan operation.
-func (h *GetPipelineExecutionPlanHandlerImpl) Execute(
-	_ context.Context,
-	_ *GetPipelineExecutionPlanInput,
+func (h *GetPipelineExecutionPlanImpl) Execute(
+	ctx context.Context,
+	input *GetPipelineExecutionPlanInput,
 ) (*GetPipelineExecutionPlanOutput, error) {
 	// TODO: Implement GetPipelineExecutionPlan logic
 	return nil, fmt.Errorf("not implemented")

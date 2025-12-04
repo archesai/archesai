@@ -35,7 +35,7 @@ type LoginOutput struct {
 	UserID         uuid.UUID  `json:"userID"`
 }
 
-// LoginHandler defines the interface for the Login operation.
-type LoginHandler interface {
+// Login defines the interface for the Login operation.
+type Login interface {
 	Execute(ctx context.Context, input *LoginInput) (*LoginOutput, error)
 }

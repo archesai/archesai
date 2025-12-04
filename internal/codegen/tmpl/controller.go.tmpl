@@ -18,26 +18,27 @@ import (
 	"github.com/archesai/archesai/pkg/server"
 	"{{ .ProjectName }}/application"
 	"{{ .ProjectName }}/models"
+{{- if .NeedsServerModels }}
+	servermodels "github.com/archesai/archesai/pkg/server/models"
+{{- end }}
 )
 
 // ============================================================================
 // {{ .Operation.ID }} - {{ .Operation.Method }} {{ .Operation.Path }}
 // ============================================================================
 
-// Handler type
-
-// {{ .Operation.ID }}HandlerHTTP wraps the user handler for HTTP
-type {{ .Operation.ID }}HandlerHTTP struct {
-	handler application.{{ .Operation.ID }}Handler
+// {{ .Operation.ID }}Handler is the HTTP handler for {{ .Operation.ID }}.
+type {{ .Operation.ID }}Handler struct {
+	{{ camelCase .Operation.ID }} application.{{ .Operation.ID }}
 }
 
-// New{{ .Operation.ID }}HandlerHTTP creates a new HTTP handler wrapper
-func New{{ .Operation.ID }}HandlerHTTP(handler application.{{ .Operation.ID }}Handler) *{{ .Operation.ID }}HandlerHTTP {
-	return &{{ .Operation.ID }}HandlerHTTP{handler: handler}
+// New{{ .Operation.ID }}Handler creates a new HTTP handler.
+func New{{ .Operation.ID }}Handler({{ camelCase .Operation.ID }} application.{{ .Operation.ID }}) *{{ .Operation.ID }}Handler {
+	return &{{ .Operation.ID }}Handler{ {{- camelCase .Operation.ID -}}: {{ camelCase .Operation.ID -}} }
 }
 
-// Register{{ .Operation.ID }}Route registers the HTTP route for {{ .Operation.ID }}
-func Register{{ .Operation.ID }}Route(mux *http.ServeMux, handler *{{ .Operation.ID }}HandlerHTTP) {
+// Register{{ .Operation.ID }}Route registers the HTTP route for {{ .Operation.ID }}.
+func Register{{ .Operation.ID }}Route(mux *http.ServeMux, handler *{{ .Operation.ID }}Handler) {
 	mux.HandleFunc("{{ .Operation.Method }} {{ .Operation.Path }}", handler.ServeHTTP)
 }
 
@@ -138,7 +139,7 @@ func (response {{ $.Operation.ID }}{{ $response.StatusCode }}Response) Visit{{ $
 {{- end }}
 
 // ServeHTTP handles the {{ .Operation.Method }} {{ .Operation.Path }} endpoint.
-func (h *{{ .Operation.ID }}HandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *{{ .Operation.ID }}Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	{{- if or .Operation.HasBearerAuth .Operation.HasCookieAuth }}
 
@@ -246,10 +247,10 @@ func (h *{{ .Operation.ID }}HandlerHTTP) ServeHTTP(w http.ResponseWriter, r *htt
 	{{- end }}
 	{{- end }}
 
-	// Execute handler
+	// Execute
 	{{- $successResponse := .Operation.GetSuccessResponse }}
 	{{- if and $successResponse (eq $successResponse.StatusCode "204") }}
-	if err := h.handler.Execute(ctx, input); err != nil {
+	if err := h.{{ camelCase .Operation.ID }}.Execute(ctx, input); err != nil {
 		errorResp := {{ .Operation.ID }}500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}
@@ -264,7 +265,7 @@ func (h *{{ .Operation.ID }}HandlerHTTP) ServeHTTP(w http.ResponseWriter, r *htt
 		fmt.Fprintf(w, "error writing response: %v", err)
 	}
 	{{- else }}
-	result, err := h.handler.Execute(ctx, input)
+	result, err := h.{{ camelCase .Operation.ID }}.Execute(ctx, input)
 	if err != nil {
 		errorResp := {{ .Operation.ID }}500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

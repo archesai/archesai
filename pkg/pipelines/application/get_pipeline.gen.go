@@ -26,27 +26,27 @@ type GetPipelineOutput struct {
 	Data models.Pipeline `json:"data"`
 }
 
-// GetPipelineHandler defines the interface for the GetPipeline operation.
-type GetPipelineHandler interface {
+// GetPipeline defines the interface for the GetPipeline operation.
+type GetPipeline interface {
 	Execute(ctx context.Context, input *GetPipelineInput) (*GetPipelineOutput, error)
 }
 
-// GetPipelineHandlerImpl is the default implementation of GetPipelineHandler.
-type GetPipelineHandlerImpl struct {
+// GetPipelineImpl is the default implementation of GetPipeline.
+type GetPipelineImpl struct {
 	repo repositories.PipelineRepository
 }
 
-// NewGetPipelineHandler creates a new GetPipeline handler.
-func NewGetPipelineHandler(
+// NewGetPipeline creates a new GetPipeline handler.
+func NewGetPipeline(
 	repo repositories.PipelineRepository,
-) GetPipelineHandler {
-	return &GetPipelineHandlerImpl{
+) GetPipeline {
+	return &GetPipelineImpl{
 		repo: repo,
 	}
 }
 
 // Execute performs the GetPipeline operation.
-func (h *GetPipelineHandlerImpl) Execute(ctx context.Context, input *GetPipelineInput) (*GetPipelineOutput, error) {
+func (h *GetPipelineImpl) Execute(ctx context.Context, input *GetPipelineInput) (*GetPipelineOutput, error) {
 	// Get from repository
 	result, err := h.repo.Get(ctx, input.ID)
 	if err != nil {

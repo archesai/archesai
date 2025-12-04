@@ -1,7 +1,6 @@
 package codegen
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"log/slog"
@@ -35,7 +34,7 @@ func (g *HCLGenerator) Priority() int { return PriorityLast }
 func (g *HCLGenerator) Generate(ctx *GeneratorContext) error {
 	var entities []*parsers.SchemaDef
 	for _, schema := range ctx.SpecDef.Schemas {
-		if schema.XCodegenSchemaType == "entity" {
+		if schema.XCodegenSchemaType == parsers.XCodegenSchemaTypeEntity {
 			entities = append(entities, schema)
 		}
 	}
@@ -50,23 +49,15 @@ func (g *HCLGenerator) Generate(ctx *GeneratorContext) error {
 	// PostgreSQL
 	eg.Go(func() error {
 		data := HCLTemplateData{Schemas: entities, DatabaseType: database.TypePostgreSQL}
-		var buf bytes.Buffer
-		if err := ctx.Renderer.Render(&buf, "hcl.tmpl", data); err != nil {
-			return fmt.Errorf("failed to render PostgreSQL HCL: %w", err)
-		}
 		path := filepath.Join("infrastructure", "postgres", "schema.gen.hcl")
-		return ctx.Storage.WriteFile(path, buf.Bytes(), 0644)
+		return ctx.RenderToFile("hcl.tmpl", path, data)
 	})
 
 	// SQLite
 	eg.Go(func() error {
 		data := HCLTemplateData{Schemas: entities, DatabaseType: database.TypeSQLite}
-		var buf bytes.Buffer
-		if err := ctx.Renderer.Render(&buf, "hcl.tmpl", data); err != nil {
-			return fmt.Errorf("failed to render SQLite HCL: %w", err)
-		}
 		path := filepath.Join("infrastructure", "sqlite", "schema.gen.hcl")
-		return ctx.Storage.WriteFile(path, buf.Bytes(), 0644)
+		return ctx.RenderToFile("hcl.tmpl", path, data)
 	})
 
 	if err := eg.Wait(); err != nil {

@@ -16,20 +16,18 @@ import (
 // CreateTool - POST /tools
 // ============================================================================
 
-// Handler type
-
-// CreateToolHandlerHTTP wraps the user handler for HTTP
-type CreateToolHandlerHTTP struct {
-	handler application.CreateToolHandler
+// CreateToolHandler is the HTTP handler for CreateTool.
+type CreateToolHandler struct {
+	createTool application.CreateTool
 }
 
-// NewCreateToolHandlerHTTP creates a new HTTP handler wrapper
-func NewCreateToolHandlerHTTP(handler application.CreateToolHandler) *CreateToolHandlerHTTP {
-	return &CreateToolHandlerHTTP{handler: handler}
+// NewCreateToolHandler creates a new HTTP handler.
+func NewCreateToolHandler(createTool application.CreateTool) *CreateToolHandler {
+	return &CreateToolHandler{createTool: createTool}
 }
 
-// RegisterCreateToolRoute registers the HTTP route for CreateTool
-func RegisterCreateToolRoute(mux *http.ServeMux, handler *CreateToolHandlerHTTP) {
+// RegisterCreateToolRoute registers the HTTP route for CreateTool.
+func RegisterCreateToolRoute(mux *http.ServeMux, handler *CreateToolHandler) {
 	mux.HandleFunc("POST /tools", handler.ServeHTTP)
 }
 
@@ -108,7 +106,7 @@ func (response CreateTool500Response) VisitCreateToolResponse(w http.ResponseWri
 }
 
 // ServeHTTP handles the POST /tools endpoint.
-func (h *CreateToolHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *CreateToolHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Build input from request
@@ -128,8 +126,8 @@ func (h *CreateToolHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request
 	input.Description = body.Description
 	input.Name = body.Name
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.createTool.Execute(ctx, input)
 	if err != nil {
 		errorResp := CreateTool500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

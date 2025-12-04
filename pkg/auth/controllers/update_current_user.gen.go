@@ -18,20 +18,18 @@ import (
 // UpdateCurrentUser - PATCH /auth/me
 // ============================================================================
 
-// Handler type
-
-// UpdateCurrentUserHandlerHTTP wraps the user handler for HTTP
-type UpdateCurrentUserHandlerHTTP struct {
-	handler application.UpdateCurrentUserHandler
+// UpdateCurrentUserHandler is the HTTP handler for UpdateCurrentUser.
+type UpdateCurrentUserHandler struct {
+	updateCurrentUser application.UpdateCurrentUser
 }
 
-// NewUpdateCurrentUserHandlerHTTP creates a new HTTP handler wrapper
-func NewUpdateCurrentUserHandlerHTTP(handler application.UpdateCurrentUserHandler) *UpdateCurrentUserHandlerHTTP {
-	return &UpdateCurrentUserHandlerHTTP{handler: handler}
+// NewUpdateCurrentUserHandler creates a new HTTP handler.
+func NewUpdateCurrentUserHandler(updateCurrentUser application.UpdateCurrentUser) *UpdateCurrentUserHandler {
+	return &UpdateCurrentUserHandler{updateCurrentUser: updateCurrentUser}
 }
 
-// RegisterUpdateCurrentUserRoute registers the HTTP route for UpdateCurrentUser
-func RegisterUpdateCurrentUserRoute(mux *http.ServeMux, handler *UpdateCurrentUserHandlerHTTP) {
+// RegisterUpdateCurrentUserRoute registers the HTTP route for UpdateCurrentUser.
+func RegisterUpdateCurrentUserRoute(mux *http.ServeMux, handler *UpdateCurrentUserHandler) {
 	mux.HandleFunc("PATCH /auth/me", handler.ServeHTTP)
 }
 
@@ -110,7 +108,7 @@ func (response UpdateCurrentUser500Response) VisitUpdateCurrentUserResponse(w ht
 }
 
 // ServeHTTP handles the PATCH /auth/me endpoint.
-func (h *UpdateCurrentUserHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *UpdateCurrentUserHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Extract session ID from context for authenticated operations
@@ -143,8 +141,8 @@ func (h *UpdateCurrentUserHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.
 	input.Image = body.Image
 	input.Name = body.Name
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.updateCurrentUser.Execute(ctx, input)
 	if err != nil {
 		errorResp := UpdateCurrentUser500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

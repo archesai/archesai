@@ -7,27 +7,27 @@ import (
 	"fmt"
 )
 
-// Ensure OauthCallbackHandlerImpl implements OauthCallbackHandler
-var _ OauthCallbackHandler = (*OauthCallbackHandlerImpl)(nil)
+// Ensure OauthCallbackImpl implements OauthCallback
+var _ OauthCallback = (*OauthCallbackImpl)(nil)
 
-// OauthCallbackHandlerImpl implements the OauthCallbackHandler interface.
-type OauthCallbackHandlerImpl struct {
+// OauthCallbackImpl implements the OauthCallback interface.
+type OauthCallbackImpl struct {
 	// TODO: Add your dependencies here
 }
 
-// NewOauthCallbackHandler creates a new OauthCallback handler.
-func NewOauthCallbackHandler(
+// NewOauthCallback creates a new OauthCallback implementation.
+func NewOauthCallback(
 // TODO: Add your dependencies here
-) OauthCallbackHandler {
-	return &OauthCallbackHandlerImpl{
+) OauthCallback {
+	return &OauthCallbackImpl{
 		// TODO: Initialize dependencies
 	}
 }
 
 // Execute performs the OauthCallback operation.
-func (h *OauthCallbackHandlerImpl) Execute(
-	_ context.Context,
-	_ *OauthCallbackInput,
+func (h *OauthCallbackImpl) Execute(
+	ctx context.Context,
+	input *OauthCallbackInput,
 ) (*OauthCallbackOutput, error) {
 	// TODO: Implement OauthCallback logic
 	return nil, fmt.Errorf("not implemented")

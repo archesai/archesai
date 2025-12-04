@@ -20,7 +20,7 @@ type ConfirmEmailChangeInput struct {
 	UserID    uuid.UUID
 }
 
-// ConfirmEmailChangeHandler defines the interface for the ConfirmEmailChange operation.
-type ConfirmEmailChangeHandler interface {
+// ConfirmEmailChange defines the interface for the ConfirmEmailChange operation.
+type ConfirmEmailChange interface {
 	Execute(ctx context.Context, input *ConfirmEmailChangeInput) error
 }

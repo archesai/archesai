@@ -35,7 +35,7 @@ type RegisterOutput struct {
 	UserID         uuid.UUID  `json:"userID"`
 }
 
-// RegisterHandler defines the interface for the Register operation.
-type RegisterHandler interface {
+// Register defines the interface for the Register operation.
+type Register interface {
 	Execute(ctx context.Context, input *RegisterInput) (*RegisterOutput, error)
 }

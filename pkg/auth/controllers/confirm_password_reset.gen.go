@@ -15,20 +15,18 @@ import (
 // ConfirmPasswordReset - POST /auth/reset-password
 // ============================================================================
 
-// Handler type
-
-// ConfirmPasswordResetHandlerHTTP wraps the user handler for HTTP
-type ConfirmPasswordResetHandlerHTTP struct {
-	handler application.ConfirmPasswordResetHandler
+// ConfirmPasswordResetHandler is the HTTP handler for ConfirmPasswordReset.
+type ConfirmPasswordResetHandler struct {
+	confirmPasswordReset application.ConfirmPasswordReset
 }
 
-// NewConfirmPasswordResetHandlerHTTP creates a new HTTP handler wrapper
-func NewConfirmPasswordResetHandlerHTTP(handler application.ConfirmPasswordResetHandler) *ConfirmPasswordResetHandlerHTTP {
-	return &ConfirmPasswordResetHandlerHTTP{handler: handler}
+// NewConfirmPasswordResetHandler creates a new HTTP handler.
+func NewConfirmPasswordResetHandler(confirmPasswordReset application.ConfirmPasswordReset) *ConfirmPasswordResetHandler {
+	return &ConfirmPasswordResetHandler{confirmPasswordReset: confirmPasswordReset}
 }
 
-// RegisterConfirmPasswordResetRoute registers the HTTP route for ConfirmPasswordReset
-func RegisterConfirmPasswordResetRoute(mux *http.ServeMux, handler *ConfirmPasswordResetHandlerHTTP) {
+// RegisterConfirmPasswordResetRoute registers the HTTP route for ConfirmPasswordReset.
+func RegisterConfirmPasswordResetRoute(mux *http.ServeMux, handler *ConfirmPasswordResetHandler) {
 	mux.HandleFunc("POST /auth/reset-password", handler.ServeHTTP)
 }
 
@@ -115,7 +113,7 @@ func (response ConfirmPasswordReset500Response) VisitConfirmPasswordResetRespons
 }
 
 // ServeHTTP handles the POST /auth/reset-password endpoint.
-func (h *ConfirmPasswordResetHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *ConfirmPasswordResetHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Build input from request
@@ -135,8 +133,8 @@ func (h *ConfirmPasswordResetHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *ht
 	input.NewPassword = body.NewPassword
 	input.Token = body.Token
 
-	// Execute handler
-	if err := h.handler.Execute(ctx, input); err != nil {
+	// Execute
+	if err := h.confirmPasswordReset.Execute(ctx, input); err != nil {
 		errorResp := ConfirmPasswordReset500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

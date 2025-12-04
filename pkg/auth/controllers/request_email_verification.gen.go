@@ -17,20 +17,18 @@ import (
 // RequestEmailVerification - POST /auth/request-verification
 // ============================================================================
 
-// Handler type
-
-// RequestEmailVerificationHandlerHTTP wraps the user handler for HTTP
-type RequestEmailVerificationHandlerHTTP struct {
-	handler application.RequestEmailVerificationHandler
+// RequestEmailVerificationHandler is the HTTP handler for RequestEmailVerification.
+type RequestEmailVerificationHandler struct {
+	requestEmailVerification application.RequestEmailVerification
 }
 
-// NewRequestEmailVerificationHandlerHTTP creates a new HTTP handler wrapper
-func NewRequestEmailVerificationHandlerHTTP(handler application.RequestEmailVerificationHandler) *RequestEmailVerificationHandlerHTTP {
-	return &RequestEmailVerificationHandlerHTTP{handler: handler}
+// NewRequestEmailVerificationHandler creates a new HTTP handler.
+func NewRequestEmailVerificationHandler(requestEmailVerification application.RequestEmailVerification) *RequestEmailVerificationHandler {
+	return &RequestEmailVerificationHandler{requestEmailVerification: requestEmailVerification}
 }
 
-// RegisterRequestEmailVerificationRoute registers the HTTP route for RequestEmailVerification
-func RegisterRequestEmailVerificationRoute(mux *http.ServeMux, handler *RequestEmailVerificationHandlerHTTP) {
+// RegisterRequestEmailVerificationRoute registers the HTTP route for RequestEmailVerification.
+func RegisterRequestEmailVerificationRoute(mux *http.ServeMux, handler *RequestEmailVerificationHandler) {
 	mux.HandleFunc("POST /auth/request-verification", handler.ServeHTTP)
 }
 
@@ -91,7 +89,7 @@ func (response RequestEmailVerification500Response) VisitRequestEmailVerificatio
 }
 
 // ServeHTTP handles the POST /auth/request-verification endpoint.
-func (h *RequestEmailVerificationHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *RequestEmailVerificationHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Extract session ID from context for authenticated operations
@@ -110,8 +108,8 @@ func (h *RequestEmailVerificationHandlerHTTP) ServeHTTP(w http.ResponseWriter, r
 	input := &application.RequestEmailVerificationInput{}
 	input.SessionID = sessionID
 
-	// Execute handler
-	if err := h.handler.Execute(ctx, input); err != nil {
+	// Execute
+	if err := h.requestEmailVerification.Execute(ctx, input); err != nil {
 		errorResp := RequestEmailVerification500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

@@ -18,20 +18,18 @@ import (
 // DeleteOrganization - DELETE /organizations/{id}
 // ============================================================================
 
-// Handler type
-
-// DeleteOrganizationHandlerHTTP wraps the user handler for HTTP
-type DeleteOrganizationHandlerHTTP struct {
-	handler application.DeleteOrganizationHandler
+// DeleteOrganizationHandler is the HTTP handler for DeleteOrganization.
+type DeleteOrganizationHandler struct {
+	deleteOrganization application.DeleteOrganization
 }
 
-// NewDeleteOrganizationHandlerHTTP creates a new HTTP handler wrapper
-func NewDeleteOrganizationHandlerHTTP(handler application.DeleteOrganizationHandler) *DeleteOrganizationHandlerHTTP {
-	return &DeleteOrganizationHandlerHTTP{handler: handler}
+// NewDeleteOrganizationHandler creates a new HTTP handler.
+func NewDeleteOrganizationHandler(deleteOrganization application.DeleteOrganization) *DeleteOrganizationHandler {
+	return &DeleteOrganizationHandler{deleteOrganization: deleteOrganization}
 }
 
-// RegisterDeleteOrganizationRoute registers the HTTP route for DeleteOrganization
-func RegisterDeleteOrganizationRoute(mux *http.ServeMux, handler *DeleteOrganizationHandlerHTTP) {
+// RegisterDeleteOrganizationRoute registers the HTTP route for DeleteOrganization.
+func RegisterDeleteOrganizationRoute(mux *http.ServeMux, handler *DeleteOrganizationHandler) {
 	mux.HandleFunc("DELETE /organizations/{id}", handler.ServeHTTP)
 }
 
@@ -112,7 +110,7 @@ func (response DeleteOrganization500Response) VisitDeleteOrganizationResponse(w 
 }
 
 // ServeHTTP handles the DELETE /organizations/{id} endpoint.
-func (h *DeleteOrganizationHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *DeleteOrganizationHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Extract session ID from context for authenticated operations
@@ -144,8 +142,8 @@ func (h *DeleteOrganizationHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http
 	}
 	input.ID = id
 
-	// Execute handler
-	if err := h.handler.Execute(ctx, input); err != nil {
+	// Execute
+	if err := h.deleteOrganization.Execute(ctx, input); err != nil {
 		errorResp := DeleteOrganization500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

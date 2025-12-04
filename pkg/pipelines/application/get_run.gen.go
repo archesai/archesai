@@ -26,27 +26,27 @@ type GetRunOutput struct {
 	Data models.Run `json:"data"`
 }
 
-// GetRunHandler defines the interface for the GetRun operation.
-type GetRunHandler interface {
+// GetRun defines the interface for the GetRun operation.
+type GetRun interface {
 	Execute(ctx context.Context, input *GetRunInput) (*GetRunOutput, error)
 }
 
-// GetRunHandlerImpl is the default implementation of GetRunHandler.
-type GetRunHandlerImpl struct {
+// GetRunImpl is the default implementation of GetRun.
+type GetRunImpl struct {
 	repo repositories.RunRepository
 }
 
-// NewGetRunHandler creates a new GetRun handler.
-func NewGetRunHandler(
+// NewGetRun creates a new GetRun handler.
+func NewGetRun(
 	repo repositories.RunRepository,
-) GetRunHandler {
-	return &GetRunHandlerImpl{
+) GetRun {
+	return &GetRunImpl{
 		repo: repo,
 	}
 }
 
 // Execute performs the GetRun operation.
-func (h *GetRunHandlerImpl) Execute(ctx context.Context, input *GetRunInput) (*GetRunOutput, error) {
+func (h *GetRunImpl) Execute(ctx context.Context, input *GetRunInput) (*GetRunOutput, error) {
 	// Get from repository
 	result, err := h.repo.Get(ctx, input.ID)
 	if err != nil {

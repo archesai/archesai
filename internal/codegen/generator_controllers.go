@@ -1,17 +1,17 @@
 package codegen
 
 import (
-	"bytes"
 	"fmt"
 	"path/filepath"
 
 	"github.com/archesai/archesai/internal/parsers"
 )
 
-// HandlerControllerTemplateData holds the data for rendering controller templates.
-type HandlerControllerTemplateData struct {
-	Operation   *parsers.OperationDef
-	ProjectName string
+// ControllerTemplateData holds the data for rendering controller templates.
+type ControllerTemplateData struct {
+	Operation         *parsers.OperationDef
+	ProjectName       string
+	NeedsServerModels bool
 }
 
 // ControllersGenerator generates controller code for API operations.
@@ -35,18 +35,14 @@ func (g *ControllersGenerator) Generate(ctx *GeneratorContext) error {
 			"controllers",
 			fmt.Sprintf("%s.gen.go", parsers.SnakeCase(op.ID)),
 		)
-		data := &HandlerControllerTemplateData{
-			Operation:   &op,
-			ProjectName: ctx.ProjectName,
+		data := &ControllerTemplateData{
+			Operation:         &op,
+			ProjectName:       ctx.ProjectName,
+			NeedsServerModels: op.NeedsServerModels(),
 		}
 
-		var buf bytes.Buffer
-		if err := ctx.Renderer.Render(&buf, "controller.go.tmpl", data); err != nil {
-			return fmt.Errorf("failed to render handler controller for %s: %w", op.ID, err)
-		}
-
-		if err := ctx.Storage.WriteFile(outputPath, buf.Bytes(), 0644); err != nil {
-			return fmt.Errorf("failed to write handler controller for %s: %w", op.ID, err)
+		if err := ctx.RenderToFile("controller.go.tmpl", outputPath, data); err != nil {
+			return fmt.Errorf("failed to generate controller for %s: %w", op.ID, err)
 		}
 	}
 	return nil

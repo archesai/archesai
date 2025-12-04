@@ -18,20 +18,18 @@ import (
 // GetPipelineExecutionPlan - GET /pipelines/{id}/execution-plans
 // ============================================================================
 
-// Handler type
-
-// GetPipelineExecutionPlanHandlerHTTP wraps the user handler for HTTP
-type GetPipelineExecutionPlanHandlerHTTP struct {
-	handler application.GetPipelineExecutionPlanHandler
+// GetPipelineExecutionPlanHandler is the HTTP handler for GetPipelineExecutionPlan.
+type GetPipelineExecutionPlanHandler struct {
+	getPipelineExecutionPlan application.GetPipelineExecutionPlan
 }
 
-// NewGetPipelineExecutionPlanHandlerHTTP creates a new HTTP handler wrapper
-func NewGetPipelineExecutionPlanHandlerHTTP(handler application.GetPipelineExecutionPlanHandler) *GetPipelineExecutionPlanHandlerHTTP {
-	return &GetPipelineExecutionPlanHandlerHTTP{handler: handler}
+// NewGetPipelineExecutionPlanHandler creates a new HTTP handler.
+func NewGetPipelineExecutionPlanHandler(getPipelineExecutionPlan application.GetPipelineExecutionPlan) *GetPipelineExecutionPlanHandler {
+	return &GetPipelineExecutionPlanHandler{getPipelineExecutionPlan: getPipelineExecutionPlan}
 }
 
-// RegisterGetPipelineExecutionPlanRoute registers the HTTP route for GetPipelineExecutionPlan
-func RegisterGetPipelineExecutionPlanRoute(mux *http.ServeMux, handler *GetPipelineExecutionPlanHandlerHTTP) {
+// RegisterGetPipelineExecutionPlanRoute registers the HTTP route for GetPipelineExecutionPlan.
+func RegisterGetPipelineExecutionPlanRoute(mux *http.ServeMux, handler *GetPipelineExecutionPlanHandler) {
 	mux.HandleFunc("GET /pipelines/{id}/execution-plans", handler.ServeHTTP)
 }
 
@@ -126,7 +124,7 @@ func (response GetPipelineExecutionPlan500Response) VisitGetPipelineExecutionPla
 }
 
 // ServeHTTP handles the GET /pipelines/{id}/execution-plans endpoint.
-func (h *GetPipelineExecutionPlanHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *GetPipelineExecutionPlanHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Build input from request
@@ -145,8 +143,8 @@ func (h *GetPipelineExecutionPlanHandlerHTTP) ServeHTTP(w http.ResponseWriter, r
 	}
 	input.ID = id
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.getPipelineExecutionPlan.Execute(ctx, input)
 	if err != nil {
 		errorResp := GetPipelineExecutionPlan500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

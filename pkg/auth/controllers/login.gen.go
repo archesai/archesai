@@ -18,20 +18,18 @@ import (
 // Login - POST /auth/login
 // ============================================================================
 
-// Handler type
-
-// LoginHandlerHTTP wraps the user handler for HTTP
-type LoginHandlerHTTP struct {
-	handler application.LoginHandler
+// LoginHandler is the HTTP handler for Login.
+type LoginHandler struct {
+	login application.Login
 }
 
-// NewLoginHandlerHTTP creates a new HTTP handler wrapper
-func NewLoginHandlerHTTP(handler application.LoginHandler) *LoginHandlerHTTP {
-	return &LoginHandlerHTTP{handler: handler}
+// NewLoginHandler creates a new HTTP handler.
+func NewLoginHandler(login application.Login) *LoginHandler {
+	return &LoginHandler{login: login}
 }
 
-// RegisterLoginRoute registers the HTTP route for Login
-func RegisterLoginRoute(mux *http.ServeMux, handler *LoginHandlerHTTP) {
+// RegisterLoginRoute registers the HTTP route for Login.
+func RegisterLoginRoute(mux *http.ServeMux, handler *LoginHandler) {
 	mux.HandleFunc("POST /auth/login", handler.ServeHTTP)
 }
 
@@ -121,7 +119,7 @@ func (response Login500Response) VisitLoginResponse(w http.ResponseWriter) error
 }
 
 // ServeHTTP handles the POST /auth/login endpoint.
-func (h *LoginHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *LoginHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Build input from request
@@ -142,8 +140,8 @@ func (h *LoginHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	input.Password = body.Password
 	input.RememberMe = body.RememberMe
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.login.Execute(ctx, input)
 	if err != nil {
 		errorResp := Login500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

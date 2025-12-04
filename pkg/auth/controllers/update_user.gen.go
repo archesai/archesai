@@ -19,20 +19,18 @@ import (
 // UpdateUser - PATCH /users/{id}
 // ============================================================================
 
-// Handler type
-
-// UpdateUserHandlerHTTP wraps the user handler for HTTP
-type UpdateUserHandlerHTTP struct {
-	handler application.UpdateUserHandler
+// UpdateUserHandler is the HTTP handler for UpdateUser.
+type UpdateUserHandler struct {
+	updateUser application.UpdateUser
 }
 
-// NewUpdateUserHandlerHTTP creates a new HTTP handler wrapper
-func NewUpdateUserHandlerHTTP(handler application.UpdateUserHandler) *UpdateUserHandlerHTTP {
-	return &UpdateUserHandlerHTTP{handler: handler}
+// NewUpdateUserHandler creates a new HTTP handler.
+func NewUpdateUserHandler(updateUser application.UpdateUser) *UpdateUserHandler {
+	return &UpdateUserHandler{updateUser: updateUser}
 }
 
-// RegisterUpdateUserRoute registers the HTTP route for UpdateUser
-func RegisterUpdateUserRoute(mux *http.ServeMux, handler *UpdateUserHandlerHTTP) {
+// RegisterUpdateUserRoute registers the HTTP route for UpdateUser.
+func RegisterUpdateUserRoute(mux *http.ServeMux, handler *UpdateUserHandler) {
 	mux.HandleFunc("PATCH /users/{id}", handler.ServeHTTP)
 }
 
@@ -121,7 +119,7 @@ func (response UpdateUser500Response) VisitUpdateUserResponse(w http.ResponseWri
 }
 
 // ServeHTTP handles the PATCH /users/{id} endpoint.
-func (h *UpdateUserHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *UpdateUserHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Extract session ID from context for authenticated operations
@@ -167,8 +165,8 @@ func (h *UpdateUserHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request
 	input.Email = body.Email
 	input.Image = body.Image
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.updateUser.Execute(ctx, input)
 	if err != nil {
 		errorResp := UpdateUser500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

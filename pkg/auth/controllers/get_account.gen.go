@@ -19,20 +19,18 @@ import (
 // GetAccount - GET /auth/accounts/{id}
 // ============================================================================
 
-// Handler type
-
-// GetAccountHandlerHTTP wraps the user handler for HTTP
-type GetAccountHandlerHTTP struct {
-	handler application.GetAccountHandler
+// GetAccountHandler is the HTTP handler for GetAccount.
+type GetAccountHandler struct {
+	getAccount application.GetAccount
 }
 
-// NewGetAccountHandlerHTTP creates a new HTTP handler wrapper
-func NewGetAccountHandlerHTTP(handler application.GetAccountHandler) *GetAccountHandlerHTTP {
-	return &GetAccountHandlerHTTP{handler: handler}
+// NewGetAccountHandler creates a new HTTP handler.
+func NewGetAccountHandler(getAccount application.GetAccount) *GetAccountHandler {
+	return &GetAccountHandler{getAccount: getAccount}
 }
 
-// RegisterGetAccountRoute registers the HTTP route for GetAccount
-func RegisterGetAccountRoute(mux *http.ServeMux, handler *GetAccountHandlerHTTP) {
+// RegisterGetAccountRoute registers the HTTP route for GetAccount.
+func RegisterGetAccountRoute(mux *http.ServeMux, handler *GetAccountHandler) {
 	mux.HandleFunc("GET /auth/accounts/{id}", handler.ServeHTTP)
 }
 
@@ -115,7 +113,7 @@ func (response GetAccount500Response) VisitGetAccountResponse(w http.ResponseWri
 }
 
 // ServeHTTP handles the GET /auth/accounts/{id} endpoint.
-func (h *GetAccountHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *GetAccountHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Extract session ID from context for authenticated operations
@@ -147,8 +145,8 @@ func (h *GetAccountHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request
 	}
 	input.ID = id
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.getAccount.Execute(ctx, input)
 	if err != nil {
 		errorResp := GetAccount500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

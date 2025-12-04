@@ -17,20 +17,18 @@ import (
 // LinkAccount - POST /auth/link
 // ============================================================================
 
-// Handler type
-
-// LinkAccountHandlerHTTP wraps the user handler for HTTP
-type LinkAccountHandlerHTTP struct {
-	handler application.LinkAccountHandler
+// LinkAccountHandler is the HTTP handler for LinkAccount.
+type LinkAccountHandler struct {
+	linkAccount application.LinkAccount
 }
 
-// NewLinkAccountHandlerHTTP creates a new HTTP handler wrapper
-func NewLinkAccountHandlerHTTP(handler application.LinkAccountHandler) *LinkAccountHandlerHTTP {
-	return &LinkAccountHandlerHTTP{handler: handler}
+// NewLinkAccountHandler creates a new HTTP handler.
+func NewLinkAccountHandler(linkAccount application.LinkAccount) *LinkAccountHandler {
+	return &LinkAccountHandler{linkAccount: linkAccount}
 }
 
-// RegisterLinkAccountRoute registers the HTTP route for LinkAccount
-func RegisterLinkAccountRoute(mux *http.ServeMux, handler *LinkAccountHandlerHTTP) {
+// RegisterLinkAccountRoute registers the HTTP route for LinkAccount.
+func RegisterLinkAccountRoute(mux *http.ServeMux, handler *LinkAccountHandler) {
 	mux.HandleFunc("POST /auth/link", handler.ServeHTTP)
 }
 
@@ -119,7 +117,7 @@ func (response LinkAccount500Response) VisitLinkAccountResponse(w http.ResponseW
 }
 
 // ServeHTTP handles the POST /auth/link endpoint.
-func (h *LinkAccountHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *LinkAccountHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Extract session ID from context for authenticated operations
@@ -152,8 +150,8 @@ func (h *LinkAccountHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Reques
 	input.Provider = body.Provider
 	input.RedirectURL = body.RedirectURL
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.linkAccount.Execute(ctx, input)
 	if err != nil {
 		errorResp := LinkAccount500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

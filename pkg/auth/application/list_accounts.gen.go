@@ -10,6 +10,7 @@ import (
 
 	"github.com/archesai/archesai/pkg/auth/models"
 	"github.com/archesai/archesai/pkg/auth/repositories"
+	servermodels "github.com/archesai/archesai/pkg/server/models"
 )
 
 // ============================================================================
@@ -23,31 +24,31 @@ type ListAccountsInput struct {
 
 // ListAccountsOutput represents the output for the ListAccounts operation.
 type ListAccountsOutput struct {
-	Data []models.Account      `json:"data"`
-	Meta models.PaginationMeta `json:"meta"`
+	Data []models.Account            `json:"data"`
+	Meta servermodels.PaginationMeta `json:"meta"`
 }
 
-// ListAccountsHandler defines the interface for the ListAccounts operation.
-type ListAccountsHandler interface {
+// ListAccounts defines the interface for the ListAccounts operation.
+type ListAccounts interface {
 	Execute(ctx context.Context, input *ListAccountsInput) (*ListAccountsOutput, error)
 }
 
-// ListAccountsHandlerImpl is the default implementation of ListAccountsHandler.
-type ListAccountsHandlerImpl struct {
+// ListAccountsImpl is the default implementation of ListAccounts.
+type ListAccountsImpl struct {
 	repo repositories.AccountRepository
 }
 
-// NewListAccountsHandler creates a new ListAccounts handler.
-func NewListAccountsHandler(
+// NewListAccounts creates a new ListAccounts handler.
+func NewListAccounts(
 	repo repositories.AccountRepository,
-) ListAccountsHandler {
-	return &ListAccountsHandlerImpl{
+) ListAccounts {
+	return &ListAccountsImpl{
 		repo: repo,
 	}
 }
 
 // Execute performs the ListAccounts operation.
-func (h *ListAccountsHandlerImpl) Execute(ctx context.Context, input *ListAccountsInput) (*ListAccountsOutput, error) {
+func (h *ListAccountsImpl) Execute(ctx context.Context, input *ListAccountsInput) (*ListAccountsOutput, error) {
 	// List from repository
 	results, total, err := h.repo.List(ctx, 100, 0) // TODO: Use pagination from input
 	if err != nil {

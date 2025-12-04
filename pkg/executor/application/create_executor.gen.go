@@ -39,30 +39,30 @@ type CreateExecutorOutput struct {
 	Data models.Executor `json:"data"`
 }
 
-// CreateExecutorHandler defines the interface for the CreateExecutor operation.
-type CreateExecutorHandler interface {
+// CreateExecutor defines the interface for the CreateExecutor operation.
+type CreateExecutor interface {
 	Execute(ctx context.Context, input *CreateExecutorInput) (*CreateExecutorOutput, error)
 }
 
-// CreateExecutorHandlerImpl is the default implementation of CreateExecutorHandler.
-type CreateExecutorHandlerImpl struct {
+// CreateExecutorImpl is the default implementation of CreateExecutor.
+type CreateExecutorImpl struct {
 	repo      repositories.ExecutorRepository
 	publisher events.Publisher
 }
 
-// NewCreateExecutorHandler creates a new CreateExecutor handler.
-func NewCreateExecutorHandler(
+// NewCreateExecutor creates a new CreateExecutor handler.
+func NewCreateExecutor(
 	repo repositories.ExecutorRepository,
 	publisher events.Publisher,
-) CreateExecutorHandler {
-	return &CreateExecutorHandlerImpl{
+) CreateExecutor {
+	return &CreateExecutorImpl{
 		repo:      repo,
 		publisher: publisher,
 	}
 }
 
 // Execute performs the CreateExecutor operation.
-func (h *CreateExecutorHandlerImpl) Execute(ctx context.Context, input *CreateExecutorInput) (*CreateExecutorOutput, error) {
+func (h *CreateExecutorImpl) Execute(ctx context.Context, input *CreateExecutorInput) (*CreateExecutorOutput, error) {
 	// Create entity
 	entity := &models.Executor{
 		ID:        uuid.New(),

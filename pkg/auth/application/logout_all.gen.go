@@ -22,7 +22,7 @@ type LogoutAllOutput struct {
 	Message string `json:"message"`
 }
 
-// LogoutAllHandler defines the interface for the LogoutAll operation.
-type LogoutAllHandler interface {
+// LogoutAll defines the interface for the LogoutAll operation.
+type LogoutAll interface {
 	Execute(ctx context.Context, input *LogoutAllInput) (*LogoutAllOutput, error)
 }

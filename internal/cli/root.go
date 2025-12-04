@@ -8,13 +8,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
+	"github.com/archesai/archesai/internal/cli/flags"
 	"github.com/archesai/archesai/pkg/logger"
-)
-
-var (
-	cfgFile string
-	verbose bool
-	pretty  bool
 )
 
 // rootCmd represents the base command when called without any subcommands.
@@ -38,28 +33,18 @@ func Execute() {
 }
 
 func init() {
-	cobra.OnInitialize(initConfig)
+	// Initialize configuration
+	cobra.OnInitialize(loadConfig)
 
 	// Global flags
-	rootCmd.PersistentFlags().
-		StringVar(&cfgFile, "config", "", "config file (default is .archesai.yaml)")
-	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
-	rootCmd.PersistentFlags().BoolVar(&pretty, "pretty", false, "enable pretty logging output")
-
-	// Bind flags to viper
-	if err := viper.BindPFlag("verbose", rootCmd.PersistentFlags().Lookup("verbose")); err != nil {
-		slog.Error("Failed to bind verbose flag", "err", err)
-	}
-	if err := viper.BindPFlag("pretty", rootCmd.PersistentFlags().Lookup("pretty")); err != nil {
-		slog.Error("Failed to bind pretty flag", "err", err)
-	}
+	flags.SetRootFlags(rootCmd)
 }
 
-// initConfig reads in config file and ENV variables if set.
-func initConfig() {
-	if cfgFile != "" {
+// loadConfig reads in config file and ENV variables if set.
+func loadConfig() {
+	if flags.Root.ConfigFile != "" {
 		// Use config file from the flag.
-		viper.SetConfigFile(cfgFile)
+		viper.SetConfigFile(flags.Root.ConfigFile)
 	} else {
 		// Search for config in current directory and home directory
 		viper.AddConfigPath(".")
@@ -73,21 +58,18 @@ func initConfig() {
 	viper.AutomaticEnv()
 
 	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil && verbose {
+	if err := viper.ReadInConfig(); err == nil && flags.Root.Verbose {
 		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
 	}
 
-	// Configure logger based on flags
+	// Configure logger based on flags and set as default
 	logLevel := "info"
-	if verbose {
+	if flags.Root.Verbose {
 		logLevel = "debug"
 	}
-
 	logCfg := logger.Config{
 		Level:  logLevel,
-		Pretty: pretty,
+		Pretty: flags.Root.Pretty,
 	}
-
-	// Set as default logger
 	slog.SetDefault(logger.New(logCfg))
 }

@@ -7,27 +7,27 @@ import (
 	"fmt"
 )
 
-// Ensure ValidatePipelineExecutionPlanHandlerImpl implements ValidatePipelineExecutionPlanHandler
-var _ ValidatePipelineExecutionPlanHandler = (*ValidatePipelineExecutionPlanHandlerImpl)(nil)
+// Ensure ValidatePipelineExecutionPlanImpl implements ValidatePipelineExecutionPlan
+var _ ValidatePipelineExecutionPlan = (*ValidatePipelineExecutionPlanImpl)(nil)
 
-// ValidatePipelineExecutionPlanHandlerImpl implements the ValidatePipelineExecutionPlanHandler interface.
-type ValidatePipelineExecutionPlanHandlerImpl struct {
+// ValidatePipelineExecutionPlanImpl implements the ValidatePipelineExecutionPlan interface.
+type ValidatePipelineExecutionPlanImpl struct {
 	// TODO: Add your dependencies here
 }
 
-// NewValidatePipelineExecutionPlanHandler creates a new ValidatePipelineExecutionPlan handler.
-func NewValidatePipelineExecutionPlanHandler(
+// NewValidatePipelineExecutionPlan creates a new ValidatePipelineExecutionPlan implementation.
+func NewValidatePipelineExecutionPlan(
 // TODO: Add your dependencies here
-) ValidatePipelineExecutionPlanHandler {
-	return &ValidatePipelineExecutionPlanHandlerImpl{
+) ValidatePipelineExecutionPlan {
+	return &ValidatePipelineExecutionPlanImpl{
 		// TODO: Initialize dependencies
 	}
 }
 
 // Execute performs the ValidatePipelineExecutionPlan operation.
-func (h *ValidatePipelineExecutionPlanHandlerImpl) Execute(
-	_ context.Context,
-	_ *ValidatePipelineExecutionPlanInput,
+func (h *ValidatePipelineExecutionPlanImpl) Execute(
+	ctx context.Context,
+	input *ValidatePipelineExecutionPlanInput,
 ) (*ValidatePipelineExecutionPlanOutput, error) {
 	// TODO: Implement ValidatePipelineExecutionPlan logic
 	return nil, fmt.Errorf("not implemented")

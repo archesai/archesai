@@ -18,20 +18,18 @@ import (
 // DeleteRun - DELETE /runs/{id}
 // ============================================================================
 
-// Handler type
-
-// DeleteRunHandlerHTTP wraps the user handler for HTTP
-type DeleteRunHandlerHTTP struct {
-	handler application.DeleteRunHandler
+// DeleteRunHandler is the HTTP handler for DeleteRun.
+type DeleteRunHandler struct {
+	deleteRun application.DeleteRun
 }
 
-// NewDeleteRunHandlerHTTP creates a new HTTP handler wrapper
-func NewDeleteRunHandlerHTTP(handler application.DeleteRunHandler) *DeleteRunHandlerHTTP {
-	return &DeleteRunHandlerHTTP{handler: handler}
+// NewDeleteRunHandler creates a new HTTP handler.
+func NewDeleteRunHandler(deleteRun application.DeleteRun) *DeleteRunHandler {
+	return &DeleteRunHandler{deleteRun: deleteRun}
 }
 
-// RegisterDeleteRunRoute registers the HTTP route for DeleteRun
-func RegisterDeleteRunRoute(mux *http.ServeMux, handler *DeleteRunHandlerHTTP) {
+// RegisterDeleteRunRoute registers the HTTP route for DeleteRun.
+func RegisterDeleteRunRoute(mux *http.ServeMux, handler *DeleteRunHandler) {
 	mux.HandleFunc("DELETE /runs/{id}", handler.ServeHTTP)
 }
 
@@ -112,7 +110,7 @@ func (response DeleteRun500Response) VisitDeleteRunResponse(w http.ResponseWrite
 }
 
 // ServeHTTP handles the DELETE /runs/{id} endpoint.
-func (h *DeleteRunHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *DeleteRunHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Build input from request
@@ -131,8 +129,8 @@ func (h *DeleteRunHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	}
 	input.ID = id
 
-	// Execute handler
-	if err := h.handler.Execute(ctx, input); err != nil {
+	// Execute
+	if err := h.deleteRun.Execute(ctx, input); err != nil {
 		errorResp := DeleteRun500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

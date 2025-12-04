@@ -29,30 +29,30 @@ type CreateArtifactOutput struct {
 	Data models.Artifact `json:"data"`
 }
 
-// CreateArtifactHandler defines the interface for the CreateArtifact operation.
-type CreateArtifactHandler interface {
+// CreateArtifact defines the interface for the CreateArtifact operation.
+type CreateArtifact interface {
 	Execute(ctx context.Context, input *CreateArtifactInput) (*CreateArtifactOutput, error)
 }
 
-// CreateArtifactHandlerImpl is the default implementation of CreateArtifactHandler.
-type CreateArtifactHandlerImpl struct {
+// CreateArtifactImpl is the default implementation of CreateArtifact.
+type CreateArtifactImpl struct {
 	repo      repositories.ArtifactRepository
 	publisher events.Publisher
 }
 
-// NewCreateArtifactHandler creates a new CreateArtifact handler.
-func NewCreateArtifactHandler(
+// NewCreateArtifact creates a new CreateArtifact handler.
+func NewCreateArtifact(
 	repo repositories.ArtifactRepository,
 	publisher events.Publisher,
-) CreateArtifactHandler {
-	return &CreateArtifactHandlerImpl{
+) CreateArtifact {
+	return &CreateArtifactImpl{
 		repo:      repo,
 		publisher: publisher,
 	}
 }
 
 // Execute performs the CreateArtifact operation.
-func (h *CreateArtifactHandlerImpl) Execute(ctx context.Context, input *CreateArtifactInput) (*CreateArtifactOutput, error) {
+func (h *CreateArtifactImpl) Execute(ctx context.Context, input *CreateArtifactInput) (*CreateArtifactOutput, error) {
 	// Create entity
 	entity := &models.Artifact{
 		ID:        uuid.New(),

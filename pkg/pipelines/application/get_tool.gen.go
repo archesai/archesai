@@ -26,27 +26,27 @@ type GetToolOutput struct {
 	Data models.Tool `json:"data"`
 }
 
-// GetToolHandler defines the interface for the GetTool operation.
-type GetToolHandler interface {
+// GetTool defines the interface for the GetTool operation.
+type GetTool interface {
 	Execute(ctx context.Context, input *GetToolInput) (*GetToolOutput, error)
 }
 
-// GetToolHandlerImpl is the default implementation of GetToolHandler.
-type GetToolHandlerImpl struct {
+// GetToolImpl is the default implementation of GetTool.
+type GetToolImpl struct {
 	repo repositories.ToolRepository
 }
 
-// NewGetToolHandler creates a new GetTool handler.
-func NewGetToolHandler(
+// NewGetTool creates a new GetTool handler.
+func NewGetTool(
 	repo repositories.ToolRepository,
-) GetToolHandler {
-	return &GetToolHandlerImpl{
+) GetTool {
+	return &GetToolImpl{
 		repo: repo,
 	}
 }
 
 // Execute performs the GetTool operation.
-func (h *GetToolHandlerImpl) Execute(ctx context.Context, input *GetToolInput) (*GetToolOutput, error) {
+func (h *GetToolImpl) Execute(ctx context.Context, input *GetToolInput) (*GetToolOutput, error) {
 	// Get from repository
 	result, err := h.repo.Get(ctx, input.ID)
 	if err != nil {

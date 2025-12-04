@@ -7,28 +7,25 @@ import (
 	"fmt"
 )
 
-// Ensure DeleteCurrentUserHandlerImpl implements DeleteCurrentUserHandler
-var _ DeleteCurrentUserHandler = (*DeleteCurrentUserHandlerImpl)(nil)
+// Ensure DeleteCurrentUserImpl implements DeleteCurrentUser
+var _ DeleteCurrentUser = (*DeleteCurrentUserImpl)(nil)
 
-// DeleteCurrentUserHandlerImpl implements the DeleteCurrentUserHandler interface.
-type DeleteCurrentUserHandlerImpl struct {
+// DeleteCurrentUserImpl implements the DeleteCurrentUser interface.
+type DeleteCurrentUserImpl struct {
 	// TODO: Add your dependencies here
 }
 
-// NewDeleteCurrentUserHandler creates a new DeleteCurrentUser handler.
-func NewDeleteCurrentUserHandler(
+// NewDeleteCurrentUser creates a new DeleteCurrentUser implementation.
+func NewDeleteCurrentUser(
 // TODO: Add your dependencies here
-) DeleteCurrentUserHandler {
-	return &DeleteCurrentUserHandlerImpl{
+) DeleteCurrentUser {
+	return &DeleteCurrentUserImpl{
 		// TODO: Initialize dependencies
 	}
 }
 
 // Execute performs the DeleteCurrentUser operation.
-func (h *DeleteCurrentUserHandlerImpl) Execute(
-	_ context.Context,
-	_ *DeleteCurrentUserInput,
-) error {
+func (h *DeleteCurrentUserImpl) Execute(ctx context.Context, input *DeleteCurrentUserInput) error {
 	// TODO: Implement DeleteCurrentUser logic
 	return fmt.Errorf("not implemented")
 }

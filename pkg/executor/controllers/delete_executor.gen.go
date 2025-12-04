@@ -18,20 +18,18 @@ import (
 // DeleteExecutor - DELETE /executors/{id}
 // ============================================================================
 
-// Handler type
-
-// DeleteExecutorHandlerHTTP wraps the user handler for HTTP
-type DeleteExecutorHandlerHTTP struct {
-	handler application.DeleteExecutorHandler
+// DeleteExecutorHandler is the HTTP handler for DeleteExecutor.
+type DeleteExecutorHandler struct {
+	deleteExecutor application.DeleteExecutor
 }
 
-// NewDeleteExecutorHandlerHTTP creates a new HTTP handler wrapper
-func NewDeleteExecutorHandlerHTTP(handler application.DeleteExecutorHandler) *DeleteExecutorHandlerHTTP {
-	return &DeleteExecutorHandlerHTTP{handler: handler}
+// NewDeleteExecutorHandler creates a new HTTP handler.
+func NewDeleteExecutorHandler(deleteExecutor application.DeleteExecutor) *DeleteExecutorHandler {
+	return &DeleteExecutorHandler{deleteExecutor: deleteExecutor}
 }
 
-// RegisterDeleteExecutorRoute registers the HTTP route for DeleteExecutor
-func RegisterDeleteExecutorRoute(mux *http.ServeMux, handler *DeleteExecutorHandlerHTTP) {
+// RegisterDeleteExecutorRoute registers the HTTP route for DeleteExecutor.
+func RegisterDeleteExecutorRoute(mux *http.ServeMux, handler *DeleteExecutorHandler) {
 	mux.HandleFunc("DELETE /executors/{id}", handler.ServeHTTP)
 }
 
@@ -112,7 +110,7 @@ func (response DeleteExecutor500Response) VisitDeleteExecutorResponse(w http.Res
 }
 
 // ServeHTTP handles the DELETE /executors/{id} endpoint.
-func (h *DeleteExecutorHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *DeleteExecutorHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Build input from request
@@ -131,8 +129,8 @@ func (h *DeleteExecutorHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Req
 	}
 	input.ID = id
 
-	// Execute handler
-	if err := h.handler.Execute(ctx, input); err != nil {
+	// Execute
+	if err := h.deleteExecutor.Execute(ctx, input); err != nil {
 		errorResp := DeleteExecutor500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

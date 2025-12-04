@@ -24,7 +24,7 @@ type GetPipelineStepsOutput struct {
 	Data []models.PipelineStep `json:"data"`
 }
 
-// GetPipelineStepsHandler defines the interface for the GetPipelineSteps operation.
-type GetPipelineStepsHandler interface {
+// GetPipelineSteps defines the interface for the GetPipelineSteps operation.
+type GetPipelineSteps interface {
 	Execute(ctx context.Context, input *GetPipelineStepsInput) (*GetPipelineStepsOutput, error)
 }

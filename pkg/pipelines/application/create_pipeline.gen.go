@@ -29,30 +29,30 @@ type CreatePipelineOutput struct {
 	Data models.Pipeline `json:"data"`
 }
 
-// CreatePipelineHandler defines the interface for the CreatePipeline operation.
-type CreatePipelineHandler interface {
+// CreatePipeline defines the interface for the CreatePipeline operation.
+type CreatePipeline interface {
 	Execute(ctx context.Context, input *CreatePipelineInput) (*CreatePipelineOutput, error)
 }
 
-// CreatePipelineHandlerImpl is the default implementation of CreatePipelineHandler.
-type CreatePipelineHandlerImpl struct {
+// CreatePipelineImpl is the default implementation of CreatePipeline.
+type CreatePipelineImpl struct {
 	repo      repositories.PipelineRepository
 	publisher events.Publisher
 }
 
-// NewCreatePipelineHandler creates a new CreatePipeline handler.
-func NewCreatePipelineHandler(
+// NewCreatePipeline creates a new CreatePipeline handler.
+func NewCreatePipeline(
 	repo repositories.PipelineRepository,
 	publisher events.Publisher,
-) CreatePipelineHandler {
-	return &CreatePipelineHandlerImpl{
+) CreatePipeline {
+	return &CreatePipelineImpl{
 		repo:      repo,
 		publisher: publisher,
 	}
 }
 
 // Execute performs the CreatePipeline operation.
-func (h *CreatePipelineHandlerImpl) Execute(ctx context.Context, input *CreatePipelineInput) (*CreatePipelineOutput, error) {
+func (h *CreatePipelineImpl) Execute(ctx context.Context, input *CreatePipelineInput) (*CreatePipelineOutput, error) {
 	// Create entity
 	entity := &models.Pipeline{
 		ID:        uuid.New(),

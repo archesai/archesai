@@ -17,20 +17,18 @@ import (
 // LogoutAll - POST /auth/logout-all
 // ============================================================================
 
-// Handler type
-
-// LogoutAllHandlerHTTP wraps the user handler for HTTP
-type LogoutAllHandlerHTTP struct {
-	handler application.LogoutAllHandler
+// LogoutAllHandler is the HTTP handler for LogoutAll.
+type LogoutAllHandler struct {
+	logoutAll application.LogoutAll
 }
 
-// NewLogoutAllHandlerHTTP creates a new HTTP handler wrapper
-func NewLogoutAllHandlerHTTP(handler application.LogoutAllHandler) *LogoutAllHandlerHTTP {
-	return &LogoutAllHandlerHTTP{handler: handler}
+// NewLogoutAllHandler creates a new HTTP handler.
+func NewLogoutAllHandler(logoutAll application.LogoutAll) *LogoutAllHandler {
+	return &LogoutAllHandler{logoutAll: logoutAll}
 }
 
-// RegisterLogoutAllRoute registers the HTTP route for LogoutAll
-func RegisterLogoutAllRoute(mux *http.ServeMux, handler *LogoutAllHandlerHTTP) {
+// RegisterLogoutAllRoute registers the HTTP route for LogoutAll.
+func RegisterLogoutAllRoute(mux *http.ServeMux, handler *LogoutAllHandler) {
 	mux.HandleFunc("POST /auth/logout-all", handler.ServeHTTP)
 }
 
@@ -93,7 +91,7 @@ func (response LogoutAll500Response) VisitLogoutAllResponse(w http.ResponseWrite
 }
 
 // ServeHTTP handles the POST /auth/logout-all endpoint.
-func (h *LogoutAllHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *LogoutAllHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Extract session ID from context for authenticated operations
@@ -112,8 +110,8 @@ func (h *LogoutAllHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	input := &application.LogoutAllInput{}
 	input.SessionID = sessionID
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.logoutAll.Execute(ctx, input)
 	if err != nil {
 		errorResp := LogoutAll500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

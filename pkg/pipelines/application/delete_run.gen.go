@@ -22,30 +22,30 @@ type DeleteRunInput struct {
 	ID uuid.UUID
 }
 
-// DeleteRunHandler defines the interface for the DeleteRun operation.
-type DeleteRunHandler interface {
+// DeleteRun defines the interface for the DeleteRun operation.
+type DeleteRun interface {
 	Execute(ctx context.Context, input *DeleteRunInput) error
 }
 
-// DeleteRunHandlerImpl is the default implementation of DeleteRunHandler.
-type DeleteRunHandlerImpl struct {
+// DeleteRunImpl is the default implementation of DeleteRun.
+type DeleteRunImpl struct {
 	repo      repositories.RunRepository
 	publisher events.Publisher
 }
 
-// NewDeleteRunHandler creates a new DeleteRun handler.
-func NewDeleteRunHandler(
+// NewDeleteRun creates a new DeleteRun handler.
+func NewDeleteRun(
 	repo repositories.RunRepository,
 	publisher events.Publisher,
-) DeleteRunHandler {
-	return &DeleteRunHandlerImpl{
+) DeleteRun {
+	return &DeleteRunImpl{
 		repo:      repo,
 		publisher: publisher,
 	}
 }
 
 // Execute performs the DeleteRun operation.
-func (h *DeleteRunHandlerImpl) Execute(ctx context.Context, input *DeleteRunInput) error {
+func (h *DeleteRunImpl) Execute(ctx context.Context, input *DeleteRunInput) error {
 	// Delete from repository
 	if err := h.repo.Delete(ctx, input.ID); err != nil {
 		return fmt.Errorf("failed to delete run: %w", err)

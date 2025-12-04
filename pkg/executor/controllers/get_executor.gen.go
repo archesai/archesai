@@ -19,20 +19,18 @@ import (
 // GetExecutor - GET /executors/{id}
 // ============================================================================
 
-// Handler type
-
-// GetExecutorHandlerHTTP wraps the user handler for HTTP
-type GetExecutorHandlerHTTP struct {
-	handler application.GetExecutorHandler
+// GetExecutorHandler is the HTTP handler for GetExecutor.
+type GetExecutorHandler struct {
+	getExecutor application.GetExecutor
 }
 
-// NewGetExecutorHandlerHTTP creates a new HTTP handler wrapper
-func NewGetExecutorHandlerHTTP(handler application.GetExecutorHandler) *GetExecutorHandlerHTTP {
-	return &GetExecutorHandlerHTTP{handler: handler}
+// NewGetExecutorHandler creates a new HTTP handler.
+func NewGetExecutorHandler(getExecutor application.GetExecutor) *GetExecutorHandler {
+	return &GetExecutorHandler{getExecutor: getExecutor}
 }
 
-// RegisterGetExecutorRoute registers the HTTP route for GetExecutor
-func RegisterGetExecutorRoute(mux *http.ServeMux, handler *GetExecutorHandlerHTTP) {
+// RegisterGetExecutorRoute registers the HTTP route for GetExecutor.
+func RegisterGetExecutorRoute(mux *http.ServeMux, handler *GetExecutorHandler) {
 	mux.HandleFunc("GET /executors/{id}", handler.ServeHTTP)
 }
 
@@ -115,7 +113,7 @@ func (response GetExecutor500Response) VisitGetExecutorResponse(w http.ResponseW
 }
 
 // ServeHTTP handles the GET /executors/{id} endpoint.
-func (h *GetExecutorHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *GetExecutorHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Build input from request
@@ -134,8 +132,8 @@ func (h *GetExecutorHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Reques
 	}
 	input.ID = id
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.getExecutor.Execute(ctx, input)
 	if err != nil {
 		errorResp := GetExecutor500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

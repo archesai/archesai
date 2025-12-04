@@ -7,27 +7,27 @@ import (
 	"fmt"
 )
 
-// Ensure UpdateCurrentUserHandlerImpl implements UpdateCurrentUserHandler
-var _ UpdateCurrentUserHandler = (*UpdateCurrentUserHandlerImpl)(nil)
+// Ensure UpdateCurrentUserImpl implements UpdateCurrentUser
+var _ UpdateCurrentUser = (*UpdateCurrentUserImpl)(nil)
 
-// UpdateCurrentUserHandlerImpl implements the UpdateCurrentUserHandler interface.
-type UpdateCurrentUserHandlerImpl struct {
+// UpdateCurrentUserImpl implements the UpdateCurrentUser interface.
+type UpdateCurrentUserImpl struct {
 	// TODO: Add your dependencies here
 }
 
-// NewUpdateCurrentUserHandler creates a new UpdateCurrentUser handler.
-func NewUpdateCurrentUserHandler(
+// NewUpdateCurrentUser creates a new UpdateCurrentUser implementation.
+func NewUpdateCurrentUser(
 // TODO: Add your dependencies here
-) UpdateCurrentUserHandler {
-	return &UpdateCurrentUserHandlerImpl{
+) UpdateCurrentUser {
+	return &UpdateCurrentUserImpl{
 		// TODO: Initialize dependencies
 	}
 }
 
 // Execute performs the UpdateCurrentUser operation.
-func (h *UpdateCurrentUserHandlerImpl) Execute(
-	_ context.Context,
-	_ *UpdateCurrentUserInput,
+func (h *UpdateCurrentUserImpl) Execute(
+	ctx context.Context,
+	input *UpdateCurrentUserInput,
 ) (*UpdateCurrentUserOutput, error) {
 	// TODO: Implement UpdateCurrentUser logic
 	return nil, fmt.Errorf("not implemented")

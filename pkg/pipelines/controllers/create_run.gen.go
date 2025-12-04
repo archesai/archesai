@@ -18,20 +18,18 @@ import (
 // CreateRun - POST /runs
 // ============================================================================
 
-// Handler type
-
-// CreateRunHandlerHTTP wraps the user handler for HTTP
-type CreateRunHandlerHTTP struct {
-	handler application.CreateRunHandler
+// CreateRunHandler is the HTTP handler for CreateRun.
+type CreateRunHandler struct {
+	createRun application.CreateRun
 }
 
-// NewCreateRunHandlerHTTP creates a new HTTP handler wrapper
-func NewCreateRunHandlerHTTP(handler application.CreateRunHandler) *CreateRunHandlerHTTP {
-	return &CreateRunHandlerHTTP{handler: handler}
+// NewCreateRunHandler creates a new HTTP handler.
+func NewCreateRunHandler(createRun application.CreateRun) *CreateRunHandler {
+	return &CreateRunHandler{createRun: createRun}
 }
 
-// RegisterCreateRunRoute registers the HTTP route for CreateRun
-func RegisterCreateRunRoute(mux *http.ServeMux, handler *CreateRunHandlerHTTP) {
+// RegisterCreateRunRoute registers the HTTP route for CreateRun.
+func RegisterCreateRunRoute(mux *http.ServeMux, handler *CreateRunHandler) {
 	mux.HandleFunc("POST /runs", handler.ServeHTTP)
 }
 
@@ -109,7 +107,7 @@ func (response CreateRun500Response) VisitCreateRunResponse(w http.ResponseWrite
 }
 
 // ServeHTTP handles the POST /runs endpoint.
-func (h *CreateRunHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *CreateRunHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Build input from request
@@ -128,8 +126,8 @@ func (h *CreateRunHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	}
 	input.PipelineID = body.PipelineID
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.createRun.Execute(ctx, input)
 	if err != nil {
 		errorResp := CreateRun500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

@@ -16,20 +16,18 @@ import (
 // GetConfig - GET /config
 // ============================================================================
 
-// Handler type
-
-// GetConfigHandlerHTTP wraps the user handler for HTTP
-type GetConfigHandlerHTTP struct {
-	handler application.GetConfigHandler
+// GetConfigHandler is the HTTP handler for GetConfig.
+type GetConfigHandler struct {
+	getConfig application.GetConfig
 }
 
-// NewGetConfigHandlerHTTP creates a new HTTP handler wrapper
-func NewGetConfigHandlerHTTP(handler application.GetConfigHandler) *GetConfigHandlerHTTP {
-	return &GetConfigHandlerHTTP{handler: handler}
+// NewGetConfigHandler creates a new HTTP handler.
+func NewGetConfigHandler(getConfig application.GetConfig) *GetConfigHandler {
+	return &GetConfigHandler{getConfig: getConfig}
 }
 
-// RegisterGetConfigRoute registers the HTTP route for GetConfig
-func RegisterGetConfigRoute(mux *http.ServeMux, handler *GetConfigHandlerHTTP) {
+// RegisterGetConfigRoute registers the HTTP route for GetConfig.
+func RegisterGetConfigRoute(mux *http.ServeMux, handler *GetConfigHandler) {
 	mux.HandleFunc("GET /config", handler.ServeHTTP)
 }
 
@@ -102,14 +100,14 @@ func (response GetConfig500Response) VisitGetConfigResponse(w http.ResponseWrite
 }
 
 // ServeHTTP handles the GET /config endpoint.
-func (h *GetConfigHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *GetConfigHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Build input from request
 	input := &application.GetConfigInput{}
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.getConfig.Execute(ctx, input)
 	if err != nil {
 		errorResp := GetConfig500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

@@ -19,7 +19,7 @@ type RequestEmailChangeInput struct {
 	UserID    uuid.UUID
 }
 
-// RequestEmailChangeHandler defines the interface for the RequestEmailChange operation.
-type RequestEmailChangeHandler interface {
+// RequestEmailChange defines the interface for the RequestEmailChange operation.
+type RequestEmailChange interface {
 	Execute(ctx context.Context, input *RequestEmailChangeInput) error
 }

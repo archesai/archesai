@@ -28,30 +28,30 @@ type CreateRunOutput struct {
 	Data models.Run `json:"data"`
 }
 
-// CreateRunHandler defines the interface for the CreateRun operation.
-type CreateRunHandler interface {
+// CreateRun defines the interface for the CreateRun operation.
+type CreateRun interface {
 	Execute(ctx context.Context, input *CreateRunInput) (*CreateRunOutput, error)
 }
 
-// CreateRunHandlerImpl is the default implementation of CreateRunHandler.
-type CreateRunHandlerImpl struct {
+// CreateRunImpl is the default implementation of CreateRun.
+type CreateRunImpl struct {
 	repo      repositories.RunRepository
 	publisher events.Publisher
 }
 
-// NewCreateRunHandler creates a new CreateRun handler.
-func NewCreateRunHandler(
+// NewCreateRun creates a new CreateRun handler.
+func NewCreateRun(
 	repo repositories.RunRepository,
 	publisher events.Publisher,
-) CreateRunHandler {
-	return &CreateRunHandlerImpl{
+) CreateRun {
+	return &CreateRunImpl{
 		repo:      repo,
 		publisher: publisher,
 	}
 }
 
 // Execute performs the CreateRun operation.
-func (h *CreateRunHandlerImpl) Execute(ctx context.Context, input *CreateRunInput) (*CreateRunOutput, error) {
+func (h *CreateRunImpl) Execute(ctx context.Context, input *CreateRunInput) (*CreateRunOutput, error) {
 	// Create entity
 	entity := &models.Run{
 		ID:        uuid.New(),

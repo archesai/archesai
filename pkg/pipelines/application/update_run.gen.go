@@ -29,30 +29,30 @@ type UpdateRunOutput struct {
 	Data models.Run `json:"data"`
 }
 
-// UpdateRunHandler defines the interface for the UpdateRun operation.
-type UpdateRunHandler interface {
+// UpdateRun defines the interface for the UpdateRun operation.
+type UpdateRun interface {
 	Execute(ctx context.Context, input *UpdateRunInput) (*UpdateRunOutput, error)
 }
 
-// UpdateRunHandlerImpl is the default implementation of UpdateRunHandler.
-type UpdateRunHandlerImpl struct {
+// UpdateRunImpl is the default implementation of UpdateRun.
+type UpdateRunImpl struct {
 	repo      repositories.RunRepository
 	publisher events.Publisher
 }
 
-// NewUpdateRunHandler creates a new UpdateRun handler.
-func NewUpdateRunHandler(
+// NewUpdateRun creates a new UpdateRun handler.
+func NewUpdateRun(
 	repo repositories.RunRepository,
 	publisher events.Publisher,
-) UpdateRunHandler {
-	return &UpdateRunHandlerImpl{
+) UpdateRun {
+	return &UpdateRunImpl{
 		repo:      repo,
 		publisher: publisher,
 	}
 }
 
 // Execute performs the UpdateRun operation.
-func (h *UpdateRunHandlerImpl) Execute(ctx context.Context, input *UpdateRunInput) (*UpdateRunOutput, error) {
+func (h *UpdateRunImpl) Execute(ctx context.Context, input *UpdateRunInput) (*UpdateRunOutput, error) {
 	// Get existing entity
 	existing, err := h.repo.Get(ctx, input.ID)
 	if err != nil {

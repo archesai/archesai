@@ -26,7 +26,7 @@ type UpdateCurrentUserOutput struct {
 	Data models.User `json:"data"`
 }
 
-// UpdateCurrentUserHandler defines the interface for the UpdateCurrentUser operation.
-type UpdateCurrentUserHandler interface {
+// UpdateCurrentUser defines the interface for the UpdateCurrentUser operation.
+type UpdateCurrentUser interface {
 	Execute(ctx context.Context, input *UpdateCurrentUserInput) (*UpdateCurrentUserOutput, error)
 }

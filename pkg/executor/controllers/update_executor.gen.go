@@ -19,20 +19,18 @@ import (
 // UpdateExecutor - PATCH /executors/{id}
 // ============================================================================
 
-// Handler type
-
-// UpdateExecutorHandlerHTTP wraps the user handler for HTTP
-type UpdateExecutorHandlerHTTP struct {
-	handler application.UpdateExecutorHandler
+// UpdateExecutorHandler is the HTTP handler for UpdateExecutor.
+type UpdateExecutorHandler struct {
+	updateExecutor application.UpdateExecutor
 }
 
-// NewUpdateExecutorHandlerHTTP creates a new HTTP handler wrapper
-func NewUpdateExecutorHandlerHTTP(handler application.UpdateExecutorHandler) *UpdateExecutorHandlerHTTP {
-	return &UpdateExecutorHandlerHTTP{handler: handler}
+// NewUpdateExecutorHandler creates a new HTTP handler.
+func NewUpdateExecutorHandler(updateExecutor application.UpdateExecutor) *UpdateExecutorHandler {
+	return &UpdateExecutorHandler{updateExecutor: updateExecutor}
 }
 
-// RegisterUpdateExecutorRoute registers the HTTP route for UpdateExecutor
-func RegisterUpdateExecutorRoute(mux *http.ServeMux, handler *UpdateExecutorHandlerHTTP) {
+// RegisterUpdateExecutorRoute registers the HTTP route for UpdateExecutor.
+func RegisterUpdateExecutorRoute(mux *http.ServeMux, handler *UpdateExecutorHandler) {
 	mux.HandleFunc("PATCH /executors/{id}", handler.ServeHTTP)
 }
 
@@ -132,7 +130,7 @@ func (response UpdateExecutor500Response) VisitUpdateExecutorResponse(w http.Res
 }
 
 // ServeHTTP handles the PATCH /executors/{id} endpoint.
-func (h *UpdateExecutorHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *UpdateExecutorHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Build input from request
@@ -176,8 +174,8 @@ func (h *UpdateExecutorHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Req
 	input.SchemaOut = body.SchemaOut
 	input.Timeout = body.Timeout
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.updateExecutor.Execute(ctx, input)
 	if err != nil {
 		errorResp := UpdateExecutor500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

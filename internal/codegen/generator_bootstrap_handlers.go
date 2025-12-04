@@ -1,7 +1,6 @@
 package codegen
 
 import (
-	"bytes"
 	"fmt"
 	"path/filepath"
 	"sort"
@@ -75,10 +74,9 @@ func (g *BootstrapHandlersGenerator) Generate(ctx *GeneratorContext) error {
 		NeedsPublisher: needsPublisher,
 	}
 
-	var buf bytes.Buffer
-	if err := ctx.Renderer.Render(&buf, "handlers.go.tmpl", data); err != nil {
-		return fmt.Errorf("failed to render handlers.go.tmpl: %w", err)
+	outputPath := filepath.Join("bootstrap", "handlers.gen.go")
+	if err := ctx.RenderToFile("handlers.go.tmpl", outputPath, data); err != nil {
+		return fmt.Errorf("failed to generate bootstrap handlers: %w", err)
 	}
-
-	return ctx.Storage.WriteFile(filepath.Join("bootstrap", "handlers.gen.go"), buf.Bytes(), 0644)
+	return nil
 }

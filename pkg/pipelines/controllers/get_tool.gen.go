@@ -19,20 +19,18 @@ import (
 // GetTool - GET /tools/{id}
 // ============================================================================
 
-// Handler type
-
-// GetToolHandlerHTTP wraps the user handler for HTTP
-type GetToolHandlerHTTP struct {
-	handler application.GetToolHandler
+// GetToolHandler is the HTTP handler for GetTool.
+type GetToolHandler struct {
+	getTool application.GetTool
 }
 
-// NewGetToolHandlerHTTP creates a new HTTP handler wrapper
-func NewGetToolHandlerHTTP(handler application.GetToolHandler) *GetToolHandlerHTTP {
-	return &GetToolHandlerHTTP{handler: handler}
+// NewGetToolHandler creates a new HTTP handler.
+func NewGetToolHandler(getTool application.GetTool) *GetToolHandler {
+	return &GetToolHandler{getTool: getTool}
 }
 
-// RegisterGetToolRoute registers the HTTP route for GetTool
-func RegisterGetToolRoute(mux *http.ServeMux, handler *GetToolHandlerHTTP) {
+// RegisterGetToolRoute registers the HTTP route for GetTool.
+func RegisterGetToolRoute(mux *http.ServeMux, handler *GetToolHandler) {
 	mux.HandleFunc("GET /tools/{id}", handler.ServeHTTP)
 }
 
@@ -115,7 +113,7 @@ func (response GetTool500Response) VisitGetToolResponse(w http.ResponseWriter) e
 }
 
 // ServeHTTP handles the GET /tools/{id} endpoint.
-func (h *GetToolHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *GetToolHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Build input from request
@@ -134,8 +132,8 @@ func (h *GetToolHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	input.ID = id
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.getTool.Execute(ctx, input)
 	if err != nil {
 		errorResp := GetTool500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

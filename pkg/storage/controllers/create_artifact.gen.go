@@ -16,20 +16,18 @@ import (
 // CreateArtifact - POST /artifacts
 // ============================================================================
 
-// Handler type
-
-// CreateArtifactHandlerHTTP wraps the user handler for HTTP
-type CreateArtifactHandlerHTTP struct {
-	handler application.CreateArtifactHandler
+// CreateArtifactHandler is the HTTP handler for CreateArtifact.
+type CreateArtifactHandler struct {
+	createArtifact application.CreateArtifact
 }
 
-// NewCreateArtifactHandlerHTTP creates a new HTTP handler wrapper
-func NewCreateArtifactHandlerHTTP(handler application.CreateArtifactHandler) *CreateArtifactHandlerHTTP {
-	return &CreateArtifactHandlerHTTP{handler: handler}
+// NewCreateArtifactHandler creates a new HTTP handler.
+func NewCreateArtifactHandler(createArtifact application.CreateArtifact) *CreateArtifactHandler {
+	return &CreateArtifactHandler{createArtifact: createArtifact}
 }
 
-// RegisterCreateArtifactRoute registers the HTTP route for CreateArtifact
-func RegisterCreateArtifactRoute(mux *http.ServeMux, handler *CreateArtifactHandlerHTTP) {
+// RegisterCreateArtifactRoute registers the HTTP route for CreateArtifact.
+func RegisterCreateArtifactRoute(mux *http.ServeMux, handler *CreateArtifactHandler) {
 	mux.HandleFunc("POST /artifacts", handler.ServeHTTP)
 }
 
@@ -108,7 +106,7 @@ func (response CreateArtifact500Response) VisitCreateArtifactResponse(w http.Res
 }
 
 // ServeHTTP handles the POST /artifacts endpoint.
-func (h *CreateArtifactHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *CreateArtifactHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Build input from request
@@ -128,8 +126,8 @@ func (h *CreateArtifactHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Req
 	input.Name = body.Name
 	input.Text = body.Text
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.createArtifact.Execute(ctx, input)
 	if err != nil {
 		errorResp := CreateArtifact500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

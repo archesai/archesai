@@ -13,26 +13,25 @@ import (
 	"github.com/archesai/archesai/pkg/auth/application"
 	"github.com/archesai/archesai/pkg/auth/models"
 	"github.com/archesai/archesai/pkg/server"
+	servermodels "github.com/archesai/archesai/pkg/server/models"
 )
 
 // ============================================================================
 // ListOrganizations - GET /organizations
 // ============================================================================
 
-// Handler type
-
-// ListOrganizationsHandlerHTTP wraps the user handler for HTTP
-type ListOrganizationsHandlerHTTP struct {
-	handler application.ListOrganizationsHandler
+// ListOrganizationsHandler is the HTTP handler for ListOrganizations.
+type ListOrganizationsHandler struct {
+	listOrganizations application.ListOrganizations
 }
 
-// NewListOrganizationsHandlerHTTP creates a new HTTP handler wrapper
-func NewListOrganizationsHandlerHTTP(handler application.ListOrganizationsHandler) *ListOrganizationsHandlerHTTP {
-	return &ListOrganizationsHandlerHTTP{handler: handler}
+// NewListOrganizationsHandler creates a new HTTP handler.
+func NewListOrganizationsHandler(listOrganizations application.ListOrganizations) *ListOrganizationsHandler {
+	return &ListOrganizationsHandler{listOrganizations: listOrganizations}
 }
 
-// RegisterListOrganizationsRoute registers the HTTP route for ListOrganizations
-func RegisterListOrganizationsRoute(mux *http.ServeMux, handler *ListOrganizationsHandlerHTTP) {
+// RegisterListOrganizationsRoute registers the HTTP route for ListOrganizations.
+func RegisterListOrganizationsRoute(mux *http.ServeMux, handler *ListOrganizationsHandler) {
 	mux.HandleFunc("GET /organizations", handler.ServeHTTP)
 }
 
@@ -52,8 +51,8 @@ type ListOrganizationsResponse interface {
 }
 
 type ListOrganizations200Response struct {
-	Data []models.Organization `json:"data"`
-	Meta models.PaginationMeta `json:"meta"`
+	Data []models.Organization       `json:"data"`
+	Meta servermodels.PaginationMeta `json:"meta"`
 }
 
 func (response ListOrganizations200Response) VisitListOrganizationsResponse(w http.ResponseWriter) error {
@@ -113,7 +112,7 @@ func (response ListOrganizations500Response) VisitListOrganizationsResponse(w ht
 }
 
 // ServeHTTP handles the GET /organizations endpoint.
-func (h *ListOrganizationsHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *ListOrganizationsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Extract session ID from context for authenticated operations
@@ -167,8 +166,8 @@ func (h *ListOrganizationsHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.
 		return
 	}
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.listOrganizations.Execute(ctx, input)
 	if err != nil {
 		errorResp := ListOrganizations500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

@@ -24,7 +24,7 @@ type ValidatePipelineExecutionPlanOutput struct {
 	Data models.Pipeline `json:"data"`
 }
 
-// ValidatePipelineExecutionPlanHandler defines the interface for the ValidatePipelineExecutionPlan operation.
-type ValidatePipelineExecutionPlanHandler interface {
+// ValidatePipelineExecutionPlan defines the interface for the ValidatePipelineExecutionPlan operation.
+type ValidatePipelineExecutionPlan interface {
 	Execute(ctx context.Context, input *ValidatePipelineExecutionPlanInput) (*ValidatePipelineExecutionPlanOutput, error)
 }

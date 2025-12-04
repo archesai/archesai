@@ -18,20 +18,18 @@ import (
 // DeleteUser - DELETE /users/{id}
 // ============================================================================
 
-// Handler type
-
-// DeleteUserHandlerHTTP wraps the user handler for HTTP
-type DeleteUserHandlerHTTP struct {
-	handler application.DeleteUserHandler
+// DeleteUserHandler is the HTTP handler for DeleteUser.
+type DeleteUserHandler struct {
+	deleteUser application.DeleteUser
 }
 
-// NewDeleteUserHandlerHTTP creates a new HTTP handler wrapper
-func NewDeleteUserHandlerHTTP(handler application.DeleteUserHandler) *DeleteUserHandlerHTTP {
-	return &DeleteUserHandlerHTTP{handler: handler}
+// NewDeleteUserHandler creates a new HTTP handler.
+func NewDeleteUserHandler(deleteUser application.DeleteUser) *DeleteUserHandler {
+	return &DeleteUserHandler{deleteUser: deleteUser}
 }
 
-// RegisterDeleteUserRoute registers the HTTP route for DeleteUser
-func RegisterDeleteUserRoute(mux *http.ServeMux, handler *DeleteUserHandlerHTTP) {
+// RegisterDeleteUserRoute registers the HTTP route for DeleteUser.
+func RegisterDeleteUserRoute(mux *http.ServeMux, handler *DeleteUserHandler) {
 	mux.HandleFunc("DELETE /users/{id}", handler.ServeHTTP)
 }
 
@@ -112,7 +110,7 @@ func (response DeleteUser500Response) VisitDeleteUserResponse(w http.ResponseWri
 }
 
 // ServeHTTP handles the DELETE /users/{id} endpoint.
-func (h *DeleteUserHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *DeleteUserHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Extract session ID from context for authenticated operations
@@ -144,8 +142,8 @@ func (h *DeleteUserHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request
 	}
 	input.ID = id
 
-	// Execute handler
-	if err := h.handler.Execute(ctx, input); err != nil {
+	// Execute
+	if err := h.deleteUser.Execute(ctx, input); err != nil {
 		errorResp := DeleteUser500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

@@ -19,20 +19,18 @@ import (
 // GetPipeline - GET /pipelines/{id}
 // ============================================================================
 
-// Handler type
-
-// GetPipelineHandlerHTTP wraps the user handler for HTTP
-type GetPipelineHandlerHTTP struct {
-	handler application.GetPipelineHandler
+// GetPipelineHandler is the HTTP handler for GetPipeline.
+type GetPipelineHandler struct {
+	getPipeline application.GetPipeline
 }
 
-// NewGetPipelineHandlerHTTP creates a new HTTP handler wrapper
-func NewGetPipelineHandlerHTTP(handler application.GetPipelineHandler) *GetPipelineHandlerHTTP {
-	return &GetPipelineHandlerHTTP{handler: handler}
+// NewGetPipelineHandler creates a new HTTP handler.
+func NewGetPipelineHandler(getPipeline application.GetPipeline) *GetPipelineHandler {
+	return &GetPipelineHandler{getPipeline: getPipeline}
 }
 
-// RegisterGetPipelineRoute registers the HTTP route for GetPipeline
-func RegisterGetPipelineRoute(mux *http.ServeMux, handler *GetPipelineHandlerHTTP) {
+// RegisterGetPipelineRoute registers the HTTP route for GetPipeline.
+func RegisterGetPipelineRoute(mux *http.ServeMux, handler *GetPipelineHandler) {
 	mux.HandleFunc("GET /pipelines/{id}", handler.ServeHTTP)
 }
 
@@ -115,7 +113,7 @@ func (response GetPipeline500Response) VisitGetPipelineResponse(w http.ResponseW
 }
 
 // ServeHTTP handles the GET /pipelines/{id} endpoint.
-func (h *GetPipelineHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *GetPipelineHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Build input from request
@@ -134,8 +132,8 @@ func (h *GetPipelineHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Reques
 	}
 	input.ID = id
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.getPipeline.Execute(ctx, input)
 	if err != nil {
 		errorResp := GetPipeline500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

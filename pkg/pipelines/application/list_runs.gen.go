@@ -8,6 +8,7 @@ import (
 
 	"github.com/archesai/archesai/pkg/pipelines/models"
 	"github.com/archesai/archesai/pkg/pipelines/repositories"
+	servermodels "github.com/archesai/archesai/pkg/server/models"
 )
 
 // ============================================================================
@@ -23,31 +24,31 @@ type ListRunsInput struct {
 
 // ListRunsOutput represents the output for the ListRuns operation.
 type ListRunsOutput struct {
-	Data []models.Run          `json:"data"`
-	Meta models.PaginationMeta `json:"meta"`
+	Data []models.Run                `json:"data"`
+	Meta servermodels.PaginationMeta `json:"meta"`
 }
 
-// ListRunsHandler defines the interface for the ListRuns operation.
-type ListRunsHandler interface {
+// ListRuns defines the interface for the ListRuns operation.
+type ListRuns interface {
 	Execute(ctx context.Context, input *ListRunsInput) (*ListRunsOutput, error)
 }
 
-// ListRunsHandlerImpl is the default implementation of ListRunsHandler.
-type ListRunsHandlerImpl struct {
+// ListRunsImpl is the default implementation of ListRuns.
+type ListRunsImpl struct {
 	repo repositories.RunRepository
 }
 
-// NewListRunsHandler creates a new ListRuns handler.
-func NewListRunsHandler(
+// NewListRuns creates a new ListRuns handler.
+func NewListRuns(
 	repo repositories.RunRepository,
-) ListRunsHandler {
-	return &ListRunsHandlerImpl{
+) ListRuns {
+	return &ListRunsImpl{
 		repo: repo,
 	}
 }
 
 // Execute performs the ListRuns operation.
-func (h *ListRunsHandlerImpl) Execute(ctx context.Context, input *ListRunsInput) (*ListRunsOutput, error) {
+func (h *ListRunsImpl) Execute(ctx context.Context, input *ListRunsInput) (*ListRunsOutput, error) {
 	// List from repository
 	results, total, err := h.repo.List(ctx, 100, 0) // TODO: Use pagination from input
 	if err != nil {

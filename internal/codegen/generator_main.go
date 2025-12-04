@@ -1,9 +1,6 @@
 package codegen
 
-import (
-	"bytes"
-	"fmt"
-)
+import "fmt"
 
 // MainTemplateData holds the data for rendering the main.go template.
 type MainTemplateData struct {
@@ -31,10 +28,8 @@ func (g *MainGenerator) Generate(ctx *GeneratorContext) error {
 		ProjectName: ctx.ProjectName,
 	}
 
-	var buf bytes.Buffer
-	if err := ctx.Renderer.Render(&buf, "main.go.tmpl", data); err != nil {
-		return fmt.Errorf("failed to render main.go.tmpl: %w", err)
+	if err := ctx.RenderToFile("main.go.tmpl", "main.gen.go", data); err != nil {
+		return fmt.Errorf("failed to generate main.go: %w", err)
 	}
-
-	return ctx.Storage.WriteFile("main.gen.go", buf.Bytes(), 0644)
+	return nil
 }

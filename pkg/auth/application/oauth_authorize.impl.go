@@ -7,27 +7,27 @@ import (
 	"fmt"
 )
 
-// Ensure OauthAuthorizeHandlerImpl implements OauthAuthorizeHandler
-var _ OauthAuthorizeHandler = (*OauthAuthorizeHandlerImpl)(nil)
+// Ensure OauthAuthorizeImpl implements OauthAuthorize
+var _ OauthAuthorize = (*OauthAuthorizeImpl)(nil)
 
-// OauthAuthorizeHandlerImpl implements the OauthAuthorizeHandler interface.
-type OauthAuthorizeHandlerImpl struct {
+// OauthAuthorizeImpl implements the OauthAuthorize interface.
+type OauthAuthorizeImpl struct {
 	// TODO: Add your dependencies here
 }
 
-// NewOauthAuthorizeHandler creates a new OauthAuthorize handler.
-func NewOauthAuthorizeHandler(
+// NewOauthAuthorize creates a new OauthAuthorize implementation.
+func NewOauthAuthorize(
 // TODO: Add your dependencies here
-) OauthAuthorizeHandler {
-	return &OauthAuthorizeHandlerImpl{
+) OauthAuthorize {
+	return &OauthAuthorizeImpl{
 		// TODO: Initialize dependencies
 	}
 }
 
 // Execute performs the OauthAuthorize operation.
-func (h *OauthAuthorizeHandlerImpl) Execute(
-	_ context.Context,
-	_ *OauthAuthorizeInput,
+func (h *OauthAuthorizeImpl) Execute(
+	ctx context.Context,
+	input *OauthAuthorizeInput,
 ) (*OauthAuthorizeOutput, error) {
 	// TODO: Implement OauthAuthorize logic
 	return nil, fmt.Errorf("not implemented")

@@ -8,6 +8,7 @@ import (
 
 	"github.com/archesai/archesai/pkg/executor/models"
 	"github.com/archesai/archesai/pkg/executor/repositories"
+	servermodels "github.com/archesai/archesai/pkg/server/models"
 )
 
 // ============================================================================
@@ -23,31 +24,31 @@ type ListExecutorsInput struct {
 
 // ListExecutorsOutput represents the output for the ListExecutors operation.
 type ListExecutorsOutput struct {
-	Data []models.Executor     `json:"data"`
-	Meta models.PaginationMeta `json:"meta"`
+	Data []models.Executor           `json:"data"`
+	Meta servermodels.PaginationMeta `json:"meta"`
 }
 
-// ListExecutorsHandler defines the interface for the ListExecutors operation.
-type ListExecutorsHandler interface {
+// ListExecutors defines the interface for the ListExecutors operation.
+type ListExecutors interface {
 	Execute(ctx context.Context, input *ListExecutorsInput) (*ListExecutorsOutput, error)
 }
 
-// ListExecutorsHandlerImpl is the default implementation of ListExecutorsHandler.
-type ListExecutorsHandlerImpl struct {
+// ListExecutorsImpl is the default implementation of ListExecutors.
+type ListExecutorsImpl struct {
 	repo repositories.ExecutorRepository
 }
 
-// NewListExecutorsHandler creates a new ListExecutors handler.
-func NewListExecutorsHandler(
+// NewListExecutors creates a new ListExecutors handler.
+func NewListExecutors(
 	repo repositories.ExecutorRepository,
-) ListExecutorsHandler {
-	return &ListExecutorsHandlerImpl{
+) ListExecutors {
+	return &ListExecutorsImpl{
 		repo: repo,
 	}
 }
 
 // Execute performs the ListExecutors operation.
-func (h *ListExecutorsHandlerImpl) Execute(ctx context.Context, input *ListExecutorsInput) (*ListExecutorsOutput, error) {
+func (h *ListExecutorsImpl) Execute(ctx context.Context, input *ListExecutorsInput) (*ListExecutorsOutput, error) {
 	// List from repository
 	results, total, err := h.repo.List(ctx, 100, 0) // TODO: Use pagination from input
 	if err != nil {

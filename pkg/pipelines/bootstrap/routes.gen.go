@@ -11,49 +11,49 @@ import (
 
 // HTTPHandlers holds all HTTP handlers for this package.
 type HTTPHandlers struct {
-	CreatePipeline                *controllers.CreatePipelineHandlerHTTP
-	CreatePipelineStep            *controllers.CreatePipelineStepHandlerHTTP
-	CreateRun                     *controllers.CreateRunHandlerHTTP
-	CreateTool                    *controllers.CreateToolHandlerHTTP
-	DeletePipeline                *controllers.DeletePipelineHandlerHTTP
-	DeleteRun                     *controllers.DeleteRunHandlerHTTP
-	DeleteTool                    *controllers.DeleteToolHandlerHTTP
-	GetPipeline                   *controllers.GetPipelineHandlerHTTP
-	GetPipelineExecutionPlan      *controllers.GetPipelineExecutionPlanHandlerHTTP
-	GetPipelineSteps              *controllers.GetPipelineStepsHandlerHTTP
-	GetRun                        *controllers.GetRunHandlerHTTP
-	GetTool                       *controllers.GetToolHandlerHTTP
-	ListPipelines                 *controllers.ListPipelinesHandlerHTTP
-	ListRuns                      *controllers.ListRunsHandlerHTTP
-	ListTools                     *controllers.ListToolsHandlerHTTP
-	UpdatePipeline                *controllers.UpdatePipelineHandlerHTTP
-	UpdateRun                     *controllers.UpdateRunHandlerHTTP
-	UpdateTool                    *controllers.UpdateToolHandlerHTTP
-	ValidatePipelineExecutionPlan *controllers.ValidatePipelineExecutionPlanHandlerHTTP
+	CreatePipeline                *controllers.CreatePipelineHandler
+	CreatePipelineStep            *controllers.CreatePipelineStepHandler
+	CreateRun                     *controllers.CreateRunHandler
+	CreateTool                    *controllers.CreateToolHandler
+	DeletePipeline                *controllers.DeletePipelineHandler
+	DeleteRun                     *controllers.DeleteRunHandler
+	DeleteTool                    *controllers.DeleteToolHandler
+	GetPipeline                   *controllers.GetPipelineHandler
+	GetPipelineExecutionPlan      *controllers.GetPipelineExecutionPlanHandler
+	GetPipelineSteps              *controllers.GetPipelineStepsHandler
+	GetRun                        *controllers.GetRunHandler
+	GetTool                       *controllers.GetToolHandler
+	ListPipelines                 *controllers.ListPipelinesHandler
+	ListRuns                      *controllers.ListRunsHandler
+	ListTools                     *controllers.ListToolsHandler
+	UpdatePipeline                *controllers.UpdatePipelineHandler
+	UpdateRun                     *controllers.UpdateRunHandler
+	UpdateTool                    *controllers.UpdateToolHandler
+	ValidatePipelineExecutionPlan *controllers.ValidatePipelineExecutionPlanHandler
 }
 
 // NewHTTPHandlers creates all HTTP handlers from the given application handlers.
 func NewHTTPHandlers(appHandlers *ApplicationHandlers) *HTTPHandlers {
 	return &HTTPHandlers{
-		CreatePipeline:                controllers.NewCreatePipelineHandlerHTTP(appHandlers.CreatePipeline),
-		CreatePipelineStep:            controllers.NewCreatePipelineStepHandlerHTTP(appHandlers.CreatePipelineStep),
-		CreateRun:                     controllers.NewCreateRunHandlerHTTP(appHandlers.CreateRun),
-		CreateTool:                    controllers.NewCreateToolHandlerHTTP(appHandlers.CreateTool),
-		DeletePipeline:                controllers.NewDeletePipelineHandlerHTTP(appHandlers.DeletePipeline),
-		DeleteRun:                     controllers.NewDeleteRunHandlerHTTP(appHandlers.DeleteRun),
-		DeleteTool:                    controllers.NewDeleteToolHandlerHTTP(appHandlers.DeleteTool),
-		GetPipeline:                   controllers.NewGetPipelineHandlerHTTP(appHandlers.GetPipeline),
-		GetPipelineExecutionPlan:      controllers.NewGetPipelineExecutionPlanHandlerHTTP(appHandlers.GetPipelineExecutionPlan),
-		GetPipelineSteps:              controllers.NewGetPipelineStepsHandlerHTTP(appHandlers.GetPipelineSteps),
-		GetRun:                        controllers.NewGetRunHandlerHTTP(appHandlers.GetRun),
-		GetTool:                       controllers.NewGetToolHandlerHTTP(appHandlers.GetTool),
-		ListPipelines:                 controllers.NewListPipelinesHandlerHTTP(appHandlers.ListPipelines),
-		ListRuns:                      controllers.NewListRunsHandlerHTTP(appHandlers.ListRuns),
-		ListTools:                     controllers.NewListToolsHandlerHTTP(appHandlers.ListTools),
-		UpdatePipeline:                controllers.NewUpdatePipelineHandlerHTTP(appHandlers.UpdatePipeline),
-		UpdateRun:                     controllers.NewUpdateRunHandlerHTTP(appHandlers.UpdateRun),
-		UpdateTool:                    controllers.NewUpdateToolHandlerHTTP(appHandlers.UpdateTool),
-		ValidatePipelineExecutionPlan: controllers.NewValidatePipelineExecutionPlanHandlerHTTP(appHandlers.ValidatePipelineExecutionPlan),
+		CreatePipeline:                controllers.NewCreatePipelineHandler(appHandlers.CreatePipeline),
+		CreatePipelineStep:            controllers.NewCreatePipelineStepHandler(appHandlers.CreatePipelineStep),
+		CreateRun:                     controllers.NewCreateRunHandler(appHandlers.CreateRun),
+		CreateTool:                    controllers.NewCreateToolHandler(appHandlers.CreateTool),
+		DeletePipeline:                controllers.NewDeletePipelineHandler(appHandlers.DeletePipeline),
+		DeleteRun:                     controllers.NewDeleteRunHandler(appHandlers.DeleteRun),
+		DeleteTool:                    controllers.NewDeleteToolHandler(appHandlers.DeleteTool),
+		GetPipeline:                   controllers.NewGetPipelineHandler(appHandlers.GetPipeline),
+		GetPipelineExecutionPlan:      controllers.NewGetPipelineExecutionPlanHandler(appHandlers.GetPipelineExecutionPlan),
+		GetPipelineSteps:              controllers.NewGetPipelineStepsHandler(appHandlers.GetPipelineSteps),
+		GetRun:                        controllers.NewGetRunHandler(appHandlers.GetRun),
+		GetTool:                       controllers.NewGetToolHandler(appHandlers.GetTool),
+		ListPipelines:                 controllers.NewListPipelinesHandler(appHandlers.ListPipelines),
+		ListRuns:                      controllers.NewListRunsHandler(appHandlers.ListRuns),
+		ListTools:                     controllers.NewListToolsHandler(appHandlers.ListTools),
+		UpdatePipeline:                controllers.NewUpdatePipelineHandler(appHandlers.UpdatePipeline),
+		UpdateRun:                     controllers.NewUpdateRunHandler(appHandlers.UpdateRun),
+		UpdateTool:                    controllers.NewUpdateToolHandler(appHandlers.UpdateTool),
+		ValidatePipelineExecutionPlan: controllers.NewValidatePipelineExecutionPlanHandler(appHandlers.ValidatePipelineExecutionPlan),
 	}
 }
 

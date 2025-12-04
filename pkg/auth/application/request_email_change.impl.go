@@ -7,27 +7,27 @@ import (
 	"fmt"
 )
 
-// Ensure RequestEmailChangeHandlerImpl implements RequestEmailChangeHandler
-var _ RequestEmailChangeHandler = (*RequestEmailChangeHandlerImpl)(nil)
+// Ensure RequestEmailChangeImpl implements RequestEmailChange
+var _ RequestEmailChange = (*RequestEmailChangeImpl)(nil)
 
-// RequestEmailChangeHandlerImpl implements the RequestEmailChangeHandler interface.
-type RequestEmailChangeHandlerImpl struct {
+// RequestEmailChangeImpl implements the RequestEmailChange interface.
+type RequestEmailChangeImpl struct {
 	// TODO: Add your dependencies here
 }
 
-// NewRequestEmailChangeHandler creates a new RequestEmailChange handler.
-func NewRequestEmailChangeHandler(
+// NewRequestEmailChange creates a new RequestEmailChange implementation.
+func NewRequestEmailChange(
 // TODO: Add your dependencies here
-) RequestEmailChangeHandler {
-	return &RequestEmailChangeHandlerImpl{
+) RequestEmailChange {
+	return &RequestEmailChangeImpl{
 		// TODO: Initialize dependencies
 	}
 }
 
 // Execute performs the RequestEmailChange operation.
-func (h *RequestEmailChangeHandlerImpl) Execute(
-	_ context.Context,
-	_ *RequestEmailChangeInput,
+func (h *RequestEmailChangeImpl) Execute(
+	ctx context.Context,
+	input *RequestEmailChangeInput,
 ) error {
 	// TODO: Implement RequestEmailChange logic
 	return fmt.Errorf("not implemented")

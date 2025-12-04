@@ -19,20 +19,18 @@ import (
 // UpdateTool - PATCH /tools/{id}
 // ============================================================================
 
-// Handler type
-
-// UpdateToolHandlerHTTP wraps the user handler for HTTP
-type UpdateToolHandlerHTTP struct {
-	handler application.UpdateToolHandler
+// UpdateToolHandler is the HTTP handler for UpdateTool.
+type UpdateToolHandler struct {
+	updateTool application.UpdateTool
 }
 
-// NewUpdateToolHandlerHTTP creates a new HTTP handler wrapper
-func NewUpdateToolHandlerHTTP(handler application.UpdateToolHandler) *UpdateToolHandlerHTTP {
-	return &UpdateToolHandlerHTTP{handler: handler}
+// NewUpdateToolHandler creates a new HTTP handler.
+func NewUpdateToolHandler(updateTool application.UpdateTool) *UpdateToolHandler {
+	return &UpdateToolHandler{updateTool: updateTool}
 }
 
-// RegisterUpdateToolRoute registers the HTTP route for UpdateTool
-func RegisterUpdateToolRoute(mux *http.ServeMux, handler *UpdateToolHandlerHTTP) {
+// RegisterUpdateToolRoute registers the HTTP route for UpdateTool.
+func RegisterUpdateToolRoute(mux *http.ServeMux, handler *UpdateToolHandler) {
 	mux.HandleFunc("PATCH /tools/{id}", handler.ServeHTTP)
 }
 
@@ -121,7 +119,7 @@ func (response UpdateTool500Response) VisitUpdateToolResponse(w http.ResponseWri
 }
 
 // ServeHTTP handles the PATCH /tools/{id} endpoint.
-func (h *UpdateToolHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *UpdateToolHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Build input from request
@@ -154,8 +152,8 @@ func (h *UpdateToolHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request
 	input.Description = body.Description
 	input.Name = body.Name
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.updateTool.Execute(ctx, input)
 	if err != nil {
 		errorResp := UpdateTool500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

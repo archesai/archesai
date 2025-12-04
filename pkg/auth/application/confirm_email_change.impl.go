@@ -1,4 +1,3 @@
-// Package application provides handler implementations for auth operations.
 package application
 
 // NOTE: This file is user-editable. The generator will not overwrite it.
@@ -8,27 +7,27 @@ import (
 	"fmt"
 )
 
-// Ensure ConfirmEmailChangeHandlerImpl implements ConfirmEmailChangeHandler
-var _ ConfirmEmailChangeHandler = (*ConfirmEmailChangeHandlerImpl)(nil)
+// Ensure ConfirmEmailChangeImpl implements ConfirmEmailChange
+var _ ConfirmEmailChange = (*ConfirmEmailChangeImpl)(nil)
 
-// ConfirmEmailChangeHandlerImpl implements the ConfirmEmailChangeHandler interface.
-type ConfirmEmailChangeHandlerImpl struct {
+// ConfirmEmailChangeImpl implements the ConfirmEmailChange interface.
+type ConfirmEmailChangeImpl struct {
 	// TODO: Add your dependencies here
 }
 
-// NewConfirmEmailChangeHandler creates a new ConfirmEmailChange handler.
-func NewConfirmEmailChangeHandler(
+// NewConfirmEmailChange creates a new ConfirmEmailChange implementation.
+func NewConfirmEmailChange(
 // TODO: Add your dependencies here
-) ConfirmEmailChangeHandler {
-	return &ConfirmEmailChangeHandlerImpl{
+) ConfirmEmailChange {
+	return &ConfirmEmailChangeImpl{
 		// TODO: Initialize dependencies
 	}
 }
 
 // Execute performs the ConfirmEmailChange operation.
-func (h *ConfirmEmailChangeHandlerImpl) Execute(
-	_ context.Context,
-	_ *ConfirmEmailChangeInput,
+func (h *ConfirmEmailChangeImpl) Execute(
+	ctx context.Context,
+	input *ConfirmEmailChangeInput,
 ) error {
 	// TODO: Implement ConfirmEmailChange logic
 	return fmt.Errorf("not implemented")

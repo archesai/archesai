@@ -19,20 +19,18 @@ import (
 // GetInvitation - GET /organizations/{organizationID}/invitations/{id}
 // ============================================================================
 
-// Handler type
-
-// GetInvitationHandlerHTTP wraps the user handler for HTTP
-type GetInvitationHandlerHTTP struct {
-	handler application.GetInvitationHandler
+// GetInvitationHandler is the HTTP handler for GetInvitation.
+type GetInvitationHandler struct {
+	getInvitation application.GetInvitation
 }
 
-// NewGetInvitationHandlerHTTP creates a new HTTP handler wrapper
-func NewGetInvitationHandlerHTTP(handler application.GetInvitationHandler) *GetInvitationHandlerHTTP {
-	return &GetInvitationHandlerHTTP{handler: handler}
+// NewGetInvitationHandler creates a new HTTP handler.
+func NewGetInvitationHandler(getInvitation application.GetInvitation) *GetInvitationHandler {
+	return &GetInvitationHandler{getInvitation: getInvitation}
 }
 
-// RegisterGetInvitationRoute registers the HTTP route for GetInvitation
-func RegisterGetInvitationRoute(mux *http.ServeMux, handler *GetInvitationHandlerHTTP) {
+// RegisterGetInvitationRoute registers the HTTP route for GetInvitation.
+func RegisterGetInvitationRoute(mux *http.ServeMux, handler *GetInvitationHandler) {
 	mux.HandleFunc("GET /organizations/{organizationID}/invitations/{id}", handler.ServeHTTP)
 }
 
@@ -115,7 +113,7 @@ func (response GetInvitation500Response) VisitGetInvitationResponse(w http.Respo
 }
 
 // ServeHTTP handles the GET /organizations/{organizationID}/invitations/{id} endpoint.
-func (h *GetInvitationHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *GetInvitationHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Extract session ID from context for authenticated operations
@@ -160,8 +158,8 @@ func (h *GetInvitationHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Requ
 	}
 	input.ID = id
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.getInvitation.Execute(ctx, input)
 	if err != nil {
 		errorResp := GetInvitation500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

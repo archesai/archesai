@@ -19,20 +19,18 @@ import (
 // UpdateRun - PATCH /runs/{id}
 // ============================================================================
 
-// Handler type
-
-// UpdateRunHandlerHTTP wraps the user handler for HTTP
-type UpdateRunHandlerHTTP struct {
-	handler application.UpdateRunHandler
+// UpdateRunHandler is the HTTP handler for UpdateRun.
+type UpdateRunHandler struct {
+	updateRun application.UpdateRun
 }
 
-// NewUpdateRunHandlerHTTP creates a new HTTP handler wrapper
-func NewUpdateRunHandlerHTTP(handler application.UpdateRunHandler) *UpdateRunHandlerHTTP {
-	return &UpdateRunHandlerHTTP{handler: handler}
+// NewUpdateRunHandler creates a new HTTP handler.
+func NewUpdateRunHandler(updateRun application.UpdateRun) *UpdateRunHandler {
+	return &UpdateRunHandler{updateRun: updateRun}
 }
 
-// RegisterUpdateRunRoute registers the HTTP route for UpdateRun
-func RegisterUpdateRunRoute(mux *http.ServeMux, handler *UpdateRunHandlerHTTP) {
+// RegisterUpdateRunRoute registers the HTTP route for UpdateRun.
+func RegisterUpdateRunRoute(mux *http.ServeMux, handler *UpdateRunHandler) {
 	mux.HandleFunc("PATCH /runs/{id}", handler.ServeHTTP)
 }
 
@@ -120,7 +118,7 @@ func (response UpdateRun500Response) VisitUpdateRunResponse(w http.ResponseWrite
 }
 
 // ServeHTTP handles the PATCH /runs/{id} endpoint.
-func (h *UpdateRunHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *UpdateRunHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Build input from request
@@ -152,8 +150,8 @@ func (h *UpdateRunHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	}
 	input.PipelineID = body.PipelineID
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.updateRun.Execute(ctx, input)
 	if err != nil {
 		errorResp := UpdateRun500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

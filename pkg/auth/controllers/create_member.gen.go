@@ -19,20 +19,18 @@ import (
 // CreateMember - POST /organizations/{organizationID}/members
 // ============================================================================
 
-// Handler type
-
-// CreateMemberHandlerHTTP wraps the user handler for HTTP
-type CreateMemberHandlerHTTP struct {
-	handler application.CreateMemberHandler
+// CreateMemberHandler is the HTTP handler for CreateMember.
+type CreateMemberHandler struct {
+	createMember application.CreateMember
 }
 
-// NewCreateMemberHandlerHTTP creates a new HTTP handler wrapper
-func NewCreateMemberHandlerHTTP(handler application.CreateMemberHandler) *CreateMemberHandlerHTTP {
-	return &CreateMemberHandlerHTTP{handler: handler}
+// NewCreateMemberHandler creates a new HTTP handler.
+func NewCreateMemberHandler(createMember application.CreateMember) *CreateMemberHandler {
+	return &CreateMemberHandler{createMember: createMember}
 }
 
-// RegisterCreateMemberRoute registers the HTTP route for CreateMember
-func RegisterCreateMemberRoute(mux *http.ServeMux, handler *CreateMemberHandlerHTTP) {
+// RegisterCreateMemberRoute registers the HTTP route for CreateMember.
+func RegisterCreateMemberRoute(mux *http.ServeMux, handler *CreateMemberHandler) {
 	mux.HandleFunc("POST /organizations/{organizationID}/members", handler.ServeHTTP)
 }
 
@@ -110,7 +108,7 @@ func (response CreateMember500Response) VisitCreateMemberResponse(w http.Respons
 }
 
 // ServeHTTP handles the POST /organizations/{organizationID}/members endpoint.
-func (h *CreateMemberHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *CreateMemberHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Extract session ID from context for authenticated operations
@@ -155,8 +153,8 @@ func (h *CreateMemberHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Reque
 	}
 	input.Role = body.Role
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.createMember.Execute(ctx, input)
 	if err != nil {
 		errorResp := CreateMember500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

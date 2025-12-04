@@ -8,6 +8,7 @@ import (
 
 	"github.com/archesai/archesai/pkg/pipelines/models"
 	"github.com/archesai/archesai/pkg/pipelines/repositories"
+	servermodels "github.com/archesai/archesai/pkg/server/models"
 )
 
 // ============================================================================
@@ -23,31 +24,31 @@ type ListToolsInput struct {
 
 // ListToolsOutput represents the output for the ListTools operation.
 type ListToolsOutput struct {
-	Data []models.Tool         `json:"data"`
-	Meta models.PaginationMeta `json:"meta"`
+	Data []models.Tool               `json:"data"`
+	Meta servermodels.PaginationMeta `json:"meta"`
 }
 
-// ListToolsHandler defines the interface for the ListTools operation.
-type ListToolsHandler interface {
+// ListTools defines the interface for the ListTools operation.
+type ListTools interface {
 	Execute(ctx context.Context, input *ListToolsInput) (*ListToolsOutput, error)
 }
 
-// ListToolsHandlerImpl is the default implementation of ListToolsHandler.
-type ListToolsHandlerImpl struct {
+// ListToolsImpl is the default implementation of ListTools.
+type ListToolsImpl struct {
 	repo repositories.ToolRepository
 }
 
-// NewListToolsHandler creates a new ListTools handler.
-func NewListToolsHandler(
+// NewListTools creates a new ListTools handler.
+func NewListTools(
 	repo repositories.ToolRepository,
-) ListToolsHandler {
-	return &ListToolsHandlerImpl{
+) ListTools {
+	return &ListToolsImpl{
 		repo: repo,
 	}
 }
 
 // Execute performs the ListTools operation.
-func (h *ListToolsHandlerImpl) Execute(ctx context.Context, input *ListToolsInput) (*ListToolsOutput, error) {
+func (h *ListToolsImpl) Execute(ctx context.Context, input *ListToolsInput) (*ListToolsOutput, error) {
 	// List from repository
 	results, total, err := h.repo.List(ctx, 100, 0) // TODO: Use pagination from input
 	if err != nil {

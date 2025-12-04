@@ -22,30 +22,30 @@ type DeleteToolInput struct {
 	ID uuid.UUID
 }
 
-// DeleteToolHandler defines the interface for the DeleteTool operation.
-type DeleteToolHandler interface {
+// DeleteTool defines the interface for the DeleteTool operation.
+type DeleteTool interface {
 	Execute(ctx context.Context, input *DeleteToolInput) error
 }
 
-// DeleteToolHandlerImpl is the default implementation of DeleteToolHandler.
-type DeleteToolHandlerImpl struct {
+// DeleteToolImpl is the default implementation of DeleteTool.
+type DeleteToolImpl struct {
 	repo      repositories.ToolRepository
 	publisher events.Publisher
 }
 
-// NewDeleteToolHandler creates a new DeleteTool handler.
-func NewDeleteToolHandler(
+// NewDeleteTool creates a new DeleteTool handler.
+func NewDeleteTool(
 	repo repositories.ToolRepository,
 	publisher events.Publisher,
-) DeleteToolHandler {
-	return &DeleteToolHandlerImpl{
+) DeleteTool {
+	return &DeleteToolImpl{
 		repo:      repo,
 		publisher: publisher,
 	}
 }
 
 // Execute performs the DeleteTool operation.
-func (h *DeleteToolHandlerImpl) Execute(ctx context.Context, input *DeleteToolInput) error {
+func (h *DeleteToolImpl) Execute(ctx context.Context, input *DeleteToolInput) error {
 	// Delete from repository
 	if err := h.repo.Delete(ctx, input.ID); err != nil {
 		return fmt.Errorf("failed to delete tool: %w", err)

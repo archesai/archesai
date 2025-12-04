@@ -7,27 +7,27 @@ import (
 	"fmt"
 )
 
-// Ensure RequestEmailVerificationHandlerImpl implements RequestEmailVerificationHandler
-var _ RequestEmailVerificationHandler = (*RequestEmailVerificationHandlerImpl)(nil)
+// Ensure RequestEmailVerificationImpl implements RequestEmailVerification
+var _ RequestEmailVerification = (*RequestEmailVerificationImpl)(nil)
 
-// RequestEmailVerificationHandlerImpl implements the RequestEmailVerificationHandler interface.
-type RequestEmailVerificationHandlerImpl struct {
+// RequestEmailVerificationImpl implements the RequestEmailVerification interface.
+type RequestEmailVerificationImpl struct {
 	// TODO: Add your dependencies here
 }
 
-// NewRequestEmailVerificationHandler creates a new RequestEmailVerification handler.
-func NewRequestEmailVerificationHandler(
+// NewRequestEmailVerification creates a new RequestEmailVerification implementation.
+func NewRequestEmailVerification(
 // TODO: Add your dependencies here
-) RequestEmailVerificationHandler {
-	return &RequestEmailVerificationHandlerImpl{
+) RequestEmailVerification {
+	return &RequestEmailVerificationImpl{
 		// TODO: Initialize dependencies
 	}
 }
 
 // Execute performs the RequestEmailVerification operation.
-func (h *RequestEmailVerificationHandlerImpl) Execute(
-	_ context.Context,
-	_ *RequestEmailVerificationInput,
+func (h *RequestEmailVerificationImpl) Execute(
+	ctx context.Context,
+	input *RequestEmailVerificationInput,
 ) error {
 	// TODO: Implement RequestEmailVerification logic
 	return fmt.Errorf("not implemented")

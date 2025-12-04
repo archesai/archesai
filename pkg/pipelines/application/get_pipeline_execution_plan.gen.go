@@ -34,7 +34,7 @@ type GetPipelineExecutionPlanOutput struct {
 	Data GetPipelineExecutionPlanOutputData `json:"data"`
 }
 
-// GetPipelineExecutionPlanHandler defines the interface for the GetPipelineExecutionPlan operation.
-type GetPipelineExecutionPlanHandler interface {
+// GetPipelineExecutionPlan defines the interface for the GetPipelineExecutionPlan operation.
+type GetPipelineExecutionPlan interface {
 	Execute(ctx context.Context, input *GetPipelineExecutionPlanInput) (*GetPipelineExecutionPlanOutput, error)
 }

@@ -28,30 +28,30 @@ type CreateLabelOutput struct {
 	Data models.Label `json:"data"`
 }
 
-// CreateLabelHandler defines the interface for the CreateLabel operation.
-type CreateLabelHandler interface {
+// CreateLabel defines the interface for the CreateLabel operation.
+type CreateLabel interface {
 	Execute(ctx context.Context, input *CreateLabelInput) (*CreateLabelOutput, error)
 }
 
-// CreateLabelHandlerImpl is the default implementation of CreateLabelHandler.
-type CreateLabelHandlerImpl struct {
+// CreateLabelImpl is the default implementation of CreateLabel.
+type CreateLabelImpl struct {
 	repo      repositories.LabelRepository
 	publisher events.Publisher
 }
 
-// NewCreateLabelHandler creates a new CreateLabel handler.
-func NewCreateLabelHandler(
+// NewCreateLabel creates a new CreateLabel handler.
+func NewCreateLabel(
 	repo repositories.LabelRepository,
 	publisher events.Publisher,
-) CreateLabelHandler {
-	return &CreateLabelHandlerImpl{
+) CreateLabel {
+	return &CreateLabelImpl{
 		repo:      repo,
 		publisher: publisher,
 	}
 }
 
 // Execute performs the CreateLabel operation.
-func (h *CreateLabelHandlerImpl) Execute(ctx context.Context, input *CreateLabelInput) (*CreateLabelOutput, error) {
+func (h *CreateLabelImpl) Execute(ctx context.Context, input *CreateLabelInput) (*CreateLabelOutput, error) {
 	// Create entity
 	entity := &models.Label{
 		ID:        uuid.New(),

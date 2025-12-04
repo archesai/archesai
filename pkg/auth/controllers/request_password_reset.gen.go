@@ -15,20 +15,18 @@ import (
 // RequestPasswordReset - POST /auth/forgot-password
 // ============================================================================
 
-// Handler type
-
-// RequestPasswordResetHandlerHTTP wraps the user handler for HTTP
-type RequestPasswordResetHandlerHTTP struct {
-	handler application.RequestPasswordResetHandler
+// RequestPasswordResetHandler is the HTTP handler for RequestPasswordReset.
+type RequestPasswordResetHandler struct {
+	requestPasswordReset application.RequestPasswordReset
 }
 
-// NewRequestPasswordResetHandlerHTTP creates a new HTTP handler wrapper
-func NewRequestPasswordResetHandlerHTTP(handler application.RequestPasswordResetHandler) *RequestPasswordResetHandlerHTTP {
-	return &RequestPasswordResetHandlerHTTP{handler: handler}
+// NewRequestPasswordResetHandler creates a new HTTP handler.
+func NewRequestPasswordResetHandler(requestPasswordReset application.RequestPasswordReset) *RequestPasswordResetHandler {
+	return &RequestPasswordResetHandler{requestPasswordReset: requestPasswordReset}
 }
 
-// RegisterRequestPasswordResetRoute registers the HTTP route for RequestPasswordReset
-func RegisterRequestPasswordResetRoute(mux *http.ServeMux, handler *RequestPasswordResetHandlerHTTP) {
+// RegisterRequestPasswordResetRoute registers the HTTP route for RequestPasswordReset.
+func RegisterRequestPasswordResetRoute(mux *http.ServeMux, handler *RequestPasswordResetHandler) {
 	mux.HandleFunc("POST /auth/forgot-password", handler.ServeHTTP)
 }
 
@@ -104,7 +102,7 @@ func (response RequestPasswordReset500Response) VisitRequestPasswordResetRespons
 }
 
 // ServeHTTP handles the POST /auth/forgot-password endpoint.
-func (h *RequestPasswordResetHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *RequestPasswordResetHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Build input from request
@@ -123,8 +121,8 @@ func (h *RequestPasswordResetHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *ht
 	}
 	input.Email = body.Email
 
-	// Execute handler
-	if err := h.handler.Execute(ctx, input); err != nil {
+	// Execute
+	if err := h.requestPasswordReset.Execute(ctx, input); err != nil {
 		errorResp := RequestPasswordReset500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

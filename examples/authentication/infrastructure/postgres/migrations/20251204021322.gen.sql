@@ -1,4 +1,4 @@
--- Generated at: 2025-12-03T20:15:14-05:00
+-- Generated at: 2025-12-04T02:13:22-05:00
 -- create "user" table
 CREATE TABLE "public"."user" ("id" uuid NOT NULL DEFAULT gen_random_uuid(), "created_at" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP, "updated_at" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP, "email" text NOT NULL, "email_verified" boolean NOT NULL DEFAULT false, "image" text NULL, "name" text NOT NULL, PRIMARY KEY ("id"));
 -- create "account" table

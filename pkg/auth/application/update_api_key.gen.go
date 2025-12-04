@@ -33,30 +33,30 @@ type UpdateAPIKeyOutput struct {
 	Data models.APIKey `json:"data"`
 }
 
-// UpdateAPIKeyHandler defines the interface for the UpdateAPIKey operation.
-type UpdateAPIKeyHandler interface {
+// UpdateAPIKey defines the interface for the UpdateAPIKey operation.
+type UpdateAPIKey interface {
 	Execute(ctx context.Context, input *UpdateAPIKeyInput) (*UpdateAPIKeyOutput, error)
 }
 
-// UpdateAPIKeyHandlerImpl is the default implementation of UpdateAPIKeyHandler.
-type UpdateAPIKeyHandlerImpl struct {
+// UpdateAPIKeyImpl is the default implementation of UpdateAPIKey.
+type UpdateAPIKeyImpl struct {
 	repo      repositories.APIKeyRepository
 	publisher events.Publisher
 }
 
-// NewUpdateAPIKeyHandler creates a new UpdateAPIKey handler.
-func NewUpdateAPIKeyHandler(
+// NewUpdateAPIKey creates a new UpdateAPIKey handler.
+func NewUpdateAPIKey(
 	repo repositories.APIKeyRepository,
 	publisher events.Publisher,
-) UpdateAPIKeyHandler {
-	return &UpdateAPIKeyHandlerImpl{
+) UpdateAPIKey {
+	return &UpdateAPIKeyImpl{
 		repo:      repo,
 		publisher: publisher,
 	}
 }
 
 // Execute performs the UpdateAPIKey operation.
-func (h *UpdateAPIKeyHandlerImpl) Execute(ctx context.Context, input *UpdateAPIKeyInput) (*UpdateAPIKeyOutput, error) {
+func (h *UpdateAPIKeyImpl) Execute(ctx context.Context, input *UpdateAPIKeyInput) (*UpdateAPIKeyOutput, error) {
 	// Get existing entity
 	existing, err := h.repo.Get(ctx, input.ID)
 	if err != nil {

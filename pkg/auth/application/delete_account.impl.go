@@ -7,25 +7,25 @@ import (
 	"fmt"
 )
 
-// Ensure DeleteAccountHandlerImpl implements DeleteAccountHandler
-var _ DeleteAccountHandler = (*DeleteAccountHandlerImpl)(nil)
+// Ensure DeleteAccountImpl implements DeleteAccount
+var _ DeleteAccount = (*DeleteAccountImpl)(nil)
 
-// DeleteAccountHandlerImpl implements the DeleteAccountHandler interface.
-type DeleteAccountHandlerImpl struct {
+// DeleteAccountImpl implements the DeleteAccount interface.
+type DeleteAccountImpl struct {
 	// TODO: Add your dependencies here
 }
 
-// NewDeleteAccountHandler creates a new DeleteAccount handler.
-func NewDeleteAccountHandler(
+// NewDeleteAccount creates a new DeleteAccount implementation.
+func NewDeleteAccount(
 // TODO: Add your dependencies here
-) DeleteAccountHandler {
-	return &DeleteAccountHandlerImpl{
+) DeleteAccount {
+	return &DeleteAccountImpl{
 		// TODO: Initialize dependencies
 	}
 }
 
 // Execute performs the DeleteAccount operation.
-func (h *DeleteAccountHandlerImpl) Execute(_ context.Context, _ *DeleteAccountInput) error {
+func (h *DeleteAccountImpl) Execute(ctx context.Context, input *DeleteAccountInput) error {
 	// TODO: Implement DeleteAccount logic
 	return fmt.Errorf("not implemented")
 }

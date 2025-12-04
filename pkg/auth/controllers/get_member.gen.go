@@ -19,20 +19,18 @@ import (
 // GetMember - GET /organizations/{organizationID}/members/{id}
 // ============================================================================
 
-// Handler type
-
-// GetMemberHandlerHTTP wraps the user handler for HTTP
-type GetMemberHandlerHTTP struct {
-	handler application.GetMemberHandler
+// GetMemberHandler is the HTTP handler for GetMember.
+type GetMemberHandler struct {
+	getMember application.GetMember
 }
 
-// NewGetMemberHandlerHTTP creates a new HTTP handler wrapper
-func NewGetMemberHandlerHTTP(handler application.GetMemberHandler) *GetMemberHandlerHTTP {
-	return &GetMemberHandlerHTTP{handler: handler}
+// NewGetMemberHandler creates a new HTTP handler.
+func NewGetMemberHandler(getMember application.GetMember) *GetMemberHandler {
+	return &GetMemberHandler{getMember: getMember}
 }
 
-// RegisterGetMemberRoute registers the HTTP route for GetMember
-func RegisterGetMemberRoute(mux *http.ServeMux, handler *GetMemberHandlerHTTP) {
+// RegisterGetMemberRoute registers the HTTP route for GetMember.
+func RegisterGetMemberRoute(mux *http.ServeMux, handler *GetMemberHandler) {
 	mux.HandleFunc("GET /organizations/{organizationID}/members/{id}", handler.ServeHTTP)
 }
 
@@ -115,7 +113,7 @@ func (response GetMember500Response) VisitGetMemberResponse(w http.ResponseWrite
 }
 
 // ServeHTTP handles the GET /organizations/{organizationID}/members/{id} endpoint.
-func (h *GetMemberHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *GetMemberHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Extract session ID from context for authenticated operations
@@ -160,8 +158,8 @@ func (h *GetMemberHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	}
 	input.ID = id
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.getMember.Execute(ctx, input)
 	if err != nil {
 		errorResp := GetMember500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

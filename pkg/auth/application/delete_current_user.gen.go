@@ -18,7 +18,7 @@ type DeleteCurrentUserInput struct {
 	XConfirm  string
 }
 
-// DeleteCurrentUserHandler defines the interface for the DeleteCurrentUser operation.
-type DeleteCurrentUserHandler interface {
+// DeleteCurrentUser defines the interface for the DeleteCurrentUser operation.
+type DeleteCurrentUser interface {
 	Execute(ctx context.Context, input *DeleteCurrentUserInput) error
 }

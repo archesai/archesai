@@ -18,20 +18,18 @@ import (
 // DeleteSession - DELETE /auth/sessions/{id}
 // ============================================================================
 
-// Handler type
-
-// DeleteSessionHandlerHTTP wraps the user handler for HTTP
-type DeleteSessionHandlerHTTP struct {
-	handler application.DeleteSessionHandler
+// DeleteSessionHandler is the HTTP handler for DeleteSession.
+type DeleteSessionHandler struct {
+	deleteSession application.DeleteSession
 }
 
-// NewDeleteSessionHandlerHTTP creates a new HTTP handler wrapper
-func NewDeleteSessionHandlerHTTP(handler application.DeleteSessionHandler) *DeleteSessionHandlerHTTP {
-	return &DeleteSessionHandlerHTTP{handler: handler}
+// NewDeleteSessionHandler creates a new HTTP handler.
+func NewDeleteSessionHandler(deleteSession application.DeleteSession) *DeleteSessionHandler {
+	return &DeleteSessionHandler{deleteSession: deleteSession}
 }
 
-// RegisterDeleteSessionRoute registers the HTTP route for DeleteSession
-func RegisterDeleteSessionRoute(mux *http.ServeMux, handler *DeleteSessionHandlerHTTP) {
+// RegisterDeleteSessionRoute registers the HTTP route for DeleteSession.
+func RegisterDeleteSessionRoute(mux *http.ServeMux, handler *DeleteSessionHandler) {
 	mux.HandleFunc("DELETE /auth/sessions/{id}", handler.ServeHTTP)
 }
 
@@ -112,7 +110,7 @@ func (response DeleteSession500Response) VisitDeleteSessionResponse(w http.Respo
 }
 
 // ServeHTTP handles the DELETE /auth/sessions/{id} endpoint.
-func (h *DeleteSessionHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *DeleteSessionHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Extract session ID from context for authenticated operations
@@ -144,8 +142,8 @@ func (h *DeleteSessionHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Requ
 	}
 	input.ID = id
 
-	// Execute handler
-	if err := h.handler.Execute(ctx, input); err != nil {
+	// Execute
+	if err := h.deleteSession.Execute(ctx, input); err != nil {
 		errorResp := DeleteSession500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

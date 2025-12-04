@@ -27,27 +27,27 @@ type GetOrganizationOutput struct {
 	Data models.Organization `json:"data"`
 }
 
-// GetOrganizationHandler defines the interface for the GetOrganization operation.
-type GetOrganizationHandler interface {
+// GetOrganization defines the interface for the GetOrganization operation.
+type GetOrganization interface {
 	Execute(ctx context.Context, input *GetOrganizationInput) (*GetOrganizationOutput, error)
 }
 
-// GetOrganizationHandlerImpl is the default implementation of GetOrganizationHandler.
-type GetOrganizationHandlerImpl struct {
+// GetOrganizationImpl is the default implementation of GetOrganization.
+type GetOrganizationImpl struct {
 	repo repositories.OrganizationRepository
 }
 
-// NewGetOrganizationHandler creates a new GetOrganization handler.
-func NewGetOrganizationHandler(
+// NewGetOrganization creates a new GetOrganization handler.
+func NewGetOrganization(
 	repo repositories.OrganizationRepository,
-) GetOrganizationHandler {
-	return &GetOrganizationHandlerImpl{
+) GetOrganization {
+	return &GetOrganizationImpl{
 		repo: repo,
 	}
 }
 
 // Execute performs the GetOrganization operation.
-func (h *GetOrganizationHandlerImpl) Execute(ctx context.Context, input *GetOrganizationInput) (*GetOrganizationOutput, error) {
+func (h *GetOrganizationImpl) Execute(ctx context.Context, input *GetOrganizationInput) (*GetOrganizationOutput, error) {
 	// Get from repository
 	result, err := h.repo.Get(ctx, input.ID)
 	if err != nil {

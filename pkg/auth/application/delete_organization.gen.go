@@ -23,30 +23,30 @@ type DeleteOrganizationInput struct {
 	ID        uuid.UUID
 }
 
-// DeleteOrganizationHandler defines the interface for the DeleteOrganization operation.
-type DeleteOrganizationHandler interface {
+// DeleteOrganization defines the interface for the DeleteOrganization operation.
+type DeleteOrganization interface {
 	Execute(ctx context.Context, input *DeleteOrganizationInput) error
 }
 
-// DeleteOrganizationHandlerImpl is the default implementation of DeleteOrganizationHandler.
-type DeleteOrganizationHandlerImpl struct {
+// DeleteOrganizationImpl is the default implementation of DeleteOrganization.
+type DeleteOrganizationImpl struct {
 	repo      repositories.OrganizationRepository
 	publisher events.Publisher
 }
 
-// NewDeleteOrganizationHandler creates a new DeleteOrganization handler.
-func NewDeleteOrganizationHandler(
+// NewDeleteOrganization creates a new DeleteOrganization handler.
+func NewDeleteOrganization(
 	repo repositories.OrganizationRepository,
 	publisher events.Publisher,
-) DeleteOrganizationHandler {
-	return &DeleteOrganizationHandlerImpl{
+) DeleteOrganization {
+	return &DeleteOrganizationImpl{
 		repo:      repo,
 		publisher: publisher,
 	}
 }
 
 // Execute performs the DeleteOrganization operation.
-func (h *DeleteOrganizationHandlerImpl) Execute(ctx context.Context, input *DeleteOrganizationInput) error {
+func (h *DeleteOrganizationImpl) Execute(ctx context.Context, input *DeleteOrganizationInput) error {
 	// Delete from repository
 	if err := h.repo.Delete(ctx, input.ID); err != nil {
 		return fmt.Errorf("failed to delete organization: %w", err)

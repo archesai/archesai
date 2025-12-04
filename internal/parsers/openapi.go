@@ -25,7 +25,8 @@ type OpenAPIParser struct {
 	lintEnabled     bool
 	specBytes       []byte
 	basePath        string
-	enabledIncludes []string // Names of enabled x-include-* extensions
+	enabledIncludes []string       // Names of enabled x-include-* extensions
+	merger          *IncludeMerger // Optional merger for processing x-include-* extensions
 }
 
 // NewOpenAPIParser creates a new OpenAPIParser instance
@@ -36,6 +37,13 @@ func NewOpenAPIParser() *OpenAPIParser {
 // WithLinting enables strict linting that will block parsing on any violations
 func (p *OpenAPIParser) WithLinting() *OpenAPIParser {
 	p.lintEnabled = true
+	return p
+}
+
+// WithIncludeMerger sets the IncludeMerger to use for processing x-include-* extensions.
+// If not set, a default empty merger will be used (no includes registered).
+func (p *OpenAPIParser) WithIncludeMerger(m *IncludeMerger) *OpenAPIParser {
+	p.merger = m
 	return p
 }
 
@@ -82,7 +90,10 @@ func (p *OpenAPIParser) Parse(data []byte) (*v3.Document, error) {
 // It automatically processes any x-include-* extensions to merge in referenced specs.
 func (p *OpenAPIParser) ParseFile(path string) (*v3.Document, error) {
 	// Process x-include-* extensions first
-	merger := NewDefaultIncludeMerger()
+	merger := p.merger
+	if merger == nil {
+		merger = NewIncludeMerger() // empty, no includes registered
+	}
 	mergedSpecPath, cleanup, enabledIncludes, err := merger.ProcessIncludes(path)
 	if err != nil {
 		return nil, fmt.Errorf("failed to process includes: %w", err)
@@ -106,7 +117,10 @@ func (p *OpenAPIParser) ParseFile(path string) (*v3.Document, error) {
 // all external $ref references into a single document.
 func (p *OpenAPIParser) Bundle(specPath, outputPath string, orvalFix bool) error {
 	// Process x-include-* extensions first
-	merger := NewDefaultIncludeMerger()
+	merger := p.merger
+	if merger == nil {
+		merger = NewIncludeMerger() // empty, no includes registered
+	}
 	mergedSpecPath, cleanup, _, err := merger.ProcessIncludes(specPath)
 	if err != nil {
 		return fmt.Errorf("failed to process includes: %w", err)

@@ -3,6 +3,7 @@ package cli
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
@@ -10,13 +11,9 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/archesai/archesai/internal/cli/flags"
 	"github.com/archesai/archesai/internal/dev"
 	"github.com/archesai/archesai/internal/tui"
-	"github.com/archesai/archesai/pkg/logger"
-)
-
-var (
-	devTUI bool
 )
 
 // devCmd represents the dev command
@@ -37,28 +34,15 @@ Both services run concurrently and logs are combined for easy monitoring.`,
 
 func init() {
 	rootCmd.AddCommand(devCmd)
-	devCmd.Flags().BoolVar(&devTUI, "tui", false, "Enable TUI mode for interactive log viewing")
+	flags.SetDevFlags(devCmd)
 }
 
 func runDev(_ *cobra.Command, _ []string) error {
-	// Load configuration
-	// cfg, err := config.Load()
-	// if err != nil {
-	// 	return fmt.Errorf("failed to load configuration: %w", err)
-	// }
-
-	// Create logger configuration
-	logCfg := logger.Config{
-		Level:  "info",
-		Pretty: !devTUI,
-	}
-	if devTUI {
-		logCfg.Level = "silent"
-	}
-	baseLogger := logger.New(logCfg)
+	// Get base logger
+	logger := slog.Default()
 
 	// Create process manager
-	manager := dev.NewManager(baseLogger)
+	manager := dev.NewManager(logger)
 
 	// Get project root directory
 	rootDir, err := os.Getwd()
@@ -66,35 +50,30 @@ func runDev(_ *cobra.Command, _ []string) error {
 		return fmt.Errorf("failed to get working directory: %w", err)
 	}
 
-	// Configure API process with custom hot reload
-	apiConfig := dev.ProcessConfig{
+	// Add API process with custom hot reload
+	if err := manager.AddProcess(dev.ProcessConfig{
 		Name:       "api",
 		Command:    "./bin/studio",
 		Dir:        rootDir,
-		Env:        []string{},
 		HotReload:  true,
 		BuildCmd:   "go",
 		BuildArgs:  []string{"build", "-o", "./bin/studio", "./apps/studio/main.gen.go"},
 		WatchPaths: []string{"."},
 		WatchExts:  []string{".go", ".mod", ".sum"},
-	}
-
-	if err := manager.AddProcess(apiConfig); err != nil {
+	}); err != nil {
 		return fmt.Errorf("failed to add API process: %w", err)
 	}
 
-	// Configure Platform process
-	platformConfig := dev.ProcessConfig{
-		Name:    "platform",
+	// Add frontend process
+	if err := manager.AddProcess(dev.ProcessConfig{
+		Name:    "frontend",
 		Command: "pnpm",
-		Args:    []string{"-F", "@archesai/studio", "dev"},
+		Args:    []string{"run", "dev"},
 		Dir:     rootDir,
 		// Env: []string{
 		// 	fmt.Sprintf("VITE_API_URL=http://%s:%d", cfg.API.Host, cfg.API.Port),
 		// },
-	}
-
-	if err := manager.AddProcess(platformConfig); err != nil {
+	}); err != nil {
 		return fmt.Errorf("failed to add Platform process: %w", err)
 	}
 
@@ -108,18 +87,16 @@ func runDev(_ *cobra.Command, _ []string) error {
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
 
 	// Run TUI or wait for interrupt
-	if devTUI {
-		// Run TUI - this blocks until user quits
-		if err := tui.RunDevTUI(manager); err != nil {
-			baseLogger.Error("TUI error", "error", err)
-		}
-		// TUI exited, now shutdown
-		fmt.Println("Shutting down development server...")
-	} else {
+	if flags.Dev.DisableTUI {
 		// Just wait for interrupt in non-TUI mode
 		<-quit
-		baseLogger.Info("Shutting down development server...")
+	} else {
+		// Run TUI - this blocks until user quits
+		if err := tui.RunDevTUI(manager); err != nil {
+			logger.Error("TUI error", "error", err)
+		}
 	}
+	logger.Info("Shutting down development server...")
 
 	// Shutdown manager
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -136,11 +113,9 @@ func runDev(_ *cobra.Command, _ []string) error {
 			return fmt.Errorf("failed to shutdown cleanly: %w", err)
 		}
 	case <-ctx.Done():
-		baseLogger.Warn("Shutdown timeout exceeded, forcing exit")
-		fmt.Println("Shutdown timeout exceeded, forcing exit")
+		logger.Warn("Shutdown timeout exceeded, forcing exit")
 	}
+	logger.Info("Development server stopped")
 
-	baseLogger.Info("Development server stopped")
-	fmt.Println("Development server stopped")
 	return nil
 }

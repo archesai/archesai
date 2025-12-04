@@ -29,30 +29,30 @@ type UpdateLabelOutput struct {
 	Data models.Label `json:"data"`
 }
 
-// UpdateLabelHandler defines the interface for the UpdateLabel operation.
-type UpdateLabelHandler interface {
+// UpdateLabel defines the interface for the UpdateLabel operation.
+type UpdateLabel interface {
 	Execute(ctx context.Context, input *UpdateLabelInput) (*UpdateLabelOutput, error)
 }
 
-// UpdateLabelHandlerImpl is the default implementation of UpdateLabelHandler.
-type UpdateLabelHandlerImpl struct {
+// UpdateLabelImpl is the default implementation of UpdateLabel.
+type UpdateLabelImpl struct {
 	repo      repositories.LabelRepository
 	publisher events.Publisher
 }
 
-// NewUpdateLabelHandler creates a new UpdateLabel handler.
-func NewUpdateLabelHandler(
+// NewUpdateLabel creates a new UpdateLabel handler.
+func NewUpdateLabel(
 	repo repositories.LabelRepository,
 	publisher events.Publisher,
-) UpdateLabelHandler {
-	return &UpdateLabelHandlerImpl{
+) UpdateLabel {
+	return &UpdateLabelImpl{
 		repo:      repo,
 		publisher: publisher,
 	}
 }
 
 // Execute performs the UpdateLabel operation.
-func (h *UpdateLabelHandlerImpl) Execute(ctx context.Context, input *UpdateLabelInput) (*UpdateLabelOutput, error) {
+func (h *UpdateLabelImpl) Execute(ctx context.Context, input *UpdateLabelInput) (*UpdateLabelOutput, error) {
 	// Get existing entity
 	existing, err := h.repo.Get(ctx, input.ID)
 	if err != nil {

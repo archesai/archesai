@@ -28,27 +28,27 @@ type GetMemberOutput struct {
 	Data models.Member `json:"data"`
 }
 
-// GetMemberHandler defines the interface for the GetMember operation.
-type GetMemberHandler interface {
+// GetMember defines the interface for the GetMember operation.
+type GetMember interface {
 	Execute(ctx context.Context, input *GetMemberInput) (*GetMemberOutput, error)
 }
 
-// GetMemberHandlerImpl is the default implementation of GetMemberHandler.
-type GetMemberHandlerImpl struct {
+// GetMemberImpl is the default implementation of GetMember.
+type GetMemberImpl struct {
 	repo repositories.MemberRepository
 }
 
-// NewGetMemberHandler creates a new GetMember handler.
-func NewGetMemberHandler(
+// NewGetMember creates a new GetMember handler.
+func NewGetMember(
 	repo repositories.MemberRepository,
-) GetMemberHandler {
-	return &GetMemberHandlerImpl{
+) GetMember {
+	return &GetMemberImpl{
 		repo: repo,
 	}
 }
 
 // Execute performs the GetMember operation.
-func (h *GetMemberHandlerImpl) Execute(ctx context.Context, input *GetMemberInput) (*GetMemberOutput, error) {
+func (h *GetMemberImpl) Execute(ctx context.Context, input *GetMemberInput) (*GetMemberOutput, error) {
 	// Get from repository
 	result, err := h.repo.Get(ctx, input.ID)
 	if err != nil {

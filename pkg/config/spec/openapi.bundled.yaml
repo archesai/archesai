@@ -44,6 +44,23 @@ components:
         kubernetes:
           $ref: '#/components/schemas/ConfigKubernetes'
       additionalProperties: false
+    PaginationMeta:
+      description: Pagination metadata
+      title: PaginationMeta
+      type: object
+      x-internal: server
+      x-codegen-schema-type: valueobject
+      properties:
+        total:
+          description: Total number of items in the collection
+          type: integer
+          format: int32
+          minimum: 0
+          maximum: 2147483647
+          example: 42
+      required:
+        - total
+      additionalProperties: false
     Base:
       title: Base
       description: Base schema for all entities with common fields
@@ -1514,22 +1531,6 @@ components:
           default: 0
           maximum: 9007199254740991
           example: 0
-    PaginationMeta:
-      description: Pagination metadata
-      title: PaginationMeta
-      type: object
-      properties:
-        total:
-          description: Total number of items in the collection
-          type: integer
-          format: int32
-          minimum: 0
-          maximum: 2147483647
-          example: 42
-      required:
-        - total
-      additionalProperties: false
-      x-codegen-schema-type: valueobject
     Problem:
       title: Problem
       description: RFC 7807 (Problem Details) compliant error response

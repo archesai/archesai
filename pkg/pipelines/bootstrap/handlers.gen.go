@@ -10,25 +10,25 @@ import (
 
 // ApplicationHandlers holds all application-layer handlers for this package.
 type ApplicationHandlers struct {
-	CreatePipeline                application.CreatePipelineHandler
-	CreatePipelineStep            application.CreatePipelineStepHandler
-	CreateRun                     application.CreateRunHandler
-	CreateTool                    application.CreateToolHandler
-	DeletePipeline                application.DeletePipelineHandler
-	DeleteRun                     application.DeleteRunHandler
-	DeleteTool                    application.DeleteToolHandler
-	GetPipeline                   application.GetPipelineHandler
-	GetPipelineExecutionPlan      application.GetPipelineExecutionPlanHandler
-	GetPipelineSteps              application.GetPipelineStepsHandler
-	GetRun                        application.GetRunHandler
-	GetTool                       application.GetToolHandler
-	ListPipelines                 application.ListPipelinesHandler
-	ListRuns                      application.ListRunsHandler
-	ListTools                     application.ListToolsHandler
-	UpdatePipeline                application.UpdatePipelineHandler
-	UpdateRun                     application.UpdateRunHandler
-	UpdateTool                    application.UpdateToolHandler
-	ValidatePipelineExecutionPlan application.ValidatePipelineExecutionPlanHandler
+	CreatePipeline                application.CreatePipeline
+	CreatePipelineStep            application.CreatePipelineStep
+	CreateRun                     application.CreateRun
+	CreateTool                    application.CreateTool
+	DeletePipeline                application.DeletePipeline
+	DeleteRun                     application.DeleteRun
+	DeleteTool                    application.DeleteTool
+	GetPipeline                   application.GetPipeline
+	GetPipelineExecutionPlan      application.GetPipelineExecutionPlan
+	GetPipelineSteps              application.GetPipelineSteps
+	GetRun                        application.GetRun
+	GetTool                       application.GetTool
+	ListPipelines                 application.ListPipelines
+	ListRuns                      application.ListRuns
+	ListTools                     application.ListTools
+	UpdatePipeline                application.UpdatePipeline
+	UpdateRun                     application.UpdateRun
+	UpdateTool                    application.UpdateTool
+	ValidatePipelineExecutionPlan application.ValidatePipelineExecutionPlan
 }
 
 // NewApplicationHandlers creates all application handlers with proper dependency injection.
@@ -39,24 +39,24 @@ func NewApplicationHandlers(
 	publisher events.Publisher,
 ) *ApplicationHandlers {
 	return &ApplicationHandlers{
-		CreatePipeline:                application.NewCreatePipelineHandler(pipelineRepo, publisher),
-		CreatePipelineStep:            application.NewCreatePipelineStepHandler(),
-		CreateRun:                     application.NewCreateRunHandler(runRepo, publisher),
-		CreateTool:                    application.NewCreateToolHandler(toolRepo, publisher),
-		DeletePipeline:                application.NewDeletePipelineHandler(pipelineRepo, publisher),
-		DeleteRun:                     application.NewDeleteRunHandler(runRepo, publisher),
-		DeleteTool:                    application.NewDeleteToolHandler(toolRepo, publisher),
-		GetPipeline:                   application.NewGetPipelineHandler(pipelineRepo),
-		GetPipelineExecutionPlan:      application.NewGetPipelineExecutionPlanHandler(),
-		GetPipelineSteps:              application.NewGetPipelineStepsHandler(),
-		GetRun:                        application.NewGetRunHandler(runRepo),
-		GetTool:                       application.NewGetToolHandler(toolRepo),
-		ListPipelines:                 application.NewListPipelinesHandler(pipelineRepo),
-		ListRuns:                      application.NewListRunsHandler(runRepo),
-		ListTools:                     application.NewListToolsHandler(toolRepo),
-		UpdatePipeline:                application.NewUpdatePipelineHandler(pipelineRepo, publisher),
-		UpdateRun:                     application.NewUpdateRunHandler(runRepo, publisher),
-		UpdateTool:                    application.NewUpdateToolHandler(toolRepo, publisher),
-		ValidatePipelineExecutionPlan: application.NewValidatePipelineExecutionPlanHandler(),
+		CreatePipeline:                application.NewCreatePipeline(pipelineRepo, publisher),
+		CreatePipelineStep:            application.NewCreatePipelineStep(),
+		CreateRun:                     application.NewCreateRun(runRepo, publisher),
+		CreateTool:                    application.NewCreateTool(toolRepo, publisher),
+		DeletePipeline:                application.NewDeletePipeline(pipelineRepo, publisher),
+		DeleteRun:                     application.NewDeleteRun(runRepo, publisher),
+		DeleteTool:                    application.NewDeleteTool(toolRepo, publisher),
+		GetPipeline:                   application.NewGetPipeline(pipelineRepo),
+		GetPipelineExecutionPlan:      application.NewGetPipelineExecutionPlan(),
+		GetPipelineSteps:              application.NewGetPipelineSteps(),
+		GetRun:                        application.NewGetRun(runRepo),
+		GetTool:                       application.NewGetTool(toolRepo),
+		ListPipelines:                 application.NewListPipelines(pipelineRepo),
+		ListRuns:                      application.NewListRuns(runRepo),
+		ListTools:                     application.NewListTools(toolRepo),
+		UpdatePipeline:                application.NewUpdatePipeline(pipelineRepo, publisher),
+		UpdateRun:                     application.NewUpdateRun(runRepo, publisher),
+		UpdateTool:                    application.NewUpdateTool(toolRepo, publisher),
+		ValidatePipelineExecutionPlan: application.NewValidatePipelineExecutionPlan(),
 	}
 }

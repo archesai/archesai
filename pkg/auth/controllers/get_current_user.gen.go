@@ -18,20 +18,18 @@ import (
 // GetCurrentUser - GET /auth/me
 // ============================================================================
 
-// Handler type
-
-// GetCurrentUserHandlerHTTP wraps the user handler for HTTP
-type GetCurrentUserHandlerHTTP struct {
-	handler application.GetCurrentUserHandler
+// GetCurrentUserHandler is the HTTP handler for GetCurrentUser.
+type GetCurrentUserHandler struct {
+	getCurrentUser application.GetCurrentUser
 }
 
-// NewGetCurrentUserHandlerHTTP creates a new HTTP handler wrapper
-func NewGetCurrentUserHandlerHTTP(handler application.GetCurrentUserHandler) *GetCurrentUserHandlerHTTP {
-	return &GetCurrentUserHandlerHTTP{handler: handler}
+// NewGetCurrentUserHandler creates a new HTTP handler.
+func NewGetCurrentUserHandler(getCurrentUser application.GetCurrentUser) *GetCurrentUserHandler {
+	return &GetCurrentUserHandler{getCurrentUser: getCurrentUser}
 }
 
-// RegisterGetCurrentUserRoute registers the HTTP route for GetCurrentUser
-func RegisterGetCurrentUserRoute(mux *http.ServeMux, handler *GetCurrentUserHandlerHTTP) {
+// RegisterGetCurrentUserRoute registers the HTTP route for GetCurrentUser.
+func RegisterGetCurrentUserRoute(mux *http.ServeMux, handler *GetCurrentUserHandler) {
 	mux.HandleFunc("GET /auth/me", handler.ServeHTTP)
 }
 
@@ -94,7 +92,7 @@ func (response GetCurrentUser500Response) VisitGetCurrentUserResponse(w http.Res
 }
 
 // ServeHTTP handles the GET /auth/me endpoint.
-func (h *GetCurrentUserHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *GetCurrentUserHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Extract session ID from context for authenticated operations
@@ -113,8 +111,8 @@ func (h *GetCurrentUserHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Req
 	input := &application.GetCurrentUserInput{}
 	input.SessionID = sessionID
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.getCurrentUser.Execute(ctx, input)
 	if err != nil {
 		errorResp := GetCurrentUser500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

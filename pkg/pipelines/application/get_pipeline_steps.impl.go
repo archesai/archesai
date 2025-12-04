@@ -7,27 +7,27 @@ import (
 	"fmt"
 )
 
-// Ensure GetPipelineStepsHandlerImpl implements GetPipelineStepsHandler
-var _ GetPipelineStepsHandler = (*GetPipelineStepsHandlerImpl)(nil)
+// Ensure GetPipelineStepsImpl implements GetPipelineSteps
+var _ GetPipelineSteps = (*GetPipelineStepsImpl)(nil)
 
-// GetPipelineStepsHandlerImpl implements the GetPipelineStepsHandler interface.
-type GetPipelineStepsHandlerImpl struct {
+// GetPipelineStepsImpl implements the GetPipelineSteps interface.
+type GetPipelineStepsImpl struct {
 	// TODO: Add your dependencies here
 }
 
-// NewGetPipelineStepsHandler creates a new GetPipelineSteps handler.
-func NewGetPipelineStepsHandler(
+// NewGetPipelineSteps creates a new GetPipelineSteps implementation.
+func NewGetPipelineSteps(
 // TODO: Add your dependencies here
-) GetPipelineStepsHandler {
-	return &GetPipelineStepsHandlerImpl{
+) GetPipelineSteps {
+	return &GetPipelineStepsImpl{
 		// TODO: Initialize dependencies
 	}
 }
 
 // Execute performs the GetPipelineSteps operation.
-func (h *GetPipelineStepsHandlerImpl) Execute(
-	_ context.Context,
-	_ *GetPipelineStepsInput,
+func (h *GetPipelineStepsImpl) Execute(
+	ctx context.Context,
+	input *GetPipelineStepsInput,
 ) (*GetPipelineStepsOutput, error) {
 	// TODO: Implement GetPipelineSteps logic
 	return nil, fmt.Errorf("not implemented")

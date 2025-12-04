@@ -10,6 +10,7 @@ import (
 
 	"github.com/archesai/archesai/pkg/auth/models"
 	"github.com/archesai/archesai/pkg/auth/repositories"
+	servermodels "github.com/archesai/archesai/pkg/server/models"
 )
 
 // ============================================================================
@@ -26,31 +27,31 @@ type ListUsersInput struct {
 
 // ListUsersOutput represents the output for the ListUsers operation.
 type ListUsersOutput struct {
-	Data []models.User         `json:"data"`
-	Meta models.PaginationMeta `json:"meta"`
+	Data []models.User               `json:"data"`
+	Meta servermodels.PaginationMeta `json:"meta"`
 }
 
-// ListUsersHandler defines the interface for the ListUsers operation.
-type ListUsersHandler interface {
+// ListUsers defines the interface for the ListUsers operation.
+type ListUsers interface {
 	Execute(ctx context.Context, input *ListUsersInput) (*ListUsersOutput, error)
 }
 
-// ListUsersHandlerImpl is the default implementation of ListUsersHandler.
-type ListUsersHandlerImpl struct {
+// ListUsersImpl is the default implementation of ListUsers.
+type ListUsersImpl struct {
 	repo repositories.UserRepository
 }
 
-// NewListUsersHandler creates a new ListUsers handler.
-func NewListUsersHandler(
+// NewListUsers creates a new ListUsers handler.
+func NewListUsers(
 	repo repositories.UserRepository,
-) ListUsersHandler {
-	return &ListUsersHandlerImpl{
+) ListUsers {
+	return &ListUsersImpl{
 		repo: repo,
 	}
 }
 
 // Execute performs the ListUsers operation.
-func (h *ListUsersHandlerImpl) Execute(ctx context.Context, input *ListUsersInput) (*ListUsersOutput, error) {
+func (h *ListUsersImpl) Execute(ctx context.Context, input *ListUsersInput) (*ListUsersOutput, error) {
 	// List from repository
 	results, total, err := h.repo.List(ctx, 100, 0) // TODO: Use pagination from input
 	if err != nil {

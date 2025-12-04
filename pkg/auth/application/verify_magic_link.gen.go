@@ -35,7 +35,7 @@ type VerifyMagicLinkOutput struct {
 	UserID         uuid.UUID  `json:"userID"`
 }
 
-// VerifyMagicLinkHandler defines the interface for the VerifyMagicLink operation.
-type VerifyMagicLinkHandler interface {
+// VerifyMagicLink defines the interface for the VerifyMagicLink operation.
+type VerifyMagicLink interface {
 	Execute(ctx context.Context, input *VerifyMagicLinkInput) (*VerifyMagicLinkOutput, error)
 }

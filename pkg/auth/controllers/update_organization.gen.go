@@ -19,20 +19,18 @@ import (
 // UpdateOrganization - PATCH /organizations/{id}
 // ============================================================================
 
-// Handler type
-
-// UpdateOrganizationHandlerHTTP wraps the user handler for HTTP
-type UpdateOrganizationHandlerHTTP struct {
-	handler application.UpdateOrganizationHandler
+// UpdateOrganizationHandler is the HTTP handler for UpdateOrganization.
+type UpdateOrganizationHandler struct {
+	updateOrganization application.UpdateOrganization
 }
 
-// NewUpdateOrganizationHandlerHTTP creates a new HTTP handler wrapper
-func NewUpdateOrganizationHandlerHTTP(handler application.UpdateOrganizationHandler) *UpdateOrganizationHandlerHTTP {
-	return &UpdateOrganizationHandlerHTTP{handler: handler}
+// NewUpdateOrganizationHandler creates a new HTTP handler.
+func NewUpdateOrganizationHandler(updateOrganization application.UpdateOrganization) *UpdateOrganizationHandler {
+	return &UpdateOrganizationHandler{updateOrganization: updateOrganization}
 }
 
-// RegisterUpdateOrganizationRoute registers the HTTP route for UpdateOrganization
-func RegisterUpdateOrganizationRoute(mux *http.ServeMux, handler *UpdateOrganizationHandlerHTTP) {
+// RegisterUpdateOrganizationRoute registers the HTTP route for UpdateOrganization.
+func RegisterUpdateOrganizationRoute(mux *http.ServeMux, handler *UpdateOrganizationHandler) {
 	mux.HandleFunc("PATCH /organizations/{id}", handler.ServeHTTP)
 }
 
@@ -121,7 +119,7 @@ func (response UpdateOrganization500Response) VisitUpdateOrganizationResponse(w 
 }
 
 // ServeHTTP handles the PATCH /organizations/{id} endpoint.
-func (h *UpdateOrganizationHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *UpdateOrganizationHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Extract session ID from context for authenticated operations
@@ -167,8 +165,8 @@ func (h *UpdateOrganizationHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http
 	input.BillingEmail = body.BillingEmail
 	input.OrganizationID = body.OrganizationID
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.updateOrganization.Execute(ctx, input)
 	if err != nil {
 		errorResp := UpdateOrganization500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

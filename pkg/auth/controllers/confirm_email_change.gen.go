@@ -17,20 +17,18 @@ import (
 // ConfirmEmailChange - POST /auth/confirm-email
 // ============================================================================
 
-// Handler type
-
-// ConfirmEmailChangeHandlerHTTP wraps the user handler for HTTP
-type ConfirmEmailChangeHandlerHTTP struct {
-	handler application.ConfirmEmailChangeHandler
+// ConfirmEmailChangeHandler is the HTTP handler for ConfirmEmailChange.
+type ConfirmEmailChangeHandler struct {
+	confirmEmailChange application.ConfirmEmailChange
 }
 
-// NewConfirmEmailChangeHandlerHTTP creates a new HTTP handler wrapper
-func NewConfirmEmailChangeHandlerHTTP(handler application.ConfirmEmailChangeHandler) *ConfirmEmailChangeHandlerHTTP {
-	return &ConfirmEmailChangeHandlerHTTP{handler: handler}
+// NewConfirmEmailChangeHandler creates a new HTTP handler.
+func NewConfirmEmailChangeHandler(confirmEmailChange application.ConfirmEmailChange) *ConfirmEmailChangeHandler {
+	return &ConfirmEmailChangeHandler{confirmEmailChange: confirmEmailChange}
 }
 
-// RegisterConfirmEmailChangeRoute registers the HTTP route for ConfirmEmailChange
-func RegisterConfirmEmailChangeRoute(mux *http.ServeMux, handler *ConfirmEmailChangeHandlerHTTP) {
+// RegisterConfirmEmailChangeRoute registers the HTTP route for ConfirmEmailChange.
+func RegisterConfirmEmailChangeRoute(mux *http.ServeMux, handler *ConfirmEmailChangeHandler) {
 	mux.HandleFunc("POST /auth/confirm-email", handler.ServeHTTP)
 }
 
@@ -118,7 +116,7 @@ func (response ConfirmEmailChange500Response) VisitConfirmEmailChangeResponse(w 
 }
 
 // ServeHTTP handles the POST /auth/confirm-email endpoint.
-func (h *ConfirmEmailChangeHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *ConfirmEmailChangeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Extract session ID from context for authenticated operations
@@ -152,8 +150,8 @@ func (h *ConfirmEmailChangeHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http
 	input.Token = body.Token
 	input.UserID = body.UserID
 
-	// Execute handler
-	if err := h.handler.Execute(ctx, input); err != nil {
+	// Execute
+	if err := h.confirmEmailChange.Execute(ctx, input); err != nil {
 		errorResp := ConfirmEmailChange500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

@@ -31,30 +31,30 @@ type UpdateUserOutput struct {
 	Data models.User `json:"data"`
 }
 
-// UpdateUserHandler defines the interface for the UpdateUser operation.
-type UpdateUserHandler interface {
+// UpdateUser defines the interface for the UpdateUser operation.
+type UpdateUser interface {
 	Execute(ctx context.Context, input *UpdateUserInput) (*UpdateUserOutput, error)
 }
 
-// UpdateUserHandlerImpl is the default implementation of UpdateUserHandler.
-type UpdateUserHandlerImpl struct {
+// UpdateUserImpl is the default implementation of UpdateUser.
+type UpdateUserImpl struct {
 	repo      repositories.UserRepository
 	publisher events.Publisher
 }
 
-// NewUpdateUserHandler creates a new UpdateUser handler.
-func NewUpdateUserHandler(
+// NewUpdateUser creates a new UpdateUser handler.
+func NewUpdateUser(
 	repo repositories.UserRepository,
 	publisher events.Publisher,
-) UpdateUserHandler {
-	return &UpdateUserHandlerImpl{
+) UpdateUser {
+	return &UpdateUserImpl{
 		repo:      repo,
 		publisher: publisher,
 	}
 }
 
 // Execute performs the UpdateUser operation.
-func (h *UpdateUserHandlerImpl) Execute(ctx context.Context, input *UpdateUserInput) (*UpdateUserOutput, error) {
+func (h *UpdateUserImpl) Execute(ctx context.Context, input *UpdateUserInput) (*UpdateUserOutput, error) {
 	// Get existing entity
 	existing, err := h.repo.Get(ctx, input.ID)
 	if err != nil {

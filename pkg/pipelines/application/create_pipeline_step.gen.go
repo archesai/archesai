@@ -29,7 +29,7 @@ type CreatePipelineStepOutput struct {
 	Data models.PipelineStep `json:"data"`
 }
 
-// CreatePipelineStepHandler defines the interface for the CreatePipelineStep operation.
-type CreatePipelineStepHandler interface {
+// CreatePipelineStep defines the interface for the CreatePipelineStep operation.
+type CreatePipelineStep interface {
 	Execute(ctx context.Context, input *CreatePipelineStepInput) (*CreatePipelineStepOutput, error)
 }

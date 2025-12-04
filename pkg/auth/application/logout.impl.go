@@ -7,28 +7,25 @@ import (
 	"fmt"
 )
 
-// Ensure LogoutHandlerImpl implements LogoutHandler
-var _ LogoutHandler = (*LogoutHandlerImpl)(nil)
+// Ensure LogoutImpl implements Logout
+var _ Logout = (*LogoutImpl)(nil)
 
-// LogoutHandlerImpl implements the LogoutHandler interface.
-type LogoutHandlerImpl struct {
+// LogoutImpl implements the Logout interface.
+type LogoutImpl struct {
 	// TODO: Add your dependencies here
 }
 
-// NewLogoutHandler creates a new Logout handler.
-func NewLogoutHandler(
+// NewLogout creates a new Logout implementation.
+func NewLogout(
 // TODO: Add your dependencies here
-) LogoutHandler {
-	return &LogoutHandlerImpl{
+) Logout {
+	return &LogoutImpl{
 		// TODO: Initialize dependencies
 	}
 }
 
 // Execute performs the Logout operation.
-func (h *LogoutHandlerImpl) Execute(
-	_ context.Context,
-	_ *LogoutInput,
-) (*LogoutOutput, error) {
+func (h *LogoutImpl) Execute(ctx context.Context, input *LogoutInput) (*LogoutOutput, error) {
 	// TODO: Implement Logout logic
 	return nil, fmt.Errorf("not implemented")
 }

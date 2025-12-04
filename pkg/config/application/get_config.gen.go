@@ -21,7 +21,7 @@ type GetConfigOutput struct {
 	Data *models.Config `json:"data,omitempty"`
 }
 
-// GetConfigHandler defines the interface for the GetConfig operation.
-type GetConfigHandler interface {
+// GetConfig defines the interface for the GetConfig operation.
+type GetConfig interface {
 	Execute(ctx context.Context, input *GetConfigInput) (*GetConfigOutput, error)
 }

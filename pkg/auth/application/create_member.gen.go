@@ -30,30 +30,30 @@ type CreateMemberOutput struct {
 	Data models.Member `json:"data"`
 }
 
-// CreateMemberHandler defines the interface for the CreateMember operation.
-type CreateMemberHandler interface {
+// CreateMember defines the interface for the CreateMember operation.
+type CreateMember interface {
 	Execute(ctx context.Context, input *CreateMemberInput) (*CreateMemberOutput, error)
 }
 
-// CreateMemberHandlerImpl is the default implementation of CreateMemberHandler.
-type CreateMemberHandlerImpl struct {
+// CreateMemberImpl is the default implementation of CreateMember.
+type CreateMemberImpl struct {
 	repo      repositories.MemberRepository
 	publisher events.Publisher
 }
 
-// NewCreateMemberHandler creates a new CreateMember handler.
-func NewCreateMemberHandler(
+// NewCreateMember creates a new CreateMember handler.
+func NewCreateMember(
 	repo repositories.MemberRepository,
 	publisher events.Publisher,
-) CreateMemberHandler {
-	return &CreateMemberHandlerImpl{
+) CreateMember {
+	return &CreateMemberImpl{
 		repo:      repo,
 		publisher: publisher,
 	}
 }
 
 // Execute performs the CreateMember operation.
-func (h *CreateMemberHandlerImpl) Execute(ctx context.Context, input *CreateMemberInput) (*CreateMemberOutput, error) {
+func (h *CreateMemberImpl) Execute(ctx context.Context, input *CreateMemberInput) (*CreateMemberOutput, error) {
 	// Create entity
 	entity := &models.Member{
 		ID:        uuid.New(),

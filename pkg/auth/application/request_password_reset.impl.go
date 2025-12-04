@@ -7,27 +7,27 @@ import (
 	"fmt"
 )
 
-// Ensure RequestPasswordResetHandlerImpl implements RequestPasswordResetHandler
-var _ RequestPasswordResetHandler = (*RequestPasswordResetHandlerImpl)(nil)
+// Ensure RequestPasswordResetImpl implements RequestPasswordReset
+var _ RequestPasswordReset = (*RequestPasswordResetImpl)(nil)
 
-// RequestPasswordResetHandlerImpl implements the RequestPasswordResetHandler interface.
-type RequestPasswordResetHandlerImpl struct {
+// RequestPasswordResetImpl implements the RequestPasswordReset interface.
+type RequestPasswordResetImpl struct {
 	// TODO: Add your dependencies here
 }
 
-// NewRequestPasswordResetHandler creates a new RequestPasswordReset handler.
-func NewRequestPasswordResetHandler(
+// NewRequestPasswordReset creates a new RequestPasswordReset implementation.
+func NewRequestPasswordReset(
 // TODO: Add your dependencies here
-) RequestPasswordResetHandler {
-	return &RequestPasswordResetHandlerImpl{
+) RequestPasswordReset {
+	return &RequestPasswordResetImpl{
 		// TODO: Initialize dependencies
 	}
 }
 
 // Execute performs the RequestPasswordReset operation.
-func (h *RequestPasswordResetHandlerImpl) Execute(
-	_ context.Context,
-	_ *RequestPasswordResetInput,
+func (h *RequestPasswordResetImpl) Execute(
+	ctx context.Context,
+	input *RequestPasswordResetInput,
 ) error {
 	// TODO: Implement RequestPasswordReset logic
 	return fmt.Errorf("not implemented")

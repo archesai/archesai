@@ -19,20 +19,18 @@ import (
 // ValidatePipelineExecutionPlan - POST /pipelines/{id}/execution-plans
 // ============================================================================
 
-// Handler type
-
-// ValidatePipelineExecutionPlanHandlerHTTP wraps the user handler for HTTP
-type ValidatePipelineExecutionPlanHandlerHTTP struct {
-	handler application.ValidatePipelineExecutionPlanHandler
+// ValidatePipelineExecutionPlanHandler is the HTTP handler for ValidatePipelineExecutionPlan.
+type ValidatePipelineExecutionPlanHandler struct {
+	validatePipelineExecutionPlan application.ValidatePipelineExecutionPlan
 }
 
-// NewValidatePipelineExecutionPlanHandlerHTTP creates a new HTTP handler wrapper
-func NewValidatePipelineExecutionPlanHandlerHTTP(handler application.ValidatePipelineExecutionPlanHandler) *ValidatePipelineExecutionPlanHandlerHTTP {
-	return &ValidatePipelineExecutionPlanHandlerHTTP{handler: handler}
+// NewValidatePipelineExecutionPlanHandler creates a new HTTP handler.
+func NewValidatePipelineExecutionPlanHandler(validatePipelineExecutionPlan application.ValidatePipelineExecutionPlan) *ValidatePipelineExecutionPlanHandler {
+	return &ValidatePipelineExecutionPlanHandler{validatePipelineExecutionPlan: validatePipelineExecutionPlan}
 }
 
-// RegisterValidatePipelineExecutionPlanRoute registers the HTTP route for ValidatePipelineExecutionPlan
-func RegisterValidatePipelineExecutionPlanRoute(mux *http.ServeMux, handler *ValidatePipelineExecutionPlanHandlerHTTP) {
+// RegisterValidatePipelineExecutionPlanRoute registers the HTTP route for ValidatePipelineExecutionPlan.
+func RegisterValidatePipelineExecutionPlanRoute(mux *http.ServeMux, handler *ValidatePipelineExecutionPlanHandler) {
 	mux.HandleFunc("POST /pipelines/{id}/execution-plans", handler.ServeHTTP)
 }
 
@@ -115,7 +113,7 @@ func (response ValidatePipelineExecutionPlan500Response) VisitValidatePipelineEx
 }
 
 // ServeHTTP handles the POST /pipelines/{id}/execution-plans endpoint.
-func (h *ValidatePipelineExecutionPlanHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *ValidatePipelineExecutionPlanHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Build input from request
@@ -134,8 +132,8 @@ func (h *ValidatePipelineExecutionPlanHandlerHTTP) ServeHTTP(w http.ResponseWrit
 	}
 	input.ID = id
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.validatePipelineExecutionPlan.Execute(ctx, input)
 	if err != nil {
 		errorResp := ValidatePipelineExecutionPlan500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

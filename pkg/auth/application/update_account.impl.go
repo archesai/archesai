@@ -7,27 +7,27 @@ import (
 	"fmt"
 )
 
-// Ensure UpdateAccountHandlerImpl implements UpdateAccountHandler
-var _ UpdateAccountHandler = (*UpdateAccountHandlerImpl)(nil)
+// Ensure UpdateAccountImpl implements UpdateAccount
+var _ UpdateAccount = (*UpdateAccountImpl)(nil)
 
-// UpdateAccountHandlerImpl implements the UpdateAccountHandler interface.
-type UpdateAccountHandlerImpl struct {
+// UpdateAccountImpl implements the UpdateAccount interface.
+type UpdateAccountImpl struct {
 	// TODO: Add your dependencies here
 }
 
-// NewUpdateAccountHandler creates a new UpdateAccount handler.
-func NewUpdateAccountHandler(
+// NewUpdateAccount creates a new UpdateAccount implementation.
+func NewUpdateAccount(
 // TODO: Add your dependencies here
-) UpdateAccountHandler {
-	return &UpdateAccountHandlerImpl{
+) UpdateAccount {
+	return &UpdateAccountImpl{
 		// TODO: Initialize dependencies
 	}
 }
 
 // Execute performs the UpdateAccount operation.
-func (h *UpdateAccountHandlerImpl) Execute(
-	_ context.Context,
-	_ *UpdateAccountInput,
+func (h *UpdateAccountImpl) Execute(
+	ctx context.Context,
+	input *UpdateAccountInput,
 ) (*UpdateAccountOutput, error) {
 	// TODO: Implement UpdateAccount logic
 	return nil, fmt.Errorf("not implemented")

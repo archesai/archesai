@@ -18,20 +18,18 @@ import (
 // VerifyMagicLink - POST /auth/magic-links/verify
 // ============================================================================
 
-// Handler type
-
-// VerifyMagicLinkHandlerHTTP wraps the user handler for HTTP
-type VerifyMagicLinkHandlerHTTP struct {
-	handler application.VerifyMagicLinkHandler
+// VerifyMagicLinkHandler is the HTTP handler for VerifyMagicLink.
+type VerifyMagicLinkHandler struct {
+	verifyMagicLink application.VerifyMagicLink
 }
 
-// NewVerifyMagicLinkHandlerHTTP creates a new HTTP handler wrapper
-func NewVerifyMagicLinkHandlerHTTP(handler application.VerifyMagicLinkHandler) *VerifyMagicLinkHandlerHTTP {
-	return &VerifyMagicLinkHandlerHTTP{handler: handler}
+// NewVerifyMagicLinkHandler creates a new HTTP handler.
+func NewVerifyMagicLinkHandler(verifyMagicLink application.VerifyMagicLink) *VerifyMagicLinkHandler {
+	return &VerifyMagicLinkHandler{verifyMagicLink: verifyMagicLink}
 }
 
-// RegisterVerifyMagicLinkRoute registers the HTTP route for VerifyMagicLink
-func RegisterVerifyMagicLinkRoute(mux *http.ServeMux, handler *VerifyMagicLinkHandlerHTTP) {
+// RegisterVerifyMagicLinkRoute registers the HTTP route for VerifyMagicLink.
+func RegisterVerifyMagicLinkRoute(mux *http.ServeMux, handler *VerifyMagicLinkHandler) {
 	mux.HandleFunc("POST /auth/magic-links/verify", handler.ServeHTTP)
 }
 
@@ -131,7 +129,7 @@ func (response VerifyMagicLink500Response) VisitVerifyMagicLinkResponse(w http.R
 }
 
 // ServeHTTP handles the POST /auth/magic-links/verify endpoint.
-func (h *VerifyMagicLinkHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *VerifyMagicLinkHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Build input from request
@@ -152,8 +150,8 @@ func (h *VerifyMagicLinkHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Re
 	input.Identifier = body.Identifier
 	input.Token = body.Token
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.verifyMagicLink.Execute(ctx, input)
 	if err != nil {
 		errorResp := VerifyMagicLink500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

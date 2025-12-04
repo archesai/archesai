@@ -13,26 +13,25 @@ import (
 	"github.com/archesai/archesai/pkg/auth/application"
 	"github.com/archesai/archesai/pkg/auth/models"
 	"github.com/archesai/archesai/pkg/server"
+	servermodels "github.com/archesai/archesai/pkg/server/models"
 )
 
 // ============================================================================
 // ListSessions - GET /auth/sessions
 // ============================================================================
 
-// Handler type
-
-// ListSessionsHandlerHTTP wraps the user handler for HTTP
-type ListSessionsHandlerHTTP struct {
-	handler application.ListSessionsHandler
+// ListSessionsHandler is the HTTP handler for ListSessions.
+type ListSessionsHandler struct {
+	listSessions application.ListSessions
 }
 
-// NewListSessionsHandlerHTTP creates a new HTTP handler wrapper
-func NewListSessionsHandlerHTTP(handler application.ListSessionsHandler) *ListSessionsHandlerHTTP {
-	return &ListSessionsHandlerHTTP{handler: handler}
+// NewListSessionsHandler creates a new HTTP handler.
+func NewListSessionsHandler(listSessions application.ListSessions) *ListSessionsHandler {
+	return &ListSessionsHandler{listSessions: listSessions}
 }
 
-// RegisterListSessionsRoute registers the HTTP route for ListSessions
-func RegisterListSessionsRoute(mux *http.ServeMux, handler *ListSessionsHandlerHTTP) {
+// RegisterListSessionsRoute registers the HTTP route for ListSessions.
+func RegisterListSessionsRoute(mux *http.ServeMux, handler *ListSessionsHandler) {
 	mux.HandleFunc("GET /auth/sessions", handler.ServeHTTP)
 }
 
@@ -51,8 +50,8 @@ type ListSessionsResponse interface {
 }
 
 type ListSessions200Response struct {
-	Data []models.Session      `json:"data"`
-	Meta models.PaginationMeta `json:"meta"`
+	Data []models.Session            `json:"data"`
+	Meta servermodels.PaginationMeta `json:"meta"`
 }
 
 func (response ListSessions200Response) VisitListSessionsResponse(w http.ResponseWriter) error {
@@ -112,7 +111,7 @@ func (response ListSessions500Response) VisitListSessionsResponse(w http.Respons
 }
 
 // ServeHTTP handles the GET /auth/sessions endpoint.
-func (h *ListSessionsHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *ListSessionsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Extract session ID from context for authenticated operations
@@ -155,8 +154,8 @@ func (h *ListSessionsHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.listSessions.Execute(ctx, input)
 	if err != nil {
 		errorResp := ListSessions500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

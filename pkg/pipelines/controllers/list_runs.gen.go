@@ -12,26 +12,25 @@ import (
 	"github.com/archesai/archesai/pkg/pipelines/application"
 	"github.com/archesai/archesai/pkg/pipelines/models"
 	"github.com/archesai/archesai/pkg/server"
+	servermodels "github.com/archesai/archesai/pkg/server/models"
 )
 
 // ============================================================================
 // ListRuns - GET /runs
 // ============================================================================
 
-// Handler type
-
-// ListRunsHandlerHTTP wraps the user handler for HTTP
-type ListRunsHandlerHTTP struct {
-	handler application.ListRunsHandler
+// ListRunsHandler is the HTTP handler for ListRuns.
+type ListRunsHandler struct {
+	listRuns application.ListRuns
 }
 
-// NewListRunsHandlerHTTP creates a new HTTP handler wrapper
-func NewListRunsHandlerHTTP(handler application.ListRunsHandler) *ListRunsHandlerHTTP {
-	return &ListRunsHandlerHTTP{handler: handler}
+// NewListRunsHandler creates a new HTTP handler.
+func NewListRunsHandler(listRuns application.ListRuns) *ListRunsHandler {
+	return &ListRunsHandler{listRuns: listRuns}
 }
 
-// RegisterListRunsRoute registers the HTTP route for ListRuns
-func RegisterListRunsRoute(mux *http.ServeMux, handler *ListRunsHandlerHTTP) {
+// RegisterListRunsRoute registers the HTTP route for ListRuns.
+func RegisterListRunsRoute(mux *http.ServeMux, handler *ListRunsHandler) {
 	mux.HandleFunc("GET /runs", handler.ServeHTTP)
 }
 
@@ -51,8 +50,8 @@ type ListRunsResponse interface {
 }
 
 type ListRuns200Response struct {
-	Data []models.Run          `json:"data"`
-	Meta models.PaginationMeta `json:"meta"`
+	Data []models.Run                `json:"data"`
+	Meta servermodels.PaginationMeta `json:"meta"`
 }
 
 func (response ListRuns200Response) VisitListRunsResponse(w http.ResponseWriter) error {
@@ -112,7 +111,7 @@ func (response ListRuns500Response) VisitListRunsResponse(w http.ResponseWriter)
 }
 
 // ServeHTTP handles the GET /runs endpoint.
-func (h *ListRunsHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *ListRunsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Build input from request
@@ -153,8 +152,8 @@ func (h *ListRunsHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.listRuns.Execute(ctx, input)
 	if err != nil {
 		errorResp := ListRuns500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

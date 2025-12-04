@@ -27,27 +27,27 @@ type GetAccountOutput struct {
 	Data models.Account `json:"data"`
 }
 
-// GetAccountHandler defines the interface for the GetAccount operation.
-type GetAccountHandler interface {
+// GetAccount defines the interface for the GetAccount operation.
+type GetAccount interface {
 	Execute(ctx context.Context, input *GetAccountInput) (*GetAccountOutput, error)
 }
 
-// GetAccountHandlerImpl is the default implementation of GetAccountHandler.
-type GetAccountHandlerImpl struct {
+// GetAccountImpl is the default implementation of GetAccount.
+type GetAccountImpl struct {
 	repo repositories.AccountRepository
 }
 
-// NewGetAccountHandler creates a new GetAccount handler.
-func NewGetAccountHandler(
+// NewGetAccount creates a new GetAccount handler.
+func NewGetAccount(
 	repo repositories.AccountRepository,
-) GetAccountHandler {
-	return &GetAccountHandlerImpl{
+) GetAccount {
+	return &GetAccountImpl{
 		repo: repo,
 	}
 }
 
 // Execute performs the GetAccount operation.
-func (h *GetAccountHandlerImpl) Execute(ctx context.Context, input *GetAccountInput) (*GetAccountOutput, error) {
+func (h *GetAccountImpl) Execute(ctx context.Context, input *GetAccountInput) (*GetAccountOutput, error) {
 	// Get from repository
 	result, err := h.repo.Get(ctx, input.ID)
 	if err != nil {

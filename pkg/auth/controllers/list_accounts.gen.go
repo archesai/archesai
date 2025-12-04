@@ -12,26 +12,25 @@ import (
 	"github.com/archesai/archesai/pkg/auth/application"
 	"github.com/archesai/archesai/pkg/auth/models"
 	"github.com/archesai/archesai/pkg/server"
+	servermodels "github.com/archesai/archesai/pkg/server/models"
 )
 
 // ============================================================================
 // ListAccounts - GET /auth/accounts
 // ============================================================================
 
-// Handler type
-
-// ListAccountsHandlerHTTP wraps the user handler for HTTP
-type ListAccountsHandlerHTTP struct {
-	handler application.ListAccountsHandler
+// ListAccountsHandler is the HTTP handler for ListAccounts.
+type ListAccountsHandler struct {
+	listAccounts application.ListAccounts
 }
 
-// NewListAccountsHandlerHTTP creates a new HTTP handler wrapper
-func NewListAccountsHandlerHTTP(handler application.ListAccountsHandler) *ListAccountsHandlerHTTP {
-	return &ListAccountsHandlerHTTP{handler: handler}
+// NewListAccountsHandler creates a new HTTP handler.
+func NewListAccountsHandler(listAccounts application.ListAccounts) *ListAccountsHandler {
+	return &ListAccountsHandler{listAccounts: listAccounts}
 }
 
-// RegisterListAccountsRoute registers the HTTP route for ListAccounts
-func RegisterListAccountsRoute(mux *http.ServeMux, handler *ListAccountsHandlerHTTP) {
+// RegisterListAccountsRoute registers the HTTP route for ListAccounts.
+func RegisterListAccountsRoute(mux *http.ServeMux, handler *ListAccountsHandler) {
 	mux.HandleFunc("GET /auth/accounts", handler.ServeHTTP)
 }
 
@@ -44,8 +43,8 @@ type ListAccountsResponse interface {
 }
 
 type ListAccounts200Response struct {
-	Data []models.Account      `json:"data"`
-	Meta models.PaginationMeta `json:"meta"`
+	Data []models.Account            `json:"data"`
+	Meta servermodels.PaginationMeta `json:"meta"`
 }
 
 func (response ListAccounts200Response) VisitListAccountsResponse(w http.ResponseWriter) error {
@@ -105,7 +104,7 @@ func (response ListAccounts500Response) VisitListAccountsResponse(w http.Respons
 }
 
 // ServeHTTP handles the GET /auth/accounts endpoint.
-func (h *ListAccountsHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *ListAccountsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Extract session ID from context for authenticated operations
@@ -124,8 +123,8 @@ func (h *ListAccountsHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Reque
 	input := &application.ListAccountsInput{}
 	input.SessionID = sessionID
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.listAccounts.Execute(ctx, input)
 	if err != nil {
 		errorResp := ListAccounts500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

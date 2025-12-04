@@ -11,23 +11,23 @@ import (
 
 // HTTPHandlers holds all HTTP handlers for this package.
 type HTTPHandlers struct {
-	CreateExecutor  *controllers.CreateExecutorHandlerHTTP
-	DeleteExecutor  *controllers.DeleteExecutorHandlerHTTP
-	ExecuteExecutor *controllers.ExecuteExecutorHandlerHTTP
-	GetExecutor     *controllers.GetExecutorHandlerHTTP
-	ListExecutors   *controllers.ListExecutorsHandlerHTTP
-	UpdateExecutor  *controllers.UpdateExecutorHandlerHTTP
+	CreateExecutor  *controllers.CreateExecutorHandler
+	DeleteExecutor  *controllers.DeleteExecutorHandler
+	ExecuteExecutor *controllers.ExecuteExecutorHandler
+	GetExecutor     *controllers.GetExecutorHandler
+	ListExecutors   *controllers.ListExecutorsHandler
+	UpdateExecutor  *controllers.UpdateExecutorHandler
 }
 
 // NewHTTPHandlers creates all HTTP handlers from the given application handlers.
 func NewHTTPHandlers(appHandlers *ApplicationHandlers) *HTTPHandlers {
 	return &HTTPHandlers{
-		CreateExecutor:  controllers.NewCreateExecutorHandlerHTTP(appHandlers.CreateExecutor),
-		DeleteExecutor:  controllers.NewDeleteExecutorHandlerHTTP(appHandlers.DeleteExecutor),
-		ExecuteExecutor: controllers.NewExecuteExecutorHandlerHTTP(appHandlers.ExecuteExecutor),
-		GetExecutor:     controllers.NewGetExecutorHandlerHTTP(appHandlers.GetExecutor),
-		ListExecutors:   controllers.NewListExecutorsHandlerHTTP(appHandlers.ListExecutors),
-		UpdateExecutor:  controllers.NewUpdateExecutorHandlerHTTP(appHandlers.UpdateExecutor),
+		CreateExecutor:  controllers.NewCreateExecutorHandler(appHandlers.CreateExecutor),
+		DeleteExecutor:  controllers.NewDeleteExecutorHandler(appHandlers.DeleteExecutor),
+		ExecuteExecutor: controllers.NewExecuteExecutorHandler(appHandlers.ExecuteExecutor),
+		GetExecutor:     controllers.NewGetExecutorHandler(appHandlers.GetExecutor),
+		ListExecutors:   controllers.NewListExecutorsHandler(appHandlers.ListExecutors),
+		UpdateExecutor:  controllers.NewUpdateExecutorHandler(appHandlers.UpdateExecutor),
 	}
 }
 

@@ -16,20 +16,18 @@ import (
 // RequestMagicLink - POST /auth/magic-links/request
 // ============================================================================
 
-// Handler type
-
-// RequestMagicLinkHandlerHTTP wraps the user handler for HTTP
-type RequestMagicLinkHandlerHTTP struct {
-	handler application.RequestMagicLinkHandler
+// RequestMagicLinkHandler is the HTTP handler for RequestMagicLink.
+type RequestMagicLinkHandler struct {
+	requestMagicLink application.RequestMagicLink
 }
 
-// NewRequestMagicLinkHandlerHTTP creates a new HTTP handler wrapper
-func NewRequestMagicLinkHandlerHTTP(handler application.RequestMagicLinkHandler) *RequestMagicLinkHandlerHTTP {
-	return &RequestMagicLinkHandlerHTTP{handler: handler}
+// NewRequestMagicLinkHandler creates a new HTTP handler.
+func NewRequestMagicLinkHandler(requestMagicLink application.RequestMagicLink) *RequestMagicLinkHandler {
+	return &RequestMagicLinkHandler{requestMagicLink: requestMagicLink}
 }
 
-// RegisterRequestMagicLinkRoute registers the HTTP route for RequestMagicLink
-func RegisterRequestMagicLinkRoute(mux *http.ServeMux, handler *RequestMagicLinkHandlerHTTP) {
+// RegisterRequestMagicLinkRoute registers the HTTP route for RequestMagicLink.
+func RegisterRequestMagicLinkRoute(mux *http.ServeMux, handler *RequestMagicLinkHandler) {
 	mux.HandleFunc("POST /auth/magic-links/request", handler.ServeHTTP)
 }
 
@@ -112,7 +110,7 @@ func (response RequestMagicLink500Response) VisitRequestMagicLinkResponse(w http
 }
 
 // ServeHTTP handles the POST /auth/magic-links/request endpoint.
-func (h *RequestMagicLinkHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *RequestMagicLinkHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Build input from request
@@ -133,8 +131,8 @@ func (h *RequestMagicLinkHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.R
 	input.Identifier = body.Identifier
 	input.RedirectURL = body.RedirectURL
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.requestMagicLink.Execute(ctx, input)
 	if err != nil {
 		errorResp := RequestMagicLink500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

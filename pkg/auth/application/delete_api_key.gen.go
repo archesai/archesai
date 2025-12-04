@@ -23,30 +23,30 @@ type DeleteAPIKeyInput struct {
 	ID        uuid.UUID
 }
 
-// DeleteAPIKeyHandler defines the interface for the DeleteAPIKey operation.
-type DeleteAPIKeyHandler interface {
+// DeleteAPIKey defines the interface for the DeleteAPIKey operation.
+type DeleteAPIKey interface {
 	Execute(ctx context.Context, input *DeleteAPIKeyInput) error
 }
 
-// DeleteAPIKeyHandlerImpl is the default implementation of DeleteAPIKeyHandler.
-type DeleteAPIKeyHandlerImpl struct {
+// DeleteAPIKeyImpl is the default implementation of DeleteAPIKey.
+type DeleteAPIKeyImpl struct {
 	repo      repositories.APIKeyRepository
 	publisher events.Publisher
 }
 
-// NewDeleteAPIKeyHandler creates a new DeleteAPIKey handler.
-func NewDeleteAPIKeyHandler(
+// NewDeleteAPIKey creates a new DeleteAPIKey handler.
+func NewDeleteAPIKey(
 	repo repositories.APIKeyRepository,
 	publisher events.Publisher,
-) DeleteAPIKeyHandler {
-	return &DeleteAPIKeyHandlerImpl{
+) DeleteAPIKey {
+	return &DeleteAPIKeyImpl{
 		repo:      repo,
 		publisher: publisher,
 	}
 }
 
 // Execute performs the DeleteAPIKey operation.
-func (h *DeleteAPIKeyHandlerImpl) Execute(ctx context.Context, input *DeleteAPIKeyInput) error {
+func (h *DeleteAPIKeyImpl) Execute(ctx context.Context, input *DeleteAPIKeyInput) error {
 	// Delete from repository
 	if err := h.repo.Delete(ctx, input.ID); err != nil {
 		return fmt.Errorf("failed to delete apikey: %w", err)

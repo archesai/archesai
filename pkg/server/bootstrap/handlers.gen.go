@@ -8,12 +8,12 @@ import (
 
 // ApplicationHandlers holds all application-layer handlers for this package.
 type ApplicationHandlers struct {
-	GetHealth application.GetHealthHandler
+	GetHealth application.GetHealth
 }
 
 // NewApplicationHandlers creates all application handlers with proper dependency injection.
 func NewApplicationHandlers() *ApplicationHandlers {
 	return &ApplicationHandlers{
-		GetHealth: application.NewGetHealthHandler(),
+		GetHealth: application.NewGetHealth(),
 	}
 }

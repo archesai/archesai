@@ -19,20 +19,18 @@ import (
 // CreateAPIKey - POST /api-keys
 // ============================================================================
 
-// Handler type
-
-// CreateAPIKeyHandlerHTTP wraps the user handler for HTTP
-type CreateAPIKeyHandlerHTTP struct {
-	handler application.CreateAPIKeyHandler
+// CreateAPIKeyHandler is the HTTP handler for CreateAPIKey.
+type CreateAPIKeyHandler struct {
+	createAPIKey application.CreateAPIKey
 }
 
-// NewCreateAPIKeyHandlerHTTP creates a new HTTP handler wrapper
-func NewCreateAPIKeyHandlerHTTP(handler application.CreateAPIKeyHandler) *CreateAPIKeyHandlerHTTP {
-	return &CreateAPIKeyHandlerHTTP{handler: handler}
+// NewCreateAPIKeyHandler creates a new HTTP handler.
+func NewCreateAPIKeyHandler(createAPIKey application.CreateAPIKey) *CreateAPIKeyHandler {
+	return &CreateAPIKeyHandler{createAPIKey: createAPIKey}
 }
 
-// RegisterCreateAPIKeyRoute registers the HTTP route for CreateAPIKey
-func RegisterCreateAPIKeyRoute(mux *http.ServeMux, handler *CreateAPIKeyHandlerHTTP) {
+// RegisterCreateAPIKeyRoute registers the HTTP route for CreateAPIKey.
+func RegisterCreateAPIKeyRoute(mux *http.ServeMux, handler *CreateAPIKeyHandler) {
 	mux.HandleFunc("POST /api-keys", handler.ServeHTTP)
 }
 
@@ -114,7 +112,7 @@ func (response CreateAPIKey500Response) VisitCreateAPIKeyResponse(w http.Respons
 }
 
 // ServeHTTP handles the POST /api-keys endpoint.
-func (h *CreateAPIKeyHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *CreateAPIKeyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Extract session ID from context for authenticated operations
@@ -150,8 +148,8 @@ func (h *CreateAPIKeyHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Reque
 	input.RateLimit = body.RateLimit
 	input.Scopes = body.Scopes
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.createAPIKey.Execute(ctx, input)
 	if err != nil {
 		errorResp := CreateAPIKey500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

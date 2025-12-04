@@ -28,27 +28,27 @@ type GetInvitationOutput struct {
 	Data models.Invitation `json:"data"`
 }
 
-// GetInvitationHandler defines the interface for the GetInvitation operation.
-type GetInvitationHandler interface {
+// GetInvitation defines the interface for the GetInvitation operation.
+type GetInvitation interface {
 	Execute(ctx context.Context, input *GetInvitationInput) (*GetInvitationOutput, error)
 }
 
-// GetInvitationHandlerImpl is the default implementation of GetInvitationHandler.
-type GetInvitationHandlerImpl struct {
+// GetInvitationImpl is the default implementation of GetInvitation.
+type GetInvitationImpl struct {
 	repo repositories.InvitationRepository
 }
 
-// NewGetInvitationHandler creates a new GetInvitation handler.
-func NewGetInvitationHandler(
+// NewGetInvitation creates a new GetInvitation handler.
+func NewGetInvitation(
 	repo repositories.InvitationRepository,
-) GetInvitationHandler {
-	return &GetInvitationHandlerImpl{
+) GetInvitation {
+	return &GetInvitationImpl{
 		repo: repo,
 	}
 }
 
 // Execute performs the GetInvitation operation.
-func (h *GetInvitationHandlerImpl) Execute(ctx context.Context, input *GetInvitationInput) (*GetInvitationOutput, error) {
+func (h *GetInvitationImpl) Execute(ctx context.Context, input *GetInvitationInput) (*GetInvitationOutput, error) {
 	// Get from repository
 	result, err := h.repo.Get(ctx, input.ID)
 	if err != nil {

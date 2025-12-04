@@ -27,7 +27,7 @@ type RequestMagicLinkOutput struct {
 	Token     *models.MagicLinkToken `json:"token,omitempty"`
 }
 
-// RequestMagicLinkHandler defines the interface for the RequestMagicLink operation.
-type RequestMagicLinkHandler interface {
+// RequestMagicLink defines the interface for the RequestMagicLink operation.
+type RequestMagicLink interface {
 	Execute(ctx context.Context, input *RequestMagicLinkInput) (*RequestMagicLinkOutput, error)
 }

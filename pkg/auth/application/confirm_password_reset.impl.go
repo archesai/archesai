@@ -7,27 +7,27 @@ import (
 	"fmt"
 )
 
-// Ensure ConfirmPasswordResetHandlerImpl implements ConfirmPasswordResetHandler
-var _ ConfirmPasswordResetHandler = (*ConfirmPasswordResetHandlerImpl)(nil)
+// Ensure ConfirmPasswordResetImpl implements ConfirmPasswordReset
+var _ ConfirmPasswordReset = (*ConfirmPasswordResetImpl)(nil)
 
-// ConfirmPasswordResetHandlerImpl implements the ConfirmPasswordResetHandler interface.
-type ConfirmPasswordResetHandlerImpl struct {
+// ConfirmPasswordResetImpl implements the ConfirmPasswordReset interface.
+type ConfirmPasswordResetImpl struct {
 	// TODO: Add your dependencies here
 }
 
-// NewConfirmPasswordResetHandler creates a new ConfirmPasswordReset handler.
-func NewConfirmPasswordResetHandler(
+// NewConfirmPasswordReset creates a new ConfirmPasswordReset implementation.
+func NewConfirmPasswordReset(
 // TODO: Add your dependencies here
-) ConfirmPasswordResetHandler {
-	return &ConfirmPasswordResetHandlerImpl{
+) ConfirmPasswordReset {
+	return &ConfirmPasswordResetImpl{
 		// TODO: Initialize dependencies
 	}
 }
 
 // Execute performs the ConfirmPasswordReset operation.
-func (h *ConfirmPasswordResetHandlerImpl) Execute(
-	_ context.Context,
-	_ *ConfirmPasswordResetInput,
+func (h *ConfirmPasswordResetImpl) Execute(
+	ctx context.Context,
+	input *ConfirmPasswordResetInput,
 ) error {
 	// TODO: Implement ConfirmPasswordReset logic
 	return fmt.Errorf("not implemented")

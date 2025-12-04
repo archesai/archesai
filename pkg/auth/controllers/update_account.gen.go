@@ -19,20 +19,18 @@ import (
 // UpdateAccount - PATCH /auth/accounts/{id}
 // ============================================================================
 
-// Handler type
-
-// UpdateAccountHandlerHTTP wraps the user handler for HTTP
-type UpdateAccountHandlerHTTP struct {
-	handler application.UpdateAccountHandler
+// UpdateAccountHandler is the HTTP handler for UpdateAccount.
+type UpdateAccountHandler struct {
+	updateAccount application.UpdateAccount
 }
 
-// NewUpdateAccountHandlerHTTP creates a new HTTP handler wrapper
-func NewUpdateAccountHandlerHTTP(handler application.UpdateAccountHandler) *UpdateAccountHandlerHTTP {
-	return &UpdateAccountHandlerHTTP{handler: handler}
+// NewUpdateAccountHandler creates a new HTTP handler.
+func NewUpdateAccountHandler(updateAccount application.UpdateAccount) *UpdateAccountHandler {
+	return &UpdateAccountHandler{updateAccount: updateAccount}
 }
 
-// RegisterUpdateAccountRoute registers the HTTP route for UpdateAccount
-func RegisterUpdateAccountRoute(mux *http.ServeMux, handler *UpdateAccountHandlerHTTP) {
+// RegisterUpdateAccountRoute registers the HTTP route for UpdateAccount.
+func RegisterUpdateAccountRoute(mux *http.ServeMux, handler *UpdateAccountHandler) {
 	mux.HandleFunc("PATCH /auth/accounts/{id}", handler.ServeHTTP)
 }
 
@@ -122,7 +120,7 @@ func (response UpdateAccount500Response) VisitUpdateAccountResponse(w http.Respo
 }
 
 // ServeHTTP handles the PATCH /auth/accounts/{id} endpoint.
-func (h *UpdateAccountHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *UpdateAccountHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Extract session ID from context for authenticated operations
@@ -169,8 +167,8 @@ func (h *UpdateAccountHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Requ
 	input.ProviderAccountIdentifier = body.ProviderAccountIdentifier
 	input.Type = body.Type
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.updateAccount.Execute(ctx, input)
 	if err != nil {
 		errorResp := UpdateAccount500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

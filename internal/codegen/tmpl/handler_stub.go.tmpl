@@ -15,19 +15,19 @@ import (
 	"github.com/google/uuid"
 )
 
-// Ensure {{ .Operation.ID }}HandlerImpl implements {{ .Operation.ID }}Handler
-var _ {{ .Operation.ID }}Handler = (*{{ .Operation.ID }}HandlerImpl)(nil)
+// Ensure {{ .Operation.ID }}Impl implements {{ .Operation.ID }}
+var _ {{ .Operation.ID }} = (*{{ .Operation.ID }}Impl)(nil)
 
-// {{ .Operation.ID }}HandlerImpl implements the {{ .Operation.ID }}Handler interface.
-type {{ .Operation.ID }}HandlerImpl struct {
+// {{ .Operation.ID }}Impl implements the {{ .Operation.ID }} interface.
+type {{ .Operation.ID }}Impl struct {
 	// TODO: Add your dependencies here
 }
 
-// New{{ .Operation.ID }}Handler creates a new {{ .Operation.ID }} handler.
-func New{{ .Operation.ID }}Handler(
+// New{{ .Operation.ID }} creates a new {{ .Operation.ID }} implementation.
+func New{{ .Operation.ID }}(
 	// TODO: Add your dependencies here
-) {{ .Operation.ID }}Handler {
-	return &{{ .Operation.ID }}HandlerImpl{
+) {{ .Operation.ID }} {
+	return &{{ .Operation.ID }}Impl{
 		// TODO: Initialize dependencies
 	}
 }
@@ -35,12 +35,12 @@ func New{{ .Operation.ID }}Handler(
 // Execute performs the {{ .Operation.ID }} operation.
 {{- $successResponse := .Operation.GetSuccessResponse }}
 {{- if and $successResponse (eq $successResponse.StatusCode "204") }}
-func (h *{{ .Operation.ID }}HandlerImpl) Execute(ctx context.Context, input *{{ .Operation.ID }}Input) error {
+func (h *{{ .Operation.ID }}Impl) Execute(ctx context.Context, input *{{ .Operation.ID }}Input) error {
 	// TODO: Implement {{ .Operation.ID }} logic
 	return fmt.Errorf("not implemented")
 }
 {{- else }}
-func (h *{{ .Operation.ID }}HandlerImpl) Execute(ctx context.Context, input *{{ .Operation.ID }}Input) (*{{ .Operation.ID }}Output, error) {
+func (h *{{ .Operation.ID }}Impl) Execute(ctx context.Context, input *{{ .Operation.ID }}Input) (*{{ .Operation.ID }}Output, error) {
 	// TODO: Implement {{ .Operation.ID }} logic
 	return nil, fmt.Errorf("not implemented")
 }

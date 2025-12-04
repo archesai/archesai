@@ -29,7 +29,7 @@ type GetHealthOutput struct {
 	Uptime    int64                   `json:"uptime"`
 }
 
-// GetHealthHandler defines the interface for the GetHealth operation.
-type GetHealthHandler interface {
+// GetHealth defines the interface for the GetHealth operation.
+type GetHealth interface {
 	Execute(ctx context.Context, input *GetHealthInput) (*GetHealthOutput, error)
 }

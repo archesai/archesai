@@ -18,20 +18,18 @@ import (
 // CreateOrganization - POST /organizations
 // ============================================================================
 
-// Handler type
-
-// CreateOrganizationHandlerHTTP wraps the user handler for HTTP
-type CreateOrganizationHandlerHTTP struct {
-	handler application.CreateOrganizationHandler
+// CreateOrganizationHandler is the HTTP handler for CreateOrganization.
+type CreateOrganizationHandler struct {
+	createOrganization application.CreateOrganization
 }
 
-// NewCreateOrganizationHandlerHTTP creates a new HTTP handler wrapper
-func NewCreateOrganizationHandlerHTTP(handler application.CreateOrganizationHandler) *CreateOrganizationHandlerHTTP {
-	return &CreateOrganizationHandlerHTTP{handler: handler}
+// NewCreateOrganizationHandler creates a new HTTP handler.
+func NewCreateOrganizationHandler(createOrganization application.CreateOrganization) *CreateOrganizationHandler {
+	return &CreateOrganizationHandler{createOrganization: createOrganization}
 }
 
-// RegisterCreateOrganizationRoute registers the HTTP route for CreateOrganization
-func RegisterCreateOrganizationRoute(mux *http.ServeMux, handler *CreateOrganizationHandlerHTTP) {
+// RegisterCreateOrganizationRoute registers the HTTP route for CreateOrganization.
+func RegisterCreateOrganizationRoute(mux *http.ServeMux, handler *CreateOrganizationHandler) {
 	mux.HandleFunc("POST /organizations", handler.ServeHTTP)
 }
 
@@ -110,7 +108,7 @@ func (response CreateOrganization500Response) VisitCreateOrganizationResponse(w 
 }
 
 // ServeHTTP handles the POST /organizations endpoint.
-func (h *CreateOrganizationHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *CreateOrganizationHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Extract session ID from context for authenticated operations
@@ -143,8 +141,8 @@ func (h *CreateOrganizationHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http
 	input.BillingEmail = body.BillingEmail
 	input.OrganizationID = body.OrganizationID
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.createOrganization.Execute(ctx, input)
 	if err != nil {
 		errorResp := CreateOrganization500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

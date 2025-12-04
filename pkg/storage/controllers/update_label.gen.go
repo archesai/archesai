@@ -19,20 +19,18 @@ import (
 // UpdateLabel - PATCH /labels/{id}
 // ============================================================================
 
-// Handler type
-
-// UpdateLabelHandlerHTTP wraps the user handler for HTTP
-type UpdateLabelHandlerHTTP struct {
-	handler application.UpdateLabelHandler
+// UpdateLabelHandler is the HTTP handler for UpdateLabel.
+type UpdateLabelHandler struct {
+	updateLabel application.UpdateLabel
 }
 
-// NewUpdateLabelHandlerHTTP creates a new HTTP handler wrapper
-func NewUpdateLabelHandlerHTTP(handler application.UpdateLabelHandler) *UpdateLabelHandlerHTTP {
-	return &UpdateLabelHandlerHTTP{handler: handler}
+// NewUpdateLabelHandler creates a new HTTP handler.
+func NewUpdateLabelHandler(updateLabel application.UpdateLabel) *UpdateLabelHandler {
+	return &UpdateLabelHandler{updateLabel: updateLabel}
 }
 
-// RegisterUpdateLabelRoute registers the HTTP route for UpdateLabel
-func RegisterUpdateLabelRoute(mux *http.ServeMux, handler *UpdateLabelHandlerHTTP) {
+// RegisterUpdateLabelRoute registers the HTTP route for UpdateLabel.
+func RegisterUpdateLabelRoute(mux *http.ServeMux, handler *UpdateLabelHandler) {
 	mux.HandleFunc("PATCH /labels/{id}", handler.ServeHTTP)
 }
 
@@ -120,7 +118,7 @@ func (response UpdateLabel500Response) VisitUpdateLabelResponse(w http.ResponseW
 }
 
 // ServeHTTP handles the PATCH /labels/{id} endpoint.
-func (h *UpdateLabelHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *UpdateLabelHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Build input from request
@@ -152,8 +150,8 @@ func (h *UpdateLabelHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Reques
 	}
 	input.Name = body.Name
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.updateLabel.Execute(ctx, input)
 	if err != nil {
 		errorResp := UpdateLabel500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

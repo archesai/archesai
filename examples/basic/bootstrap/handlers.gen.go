@@ -9,7 +9,7 @@ import (
 
 // ApplicationHandlers holds all application-layer handlers for this package.
 type ApplicationHandlers struct {
-	GetTodo application.GetTodoHandler
+	GetTodo application.GetTodo
 }
 
 // NewApplicationHandlers creates all application handlers with proper dependency injection.
@@ -17,6 +17,6 @@ func NewApplicationHandlers(
 	todoRepo repositories.TodoRepository,
 ) *ApplicationHandlers {
 	return &ApplicationHandlers{
-		GetTodo: application.NewGetTodoHandler(todoRepo),
+		GetTodo: application.NewGetTodo(todoRepo),
 	}
 }

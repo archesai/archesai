@@ -30,30 +30,30 @@ type UpdatePipelineOutput struct {
 	Data models.Pipeline `json:"data"`
 }
 
-// UpdatePipelineHandler defines the interface for the UpdatePipeline operation.
-type UpdatePipelineHandler interface {
+// UpdatePipeline defines the interface for the UpdatePipeline operation.
+type UpdatePipeline interface {
 	Execute(ctx context.Context, input *UpdatePipelineInput) (*UpdatePipelineOutput, error)
 }
 
-// UpdatePipelineHandlerImpl is the default implementation of UpdatePipelineHandler.
-type UpdatePipelineHandlerImpl struct {
+// UpdatePipelineImpl is the default implementation of UpdatePipeline.
+type UpdatePipelineImpl struct {
 	repo      repositories.PipelineRepository
 	publisher events.Publisher
 }
 
-// NewUpdatePipelineHandler creates a new UpdatePipeline handler.
-func NewUpdatePipelineHandler(
+// NewUpdatePipeline creates a new UpdatePipeline handler.
+func NewUpdatePipeline(
 	repo repositories.PipelineRepository,
 	publisher events.Publisher,
-) UpdatePipelineHandler {
-	return &UpdatePipelineHandlerImpl{
+) UpdatePipeline {
+	return &UpdatePipelineImpl{
 		repo:      repo,
 		publisher: publisher,
 	}
 }
 
 // Execute performs the UpdatePipeline operation.
-func (h *UpdatePipelineHandlerImpl) Execute(ctx context.Context, input *UpdatePipelineInput) (*UpdatePipelineOutput, error) {
+func (h *UpdatePipelineImpl) Execute(ctx context.Context, input *UpdatePipelineInput) (*UpdatePipelineOutput, error) {
 	// Get existing entity
 	existing, err := h.repo.Get(ctx, input.ID)
 	if err != nil {

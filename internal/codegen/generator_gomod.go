@@ -1,7 +1,6 @@
 package codegen
 
 import (
-	"bytes"
 	"fmt"
 	"log/slog"
 	"os"
@@ -29,22 +28,10 @@ func (g *GoModGenerator) Generate(ctx *GeneratorContext) error {
 		return nil
 	}
 
-	outputPath := "go.mod"
-	fullPath := filepath.Join(ctx.Storage.BaseDir(), outputPath)
-
-	if _, err := os.Stat(fullPath); err == nil {
-		return nil
-	}
-
 	data := &GoModTemplateData{ProjectName: ctx.ProjectName}
 
-	var buf bytes.Buffer
-	if err := ctx.Renderer.Render(&buf, "go.mod.tmpl", data); err != nil {
-		return fmt.Errorf("failed to render go.mod: %w", err)
-	}
-
-	if err := ctx.Storage.WriteFile(outputPath, buf.Bytes(), 0644); err != nil {
-		return fmt.Errorf("failed to write go.mod: %w", err)
+	if err := ctx.RenderToFileIfNotExists("go.mod.tmpl", "go.mod", data); err != nil {
+		return fmt.Errorf("failed to generate go.mod: %w", err)
 	}
 
 	slog.Info("generated go.mod", "project", ctx.ProjectName)

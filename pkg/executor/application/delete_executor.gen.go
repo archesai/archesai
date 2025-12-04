@@ -22,30 +22,30 @@ type DeleteExecutorInput struct {
 	ID uuid.UUID
 }
 
-// DeleteExecutorHandler defines the interface for the DeleteExecutor operation.
-type DeleteExecutorHandler interface {
+// DeleteExecutor defines the interface for the DeleteExecutor operation.
+type DeleteExecutor interface {
 	Execute(ctx context.Context, input *DeleteExecutorInput) error
 }
 
-// DeleteExecutorHandlerImpl is the default implementation of DeleteExecutorHandler.
-type DeleteExecutorHandlerImpl struct {
+// DeleteExecutorImpl is the default implementation of DeleteExecutor.
+type DeleteExecutorImpl struct {
 	repo      repositories.ExecutorRepository
 	publisher events.Publisher
 }
 
-// NewDeleteExecutorHandler creates a new DeleteExecutor handler.
-func NewDeleteExecutorHandler(
+// NewDeleteExecutor creates a new DeleteExecutor handler.
+func NewDeleteExecutor(
 	repo repositories.ExecutorRepository,
 	publisher events.Publisher,
-) DeleteExecutorHandler {
-	return &DeleteExecutorHandlerImpl{
+) DeleteExecutor {
+	return &DeleteExecutorImpl{
 		repo:      repo,
 		publisher: publisher,
 	}
 }
 
 // Execute performs the DeleteExecutor operation.
-func (h *DeleteExecutorHandlerImpl) Execute(ctx context.Context, input *DeleteExecutorInput) error {
+func (h *DeleteExecutorImpl) Execute(ctx context.Context, input *DeleteExecutorInput) error {
 	// Delete from repository
 	if err := h.repo.Delete(ctx, input.ID); err != nil {
 		return fmt.Errorf("failed to delete executor: %w", err)

@@ -13,26 +13,25 @@ import (
 	"github.com/archesai/archesai/pkg/auth/application"
 	"github.com/archesai/archesai/pkg/auth/models"
 	"github.com/archesai/archesai/pkg/server"
+	servermodels "github.com/archesai/archesai/pkg/server/models"
 )
 
 // ============================================================================
 // ListMembers - GET /organizations/{organizationID}/members
 // ============================================================================
 
-// Handler type
-
-// ListMembersHandlerHTTP wraps the user handler for HTTP
-type ListMembersHandlerHTTP struct {
-	handler application.ListMembersHandler
+// ListMembersHandler is the HTTP handler for ListMembers.
+type ListMembersHandler struct {
+	listMembers application.ListMembers
 }
 
-// NewListMembersHandlerHTTP creates a new HTTP handler wrapper
-func NewListMembersHandlerHTTP(handler application.ListMembersHandler) *ListMembersHandlerHTTP {
-	return &ListMembersHandlerHTTP{handler: handler}
+// NewListMembersHandler creates a new HTTP handler.
+func NewListMembersHandler(listMembers application.ListMembers) *ListMembersHandler {
+	return &ListMembersHandler{listMembers: listMembers}
 }
 
-// RegisterListMembersRoute registers the HTTP route for ListMembers
-func RegisterListMembersRoute(mux *http.ServeMux, handler *ListMembersHandlerHTTP) {
+// RegisterListMembersRoute registers the HTTP route for ListMembers.
+func RegisterListMembersRoute(mux *http.ServeMux, handler *ListMembersHandler) {
 	mux.HandleFunc("GET /organizations/{organizationID}/members", handler.ServeHTTP)
 }
 
@@ -52,8 +51,8 @@ type ListMembersResponse interface {
 }
 
 type ListMembers200Response struct {
-	Data []models.Member       `json:"data"`
-	Meta models.PaginationMeta `json:"meta"`
+	Data []models.Member             `json:"data"`
+	Meta servermodels.PaginationMeta `json:"meta"`
 }
 
 func (response ListMembers200Response) VisitListMembersResponse(w http.ResponseWriter) error {
@@ -113,7 +112,7 @@ func (response ListMembers500Response) VisitListMembersResponse(w http.ResponseW
 }
 
 // ServeHTTP handles the GET /organizations/{organizationID}/members endpoint.
-func (h *ListMembersHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *ListMembersHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Extract session ID from context for authenticated operations
@@ -180,8 +179,8 @@ func (h *ListMembersHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.listMembers.Execute(ctx, input)
 	if err != nil {
 		errorResp := ListMembers500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

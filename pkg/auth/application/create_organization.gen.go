@@ -30,30 +30,30 @@ type CreateOrganizationOutput struct {
 	Data models.Organization `json:"data"`
 }
 
-// CreateOrganizationHandler defines the interface for the CreateOrganization operation.
-type CreateOrganizationHandler interface {
+// CreateOrganization defines the interface for the CreateOrganization operation.
+type CreateOrganization interface {
 	Execute(ctx context.Context, input *CreateOrganizationInput) (*CreateOrganizationOutput, error)
 }
 
-// CreateOrganizationHandlerImpl is the default implementation of CreateOrganizationHandler.
-type CreateOrganizationHandlerImpl struct {
+// CreateOrganizationImpl is the default implementation of CreateOrganization.
+type CreateOrganizationImpl struct {
 	repo      repositories.OrganizationRepository
 	publisher events.Publisher
 }
 
-// NewCreateOrganizationHandler creates a new CreateOrganization handler.
-func NewCreateOrganizationHandler(
+// NewCreateOrganization creates a new CreateOrganization handler.
+func NewCreateOrganization(
 	repo repositories.OrganizationRepository,
 	publisher events.Publisher,
-) CreateOrganizationHandler {
-	return &CreateOrganizationHandlerImpl{
+) CreateOrganization {
+	return &CreateOrganizationImpl{
 		repo:      repo,
 		publisher: publisher,
 	}
 }
 
 // Execute performs the CreateOrganization operation.
-func (h *CreateOrganizationHandlerImpl) Execute(ctx context.Context, input *CreateOrganizationInput) (*CreateOrganizationOutput, error) {
+func (h *CreateOrganizationImpl) Execute(ctx context.Context, input *CreateOrganizationInput) (*CreateOrganizationOutput, error) {
 	// Create entity
 	entity := &models.Organization{
 		ID:        uuid.New(),

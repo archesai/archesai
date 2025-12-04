@@ -2,6 +2,7 @@
 description: Pagination metadata
 title: PaginationMeta
 type: object
+x-internal: server
 properties:
   total:
     description: Total number of items in the collection

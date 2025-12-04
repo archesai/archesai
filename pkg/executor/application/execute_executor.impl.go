@@ -1,4 +1,3 @@
-// Package application provides handler implementations for executor operations.
 package application
 
 // NOTE: This file is user-editable. The generator will not overwrite it.
@@ -8,27 +7,27 @@ import (
 	"fmt"
 )
 
-// Ensure ExecuteExecutorHandlerImpl implements ExecuteExecutorHandler
-var _ ExecuteExecutorHandler = (*ExecuteExecutorHandlerImpl)(nil)
+// Ensure ExecuteExecutorImpl implements ExecuteExecutor
+var _ ExecuteExecutor = (*ExecuteExecutorImpl)(nil)
 
-// ExecuteExecutorHandlerImpl implements the ExecuteExecutorHandler interface.
-type ExecuteExecutorHandlerImpl struct {
+// ExecuteExecutorImpl implements the ExecuteExecutor interface.
+type ExecuteExecutorImpl struct {
 	// TODO: Add your dependencies here
 }
 
-// NewExecuteExecutorHandler creates a new ExecuteExecutor handler.
-func NewExecuteExecutorHandler(
+// NewExecuteExecutor creates a new ExecuteExecutor implementation.
+func NewExecuteExecutor(
 // TODO: Add your dependencies here
-) ExecuteExecutorHandler {
-	return &ExecuteExecutorHandlerImpl{
+) ExecuteExecutor {
+	return &ExecuteExecutorImpl{
 		// TODO: Initialize dependencies
 	}
 }
 
 // Execute performs the ExecuteExecutor operation.
-func (h *ExecuteExecutorHandlerImpl) Execute(
-	_ context.Context,
-	_ *ExecuteExecutorInput,
+func (h *ExecuteExecutorImpl) Execute(
+	ctx context.Context,
+	input *ExecuteExecutorInput,
 ) (*ExecuteExecutorOutput, error) {
 	// TODO: Implement ExecuteExecutor logic
 	return nil, fmt.Errorf("not implemented")

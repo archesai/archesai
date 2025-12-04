@@ -1,7 +1,6 @@
 package codegen
 
 import (
-	"bytes"
 	"fmt"
 	"path/filepath"
 	"sort"
@@ -32,12 +31,11 @@ func (g *RoutesGenerator) Generate(ctx *GeneratorContext) error {
 		return nil
 	}
 
-	var buf bytes.Buffer
-	if err := ctx.Renderer.Render(&buf, "routes.go.tmpl", data); err != nil {
-		return fmt.Errorf("failed to render routes.go.tmpl: %w", err)
+	outputPath := filepath.Join("bootstrap", "routes.gen.go")
+	if err := ctx.RenderToFile("routes.go.tmpl", outputPath, data); err != nil {
+		return fmt.Errorf("failed to generate routes: %w", err)
 	}
-
-	return ctx.Storage.WriteFile(filepath.Join("bootstrap", "routes.gen.go"), buf.Bytes(), 0644)
+	return nil
 }
 
 func (g *RoutesGenerator) buildTemplateData(ctx *GeneratorContext) *RoutesTemplateData {
@@ -61,7 +59,7 @@ func (g *RoutesGenerator) buildTemplateData(ctx *GeneratorContext) *RoutesTempla
 			internalPackages = append(internalPackages, InternalPackage{
 				Name:       pkgName,
 				Alias:      pkgName,
-				ImportPath: "github.com/archesai/archesai/pkg/" + pkgName,
+				ImportPath: InternalPackageImportPath(pkgName),
 			})
 		}
 		sort.Slice(internalPackages, func(i, j int) bool {

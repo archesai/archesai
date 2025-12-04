@@ -12,26 +12,25 @@ import (
 	"github.com/archesai/archesai/pkg/pipelines/application"
 	"github.com/archesai/archesai/pkg/pipelines/models"
 	"github.com/archesai/archesai/pkg/server"
+	servermodels "github.com/archesai/archesai/pkg/server/models"
 )
 
 // ============================================================================
 // ListPipelines - GET /pipelines
 // ============================================================================
 
-// Handler type
-
-// ListPipelinesHandlerHTTP wraps the user handler for HTTP
-type ListPipelinesHandlerHTTP struct {
-	handler application.ListPipelinesHandler
+// ListPipelinesHandler is the HTTP handler for ListPipelines.
+type ListPipelinesHandler struct {
+	listPipelines application.ListPipelines
 }
 
-// NewListPipelinesHandlerHTTP creates a new HTTP handler wrapper
-func NewListPipelinesHandlerHTTP(handler application.ListPipelinesHandler) *ListPipelinesHandlerHTTP {
-	return &ListPipelinesHandlerHTTP{handler: handler}
+// NewListPipelinesHandler creates a new HTTP handler.
+func NewListPipelinesHandler(listPipelines application.ListPipelines) *ListPipelinesHandler {
+	return &ListPipelinesHandler{listPipelines: listPipelines}
 }
 
-// RegisterListPipelinesRoute registers the HTTP route for ListPipelines
-func RegisterListPipelinesRoute(mux *http.ServeMux, handler *ListPipelinesHandlerHTTP) {
+// RegisterListPipelinesRoute registers the HTTP route for ListPipelines.
+func RegisterListPipelinesRoute(mux *http.ServeMux, handler *ListPipelinesHandler) {
 	mux.HandleFunc("GET /pipelines", handler.ServeHTTP)
 }
 
@@ -51,8 +50,8 @@ type ListPipelinesResponse interface {
 }
 
 type ListPipelines200Response struct {
-	Data []models.Pipeline     `json:"data"`
-	Meta models.PaginationMeta `json:"meta"`
+	Data []models.Pipeline           `json:"data"`
+	Meta servermodels.PaginationMeta `json:"meta"`
 }
 
 func (response ListPipelines200Response) VisitListPipelinesResponse(w http.ResponseWriter) error {
@@ -112,7 +111,7 @@ func (response ListPipelines500Response) VisitListPipelinesResponse(w http.Respo
 }
 
 // ServeHTTP handles the GET /pipelines endpoint.
-func (h *ListPipelinesHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *ListPipelinesHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Build input from request
@@ -153,8 +152,8 @@ func (h *ListPipelinesHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.listPipelines.Execute(ctx, input)
 	if err != nil {
 		errorResp := ListPipelines500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

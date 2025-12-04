@@ -1,7 +1,6 @@
 package codegen
 
 import (
-	"bytes"
 	"fmt"
 	"path/filepath"
 	"strings"
@@ -20,7 +19,6 @@ func (g *PostgresGenerator) Priority() int { return PriorityNormal }
 
 // Generate creates PostgreSQL repository code for each entity schema.
 func (g *PostgresGenerator) Generate(ctx *GeneratorContext) error {
-	internalContext := ctx.InternalContext()
 	for _, schema := range ctx.SpecDef.Schemas {
 		if schema.XCodegenSchemaType != parsers.XCodegenSchemaTypeEntity {
 			continue
@@ -30,21 +28,12 @@ func (g *PostgresGenerator) Generate(ctx *GeneratorContext) error {
 			return fmt.Errorf("failed to generate PostgreSQL queries for %s: %w", schema.Name, err)
 		}
 
-		modelImportPath, repositoryInterface := getRepositoryImportPaths(
-			ctx.ProjectName,
-			internalContext,
-			schema,
-		)
+		modelImportPath, repositoryInterface := getRepositoryImportPaths(ctx, schema)
 		data := &RepositoriesTemplateData{
 			Entity:              schema,
 			ProjectName:         ctx.ProjectName,
 			ModelImportPath:     modelImportPath,
 			RepositoryInterface: repositoryInterface,
-		}
-
-		var buf bytes.Buffer
-		if err := ctx.Renderer.Render(&buf, "postgres.go.tmpl", data); err != nil {
-			return fmt.Errorf("failed to render PostgreSQL repository for %s: %w", schema.Name, err)
 		}
 
 		outputPath := filepath.Join(
@@ -53,8 +42,12 @@ func (g *PostgresGenerator) Generate(ctx *GeneratorContext) error {
 			"repositories",
 			strings.ToLower(schema.Name)+"_repository.gen.go",
 		)
-		if err := ctx.Storage.WriteFile(outputPath, buf.Bytes(), 0644); err != nil {
-			return fmt.Errorf("failed to write PostgreSQL repository for %s: %w", schema.Name, err)
+		if err := ctx.RenderToFile("postgres.go.tmpl", outputPath, data); err != nil {
+			return fmt.Errorf(
+				"failed to generate PostgreSQL repository for %s: %w",
+				schema.Name,
+				err,
+			)
 		}
 	}
 	return nil
@@ -65,23 +58,12 @@ func generateSQLQueriesForSchema(
 	schema *parsers.SchemaDef,
 	dbType string,
 ) error {
-	internalContext := ctx.InternalContext()
-	modelImportPath, repositoryInterface := getRepositoryImportPaths(
-		ctx.ProjectName,
-		internalContext,
-		schema,
-	)
-
+	modelImportPath, repositoryInterface := getRepositoryImportPaths(ctx, schema)
 	data := &RepositoriesTemplateData{
 		Entity:              schema,
 		ProjectName:         ctx.ProjectName,
 		ModelImportPath:     modelImportPath,
 		RepositoryInterface: repositoryInterface,
-	}
-
-	var buf bytes.Buffer
-	if err := ctx.Renderer.Render(&buf, "sql_queries.sql.tmpl", data); err != nil {
-		return fmt.Errorf("failed to render %s queries: %w", dbType, err)
 	}
 
 	outputPath := filepath.Join(
@@ -90,5 +72,5 @@ func generateSQLQueriesForSchema(
 		"queries",
 		strings.ToLower(schema.Name)+"s.gen.sql",
 	)
-	return ctx.Storage.WriteFile(outputPath, buf.Bytes(), 0644)
+	return ctx.RenderToFile("sql_queries.sql.tmpl", outputPath, data)
 }

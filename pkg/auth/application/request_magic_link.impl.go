@@ -7,27 +7,27 @@ import (
 	"fmt"
 )
 
-// Ensure RequestMagicLinkHandlerImpl implements RequestMagicLinkHandler
-var _ RequestMagicLinkHandler = (*RequestMagicLinkHandlerImpl)(nil)
+// Ensure RequestMagicLinkImpl implements RequestMagicLink
+var _ RequestMagicLink = (*RequestMagicLinkImpl)(nil)
 
-// RequestMagicLinkHandlerImpl implements the RequestMagicLinkHandler interface.
-type RequestMagicLinkHandlerImpl struct {
+// RequestMagicLinkImpl implements the RequestMagicLink interface.
+type RequestMagicLinkImpl struct {
 	// TODO: Add your dependencies here
 }
 
-// NewRequestMagicLinkHandler creates a new RequestMagicLink handler.
-func NewRequestMagicLinkHandler(
+// NewRequestMagicLink creates a new RequestMagicLink implementation.
+func NewRequestMagicLink(
 // TODO: Add your dependencies here
-) RequestMagicLinkHandler {
-	return &RequestMagicLinkHandlerImpl{
+) RequestMagicLink {
+	return &RequestMagicLinkImpl{
 		// TODO: Initialize dependencies
 	}
 }
 
 // Execute performs the RequestMagicLink operation.
-func (h *RequestMagicLinkHandlerImpl) Execute(
-	_ context.Context,
-	_ *RequestMagicLinkInput,
+func (h *RequestMagicLinkImpl) Execute(
+	ctx context.Context,
+	input *RequestMagicLinkInput,
 ) (*RequestMagicLinkOutput, error) {
 	// TODO: Implement RequestMagicLink logic
 	return nil, fmt.Errorf("not implemented")

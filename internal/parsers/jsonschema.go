@@ -398,6 +398,7 @@ func (p *JSONSchemaParser) resolvePropertyType(
 
 	// Determine the target package type from the referenced schema
 	targetPackage := string(XCodegenSchemaTypeEntity) // Default to entity
+	xInternal := ""
 	if resolvedSchema.Extensions != nil {
 		if ext, ok := resolvedSchema.Extensions.Get("x-codegen-schema-type"); ok {
 			var schemaTypeStr string
@@ -405,19 +406,31 @@ func (p *JSONSchemaParser) resolvePropertyType(
 				targetPackage = schemaTypeStr
 			}
 		}
+		// Check for x-internal extension - marks schema as imported from another package
+		if ext, ok := resolvedSchema.Extensions.Get("x-internal"); ok {
+			var xinternalStr string
+			if err := ext.Decode(&xinternalStr); err == nil {
+				xInternal = xinternalStr
+			}
+		}
 	}
 
 	// Qualify the type if needed (inline qualifyPropertyType)
-	// Response schemas always qualify model types
-	isResponseSchema := currentSchemaName != "" && strings.HasSuffix(currentSchemaName, "Response")
-	if isResponseSchema {
-		goType = "models." + actualTypeName
-	} else if string(currentSchemaType) == targetPackage {
-		// Within the same package, no qualification needed
-		goType = actualTypeName
+	// If schema is internal to another package (e.g., server), use that package's models
+	if xInternal == "server" {
+		goType = "servermodels." + actualTypeName
 	} else {
-		// Different package, always qualify
-		goType = "models." + actualTypeName
+		// Response schemas always qualify model types
+		isResponseSchema := currentSchemaName != "" && strings.HasSuffix(currentSchemaName, "Response")
+		if isResponseSchema {
+			goType = "models." + actualTypeName
+		} else if string(currentSchemaType) == targetPackage {
+			// Within the same package, no qualification needed
+			goType = actualTypeName
+		} else {
+			// Different package, always qualify
+			goType = "models." + actualTypeName
+		}
 	}
 
 	// Copy type info from resolved schema

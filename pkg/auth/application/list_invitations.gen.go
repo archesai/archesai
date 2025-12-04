@@ -10,6 +10,7 @@ import (
 
 	"github.com/archesai/archesai/pkg/auth/models"
 	"github.com/archesai/archesai/pkg/auth/repositories"
+	servermodels "github.com/archesai/archesai/pkg/server/models"
 )
 
 // ============================================================================
@@ -27,31 +28,31 @@ type ListInvitationsInput struct {
 
 // ListInvitationsOutput represents the output for the ListInvitations operation.
 type ListInvitationsOutput struct {
-	Data []models.Invitation   `json:"data"`
-	Meta models.PaginationMeta `json:"meta"`
+	Data []models.Invitation         `json:"data"`
+	Meta servermodels.PaginationMeta `json:"meta"`
 }
 
-// ListInvitationsHandler defines the interface for the ListInvitations operation.
-type ListInvitationsHandler interface {
+// ListInvitations defines the interface for the ListInvitations operation.
+type ListInvitations interface {
 	Execute(ctx context.Context, input *ListInvitationsInput) (*ListInvitationsOutput, error)
 }
 
-// ListInvitationsHandlerImpl is the default implementation of ListInvitationsHandler.
-type ListInvitationsHandlerImpl struct {
+// ListInvitationsImpl is the default implementation of ListInvitations.
+type ListInvitationsImpl struct {
 	repo repositories.InvitationRepository
 }
 
-// NewListInvitationsHandler creates a new ListInvitations handler.
-func NewListInvitationsHandler(
+// NewListInvitations creates a new ListInvitations handler.
+func NewListInvitations(
 	repo repositories.InvitationRepository,
-) ListInvitationsHandler {
-	return &ListInvitationsHandlerImpl{
+) ListInvitations {
+	return &ListInvitationsImpl{
 		repo: repo,
 	}
 }
 
 // Execute performs the ListInvitations operation.
-func (h *ListInvitationsHandlerImpl) Execute(ctx context.Context, input *ListInvitationsInput) (*ListInvitationsOutput, error) {
+func (h *ListInvitationsImpl) Execute(ctx context.Context, input *ListInvitationsInput) (*ListInvitationsOutput, error) {
 	// List from repository
 	results, total, err := h.repo.List(ctx, 100, 0) // TODO: Use pagination from input
 	if err != nil {

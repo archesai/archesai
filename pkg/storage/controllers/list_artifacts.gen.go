@@ -10,6 +10,7 @@ import (
 	"github.com/oapi-codegen/runtime"
 
 	"github.com/archesai/archesai/pkg/server"
+	servermodels "github.com/archesai/archesai/pkg/server/models"
 	"github.com/archesai/archesai/pkg/storage/application"
 	"github.com/archesai/archesai/pkg/storage/models"
 )
@@ -18,20 +19,18 @@ import (
 // ListArtifacts - GET /artifacts
 // ============================================================================
 
-// Handler type
-
-// ListArtifactsHandlerHTTP wraps the user handler for HTTP
-type ListArtifactsHandlerHTTP struct {
-	handler application.ListArtifactsHandler
+// ListArtifactsHandler is the HTTP handler for ListArtifacts.
+type ListArtifactsHandler struct {
+	listArtifacts application.ListArtifacts
 }
 
-// NewListArtifactsHandlerHTTP creates a new HTTP handler wrapper
-func NewListArtifactsHandlerHTTP(handler application.ListArtifactsHandler) *ListArtifactsHandlerHTTP {
-	return &ListArtifactsHandlerHTTP{handler: handler}
+// NewListArtifactsHandler creates a new HTTP handler.
+func NewListArtifactsHandler(listArtifacts application.ListArtifacts) *ListArtifactsHandler {
+	return &ListArtifactsHandler{listArtifacts: listArtifacts}
 }
 
-// RegisterListArtifactsRoute registers the HTTP route for ListArtifacts
-func RegisterListArtifactsRoute(mux *http.ServeMux, handler *ListArtifactsHandlerHTTP) {
+// RegisterListArtifactsRoute registers the HTTP route for ListArtifacts.
+func RegisterListArtifactsRoute(mux *http.ServeMux, handler *ListArtifactsHandler) {
 	mux.HandleFunc("GET /artifacts", handler.ServeHTTP)
 }
 
@@ -51,8 +50,8 @@ type ListArtifactsResponse interface {
 }
 
 type ListArtifacts200Response struct {
-	Data []models.Artifact     `json:"data"`
-	Meta models.PaginationMeta `json:"meta"`
+	Data []models.Artifact           `json:"data"`
+	Meta servermodels.PaginationMeta `json:"meta"`
 }
 
 func (response ListArtifacts200Response) VisitListArtifactsResponse(w http.ResponseWriter) error {
@@ -112,7 +111,7 @@ func (response ListArtifacts500Response) VisitListArtifactsResponse(w http.Respo
 }
 
 // ServeHTTP handles the GET /artifacts endpoint.
-func (h *ListArtifactsHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *ListArtifactsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Build input from request
@@ -153,8 +152,8 @@ func (h *ListArtifactsHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.listArtifacts.Execute(ctx, input)
 	if err != nil {
 		errorResp := ListArtifacts500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

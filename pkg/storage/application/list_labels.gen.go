@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 
+	servermodels "github.com/archesai/archesai/pkg/server/models"
 	"github.com/archesai/archesai/pkg/storage/models"
 	"github.com/archesai/archesai/pkg/storage/repositories"
 )
@@ -23,31 +24,31 @@ type ListLabelsInput struct {
 
 // ListLabelsOutput represents the output for the ListLabels operation.
 type ListLabelsOutput struct {
-	Data []models.Label        `json:"data"`
-	Meta models.PaginationMeta `json:"meta"`
+	Data []models.Label              `json:"data"`
+	Meta servermodels.PaginationMeta `json:"meta"`
 }
 
-// ListLabelsHandler defines the interface for the ListLabels operation.
-type ListLabelsHandler interface {
+// ListLabels defines the interface for the ListLabels operation.
+type ListLabels interface {
 	Execute(ctx context.Context, input *ListLabelsInput) (*ListLabelsOutput, error)
 }
 
-// ListLabelsHandlerImpl is the default implementation of ListLabelsHandler.
-type ListLabelsHandlerImpl struct {
+// ListLabelsImpl is the default implementation of ListLabels.
+type ListLabelsImpl struct {
 	repo repositories.LabelRepository
 }
 
-// NewListLabelsHandler creates a new ListLabels handler.
-func NewListLabelsHandler(
+// NewListLabels creates a new ListLabels handler.
+func NewListLabels(
 	repo repositories.LabelRepository,
-) ListLabelsHandler {
-	return &ListLabelsHandlerImpl{
+) ListLabels {
+	return &ListLabelsImpl{
 		repo: repo,
 	}
 }
 
 // Execute performs the ListLabels operation.
-func (h *ListLabelsHandlerImpl) Execute(ctx context.Context, input *ListLabelsInput) (*ListLabelsOutput, error) {
+func (h *ListLabelsImpl) Execute(ctx context.Context, input *ListLabelsInput) (*ListLabelsOutput, error) {
 	// List from repository
 	results, total, err := h.repo.List(ctx, 100, 0) // TODO: Use pagination from input
 	if err != nil {

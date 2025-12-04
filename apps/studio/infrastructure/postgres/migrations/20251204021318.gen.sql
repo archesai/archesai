@@ -1,4 +1,4 @@
--- Generated at: 2025-12-03T20:15:10-05:00
+-- Generated at: 2025-12-04T02:13:18-05:00
 -- create "pipeline_step" table
 CREATE TABLE "public"."pipeline_step" ("id" uuid NOT NULL DEFAULT gen_random_uuid(), "created_at" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP, "updated_at" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP, "pipeline_id" uuid NOT NULL, "tool_id" uuid NOT NULL, PRIMARY KEY ("id"));
 -- create "user" table

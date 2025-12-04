@@ -16,20 +16,18 @@ import (
 // CreateExecutor - POST /executors
 // ============================================================================
 
-// Handler type
-
-// CreateExecutorHandlerHTTP wraps the user handler for HTTP
-type CreateExecutorHandlerHTTP struct {
-	handler application.CreateExecutorHandler
+// CreateExecutorHandler is the HTTP handler for CreateExecutor.
+type CreateExecutorHandler struct {
+	createExecutor application.CreateExecutor
 }
 
-// NewCreateExecutorHandlerHTTP creates a new HTTP handler wrapper
-func NewCreateExecutorHandlerHTTP(handler application.CreateExecutorHandler) *CreateExecutorHandlerHTTP {
-	return &CreateExecutorHandlerHTTP{handler: handler}
+// NewCreateExecutorHandler creates a new HTTP handler.
+func NewCreateExecutorHandler(createExecutor application.CreateExecutor) *CreateExecutorHandler {
+	return &CreateExecutorHandler{createExecutor: createExecutor}
 }
 
-// RegisterCreateExecutorRoute registers the HTTP route for CreateExecutor
-func RegisterCreateExecutorRoute(mux *http.ServeMux, handler *CreateExecutorHandlerHTTP) {
+// RegisterCreateExecutorRoute registers the HTTP route for CreateExecutor.
+func RegisterCreateExecutorRoute(mux *http.ServeMux, handler *CreateExecutorHandler) {
 	mux.HandleFunc("POST /executors", handler.ServeHTTP)
 }
 
@@ -118,7 +116,7 @@ func (response CreateExecutor500Response) VisitCreateExecutorResponse(w http.Res
 }
 
 // ServeHTTP handles the POST /executors endpoint.
-func (h *CreateExecutorHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *CreateExecutorHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Build input from request
@@ -148,8 +146,8 @@ func (h *CreateExecutorHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Req
 	input.SchemaOut = body.SchemaOut
 	input.Timeout = body.Timeout
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.createExecutor.Execute(ctx, input)
 	if err != nil {
 		errorResp := CreateExecutor500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

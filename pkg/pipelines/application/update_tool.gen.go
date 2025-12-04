@@ -30,30 +30,30 @@ type UpdateToolOutput struct {
 	Data models.Tool `json:"data"`
 }
 
-// UpdateToolHandler defines the interface for the UpdateTool operation.
-type UpdateToolHandler interface {
+// UpdateTool defines the interface for the UpdateTool operation.
+type UpdateTool interface {
 	Execute(ctx context.Context, input *UpdateToolInput) (*UpdateToolOutput, error)
 }
 
-// UpdateToolHandlerImpl is the default implementation of UpdateToolHandler.
-type UpdateToolHandlerImpl struct {
+// UpdateToolImpl is the default implementation of UpdateTool.
+type UpdateToolImpl struct {
 	repo      repositories.ToolRepository
 	publisher events.Publisher
 }
 
-// NewUpdateToolHandler creates a new UpdateTool handler.
-func NewUpdateToolHandler(
+// NewUpdateTool creates a new UpdateTool handler.
+func NewUpdateTool(
 	repo repositories.ToolRepository,
 	publisher events.Publisher,
-) UpdateToolHandler {
-	return &UpdateToolHandlerImpl{
+) UpdateTool {
+	return &UpdateToolImpl{
 		repo:      repo,
 		publisher: publisher,
 	}
 }
 
 // Execute performs the UpdateTool operation.
-func (h *UpdateToolHandlerImpl) Execute(ctx context.Context, input *UpdateToolInput) (*UpdateToolOutput, error) {
+func (h *UpdateToolImpl) Execute(ctx context.Context, input *UpdateToolInput) (*UpdateToolOutput, error) {
 	// Get existing entity
 	existing, err := h.repo.Get(ctx, input.ID)
 	if err != nil {

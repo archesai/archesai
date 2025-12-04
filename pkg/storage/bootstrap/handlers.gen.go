@@ -10,16 +10,16 @@ import (
 
 // ApplicationHandlers holds all application-layer handlers for this package.
 type ApplicationHandlers struct {
-	CreateArtifact application.CreateArtifactHandler
-	CreateLabel    application.CreateLabelHandler
-	DeleteArtifact application.DeleteArtifactHandler
-	DeleteLabel    application.DeleteLabelHandler
-	GetArtifact    application.GetArtifactHandler
-	GetLabel       application.GetLabelHandler
-	ListArtifacts  application.ListArtifactsHandler
-	ListLabels     application.ListLabelsHandler
-	UpdateArtifact application.UpdateArtifactHandler
-	UpdateLabel    application.UpdateLabelHandler
+	CreateArtifact application.CreateArtifact
+	CreateLabel    application.CreateLabel
+	DeleteArtifact application.DeleteArtifact
+	DeleteLabel    application.DeleteLabel
+	GetArtifact    application.GetArtifact
+	GetLabel       application.GetLabel
+	ListArtifacts  application.ListArtifacts
+	ListLabels     application.ListLabels
+	UpdateArtifact application.UpdateArtifact
+	UpdateLabel    application.UpdateLabel
 }
 
 // NewApplicationHandlers creates all application handlers with proper dependency injection.
@@ -29,15 +29,15 @@ func NewApplicationHandlers(
 	publisher events.Publisher,
 ) *ApplicationHandlers {
 	return &ApplicationHandlers{
-		CreateArtifact: application.NewCreateArtifactHandler(artifactRepo, publisher),
-		CreateLabel:    application.NewCreateLabelHandler(labelRepo, publisher),
-		DeleteArtifact: application.NewDeleteArtifactHandler(artifactRepo, publisher),
-		DeleteLabel:    application.NewDeleteLabelHandler(labelRepo, publisher),
-		GetArtifact:    application.NewGetArtifactHandler(artifactRepo),
-		GetLabel:       application.NewGetLabelHandler(labelRepo),
-		ListArtifacts:  application.NewListArtifactsHandler(artifactRepo),
-		ListLabels:     application.NewListLabelsHandler(labelRepo),
-		UpdateArtifact: application.NewUpdateArtifactHandler(artifactRepo, publisher),
-		UpdateLabel:    application.NewUpdateLabelHandler(labelRepo, publisher),
+		CreateArtifact: application.NewCreateArtifact(artifactRepo, publisher),
+		CreateLabel:    application.NewCreateLabel(labelRepo, publisher),
+		DeleteArtifact: application.NewDeleteArtifact(artifactRepo, publisher),
+		DeleteLabel:    application.NewDeleteLabel(labelRepo, publisher),
+		GetArtifact:    application.NewGetArtifact(artifactRepo),
+		GetLabel:       application.NewGetLabel(labelRepo),
+		ListArtifacts:  application.NewListArtifacts(artifactRepo),
+		ListLabels:     application.NewListLabels(labelRepo),
+		UpdateArtifact: application.NewUpdateArtifact(artifactRepo, publisher),
+		UpdateLabel:    application.NewUpdateLabel(labelRepo, publisher),
 	}
 }

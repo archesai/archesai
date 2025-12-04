@@ -41,30 +41,30 @@ type UpdateExecutorOutput struct {
 	Data models.Executor `json:"data"`
 }
 
-// UpdateExecutorHandler defines the interface for the UpdateExecutor operation.
-type UpdateExecutorHandler interface {
+// UpdateExecutor defines the interface for the UpdateExecutor operation.
+type UpdateExecutor interface {
 	Execute(ctx context.Context, input *UpdateExecutorInput) (*UpdateExecutorOutput, error)
 }
 
-// UpdateExecutorHandlerImpl is the default implementation of UpdateExecutorHandler.
-type UpdateExecutorHandlerImpl struct {
+// UpdateExecutorImpl is the default implementation of UpdateExecutor.
+type UpdateExecutorImpl struct {
 	repo      repositories.ExecutorRepository
 	publisher events.Publisher
 }
 
-// NewUpdateExecutorHandler creates a new UpdateExecutor handler.
-func NewUpdateExecutorHandler(
+// NewUpdateExecutor creates a new UpdateExecutor handler.
+func NewUpdateExecutor(
 	repo repositories.ExecutorRepository,
 	publisher events.Publisher,
-) UpdateExecutorHandler {
-	return &UpdateExecutorHandlerImpl{
+) UpdateExecutor {
+	return &UpdateExecutorImpl{
 		repo:      repo,
 		publisher: publisher,
 	}
 }
 
 // Execute performs the UpdateExecutor operation.
-func (h *UpdateExecutorHandlerImpl) Execute(ctx context.Context, input *UpdateExecutorInput) (*UpdateExecutorOutput, error) {
+func (h *UpdateExecutorImpl) Execute(ctx context.Context, input *UpdateExecutorInput) (*UpdateExecutorOutput, error) {
 	// Get existing entity
 	existing, err := h.repo.Get(ctx, input.ID)
 	if err != nil {

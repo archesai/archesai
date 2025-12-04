@@ -27,27 +27,27 @@ type GetUserOutput struct {
 	Data models.User `json:"data"`
 }
 
-// GetUserHandler defines the interface for the GetUser operation.
-type GetUserHandler interface {
+// GetUser defines the interface for the GetUser operation.
+type GetUser interface {
 	Execute(ctx context.Context, input *GetUserInput) (*GetUserOutput, error)
 }
 
-// GetUserHandlerImpl is the default implementation of GetUserHandler.
-type GetUserHandlerImpl struct {
+// GetUserImpl is the default implementation of GetUser.
+type GetUserImpl struct {
 	repo repositories.UserRepository
 }
 
-// NewGetUserHandler creates a new GetUser handler.
-func NewGetUserHandler(
+// NewGetUser creates a new GetUser handler.
+func NewGetUser(
 	repo repositories.UserRepository,
-) GetUserHandler {
-	return &GetUserHandlerImpl{
+) GetUser {
+	return &GetUserImpl{
 		repo: repo,
 	}
 }
 
 // Execute performs the GetUser operation.
-func (h *GetUserHandlerImpl) Execute(ctx context.Context, input *GetUserInput) (*GetUserOutput, error) {
+func (h *GetUserImpl) Execute(ctx context.Context, input *GetUserInput) (*GetUserOutput, error) {
 	// Get from repository
 	result, err := h.repo.Get(ctx, input.ID)
 	if err != nil {

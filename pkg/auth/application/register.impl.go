@@ -7,28 +7,25 @@ import (
 	"fmt"
 )
 
-// Ensure RegisterHandlerImpl implements RegisterHandler
-var _ RegisterHandler = (*RegisterHandlerImpl)(nil)
+// Ensure RegisterImpl implements Register
+var _ Register = (*RegisterImpl)(nil)
 
-// RegisterHandlerImpl implements the RegisterHandler interface.
-type RegisterHandlerImpl struct {
+// RegisterImpl implements the Register interface.
+type RegisterImpl struct {
 	// TODO: Add your dependencies here
 }
 
-// NewRegisterHandler creates a new Register handler.
-func NewRegisterHandler(
+// NewRegister creates a new Register implementation.
+func NewRegister(
 // TODO: Add your dependencies here
-) RegisterHandler {
-	return &RegisterHandlerImpl{
+) Register {
+	return &RegisterImpl{
 		// TODO: Initialize dependencies
 	}
 }
 
 // Execute performs the Register operation.
-func (h *RegisterHandlerImpl) Execute(
-	_ context.Context,
-	_ *RegisterInput,
-) (*RegisterOutput, error) {
+func (h *RegisterImpl) Execute(ctx context.Context, input *RegisterInput) (*RegisterOutput, error) {
 	// TODO: Implement Register logic
 	return nil, fmt.Errorf("not implemented")
 }

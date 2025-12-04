@@ -19,13 +19,16 @@ var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Print version information",
 	Long:  `Display version, commit hash, and build date of the Arches server.`,
-	Run: func(_ *cobra.Command, _ []string) {
-		slog.Info(fmt.Sprintf("version %s", version))
-		slog.Info(fmt.Sprintf("commit: %s", commit))
-		slog.Info(fmt.Sprintf("built: %s", buildDate))
-	},
+	RunE:  runVersion,
 }
 
 func init() {
 	rootCmd.AddCommand(versionCmd)
+}
+
+func runVersion(_ *cobra.Command, _ []string) error {
+	slog.Info(fmt.Sprintf("version %s", version))
+	slog.Info(fmt.Sprintf("commit: %s", commit))
+	slog.Info(fmt.Sprintf("built: %s", buildDate))
+	return nil
 }

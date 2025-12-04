@@ -23,7 +23,7 @@ import (
 // ApplicationHandlers holds all application-layer handlers for this package.
 type ApplicationHandlers struct {
 {{- range .Operations }}
-	{{ .ID }} application.{{ .ID }}Handler
+	{{ .ID }} application.{{ .ID }}
 {{- end }}
 }
 
@@ -39,11 +39,11 @@ func NewApplicationHandlers(
 	return &ApplicationHandlers{
 {{- range .Operations }}
 {{- if .XCodegenCustomHandler }}
-		{{ .ID }}: application.New{{ .ID }}Handler(),
+		{{ .ID }}: application.New{{ .ID }}(),
 {{- else if eq .Method "GET" }}
-		{{ .ID }}: application.New{{ .ID }}Handler({{ camelCase (or .XCodegenRepository .Tag) }}Repo),
+		{{ .ID }}: application.New{{ .ID }}({{ camelCase (or .XCodegenRepository .Tag) }}Repo),
 {{- else }}
-		{{ .ID }}: application.New{{ .ID }}Handler({{ camelCase (or .XCodegenRepository .Tag) }}Repo, publisher),
+		{{ .ID }}: application.New{{ .ID }}({{ camelCase (or .XCodegenRepository .Tag) }}Repo, publisher),
 {{- end }}
 {{- end }}
 	}

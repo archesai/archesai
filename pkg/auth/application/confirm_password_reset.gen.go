@@ -16,7 +16,7 @@ type ConfirmPasswordResetInput struct {
 	Token       string
 }
 
-// ConfirmPasswordResetHandler defines the interface for the ConfirmPasswordReset operation.
-type ConfirmPasswordResetHandler interface {
+// ConfirmPasswordReset defines the interface for the ConfirmPasswordReset operation.
+type ConfirmPasswordReset interface {
 	Execute(ctx context.Context, input *ConfirmPasswordResetInput) error
 }

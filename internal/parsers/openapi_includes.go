@@ -1,7 +1,6 @@
 package parsers
 
 import (
-	"embed"
 	"fmt"
 	"io/fs"
 	"os"
@@ -9,14 +8,14 @@ import (
 	"strings"
 
 	"gopkg.in/yaml.v3"
-
-	"github.com/archesai/archesai/pkg/auth"
-	"github.com/archesai/archesai/pkg/config"
-	"github.com/archesai/archesai/pkg/executor"
-	"github.com/archesai/archesai/pkg/pipelines"
-	"github.com/archesai/archesai/pkg/server"
-	"github.com/archesai/archesai/pkg/storage"
 )
+
+// IncludeFS is an interface for embedded filesystems used by includes.
+// Both embed.FS and fs.Sub-created filesystems implement this interface.
+type IncludeFS interface {
+	fs.ReadDirFS
+	fs.ReadFileFS
+}
 
 const (
 	yamlKeyRef  = "$ref"
@@ -25,8 +24,8 @@ const (
 
 // IncludeSpec defines a spec that can be included via x-include-* extensions
 type IncludeSpec struct {
-	Name string   // Extension name without "x-include-" prefix (e.g., "auth", "config")
-	FS   embed.FS // Embedded filesystem containing the spec/ directory
+	Name string    // Extension name without "x-include-" prefix (e.g., "auth", "config")
+	FS   IncludeFS // Embedded filesystem containing the spec/ directory
 }
 
 // IncludeMerger handles merging of OpenAPI specs based on x-include-* extensions
@@ -41,26 +40,12 @@ func NewIncludeMerger() *IncludeMerger {
 	}
 }
 
-// NewDefaultIncludeMerger creates a new IncludeMerger with all standard includes registered.
-func NewDefaultIncludeMerger() *IncludeMerger {
-	merger := NewIncludeMerger()
-
-	// Register all standard includes
-	merger.RegisterInclude("auth", auth.APISpec)
-	merger.RegisterInclude("config", config.APISpec)
-	merger.RegisterInclude("server", server.APISpec)
-	merger.RegisterInclude("storage", storage.APISpec)
-	merger.RegisterInclude("pipelines", pipelines.APISpec)
-	merger.RegisterInclude("executor", executor.APISpec)
-
-	return merger
-}
-
-// RegisterInclude registers an includable spec with its embedded filesystem
-func (m *IncludeMerger) RegisterInclude(name string, fs embed.FS) *IncludeMerger {
+// RegisterInclude registers an includable spec with its embedded filesystem.
+// The filesystem should contain a spec/openapi.yaml file at its root.
+func (m *IncludeMerger) RegisterInclude(name string, fsys IncludeFS) *IncludeMerger {
 	m.includeSpecs[name] = IncludeSpec{
 		Name: name,
-		FS:   fs,
+		FS:   fsys,
 	}
 	return m
 }
@@ -208,7 +193,7 @@ func (m *IncludeMerger) copyDir(src, dst string) error {
 // extractComponentsToMain extracts component files from an included spec to the main spec's
 // components directories. This allows internal refs like #/components/responses/BadRequest
 // to resolve correctly.
-func (m *IncludeMerger) extractComponentsToMain(embedFS embed.FS, mainDir string) error {
+func (m *IncludeMerger) extractComponentsToMain(embedFS IncludeFS, mainDir string) error {
 	// Component directories to copy
 	componentDirs := []string{
 		"components/schemas",
@@ -275,7 +260,7 @@ func (m *IncludeMerger) extractComponentsToMain(embedFS embed.FS, mainDir string
 }
 
 // extractEmbedFSDir recursively extracts a directory from embedded FS
-func (m *IncludeMerger) extractEmbedFSDir(embedFS embed.FS, srcDir, dstDir string) error {
+func (m *IncludeMerger) extractEmbedFSDir(embedFS IncludeFS, srcDir, dstDir string) error {
 	if err := os.MkdirAll(dstDir, 0755); err != nil {
 		return err
 	}

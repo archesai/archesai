@@ -18,20 +18,18 @@ import (
 // Register - POST /auth/register
 // ============================================================================
 
-// Handler type
-
-// RegisterHandlerHTTP wraps the user handler for HTTP
-type RegisterHandlerHTTP struct {
-	handler application.RegisterHandler
+// RegisterHandler is the HTTP handler for Register.
+type RegisterHandler struct {
+	register application.Register
 }
 
-// NewRegisterHandlerHTTP creates a new HTTP handler wrapper
-func NewRegisterHandlerHTTP(handler application.RegisterHandler) *RegisterHandlerHTTP {
-	return &RegisterHandlerHTTP{handler: handler}
+// NewRegisterHandler creates a new HTTP handler.
+func NewRegisterHandler(register application.Register) *RegisterHandler {
+	return &RegisterHandler{register: register}
 }
 
-// RegisterRegisterRoute registers the HTTP route for Register
-func RegisterRegisterRoute(mux *http.ServeMux, handler *RegisterHandlerHTTP) {
+// RegisterRegisterRoute registers the HTTP route for Register.
+func RegisterRegisterRoute(mux *http.ServeMux, handler *RegisterHandler) {
 	mux.HandleFunc("POST /auth/register", handler.ServeHTTP)
 }
 
@@ -121,7 +119,7 @@ func (response Register500Response) VisitRegisterResponse(w http.ResponseWriter)
 }
 
 // ServeHTTP handles the POST /auth/register endpoint.
-func (h *RegisterHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *RegisterHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Build input from request
@@ -142,8 +140,8 @@ func (h *RegisterHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 	input.Name = body.Name
 	input.Password = body.Password
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.register.Execute(ctx, input)
 	if err != nil {
 		errorResp := Register500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

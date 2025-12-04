@@ -19,20 +19,18 @@ import (
 // GetArtifact - GET /artifacts/{id}
 // ============================================================================
 
-// Handler type
-
-// GetArtifactHandlerHTTP wraps the user handler for HTTP
-type GetArtifactHandlerHTTP struct {
-	handler application.GetArtifactHandler
+// GetArtifactHandler is the HTTP handler for GetArtifact.
+type GetArtifactHandler struct {
+	getArtifact application.GetArtifact
 }
 
-// NewGetArtifactHandlerHTTP creates a new HTTP handler wrapper
-func NewGetArtifactHandlerHTTP(handler application.GetArtifactHandler) *GetArtifactHandlerHTTP {
-	return &GetArtifactHandlerHTTP{handler: handler}
+// NewGetArtifactHandler creates a new HTTP handler.
+func NewGetArtifactHandler(getArtifact application.GetArtifact) *GetArtifactHandler {
+	return &GetArtifactHandler{getArtifact: getArtifact}
 }
 
-// RegisterGetArtifactRoute registers the HTTP route for GetArtifact
-func RegisterGetArtifactRoute(mux *http.ServeMux, handler *GetArtifactHandlerHTTP) {
+// RegisterGetArtifactRoute registers the HTTP route for GetArtifact.
+func RegisterGetArtifactRoute(mux *http.ServeMux, handler *GetArtifactHandler) {
 	mux.HandleFunc("GET /artifacts/{id}", handler.ServeHTTP)
 }
 
@@ -115,7 +113,7 @@ func (response GetArtifact500Response) VisitGetArtifactResponse(w http.ResponseW
 }
 
 // ServeHTTP handles the GET /artifacts/{id} endpoint.
-func (h *GetArtifactHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *GetArtifactHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Build input from request
@@ -134,8 +132,8 @@ func (h *GetArtifactHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Reques
 	}
 	input.ID = id
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.getArtifact.Execute(ctx, input)
 	if err != nil {
 		errorResp := GetArtifact500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

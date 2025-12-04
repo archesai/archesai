@@ -27,27 +27,27 @@ type GetSessionOutput struct {
 	Data models.Session `json:"data"`
 }
 
-// GetSessionHandler defines the interface for the GetSession operation.
-type GetSessionHandler interface {
+// GetSession defines the interface for the GetSession operation.
+type GetSession interface {
 	Execute(ctx context.Context, input *GetSessionInput) (*GetSessionOutput, error)
 }
 
-// GetSessionHandlerImpl is the default implementation of GetSessionHandler.
-type GetSessionHandlerImpl struct {
+// GetSessionImpl is the default implementation of GetSession.
+type GetSessionImpl struct {
 	repo repositories.SessionRepository
 }
 
-// NewGetSessionHandler creates a new GetSession handler.
-func NewGetSessionHandler(
+// NewGetSession creates a new GetSession handler.
+func NewGetSession(
 	repo repositories.SessionRepository,
-) GetSessionHandler {
-	return &GetSessionHandlerImpl{
+) GetSession {
+	return &GetSessionImpl{
 		repo: repo,
 	}
 }
 
 // Execute performs the GetSession operation.
-func (h *GetSessionHandlerImpl) Execute(ctx context.Context, input *GetSessionInput) (*GetSessionOutput, error) {
+func (h *GetSessionImpl) Execute(ctx context.Context, input *GetSessionInput) (*GetSessionOutput, error) {
 	// Get from repository
 	result, err := h.repo.Get(ctx, input.ID)
 	if err != nil {

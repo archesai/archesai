@@ -13,26 +13,25 @@ import (
 	"github.com/archesai/archesai/pkg/auth/application"
 	"github.com/archesai/archesai/pkg/auth/models"
 	"github.com/archesai/archesai/pkg/server"
+	servermodels "github.com/archesai/archesai/pkg/server/models"
 )
 
 // ============================================================================
 // ListUsers - GET /users
 // ============================================================================
 
-// Handler type
-
-// ListUsersHandlerHTTP wraps the user handler for HTTP
-type ListUsersHandlerHTTP struct {
-	handler application.ListUsersHandler
+// ListUsersHandler is the HTTP handler for ListUsers.
+type ListUsersHandler struct {
+	listUsers application.ListUsers
 }
 
-// NewListUsersHandlerHTTP creates a new HTTP handler wrapper
-func NewListUsersHandlerHTTP(handler application.ListUsersHandler) *ListUsersHandlerHTTP {
-	return &ListUsersHandlerHTTP{handler: handler}
+// NewListUsersHandler creates a new HTTP handler.
+func NewListUsersHandler(listUsers application.ListUsers) *ListUsersHandler {
+	return &ListUsersHandler{listUsers: listUsers}
 }
 
-// RegisterListUsersRoute registers the HTTP route for ListUsers
-func RegisterListUsersRoute(mux *http.ServeMux, handler *ListUsersHandlerHTTP) {
+// RegisterListUsersRoute registers the HTTP route for ListUsers.
+func RegisterListUsersRoute(mux *http.ServeMux, handler *ListUsersHandler) {
 	mux.HandleFunc("GET /users", handler.ServeHTTP)
 }
 
@@ -52,8 +51,8 @@ type ListUsersResponse interface {
 }
 
 type ListUsers200Response struct {
-	Data []models.User         `json:"data"`
-	Meta models.PaginationMeta `json:"meta"`
+	Data []models.User               `json:"data"`
+	Meta servermodels.PaginationMeta `json:"meta"`
 }
 
 func (response ListUsers200Response) VisitListUsersResponse(w http.ResponseWriter) error {
@@ -113,7 +112,7 @@ func (response ListUsers500Response) VisitListUsersResponse(w http.ResponseWrite
 }
 
 // ServeHTTP handles the GET /users endpoint.
-func (h *ListUsersHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *ListUsersHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Extract session ID from context for authenticated operations
@@ -167,8 +166,8 @@ func (h *ListUsersHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.listUsers.Execute(ctx, input)
 	if err != nil {
 		errorResp := ListUsers500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

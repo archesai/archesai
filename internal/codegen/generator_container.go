@@ -1,7 +1,6 @@
 package codegen
 
 import (
-	"bytes"
 	"fmt"
 	"path/filepath"
 	"sort"
@@ -35,7 +34,7 @@ func (g *ContainerGenerator) Generate(ctx *GeneratorContext) error {
 		internalPackages = append(internalPackages, InternalPackage{
 			Name:       pkgName,
 			Alias:      pkgName,
-			ImportPath: "github.com/archesai/archesai/pkg/" + pkgName,
+			ImportPath: InternalPackageImportPath(pkgName),
 		})
 	}
 	sort.Slice(internalPackages, func(i, j int) bool {
@@ -47,10 +46,9 @@ func (g *ContainerGenerator) Generate(ctx *GeneratorContext) error {
 		ProjectName:      ctx.ProjectName,
 	}
 
-	var buf bytes.Buffer
-	if err := ctx.Renderer.Render(&buf, "container.go.tmpl", data); err != nil {
-		return fmt.Errorf("failed to render container.go.tmpl: %w", err)
+	outputPath := filepath.Join("bootstrap", "container.gen.go")
+	if err := ctx.RenderToFile("container.go.tmpl", outputPath, data); err != nil {
+		return fmt.Errorf("failed to generate container: %w", err)
 	}
-
-	return ctx.Storage.WriteFile(filepath.Join("bootstrap", "container.gen.go"), buf.Bytes(), 0644)
+	return nil
 }

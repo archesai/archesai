@@ -10,6 +10,7 @@ import (
 
 	"github.com/archesai/archesai/pkg/auth/models"
 	"github.com/archesai/archesai/pkg/auth/repositories"
+	servermodels "github.com/archesai/archesai/pkg/server/models"
 )
 
 // ============================================================================
@@ -26,31 +27,31 @@ type ListOrganizationsInput struct {
 
 // ListOrganizationsOutput represents the output for the ListOrganizations operation.
 type ListOrganizationsOutput struct {
-	Data []models.Organization `json:"data"`
-	Meta models.PaginationMeta `json:"meta"`
+	Data []models.Organization       `json:"data"`
+	Meta servermodels.PaginationMeta `json:"meta"`
 }
 
-// ListOrganizationsHandler defines the interface for the ListOrganizations operation.
-type ListOrganizationsHandler interface {
+// ListOrganizations defines the interface for the ListOrganizations operation.
+type ListOrganizations interface {
 	Execute(ctx context.Context, input *ListOrganizationsInput) (*ListOrganizationsOutput, error)
 }
 
-// ListOrganizationsHandlerImpl is the default implementation of ListOrganizationsHandler.
-type ListOrganizationsHandlerImpl struct {
+// ListOrganizationsImpl is the default implementation of ListOrganizations.
+type ListOrganizationsImpl struct {
 	repo repositories.OrganizationRepository
 }
 
-// NewListOrganizationsHandler creates a new ListOrganizations handler.
-func NewListOrganizationsHandler(
+// NewListOrganizations creates a new ListOrganizations handler.
+func NewListOrganizations(
 	repo repositories.OrganizationRepository,
-) ListOrganizationsHandler {
-	return &ListOrganizationsHandlerImpl{
+) ListOrganizations {
+	return &ListOrganizationsImpl{
 		repo: repo,
 	}
 }
 
 // Execute performs the ListOrganizations operation.
-func (h *ListOrganizationsHandlerImpl) Execute(ctx context.Context, input *ListOrganizationsInput) (*ListOrganizationsOutput, error) {
+func (h *ListOrganizationsImpl) Execute(ctx context.Context, input *ListOrganizationsInput) (*ListOrganizationsOutput, error) {
 	// List from repository
 	results, total, err := h.repo.List(ctx, 100, 0) // TODO: Use pagination from input
 	if err != nil {

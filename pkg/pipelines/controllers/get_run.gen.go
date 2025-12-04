@@ -19,20 +19,18 @@ import (
 // GetRun - GET /runs/{id}
 // ============================================================================
 
-// Handler type
-
-// GetRunHandlerHTTP wraps the user handler for HTTP
-type GetRunHandlerHTTP struct {
-	handler application.GetRunHandler
+// GetRunHandler is the HTTP handler for GetRun.
+type GetRunHandler struct {
+	getRun application.GetRun
 }
 
-// NewGetRunHandlerHTTP creates a new HTTP handler wrapper
-func NewGetRunHandlerHTTP(handler application.GetRunHandler) *GetRunHandlerHTTP {
-	return &GetRunHandlerHTTP{handler: handler}
+// NewGetRunHandler creates a new HTTP handler.
+func NewGetRunHandler(getRun application.GetRun) *GetRunHandler {
+	return &GetRunHandler{getRun: getRun}
 }
 
-// RegisterGetRunRoute registers the HTTP route for GetRun
-func RegisterGetRunRoute(mux *http.ServeMux, handler *GetRunHandlerHTTP) {
+// RegisterGetRunRoute registers the HTTP route for GetRun.
+func RegisterGetRunRoute(mux *http.ServeMux, handler *GetRunHandler) {
 	mux.HandleFunc("GET /runs/{id}", handler.ServeHTTP)
 }
 
@@ -115,7 +113,7 @@ func (response GetRun500Response) VisitGetRunResponse(w http.ResponseWriter) err
 }
 
 // ServeHTTP handles the GET /runs/{id} endpoint.
-func (h *GetRunHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *GetRunHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Build input from request
@@ -134,8 +132,8 @@ func (h *GetRunHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	input.ID = id
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.getRun.Execute(ctx, input)
 	if err != nil {
 		errorResp := GetRun500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

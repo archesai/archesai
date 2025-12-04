@@ -8,12 +8,12 @@ import (
 
 // ApplicationHandlers holds all application-layer handlers for this package.
 type ApplicationHandlers struct {
-	GetConfig application.GetConfigHandler
+	GetConfig application.GetConfig
 }
 
 // NewApplicationHandlers creates all application handlers with proper dependency injection.
 func NewApplicationHandlers() *ApplicationHandlers {
 	return &ApplicationHandlers{
-		GetConfig: application.NewGetConfigHandler(),
+		GetConfig: application.NewGetConfig(),
 	}
 }

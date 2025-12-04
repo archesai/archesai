@@ -17,7 +17,7 @@ type RequestEmailVerificationInput struct {
 	SessionID uuid.UUID
 }
 
-// RequestEmailVerificationHandler defines the interface for the RequestEmailVerification operation.
-type RequestEmailVerificationHandler interface {
+// RequestEmailVerification defines the interface for the RequestEmailVerification operation.
+type RequestEmailVerification interface {
 	Execute(ctx context.Context, input *RequestEmailVerificationInput) error
 }

@@ -12,26 +12,25 @@ import (
 	"github.com/archesai/archesai/pkg/executor/application"
 	"github.com/archesai/archesai/pkg/executor/models"
 	"github.com/archesai/archesai/pkg/server"
+	servermodels "github.com/archesai/archesai/pkg/server/models"
 )
 
 // ============================================================================
 // ListExecutors - GET /executors
 // ============================================================================
 
-// Handler type
-
-// ListExecutorsHandlerHTTP wraps the user handler for HTTP
-type ListExecutorsHandlerHTTP struct {
-	handler application.ListExecutorsHandler
+// ListExecutorsHandler is the HTTP handler for ListExecutors.
+type ListExecutorsHandler struct {
+	listExecutors application.ListExecutors
 }
 
-// NewListExecutorsHandlerHTTP creates a new HTTP handler wrapper
-func NewListExecutorsHandlerHTTP(handler application.ListExecutorsHandler) *ListExecutorsHandlerHTTP {
-	return &ListExecutorsHandlerHTTP{handler: handler}
+// NewListExecutorsHandler creates a new HTTP handler.
+func NewListExecutorsHandler(listExecutors application.ListExecutors) *ListExecutorsHandler {
+	return &ListExecutorsHandler{listExecutors: listExecutors}
 }
 
-// RegisterListExecutorsRoute registers the HTTP route for ListExecutors
-func RegisterListExecutorsRoute(mux *http.ServeMux, handler *ListExecutorsHandlerHTTP) {
+// RegisterListExecutorsRoute registers the HTTP route for ListExecutors.
+func RegisterListExecutorsRoute(mux *http.ServeMux, handler *ListExecutorsHandler) {
 	mux.HandleFunc("GET /executors", handler.ServeHTTP)
 }
 
@@ -51,8 +50,8 @@ type ListExecutorsResponse interface {
 }
 
 type ListExecutors200Response struct {
-	Data []models.Executor     `json:"data"`
-	Meta models.PaginationMeta `json:"meta"`
+	Data []models.Executor           `json:"data"`
+	Meta servermodels.PaginationMeta `json:"meta"`
 }
 
 func (response ListExecutors200Response) VisitListExecutorsResponse(w http.ResponseWriter) error {
@@ -112,7 +111,7 @@ func (response ListExecutors500Response) VisitListExecutorsResponse(w http.Respo
 }
 
 // ServeHTTP handles the GET /executors endpoint.
-func (h *ListExecutorsHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *ListExecutorsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Build input from request
@@ -153,8 +152,8 @@ func (h *ListExecutorsHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.listExecutors.Execute(ctx, input)
 	if err != nil {
 		errorResp := ListExecutors500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

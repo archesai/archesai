@@ -26,7 +26,7 @@ type ConfirmEmailVerificationOutput struct {
 	User    models.User    `json:"user"`
 }
 
-// ConfirmEmailVerificationHandler defines the interface for the ConfirmEmailVerification operation.
-type ConfirmEmailVerificationHandler interface {
+// ConfirmEmailVerification defines the interface for the ConfirmEmailVerification operation.
+type ConfirmEmailVerification interface {
 	Execute(ctx context.Context, input *ConfirmEmailVerificationInput) (*ConfirmEmailVerificationOutput, error)
 }

@@ -10,6 +10,7 @@ import (
 
 	"github.com/archesai/archesai/pkg/auth/models"
 	"github.com/archesai/archesai/pkg/auth/repositories"
+	servermodels "github.com/archesai/archesai/pkg/server/models"
 )
 
 // ============================================================================
@@ -25,31 +26,31 @@ type ListSessionsInput struct {
 
 // ListSessionsOutput represents the output for the ListSessions operation.
 type ListSessionsOutput struct {
-	Data []models.Session      `json:"data"`
-	Meta models.PaginationMeta `json:"meta"`
+	Data []models.Session            `json:"data"`
+	Meta servermodels.PaginationMeta `json:"meta"`
 }
 
-// ListSessionsHandler defines the interface for the ListSessions operation.
-type ListSessionsHandler interface {
+// ListSessions defines the interface for the ListSessions operation.
+type ListSessions interface {
 	Execute(ctx context.Context, input *ListSessionsInput) (*ListSessionsOutput, error)
 }
 
-// ListSessionsHandlerImpl is the default implementation of ListSessionsHandler.
-type ListSessionsHandlerImpl struct {
+// ListSessionsImpl is the default implementation of ListSessions.
+type ListSessionsImpl struct {
 	repo repositories.SessionRepository
 }
 
-// NewListSessionsHandler creates a new ListSessions handler.
-func NewListSessionsHandler(
+// NewListSessions creates a new ListSessions handler.
+func NewListSessions(
 	repo repositories.SessionRepository,
-) ListSessionsHandler {
-	return &ListSessionsHandlerImpl{
+) ListSessions {
+	return &ListSessionsImpl{
 		repo: repo,
 	}
 }
 
 // Execute performs the ListSessions operation.
-func (h *ListSessionsHandlerImpl) Execute(ctx context.Context, input *ListSessionsInput) (*ListSessionsOutput, error) {
+func (h *ListSessionsImpl) Execute(ctx context.Context, input *ListSessionsInput) (*ListSessionsOutput, error) {
 	// List from repository
 	results, total, err := h.repo.List(ctx, 100, 0) // TODO: Use pagination from input
 	if err != nil {

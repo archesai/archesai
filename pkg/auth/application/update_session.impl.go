@@ -7,27 +7,27 @@ import (
 	"fmt"
 )
 
-// Ensure UpdateSessionHandlerImpl implements UpdateSessionHandler
-var _ UpdateSessionHandler = (*UpdateSessionHandlerImpl)(nil)
+// Ensure UpdateSessionImpl implements UpdateSession
+var _ UpdateSession = (*UpdateSessionImpl)(nil)
 
-// UpdateSessionHandlerImpl implements the UpdateSessionHandler interface.
-type UpdateSessionHandlerImpl struct {
+// UpdateSessionImpl implements the UpdateSession interface.
+type UpdateSessionImpl struct {
 	// TODO: Add your dependencies here
 }
 
-// NewUpdateSessionHandler creates a new UpdateSession handler.
-func NewUpdateSessionHandler(
+// NewUpdateSession creates a new UpdateSession implementation.
+func NewUpdateSession(
 // TODO: Add your dependencies here
-) UpdateSessionHandler {
-	return &UpdateSessionHandlerImpl{
+) UpdateSession {
+	return &UpdateSessionImpl{
 		// TODO: Initialize dependencies
 	}
 }
 
 // Execute performs the UpdateSession operation.
-func (h *UpdateSessionHandlerImpl) Execute(
-	_ context.Context,
-	_ *UpdateSessionInput,
+func (h *UpdateSessionImpl) Execute(
+	ctx context.Context,
+	input *UpdateSessionInput,
 ) (*UpdateSessionOutput, error) {
 	// TODO: Implement UpdateSession logic
 	return nil, fmt.Errorf("not implemented")

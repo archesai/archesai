@@ -17,20 +17,18 @@ import (
 // DeleteCurrentUser - DELETE /auth/me
 // ============================================================================
 
-// Handler type
-
-// DeleteCurrentUserHandlerHTTP wraps the user handler for HTTP
-type DeleteCurrentUserHandlerHTTP struct {
-	handler application.DeleteCurrentUserHandler
+// DeleteCurrentUserHandler is the HTTP handler for DeleteCurrentUser.
+type DeleteCurrentUserHandler struct {
+	deleteCurrentUser application.DeleteCurrentUser
 }
 
-// NewDeleteCurrentUserHandlerHTTP creates a new HTTP handler wrapper
-func NewDeleteCurrentUserHandlerHTTP(handler application.DeleteCurrentUserHandler) *DeleteCurrentUserHandlerHTTP {
-	return &DeleteCurrentUserHandlerHTTP{handler: handler}
+// NewDeleteCurrentUserHandler creates a new HTTP handler.
+func NewDeleteCurrentUserHandler(deleteCurrentUser application.DeleteCurrentUser) *DeleteCurrentUserHandler {
+	return &DeleteCurrentUserHandler{deleteCurrentUser: deleteCurrentUser}
 }
 
-// RegisterDeleteCurrentUserRoute registers the HTTP route for DeleteCurrentUser
-func RegisterDeleteCurrentUserRoute(mux *http.ServeMux, handler *DeleteCurrentUserHandlerHTTP) {
+// RegisterDeleteCurrentUserRoute registers the HTTP route for DeleteCurrentUser.
+func RegisterDeleteCurrentUserRoute(mux *http.ServeMux, handler *DeleteCurrentUserHandler) {
 	mux.HandleFunc("DELETE /auth/me", handler.ServeHTTP)
 }
 
@@ -101,7 +99,7 @@ func (response DeleteCurrentUser500Response) VisitDeleteCurrentUserResponse(w ht
 }
 
 // ServeHTTP handles the DELETE /auth/me endpoint.
-func (h *DeleteCurrentUserHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *DeleteCurrentUserHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Extract session ID from context for authenticated operations
@@ -133,8 +131,8 @@ func (h *DeleteCurrentUserHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.
 	}
 	input.XConfirm = xconfirm
 
-	// Execute handler
-	if err := h.handler.Execute(ctx, input); err != nil {
+	// Execute
+	if err := h.deleteCurrentUser.Execute(ctx, input); err != nil {
 		errorResp := DeleteCurrentUser500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

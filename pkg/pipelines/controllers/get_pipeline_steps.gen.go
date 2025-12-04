@@ -19,20 +19,18 @@ import (
 // GetPipelineSteps - GET /pipelines/{id}/steps
 // ============================================================================
 
-// Handler type
-
-// GetPipelineStepsHandlerHTTP wraps the user handler for HTTP
-type GetPipelineStepsHandlerHTTP struct {
-	handler application.GetPipelineStepsHandler
+// GetPipelineStepsHandler is the HTTP handler for GetPipelineSteps.
+type GetPipelineStepsHandler struct {
+	getPipelineSteps application.GetPipelineSteps
 }
 
-// NewGetPipelineStepsHandlerHTTP creates a new HTTP handler wrapper
-func NewGetPipelineStepsHandlerHTTP(handler application.GetPipelineStepsHandler) *GetPipelineStepsHandlerHTTP {
-	return &GetPipelineStepsHandlerHTTP{handler: handler}
+// NewGetPipelineStepsHandler creates a new HTTP handler.
+func NewGetPipelineStepsHandler(getPipelineSteps application.GetPipelineSteps) *GetPipelineStepsHandler {
+	return &GetPipelineStepsHandler{getPipelineSteps: getPipelineSteps}
 }
 
-// RegisterGetPipelineStepsRoute registers the HTTP route for GetPipelineSteps
-func RegisterGetPipelineStepsRoute(mux *http.ServeMux, handler *GetPipelineStepsHandlerHTTP) {
+// RegisterGetPipelineStepsRoute registers the HTTP route for GetPipelineSteps.
+func RegisterGetPipelineStepsRoute(mux *http.ServeMux, handler *GetPipelineStepsHandler) {
 	mux.HandleFunc("GET /pipelines/{id}/steps", handler.ServeHTTP)
 }
 
@@ -115,7 +113,7 @@ func (response GetPipelineSteps500Response) VisitGetPipelineStepsResponse(w http
 }
 
 // ServeHTTP handles the GET /pipelines/{id}/steps endpoint.
-func (h *GetPipelineStepsHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *GetPipelineStepsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Build input from request
@@ -134,8 +132,8 @@ func (h *GetPipelineStepsHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.R
 	}
 	input.ID = id
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.getPipelineSteps.Execute(ctx, input)
 	if err != nil {
 		errorResp := GetPipelineSteps500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

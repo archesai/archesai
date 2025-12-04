@@ -23,33 +23,6 @@ func (g *SQLCGenerator) Priority() int { return PriorityFinal }
 
 // Generate runs sqlc to generate Go code from SQL queries.
 func (g *SQLCGenerator) Generate(ctx *GeneratorContext) error {
-	requiredDirs := []string{
-		filepath.Join("infrastructure", "postgres", "migrations"),
-		filepath.Join("infrastructure", "postgres", "queries"),
-		filepath.Join("infrastructure", "sqlite", "migrations"),
-		filepath.Join("infrastructure", "sqlite", "queries"),
-	}
-
-	if diskStorage, ok := ctx.Storage.(*storage.DiskStorage); ok {
-		for _, dir := range requiredDirs {
-			fullPath := filepath.Join(diskStorage.BaseDir(), dir)
-			if err := os.MkdirAll(fullPath, 0755); err != nil {
-				return fmt.Errorf("failed to create directory: %w", err)
-			}
-
-			entries, err := os.ReadDir(fullPath)
-			if err != nil {
-				return fmt.Errorf("failed to read directory: %w", err)
-			}
-
-			if len(entries) == 0 {
-				if err := ctx.Storage.WriteFile(filepath.Join(dir, ".gitkeep"), []byte(""), 0644); err != nil {
-					return fmt.Errorf("failed to create .gitkeep: %w", err)
-				}
-			}
-		}
-	}
-
 	// Generate sqlc.gen.yaml for postgres
 	data := map[string]string{"OutputDir": ctx.Storage.BaseDir()}
 	var buf bytes.Buffer

@@ -18,20 +18,18 @@ import (
 // DeleteLabel - DELETE /labels/{id}
 // ============================================================================
 
-// Handler type
-
-// DeleteLabelHandlerHTTP wraps the user handler for HTTP
-type DeleteLabelHandlerHTTP struct {
-	handler application.DeleteLabelHandler
+// DeleteLabelHandler is the HTTP handler for DeleteLabel.
+type DeleteLabelHandler struct {
+	deleteLabel application.DeleteLabel
 }
 
-// NewDeleteLabelHandlerHTTP creates a new HTTP handler wrapper
-func NewDeleteLabelHandlerHTTP(handler application.DeleteLabelHandler) *DeleteLabelHandlerHTTP {
-	return &DeleteLabelHandlerHTTP{handler: handler}
+// NewDeleteLabelHandler creates a new HTTP handler.
+func NewDeleteLabelHandler(deleteLabel application.DeleteLabel) *DeleteLabelHandler {
+	return &DeleteLabelHandler{deleteLabel: deleteLabel}
 }
 
-// RegisterDeleteLabelRoute registers the HTTP route for DeleteLabel
-func RegisterDeleteLabelRoute(mux *http.ServeMux, handler *DeleteLabelHandlerHTTP) {
+// RegisterDeleteLabelRoute registers the HTTP route for DeleteLabel.
+func RegisterDeleteLabelRoute(mux *http.ServeMux, handler *DeleteLabelHandler) {
 	mux.HandleFunc("DELETE /labels/{id}", handler.ServeHTTP)
 }
 
@@ -112,7 +110,7 @@ func (response DeleteLabel500Response) VisitDeleteLabelResponse(w http.ResponseW
 }
 
 // ServeHTTP handles the DELETE /labels/{id} endpoint.
-func (h *DeleteLabelHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *DeleteLabelHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Build input from request
@@ -131,8 +129,8 @@ func (h *DeleteLabelHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Reques
 	}
 	input.ID = id
 
-	// Execute handler
-	if err := h.handler.Execute(ctx, input); err != nil {
+	// Execute
+	if err := h.deleteLabel.Execute(ctx, input); err != nil {
 		errorResp := DeleteLabel500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

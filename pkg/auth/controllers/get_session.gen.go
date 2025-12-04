@@ -19,20 +19,18 @@ import (
 // GetSession - GET /auth/sessions/{id}
 // ============================================================================
 
-// Handler type
-
-// GetSessionHandlerHTTP wraps the user handler for HTTP
-type GetSessionHandlerHTTP struct {
-	handler application.GetSessionHandler
+// GetSessionHandler is the HTTP handler for GetSession.
+type GetSessionHandler struct {
+	getSession application.GetSession
 }
 
-// NewGetSessionHandlerHTTP creates a new HTTP handler wrapper
-func NewGetSessionHandlerHTTP(handler application.GetSessionHandler) *GetSessionHandlerHTTP {
-	return &GetSessionHandlerHTTP{handler: handler}
+// NewGetSessionHandler creates a new HTTP handler.
+func NewGetSessionHandler(getSession application.GetSession) *GetSessionHandler {
+	return &GetSessionHandler{getSession: getSession}
 }
 
-// RegisterGetSessionRoute registers the HTTP route for GetSession
-func RegisterGetSessionRoute(mux *http.ServeMux, handler *GetSessionHandlerHTTP) {
+// RegisterGetSessionRoute registers the HTTP route for GetSession.
+func RegisterGetSessionRoute(mux *http.ServeMux, handler *GetSessionHandler) {
 	mux.HandleFunc("GET /auth/sessions/{id}", handler.ServeHTTP)
 }
 
@@ -115,7 +113,7 @@ func (response GetSession500Response) VisitGetSessionResponse(w http.ResponseWri
 }
 
 // ServeHTTP handles the GET /auth/sessions/{id} endpoint.
-func (h *GetSessionHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *GetSessionHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Extract session ID from context for authenticated operations
@@ -147,8 +145,8 @@ func (h *GetSessionHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request
 	}
 	input.ID = id
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.getSession.Execute(ctx, input)
 	if err != nil {
 		errorResp := GetSession500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

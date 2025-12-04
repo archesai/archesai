@@ -7,25 +7,25 @@ import (
 	"fmt"
 )
 
-// Ensure LoginHandlerImpl implements LoginHandler
-var _ LoginHandler = (*LoginHandlerImpl)(nil)
+// Ensure LoginImpl implements Login
+var _ Login = (*LoginImpl)(nil)
 
-// LoginHandlerImpl implements the LoginHandler interface.
-type LoginHandlerImpl struct {
+// LoginImpl implements the Login interface.
+type LoginImpl struct {
 	// TODO: Add your dependencies here
 }
 
-// NewLoginHandler creates a new Login handler.
-func NewLoginHandler(
+// NewLogin creates a new Login implementation.
+func NewLogin(
 // TODO: Add your dependencies here
-) LoginHandler {
-	return &LoginHandlerImpl{
+) Login {
+	return &LoginImpl{
 		// TODO: Initialize dependencies
 	}
 }
 
 // Execute performs the Login operation.
-func (h *LoginHandlerImpl) Execute(_ context.Context, _ *LoginInput) (*LoginOutput, error) {
+func (h *LoginImpl) Execute(ctx context.Context, input *LoginInput) (*LoginOutput, error) {
 	// TODO: Implement Login logic
 	return nil, fmt.Errorf("not implemented")
 }

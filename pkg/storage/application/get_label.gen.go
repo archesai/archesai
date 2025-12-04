@@ -26,27 +26,27 @@ type GetLabelOutput struct {
 	Data models.Label `json:"data"`
 }
 
-// GetLabelHandler defines the interface for the GetLabel operation.
-type GetLabelHandler interface {
+// GetLabel defines the interface for the GetLabel operation.
+type GetLabel interface {
 	Execute(ctx context.Context, input *GetLabelInput) (*GetLabelOutput, error)
 }
 
-// GetLabelHandlerImpl is the default implementation of GetLabelHandler.
-type GetLabelHandlerImpl struct {
+// GetLabelImpl is the default implementation of GetLabel.
+type GetLabelImpl struct {
 	repo repositories.LabelRepository
 }
 
-// NewGetLabelHandler creates a new GetLabel handler.
-func NewGetLabelHandler(
+// NewGetLabel creates a new GetLabel handler.
+func NewGetLabel(
 	repo repositories.LabelRepository,
-) GetLabelHandler {
-	return &GetLabelHandlerImpl{
+) GetLabel {
+	return &GetLabelImpl{
 		repo: repo,
 	}
 }
 
 // Execute performs the GetLabel operation.
-func (h *GetLabelHandlerImpl) Execute(ctx context.Context, input *GetLabelInput) (*GetLabelOutput, error) {
+func (h *GetLabelImpl) Execute(ctx context.Context, input *GetLabelInput) (*GetLabelOutput, error) {
 	// Get from repository
 	result, err := h.repo.Get(ctx, input.ID)
 	if err != nil {

@@ -17,20 +17,18 @@ import (
 // RequestEmailChange - POST /auth/change-email
 // ============================================================================
 
-// Handler type
-
-// RequestEmailChangeHandlerHTTP wraps the user handler for HTTP
-type RequestEmailChangeHandlerHTTP struct {
-	handler application.RequestEmailChangeHandler
+// RequestEmailChangeHandler is the HTTP handler for RequestEmailChange.
+type RequestEmailChangeHandler struct {
+	requestEmailChange application.RequestEmailChange
 }
 
-// NewRequestEmailChangeHandlerHTTP creates a new HTTP handler wrapper
-func NewRequestEmailChangeHandlerHTTP(handler application.RequestEmailChangeHandler) *RequestEmailChangeHandlerHTTP {
-	return &RequestEmailChangeHandlerHTTP{handler: handler}
+// NewRequestEmailChangeHandler creates a new HTTP handler.
+func NewRequestEmailChangeHandler(requestEmailChange application.RequestEmailChange) *RequestEmailChangeHandler {
+	return &RequestEmailChangeHandler{requestEmailChange: requestEmailChange}
 }
 
-// RegisterRequestEmailChangeRoute registers the HTTP route for RequestEmailChange
-func RegisterRequestEmailChangeRoute(mux *http.ServeMux, handler *RequestEmailChangeHandlerHTTP) {
+// RegisterRequestEmailChangeRoute registers the HTTP route for RequestEmailChange.
+func RegisterRequestEmailChangeRoute(mux *http.ServeMux, handler *RequestEmailChangeHandler) {
 	mux.HandleFunc("POST /auth/change-email", handler.ServeHTTP)
 }
 
@@ -107,7 +105,7 @@ func (response RequestEmailChange500Response) VisitRequestEmailChangeResponse(w 
 }
 
 // ServeHTTP handles the POST /auth/change-email endpoint.
-func (h *RequestEmailChangeHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *RequestEmailChangeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Extract session ID from context for authenticated operations
@@ -140,8 +138,8 @@ func (h *RequestEmailChangeHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http
 	input.NewEmail = body.NewEmail
 	input.UserID = body.UserID
 
-	// Execute handler
-	if err := h.handler.Execute(ctx, input); err != nil {
+	// Execute
+	if err := h.requestEmailChange.Execute(ctx, input); err != nil {
 		errorResp := RequestEmailChange500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

@@ -19,20 +19,18 @@ import (
 // CreatePipelineStep - POST /pipelines/{id}/steps
 // ============================================================================
 
-// Handler type
-
-// CreatePipelineStepHandlerHTTP wraps the user handler for HTTP
-type CreatePipelineStepHandlerHTTP struct {
-	handler application.CreatePipelineStepHandler
+// CreatePipelineStepHandler is the HTTP handler for CreatePipelineStep.
+type CreatePipelineStepHandler struct {
+	createPipelineStep application.CreatePipelineStep
 }
 
-// NewCreatePipelineStepHandlerHTTP creates a new HTTP handler wrapper
-func NewCreatePipelineStepHandlerHTTP(handler application.CreatePipelineStepHandler) *CreatePipelineStepHandlerHTTP {
-	return &CreatePipelineStepHandlerHTTP{handler: handler}
+// NewCreatePipelineStepHandler creates a new HTTP handler.
+func NewCreatePipelineStepHandler(createPipelineStep application.CreatePipelineStep) *CreatePipelineStepHandler {
+	return &CreatePipelineStepHandler{createPipelineStep: createPipelineStep}
 }
 
-// RegisterCreatePipelineStepRoute registers the HTTP route for CreatePipelineStep
-func RegisterCreatePipelineStepRoute(mux *http.ServeMux, handler *CreatePipelineStepHandlerHTTP) {
+// RegisterCreatePipelineStepRoute registers the HTTP route for CreatePipelineStep.
+func RegisterCreatePipelineStepRoute(mux *http.ServeMux, handler *CreatePipelineStepHandler) {
 	mux.HandleFunc("POST /pipelines/{id}/steps", handler.ServeHTTP)
 }
 
@@ -124,7 +122,7 @@ func (response CreatePipelineStep500Response) VisitCreatePipelineStepResponse(w 
 }
 
 // ServeHTTP handles the POST /pipelines/{id}/steps endpoint.
-func (h *CreatePipelineStepHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *CreatePipelineStepHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Build input from request
@@ -160,8 +158,8 @@ func (h *CreatePipelineStepHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http
 	input.Position = body.Position
 	input.ToolID = body.ToolID
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.createPipelineStep.Execute(ctx, input)
 	if err != nil {
 		errorResp := CreatePipelineStep500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

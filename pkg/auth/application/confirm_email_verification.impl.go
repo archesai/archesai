@@ -7,27 +7,27 @@ import (
 	"fmt"
 )
 
-// Ensure ConfirmEmailVerificationHandlerImpl implements ConfirmEmailVerificationHandler
-var _ ConfirmEmailVerificationHandler = (*ConfirmEmailVerificationHandlerImpl)(nil)
+// Ensure ConfirmEmailVerificationImpl implements ConfirmEmailVerification
+var _ ConfirmEmailVerification = (*ConfirmEmailVerificationImpl)(nil)
 
-// ConfirmEmailVerificationHandlerImpl implements the ConfirmEmailVerificationHandler interface.
-type ConfirmEmailVerificationHandlerImpl struct {
+// ConfirmEmailVerificationImpl implements the ConfirmEmailVerification interface.
+type ConfirmEmailVerificationImpl struct {
 	// TODO: Add your dependencies here
 }
 
-// NewConfirmEmailVerificationHandler creates a new ConfirmEmailVerification handler.
-func NewConfirmEmailVerificationHandler(
+// NewConfirmEmailVerification creates a new ConfirmEmailVerification implementation.
+func NewConfirmEmailVerification(
 // TODO: Add your dependencies here
-) ConfirmEmailVerificationHandler {
-	return &ConfirmEmailVerificationHandlerImpl{
+) ConfirmEmailVerification {
+	return &ConfirmEmailVerificationImpl{
 		// TODO: Initialize dependencies
 	}
 }
 
 // Execute performs the ConfirmEmailVerification operation.
-func (h *ConfirmEmailVerificationHandlerImpl) Execute(
-	_ context.Context,
-	_ *ConfirmEmailVerificationInput,
+func (h *ConfirmEmailVerificationImpl) Execute(
+	ctx context.Context,
+	input *ConfirmEmailVerificationInput,
 ) (*ConfirmEmailVerificationOutput, error) {
 	// TODO: Implement ConfirmEmailVerification logic
 	return nil, fmt.Errorf("not implemented")

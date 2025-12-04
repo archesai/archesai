@@ -19,20 +19,18 @@ import (
 // UpdateArtifact - PATCH /artifacts/{id}
 // ============================================================================
 
-// Handler type
-
-// UpdateArtifactHandlerHTTP wraps the user handler for HTTP
-type UpdateArtifactHandlerHTTP struct {
-	handler application.UpdateArtifactHandler
+// UpdateArtifactHandler is the HTTP handler for UpdateArtifact.
+type UpdateArtifactHandler struct {
+	updateArtifact application.UpdateArtifact
 }
 
-// NewUpdateArtifactHandlerHTTP creates a new HTTP handler wrapper
-func NewUpdateArtifactHandlerHTTP(handler application.UpdateArtifactHandler) *UpdateArtifactHandlerHTTP {
-	return &UpdateArtifactHandlerHTTP{handler: handler}
+// NewUpdateArtifactHandler creates a new HTTP handler.
+func NewUpdateArtifactHandler(updateArtifact application.UpdateArtifact) *UpdateArtifactHandler {
+	return &UpdateArtifactHandler{updateArtifact: updateArtifact}
 }
 
-// RegisterUpdateArtifactRoute registers the HTTP route for UpdateArtifact
-func RegisterUpdateArtifactRoute(mux *http.ServeMux, handler *UpdateArtifactHandlerHTTP) {
+// RegisterUpdateArtifactRoute registers the HTTP route for UpdateArtifact.
+func RegisterUpdateArtifactRoute(mux *http.ServeMux, handler *UpdateArtifactHandler) {
 	mux.HandleFunc("PATCH /artifacts/{id}", handler.ServeHTTP)
 }
 
@@ -122,7 +120,7 @@ func (response UpdateArtifact500Response) VisitUpdateArtifactResponse(w http.Res
 }
 
 // ServeHTTP handles the PATCH /artifacts/{id} endpoint.
-func (h *UpdateArtifactHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *UpdateArtifactHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Build input from request
@@ -156,8 +154,8 @@ func (h *UpdateArtifactHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Req
 	input.Text = body.Text
 	input.URL = body.URL
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.updateArtifact.Execute(ctx, input)
 	if err != nil {
 		errorResp := UpdateArtifact500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

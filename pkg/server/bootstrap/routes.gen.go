@@ -11,13 +11,13 @@ import (
 
 // HTTPHandlers holds all HTTP handlers for this package.
 type HTTPHandlers struct {
-	GetHealth *controllers.GetHealthHandlerHTTP
+	GetHealth *controllers.GetHealthHandler
 }
 
 // NewHTTPHandlers creates all HTTP handlers from the given application handlers.
 func NewHTTPHandlers(appHandlers *ApplicationHandlers) *HTTPHandlers {
 	return &HTTPHandlers{
-		GetHealth: controllers.NewGetHealthHandlerHTTP(appHandlers.GetHealth),
+		GetHealth: controllers.NewGetHealthHandler(appHandlers.GetHealth),
 	}
 }
 

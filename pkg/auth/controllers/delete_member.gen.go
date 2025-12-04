@@ -18,20 +18,18 @@ import (
 // DeleteMember - DELETE /organizations/{organizationID}/members/{id}
 // ============================================================================
 
-// Handler type
-
-// DeleteMemberHandlerHTTP wraps the user handler for HTTP
-type DeleteMemberHandlerHTTP struct {
-	handler application.DeleteMemberHandler
+// DeleteMemberHandler is the HTTP handler for DeleteMember.
+type DeleteMemberHandler struct {
+	deleteMember application.DeleteMember
 }
 
-// NewDeleteMemberHandlerHTTP creates a new HTTP handler wrapper
-func NewDeleteMemberHandlerHTTP(handler application.DeleteMemberHandler) *DeleteMemberHandlerHTTP {
-	return &DeleteMemberHandlerHTTP{handler: handler}
+// NewDeleteMemberHandler creates a new HTTP handler.
+func NewDeleteMemberHandler(deleteMember application.DeleteMember) *DeleteMemberHandler {
+	return &DeleteMemberHandler{deleteMember: deleteMember}
 }
 
-// RegisterDeleteMemberRoute registers the HTTP route for DeleteMember
-func RegisterDeleteMemberRoute(mux *http.ServeMux, handler *DeleteMemberHandlerHTTP) {
+// RegisterDeleteMemberRoute registers the HTTP route for DeleteMember.
+func RegisterDeleteMemberRoute(mux *http.ServeMux, handler *DeleteMemberHandler) {
 	mux.HandleFunc("DELETE /organizations/{organizationID}/members/{id}", handler.ServeHTTP)
 }
 
@@ -112,7 +110,7 @@ func (response DeleteMember500Response) VisitDeleteMemberResponse(w http.Respons
 }
 
 // ServeHTTP handles the DELETE /organizations/{organizationID}/members/{id} endpoint.
-func (h *DeleteMemberHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *DeleteMemberHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Extract session ID from context for authenticated operations
@@ -157,8 +155,8 @@ func (h *DeleteMemberHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Reque
 	}
 	input.ID = id
 
-	// Execute handler
-	if err := h.handler.Execute(ctx, input); err != nil {
+	// Execute
+	if err := h.deleteMember.Execute(ctx, input); err != nil {
 		errorResp := DeleteMember500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

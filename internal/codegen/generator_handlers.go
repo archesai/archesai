@@ -1,23 +1,22 @@
 package codegen
 
 import (
-	"bytes"
 	"fmt"
-	"os"
 	"path/filepath"
 
 	"github.com/archesai/archesai/internal/parsers"
 )
 
-// HandlerTemplateData holds the data for rendering handler templates.
-type HandlerTemplateData struct {
-	Operation   *parsers.OperationDef
-	ProjectName string
-	NeedsUUID   bool
+// ApplicationTemplateData holds the data for rendering application handler templates.
+type ApplicationTemplateData struct {
+	Operation         *parsers.OperationDef
+	ProjectName       string
+	NeedsUUID         bool
+	NeedsServerModels bool
 }
 
-// HandlerStubTemplateData holds the data for rendering custom handler stub templates.
-type HandlerStubTemplateData struct {
+// ApplicationStubTemplateData holds the data for rendering custom handler stub templates.
+type ApplicationStubTemplateData struct {
 	Operation   *parsers.OperationDef
 	ProjectName string
 	NeedsUUID   bool
@@ -57,53 +56,31 @@ func generateHandlerGenFile(ctx *GeneratorContext, op parsers.OperationDef) erro
 	fileName := parsers.SnakeCase(op.ID) + ".gen.go"
 	outputPath := filepath.Join("application", fileName)
 
-	needsUUID := op.HasBearerAuth() || op.HasCookieAuth()
-	for _, p := range op.GetPathParams() {
-		if p.GoType == "uuid.UUID" {
-			needsUUID = true
-		}
+	data := &ApplicationTemplateData{
+		Operation:         &op,
+		ProjectName:       ctx.ProjectName,
+		NeedsUUID:         op.NeedsUUID(),
+		NeedsServerModels: op.NeedsServerModels(),
 	}
 
-	data := &HandlerTemplateData{
-		Operation:   &op,
-		ProjectName: ctx.ProjectName,
-		NeedsUUID:   needsUUID,
+	if err := ctx.RenderToFile("handler.gen.go.tmpl", outputPath, data); err != nil {
+		return fmt.Errorf("failed to generate handler for %s: %w", op.ID, err)
 	}
-
-	var buf bytes.Buffer
-	if err := ctx.Renderer.Render(&buf, "handler.gen.go.tmpl", data); err != nil {
-		return fmt.Errorf("failed to render handler for %s: %w", op.ID, err)
-	}
-
-	return ctx.Storage.WriteFile(outputPath, buf.Bytes(), 0644)
+	return nil
 }
 
 func generateCustomHandlerStub(ctx *GeneratorContext, op parsers.OperationDef) error {
 	fileName := parsers.SnakeCase(op.ID) + ".impl.go"
 	outputPath := filepath.Join("application", fileName)
 
-	fullPath := filepath.Join(ctx.Storage.BaseDir(), outputPath)
-	if _, err := os.Stat(fullPath); err == nil {
-		return nil
-	}
-
-	needsUUID := op.HasBearerAuth() || op.HasCookieAuth()
-	for _, p := range op.GetPathParams() {
-		if p.GoType == "uuid.UUID" {
-			needsUUID = true
-		}
-	}
-
-	data := &HandlerStubTemplateData{
+	data := &ApplicationStubTemplateData{
 		Operation:   &op,
 		ProjectName: ctx.ProjectName,
-		NeedsUUID:   needsUUID,
+		NeedsUUID:   op.NeedsUUID(),
 	}
 
-	var buf bytes.Buffer
-	if err := ctx.Renderer.Render(&buf, "handler_stub.go.tmpl", data); err != nil {
-		return fmt.Errorf("failed to render handler stub for %s: %w", op.ID, err)
+	if err := ctx.RenderToFileIfNotExists("handler_stub.go.tmpl", outputPath, data); err != nil {
+		return fmt.Errorf("failed to generate handler stub for %s: %w", op.ID, err)
 	}
-
-	return ctx.Storage.WriteFile(outputPath, buf.Bytes(), 0644)
+	return nil
 }

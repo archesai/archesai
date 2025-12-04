@@ -7,27 +7,27 @@ import (
 	"fmt"
 )
 
-// Ensure LinkAccountHandlerImpl implements LinkAccountHandler
-var _ LinkAccountHandler = (*LinkAccountHandlerImpl)(nil)
+// Ensure LinkAccountImpl implements LinkAccount
+var _ LinkAccount = (*LinkAccountImpl)(nil)
 
-// LinkAccountHandlerImpl implements the LinkAccountHandler interface.
-type LinkAccountHandlerImpl struct {
+// LinkAccountImpl implements the LinkAccount interface.
+type LinkAccountImpl struct {
 	// TODO: Add your dependencies here
 }
 
-// NewLinkAccountHandler creates a new LinkAccount handler.
-func NewLinkAccountHandler(
+// NewLinkAccount creates a new LinkAccount implementation.
+func NewLinkAccount(
 // TODO: Add your dependencies here
-) LinkAccountHandler {
-	return &LinkAccountHandlerImpl{
+) LinkAccount {
+	return &LinkAccountImpl{
 		// TODO: Initialize dependencies
 	}
 }
 
 // Execute performs the LinkAccount operation.
-func (h *LinkAccountHandlerImpl) Execute(
-	_ context.Context,
-	_ *LinkAccountInput,
+func (h *LinkAccountImpl) Execute(
+	ctx context.Context,
+	input *LinkAccountInput,
 ) (*LinkAccountOutput, error) {
 	// TODO: Implement LinkAccount logic
 	return nil, fmt.Errorf("not implemented")

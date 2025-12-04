@@ -25,6 +25,9 @@ components:
       $ref: components/parameters/PageQuery.yaml
     ResourceID:
       $ref: components/parameters/ResourceID.yaml
+  schemas:
+    PaginationMeta:
+      $ref: components/schemas/PaginationMeta.yaml
   responses:
     BadRequest:
       $ref: components/responses/BadRequest.yaml

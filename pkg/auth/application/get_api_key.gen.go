@@ -27,27 +27,27 @@ type GetAPIKeyOutput struct {
 	Data models.APIKey `json:"data"`
 }
 
-// GetAPIKeyHandler defines the interface for the GetAPIKey operation.
-type GetAPIKeyHandler interface {
+// GetAPIKey defines the interface for the GetAPIKey operation.
+type GetAPIKey interface {
 	Execute(ctx context.Context, input *GetAPIKeyInput) (*GetAPIKeyOutput, error)
 }
 
-// GetAPIKeyHandlerImpl is the default implementation of GetAPIKeyHandler.
-type GetAPIKeyHandlerImpl struct {
+// GetAPIKeyImpl is the default implementation of GetAPIKey.
+type GetAPIKeyImpl struct {
 	repo repositories.APIKeyRepository
 }
 
-// NewGetAPIKeyHandler creates a new GetAPIKey handler.
-func NewGetAPIKeyHandler(
+// NewGetAPIKey creates a new GetAPIKey handler.
+func NewGetAPIKey(
 	repo repositories.APIKeyRepository,
-) GetAPIKeyHandler {
-	return &GetAPIKeyHandlerImpl{
+) GetAPIKey {
+	return &GetAPIKeyImpl{
 		repo: repo,
 	}
 }
 
 // Execute performs the GetAPIKey operation.
-func (h *GetAPIKeyHandlerImpl) Execute(ctx context.Context, input *GetAPIKeyInput) (*GetAPIKeyOutput, error) {
+func (h *GetAPIKeyImpl) Execute(ctx context.Context, input *GetAPIKeyInput) (*GetAPIKeyOutput, error) {
 	// Get from repository
 	result, err := h.repo.Get(ctx, input.ID)
 	if err != nil {

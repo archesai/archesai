@@ -26,7 +26,7 @@ type OauthAuthorizeOutput struct {
 	AuthorizationURL string `json:"authorizationURL"`
 }
 
-// OauthAuthorizeHandler defines the interface for the OauthAuthorize operation.
-type OauthAuthorizeHandler interface {
+// OauthAuthorize defines the interface for the OauthAuthorize operation.
+type OauthAuthorize interface {
 	Execute(ctx context.Context, input *OauthAuthorizeInput) (*OauthAuthorizeOutput, error)
 }

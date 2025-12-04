@@ -10,6 +10,7 @@ import (
 
 	"github.com/archesai/archesai/pkg/auth/models"
 	"github.com/archesai/archesai/pkg/auth/repositories"
+	servermodels "github.com/archesai/archesai/pkg/server/models"
 )
 
 // ============================================================================
@@ -27,31 +28,31 @@ type ListMembersInput struct {
 
 // ListMembersOutput represents the output for the ListMembers operation.
 type ListMembersOutput struct {
-	Data []models.Member       `json:"data"`
-	Meta models.PaginationMeta `json:"meta"`
+	Data []models.Member             `json:"data"`
+	Meta servermodels.PaginationMeta `json:"meta"`
 }
 
-// ListMembersHandler defines the interface for the ListMembers operation.
-type ListMembersHandler interface {
+// ListMembers defines the interface for the ListMembers operation.
+type ListMembers interface {
 	Execute(ctx context.Context, input *ListMembersInput) (*ListMembersOutput, error)
 }
 
-// ListMembersHandlerImpl is the default implementation of ListMembersHandler.
-type ListMembersHandlerImpl struct {
+// ListMembersImpl is the default implementation of ListMembers.
+type ListMembersImpl struct {
 	repo repositories.MemberRepository
 }
 
-// NewListMembersHandler creates a new ListMembers handler.
-func NewListMembersHandler(
+// NewListMembers creates a new ListMembers handler.
+func NewListMembers(
 	repo repositories.MemberRepository,
-) ListMembersHandler {
-	return &ListMembersHandlerImpl{
+) ListMembers {
+	return &ListMembersImpl{
 		repo: repo,
 	}
 }
 
 // Execute performs the ListMembers operation.
-func (h *ListMembersHandlerImpl) Execute(ctx context.Context, input *ListMembersInput) (*ListMembersOutput, error) {
+func (h *ListMembersImpl) Execute(ctx context.Context, input *ListMembersInput) (*ListMembersOutput, error) {
 	// List from repository
 	results, total, err := h.repo.List(ctx, 100, 0) // TODO: Use pagination from input
 	if err != nil {

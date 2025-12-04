@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 
+	servermodels "github.com/archesai/archesai/pkg/server/models"
 	"github.com/archesai/archesai/pkg/storage/models"
 	"github.com/archesai/archesai/pkg/storage/repositories"
 )
@@ -23,31 +24,31 @@ type ListArtifactsInput struct {
 
 // ListArtifactsOutput represents the output for the ListArtifacts operation.
 type ListArtifactsOutput struct {
-	Data []models.Artifact     `json:"data"`
-	Meta models.PaginationMeta `json:"meta"`
+	Data []models.Artifact           `json:"data"`
+	Meta servermodels.PaginationMeta `json:"meta"`
 }
 
-// ListArtifactsHandler defines the interface for the ListArtifacts operation.
-type ListArtifactsHandler interface {
+// ListArtifacts defines the interface for the ListArtifacts operation.
+type ListArtifacts interface {
 	Execute(ctx context.Context, input *ListArtifactsInput) (*ListArtifactsOutput, error)
 }
 
-// ListArtifactsHandlerImpl is the default implementation of ListArtifactsHandler.
-type ListArtifactsHandlerImpl struct {
+// ListArtifactsImpl is the default implementation of ListArtifacts.
+type ListArtifactsImpl struct {
 	repo repositories.ArtifactRepository
 }
 
-// NewListArtifactsHandler creates a new ListArtifacts handler.
-func NewListArtifactsHandler(
+// NewListArtifacts creates a new ListArtifacts handler.
+func NewListArtifacts(
 	repo repositories.ArtifactRepository,
-) ListArtifactsHandler {
-	return &ListArtifactsHandlerImpl{
+) ListArtifacts {
+	return &ListArtifactsImpl{
 		repo: repo,
 	}
 }
 
 // Execute performs the ListArtifacts operation.
-func (h *ListArtifactsHandlerImpl) Execute(ctx context.Context, input *ListArtifactsInput) (*ListArtifactsOutput, error) {
+func (h *ListArtifactsImpl) Execute(ctx context.Context, input *ListArtifactsInput) (*ListArtifactsOutput, error) {
 	// List from repository
 	results, total, err := h.repo.List(ctx, 100, 0) // TODO: Use pagination from input
 	if err != nil {

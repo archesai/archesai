@@ -10,12 +10,12 @@ import (
 
 // ApplicationHandlers holds all application-layer handlers for this package.
 type ApplicationHandlers struct {
-	CreateExecutor  application.CreateExecutorHandler
-	DeleteExecutor  application.DeleteExecutorHandler
-	ExecuteExecutor application.ExecuteExecutorHandler
-	GetExecutor     application.GetExecutorHandler
-	ListExecutors   application.ListExecutorsHandler
-	UpdateExecutor  application.UpdateExecutorHandler
+	CreateExecutor  application.CreateExecutor
+	DeleteExecutor  application.DeleteExecutor
+	ExecuteExecutor application.ExecuteExecutor
+	GetExecutor     application.GetExecutor
+	ListExecutors   application.ListExecutors
+	UpdateExecutor  application.UpdateExecutor
 }
 
 // NewApplicationHandlers creates all application handlers with proper dependency injection.
@@ -24,11 +24,11 @@ func NewApplicationHandlers(
 	publisher events.Publisher,
 ) *ApplicationHandlers {
 	return &ApplicationHandlers{
-		CreateExecutor:  application.NewCreateExecutorHandler(executorRepo, publisher),
-		DeleteExecutor:  application.NewDeleteExecutorHandler(executorRepo, publisher),
-		ExecuteExecutor: application.NewExecuteExecutorHandler(),
-		GetExecutor:     application.NewGetExecutorHandler(executorRepo),
-		ListExecutors:   application.NewListExecutorsHandler(executorRepo),
-		UpdateExecutor:  application.NewUpdateExecutorHandler(executorRepo, publisher),
+		CreateExecutor:  application.NewCreateExecutor(executorRepo, publisher),
+		DeleteExecutor:  application.NewDeleteExecutor(executorRepo, publisher),
+		ExecuteExecutor: application.NewExecuteExecutor(),
+		GetExecutor:     application.NewGetExecutor(executorRepo),
+		ListExecutors:   application.NewListExecutors(executorRepo),
+		UpdateExecutor:  application.NewUpdateExecutor(executorRepo, publisher),
 	}
 }

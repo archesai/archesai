@@ -20,20 +20,18 @@ import (
 // UpdateAPIKey - PATCH /api-keys/{id}
 // ============================================================================
 
-// Handler type
-
-// UpdateAPIKeyHandlerHTTP wraps the user handler for HTTP
-type UpdateAPIKeyHandlerHTTP struct {
-	handler application.UpdateAPIKeyHandler
+// UpdateAPIKeyHandler is the HTTP handler for UpdateAPIKey.
+type UpdateAPIKeyHandler struct {
+	updateAPIKey application.UpdateAPIKey
 }
 
-// NewUpdateAPIKeyHandlerHTTP creates a new HTTP handler wrapper
-func NewUpdateAPIKeyHandlerHTTP(handler application.UpdateAPIKeyHandler) *UpdateAPIKeyHandlerHTTP {
-	return &UpdateAPIKeyHandlerHTTP{handler: handler}
+// NewUpdateAPIKeyHandler creates a new HTTP handler.
+func NewUpdateAPIKeyHandler(updateAPIKey application.UpdateAPIKey) *UpdateAPIKeyHandler {
+	return &UpdateAPIKeyHandler{updateAPIKey: updateAPIKey}
 }
 
-// RegisterUpdateAPIKeyRoute registers the HTTP route for UpdateAPIKey
-func RegisterUpdateAPIKeyRoute(mux *http.ServeMux, handler *UpdateAPIKeyHandlerHTTP) {
+// RegisterUpdateAPIKeyRoute registers the HTTP route for UpdateAPIKey.
+func RegisterUpdateAPIKeyRoute(mux *http.ServeMux, handler *UpdateAPIKeyHandler) {
 	mux.HandleFunc("PATCH /api-keys/{id}", handler.ServeHTTP)
 }
 
@@ -124,7 +122,7 @@ func (response UpdateAPIKey500Response) VisitUpdateAPIKeyResponse(w http.Respons
 }
 
 // ServeHTTP handles the PATCH /api-keys/{id} endpoint.
-func (h *UpdateAPIKeyHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *UpdateAPIKeyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Extract session ID from context for authenticated operations
@@ -172,8 +170,8 @@ func (h *UpdateAPIKeyHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Reque
 	input.RateLimit = body.RateLimit
 	input.Scopes = body.Scopes
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.updateAPIKey.Execute(ctx, input)
 	if err != nil {
 		errorResp := UpdateAPIKey500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

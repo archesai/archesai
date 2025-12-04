@@ -25,27 +25,27 @@ type GetTodoOutput struct {
 	Data []models.Todo `json:"data,omitempty"`
 }
 
-// GetTodoHandler defines the interface for the GetTodo operation.
-type GetTodoHandler interface {
+// GetTodo defines the interface for the GetTodo operation.
+type GetTodo interface {
 	Execute(ctx context.Context, input *GetTodoInput) (*GetTodoOutput, error)
 }
 
-// GetTodoHandlerImpl is the default implementation of GetTodoHandler.
-type GetTodoHandlerImpl struct {
+// GetTodoImpl is the default implementation of GetTodo.
+type GetTodoImpl struct {
 	repo repositories.TodoRepository
 }
 
-// NewGetTodoHandler creates a new GetTodo handler.
-func NewGetTodoHandler(
+// NewGetTodo creates a new GetTodo handler.
+func NewGetTodo(
 	repo repositories.TodoRepository,
-) GetTodoHandler {
-	return &GetTodoHandlerImpl{
+) GetTodo {
+	return &GetTodoImpl{
 		repo: repo,
 	}
 }
 
 // Execute performs the GetTodo operation.
-func (h *GetTodoHandlerImpl) Execute(ctx context.Context, input *GetTodoInput) (*GetTodoOutput, error) {
+func (h *GetTodoImpl) Execute(ctx context.Context, input *GetTodoInput) (*GetTodoOutput, error) {
 	// Get from repository
 	result, err := h.repo.Get(ctx, uuid.Nil) // TODO: Get correct ID
 	if err != nil {

@@ -19,20 +19,18 @@ import (
 // UpdateInvitation - PATCH /organizations/{organizationID}/invitations/{id}
 // ============================================================================
 
-// Handler type
-
-// UpdateInvitationHandlerHTTP wraps the user handler for HTTP
-type UpdateInvitationHandlerHTTP struct {
-	handler application.UpdateInvitationHandler
+// UpdateInvitationHandler is the HTTP handler for UpdateInvitation.
+type UpdateInvitationHandler struct {
+	updateInvitation application.UpdateInvitation
 }
 
-// NewUpdateInvitationHandlerHTTP creates a new HTTP handler wrapper
-func NewUpdateInvitationHandlerHTTP(handler application.UpdateInvitationHandler) *UpdateInvitationHandlerHTTP {
-	return &UpdateInvitationHandlerHTTP{handler: handler}
+// NewUpdateInvitationHandler creates a new HTTP handler.
+func NewUpdateInvitationHandler(updateInvitation application.UpdateInvitation) *UpdateInvitationHandler {
+	return &UpdateInvitationHandler{updateInvitation: updateInvitation}
 }
 
-// RegisterUpdateInvitationRoute registers the HTTP route for UpdateInvitation
-func RegisterUpdateInvitationRoute(mux *http.ServeMux, handler *UpdateInvitationHandlerHTTP) {
+// RegisterUpdateInvitationRoute registers the HTTP route for UpdateInvitation.
+func RegisterUpdateInvitationRoute(mux *http.ServeMux, handler *UpdateInvitationHandler) {
 	mux.HandleFunc("PATCH /organizations/{organizationID}/invitations/{id}", handler.ServeHTTP)
 }
 
@@ -121,7 +119,7 @@ func (response UpdateInvitation500Response) VisitUpdateInvitationResponse(w http
 }
 
 // ServeHTTP handles the PATCH /organizations/{organizationID}/invitations/{id} endpoint.
-func (h *UpdateInvitationHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *UpdateInvitationHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Extract session ID from context for authenticated operations
@@ -180,8 +178,8 @@ func (h *UpdateInvitationHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.R
 	input.Email = body.Email
 	input.Role = body.Role
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.updateInvitation.Execute(ctx, input)
 	if err != nil {
 		errorResp := UpdateInvitation500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

@@ -22,30 +22,30 @@ type DeleteArtifactInput struct {
 	ID uuid.UUID
 }
 
-// DeleteArtifactHandler defines the interface for the DeleteArtifact operation.
-type DeleteArtifactHandler interface {
+// DeleteArtifact defines the interface for the DeleteArtifact operation.
+type DeleteArtifact interface {
 	Execute(ctx context.Context, input *DeleteArtifactInput) error
 }
 
-// DeleteArtifactHandlerImpl is the default implementation of DeleteArtifactHandler.
-type DeleteArtifactHandlerImpl struct {
+// DeleteArtifactImpl is the default implementation of DeleteArtifact.
+type DeleteArtifactImpl struct {
 	repo      repositories.ArtifactRepository
 	publisher events.Publisher
 }
 
-// NewDeleteArtifactHandler creates a new DeleteArtifact handler.
-func NewDeleteArtifactHandler(
+// NewDeleteArtifact creates a new DeleteArtifact handler.
+func NewDeleteArtifact(
 	repo repositories.ArtifactRepository,
 	publisher events.Publisher,
-) DeleteArtifactHandler {
-	return &DeleteArtifactHandlerImpl{
+) DeleteArtifact {
+	return &DeleteArtifactImpl{
 		repo:      repo,
 		publisher: publisher,
 	}
 }
 
 // Execute performs the DeleteArtifact operation.
-func (h *DeleteArtifactHandlerImpl) Execute(ctx context.Context, input *DeleteArtifactInput) error {
+func (h *DeleteArtifactImpl) Execute(ctx context.Context, input *DeleteArtifactInput) error {
 	// Delete from repository
 	if err := h.repo.Delete(ctx, input.ID); err != nil {
 		return fmt.Errorf("failed to delete artifact: %w", err)

@@ -68,6 +68,29 @@ func (s *SchemaDef) IsInternal(context string) bool {
 	return s.XInternal != context
 }
 
+// NeedsServerModels returns true if this schema or any of its properties
+// reference types from the server package (indicated by servermodels. prefix in GoType).
+func (s *SchemaDef) NeedsServerModels() bool {
+	if s == nil {
+		return false
+	}
+	// Check this schema's GoType
+	if strings.HasPrefix(s.GoType, "servermodels.") {
+		return true
+	}
+	// Check nested properties
+	for _, prop := range s.Properties {
+		if prop.NeedsServerModels() {
+			return true
+		}
+	}
+	// Check array items
+	if s.Items != nil && s.Items.NeedsServerModels() {
+		return true
+	}
+	return false
+}
+
 // IsEnum returns true if the schema is an enum
 func (s *SchemaDef) IsEnum() bool {
 	return len(s.Enum) > 0

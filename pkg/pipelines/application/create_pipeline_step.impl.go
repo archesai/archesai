@@ -1,4 +1,3 @@
-// Package application provides handler implementations for pipeline operations.
 package application
 
 // NOTE: This file is user-editable. The generator will not overwrite it.
@@ -8,27 +7,27 @@ import (
 	"fmt"
 )
 
-// Ensure CreatePipelineStepHandlerImpl implements CreatePipelineStepHandler
-var _ CreatePipelineStepHandler = (*CreatePipelineStepHandlerImpl)(nil)
+// Ensure CreatePipelineStepImpl implements CreatePipelineStep
+var _ CreatePipelineStep = (*CreatePipelineStepImpl)(nil)
 
-// CreatePipelineStepHandlerImpl implements the CreatePipelineStepHandler interface.
-type CreatePipelineStepHandlerImpl struct {
+// CreatePipelineStepImpl implements the CreatePipelineStep interface.
+type CreatePipelineStepImpl struct {
 	// TODO: Add your dependencies here
 }
 
-// NewCreatePipelineStepHandler creates a new CreatePipelineStep handler.
-func NewCreatePipelineStepHandler(
+// NewCreatePipelineStep creates a new CreatePipelineStep implementation.
+func NewCreatePipelineStep(
 // TODO: Add your dependencies here
-) CreatePipelineStepHandler {
-	return &CreatePipelineStepHandlerImpl{
+) CreatePipelineStep {
+	return &CreatePipelineStepImpl{
 		// TODO: Initialize dependencies
 	}
 }
 
 // Execute performs the CreatePipelineStep operation.
-func (h *CreatePipelineStepHandlerImpl) Execute(
-	_ context.Context,
-	_ *CreatePipelineStepInput,
+func (h *CreatePipelineStepImpl) Execute(
+	ctx context.Context,
+	input *CreatePipelineStepInput,
 ) (*CreatePipelineStepOutput, error) {
 	// TODO: Implement CreatePipelineStep logic
 	return nil, fmt.Errorf("not implemented")

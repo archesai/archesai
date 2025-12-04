@@ -31,30 +31,30 @@ type UpdateOrganizationOutput struct {
 	Data models.Organization `json:"data"`
 }
 
-// UpdateOrganizationHandler defines the interface for the UpdateOrganization operation.
-type UpdateOrganizationHandler interface {
+// UpdateOrganization defines the interface for the UpdateOrganization operation.
+type UpdateOrganization interface {
 	Execute(ctx context.Context, input *UpdateOrganizationInput) (*UpdateOrganizationOutput, error)
 }
 
-// UpdateOrganizationHandlerImpl is the default implementation of UpdateOrganizationHandler.
-type UpdateOrganizationHandlerImpl struct {
+// UpdateOrganizationImpl is the default implementation of UpdateOrganization.
+type UpdateOrganizationImpl struct {
 	repo      repositories.OrganizationRepository
 	publisher events.Publisher
 }
 
-// NewUpdateOrganizationHandler creates a new UpdateOrganization handler.
-func NewUpdateOrganizationHandler(
+// NewUpdateOrganization creates a new UpdateOrganization handler.
+func NewUpdateOrganization(
 	repo repositories.OrganizationRepository,
 	publisher events.Publisher,
-) UpdateOrganizationHandler {
-	return &UpdateOrganizationHandlerImpl{
+) UpdateOrganization {
+	return &UpdateOrganizationImpl{
 		repo:      repo,
 		publisher: publisher,
 	}
 }
 
 // Execute performs the UpdateOrganization operation.
-func (h *UpdateOrganizationHandlerImpl) Execute(ctx context.Context, input *UpdateOrganizationInput) (*UpdateOrganizationOutput, error) {
+func (h *UpdateOrganizationImpl) Execute(ctx context.Context, input *UpdateOrganizationInput) (*UpdateOrganizationOutput, error) {
 	// Get existing entity
 	existing, err := h.repo.Get(ctx, input.ID)
 	if err != nil {

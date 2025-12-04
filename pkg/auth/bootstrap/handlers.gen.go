@@ -10,56 +10,56 @@ import (
 
 // ApplicationHandlers holds all application-layer handlers for this package.
 type ApplicationHandlers struct {
-	ConfirmEmailChange       application.ConfirmEmailChangeHandler
-	ConfirmEmailVerification application.ConfirmEmailVerificationHandler
-	ConfirmPasswordReset     application.ConfirmPasswordResetHandler
-	CreateAPIKey             application.CreateAPIKeyHandler
-	CreateInvitation         application.CreateInvitationHandler
-	CreateMember             application.CreateMemberHandler
-	CreateOrganization       application.CreateOrganizationHandler
-	DeleteAPIKey             application.DeleteAPIKeyHandler
-	DeleteAccount            application.DeleteAccountHandler
-	DeleteCurrentUser        application.DeleteCurrentUserHandler
-	DeleteInvitation         application.DeleteInvitationHandler
-	DeleteMember             application.DeleteMemberHandler
-	DeleteOrganization       application.DeleteOrganizationHandler
-	DeleteSession            application.DeleteSessionHandler
-	DeleteUser               application.DeleteUserHandler
-	GetAPIKey                application.GetAPIKeyHandler
-	GetAccount               application.GetAccountHandler
-	GetCurrentUser           application.GetCurrentUserHandler
-	GetInvitation            application.GetInvitationHandler
-	GetMember                application.GetMemberHandler
-	GetOrganization          application.GetOrganizationHandler
-	GetSession               application.GetSessionHandler
-	GetUser                  application.GetUserHandler
-	LinkAccount              application.LinkAccountHandler
-	ListAPIKeys              application.ListAPIKeysHandler
-	ListAccounts             application.ListAccountsHandler
-	ListInvitations          application.ListInvitationsHandler
-	ListMembers              application.ListMembersHandler
-	ListOrganizations        application.ListOrganizationsHandler
-	ListSessions             application.ListSessionsHandler
-	ListUsers                application.ListUsersHandler
-	Login                    application.LoginHandler
-	Logout                   application.LogoutHandler
-	LogoutAll                application.LogoutAllHandler
-	OauthAuthorize           application.OauthAuthorizeHandler
-	OauthCallback            application.OauthCallbackHandler
-	Register                 application.RegisterHandler
-	RequestEmailChange       application.RequestEmailChangeHandler
-	RequestEmailVerification application.RequestEmailVerificationHandler
-	RequestMagicLink         application.RequestMagicLinkHandler
-	RequestPasswordReset     application.RequestPasswordResetHandler
-	UpdateAPIKey             application.UpdateAPIKeyHandler
-	UpdateAccount            application.UpdateAccountHandler
-	UpdateCurrentUser        application.UpdateCurrentUserHandler
-	UpdateInvitation         application.UpdateInvitationHandler
-	UpdateMember             application.UpdateMemberHandler
-	UpdateOrganization       application.UpdateOrganizationHandler
-	UpdateSession            application.UpdateSessionHandler
-	UpdateUser               application.UpdateUserHandler
-	VerifyMagicLink          application.VerifyMagicLinkHandler
+	ConfirmEmailChange       application.ConfirmEmailChange
+	ConfirmEmailVerification application.ConfirmEmailVerification
+	ConfirmPasswordReset     application.ConfirmPasswordReset
+	CreateAPIKey             application.CreateAPIKey
+	CreateInvitation         application.CreateInvitation
+	CreateMember             application.CreateMember
+	CreateOrganization       application.CreateOrganization
+	DeleteAPIKey             application.DeleteAPIKey
+	DeleteAccount            application.DeleteAccount
+	DeleteCurrentUser        application.DeleteCurrentUser
+	DeleteInvitation         application.DeleteInvitation
+	DeleteMember             application.DeleteMember
+	DeleteOrganization       application.DeleteOrganization
+	DeleteSession            application.DeleteSession
+	DeleteUser               application.DeleteUser
+	GetAPIKey                application.GetAPIKey
+	GetAccount               application.GetAccount
+	GetCurrentUser           application.GetCurrentUser
+	GetInvitation            application.GetInvitation
+	GetMember                application.GetMember
+	GetOrganization          application.GetOrganization
+	GetSession               application.GetSession
+	GetUser                  application.GetUser
+	LinkAccount              application.LinkAccount
+	ListAPIKeys              application.ListAPIKeys
+	ListAccounts             application.ListAccounts
+	ListInvitations          application.ListInvitations
+	ListMembers              application.ListMembers
+	ListOrganizations        application.ListOrganizations
+	ListSessions             application.ListSessions
+	ListUsers                application.ListUsers
+	Login                    application.Login
+	Logout                   application.Logout
+	LogoutAll                application.LogoutAll
+	OauthAuthorize           application.OauthAuthorize
+	OauthCallback            application.OauthCallback
+	Register                 application.Register
+	RequestEmailChange       application.RequestEmailChange
+	RequestEmailVerification application.RequestEmailVerification
+	RequestMagicLink         application.RequestMagicLink
+	RequestPasswordReset     application.RequestPasswordReset
+	UpdateAPIKey             application.UpdateAPIKey
+	UpdateAccount            application.UpdateAccount
+	UpdateCurrentUser        application.UpdateCurrentUser
+	UpdateInvitation         application.UpdateInvitation
+	UpdateMember             application.UpdateMember
+	UpdateOrganization       application.UpdateOrganization
+	UpdateSession            application.UpdateSession
+	UpdateUser               application.UpdateUser
+	VerifyMagicLink          application.VerifyMagicLink
 }
 
 // NewApplicationHandlers creates all application handlers with proper dependency injection.
@@ -74,55 +74,55 @@ func NewApplicationHandlers(
 	publisher events.Publisher,
 ) *ApplicationHandlers {
 	return &ApplicationHandlers{
-		ConfirmEmailChange:       application.NewConfirmEmailChangeHandler(),
-		ConfirmEmailVerification: application.NewConfirmEmailVerificationHandler(),
-		ConfirmPasswordReset:     application.NewConfirmPasswordResetHandler(),
-		CreateAPIKey:             application.NewCreateAPIKeyHandler(apikeyRepo, publisher),
-		CreateInvitation:         application.NewCreateInvitationHandler(invitationRepo, publisher),
-		CreateMember:             application.NewCreateMemberHandler(memberRepo, publisher),
-		CreateOrganization:       application.NewCreateOrganizationHandler(organizationRepo, publisher),
-		DeleteAPIKey:             application.NewDeleteAPIKeyHandler(apikeyRepo, publisher),
-		DeleteAccount:            application.NewDeleteAccountHandler(),
-		DeleteCurrentUser:        application.NewDeleteCurrentUserHandler(),
-		DeleteInvitation:         application.NewDeleteInvitationHandler(invitationRepo, publisher),
-		DeleteMember:             application.NewDeleteMemberHandler(memberRepo, publisher),
-		DeleteOrganization:       application.NewDeleteOrganizationHandler(organizationRepo, publisher),
-		DeleteSession:            application.NewDeleteSessionHandler(),
-		DeleteUser:               application.NewDeleteUserHandler(userRepo, publisher),
-		GetAPIKey:                application.NewGetAPIKeyHandler(apikeyRepo),
-		GetAccount:               application.NewGetAccountHandler(accountRepo),
-		GetCurrentUser:           application.NewGetCurrentUserHandler(),
-		GetInvitation:            application.NewGetInvitationHandler(invitationRepo),
-		GetMember:                application.NewGetMemberHandler(memberRepo),
-		GetOrganization:          application.NewGetOrganizationHandler(organizationRepo),
-		GetSession:               application.NewGetSessionHandler(sessionRepo),
-		GetUser:                  application.NewGetUserHandler(userRepo),
-		LinkAccount:              application.NewLinkAccountHandler(),
-		ListAPIKeys:              application.NewListAPIKeysHandler(apikeyRepo),
-		ListAccounts:             application.NewListAccountsHandler(accountRepo),
-		ListInvitations:          application.NewListInvitationsHandler(invitationRepo),
-		ListMembers:              application.NewListMembersHandler(memberRepo),
-		ListOrganizations:        application.NewListOrganizationsHandler(organizationRepo),
-		ListSessions:             application.NewListSessionsHandler(sessionRepo),
-		ListUsers:                application.NewListUsersHandler(userRepo),
-		Login:                    application.NewLoginHandler(),
-		Logout:                   application.NewLogoutHandler(),
-		LogoutAll:                application.NewLogoutAllHandler(),
-		OauthAuthorize:           application.NewOauthAuthorizeHandler(),
-		OauthCallback:            application.NewOauthCallbackHandler(),
-		Register:                 application.NewRegisterHandler(),
-		RequestEmailChange:       application.NewRequestEmailChangeHandler(),
-		RequestEmailVerification: application.NewRequestEmailVerificationHandler(),
-		RequestMagicLink:         application.NewRequestMagicLinkHandler(),
-		RequestPasswordReset:     application.NewRequestPasswordResetHandler(),
-		UpdateAPIKey:             application.NewUpdateAPIKeyHandler(apikeyRepo, publisher),
-		UpdateAccount:            application.NewUpdateAccountHandler(),
-		UpdateCurrentUser:        application.NewUpdateCurrentUserHandler(),
-		UpdateInvitation:         application.NewUpdateInvitationHandler(invitationRepo, publisher),
-		UpdateMember:             application.NewUpdateMemberHandler(memberRepo, publisher),
-		UpdateOrganization:       application.NewUpdateOrganizationHandler(organizationRepo, publisher),
-		UpdateSession:            application.NewUpdateSessionHandler(),
-		UpdateUser:               application.NewUpdateUserHandler(userRepo, publisher),
-		VerifyMagicLink:          application.NewVerifyMagicLinkHandler(),
+		ConfirmEmailChange:       application.NewConfirmEmailChange(),
+		ConfirmEmailVerification: application.NewConfirmEmailVerification(),
+		ConfirmPasswordReset:     application.NewConfirmPasswordReset(),
+		CreateAPIKey:             application.NewCreateAPIKey(apikeyRepo, publisher),
+		CreateInvitation:         application.NewCreateInvitation(invitationRepo, publisher),
+		CreateMember:             application.NewCreateMember(memberRepo, publisher),
+		CreateOrganization:       application.NewCreateOrganization(organizationRepo, publisher),
+		DeleteAPIKey:             application.NewDeleteAPIKey(apikeyRepo, publisher),
+		DeleteAccount:            application.NewDeleteAccount(),
+		DeleteCurrentUser:        application.NewDeleteCurrentUser(),
+		DeleteInvitation:         application.NewDeleteInvitation(invitationRepo, publisher),
+		DeleteMember:             application.NewDeleteMember(memberRepo, publisher),
+		DeleteOrganization:       application.NewDeleteOrganization(organizationRepo, publisher),
+		DeleteSession:            application.NewDeleteSession(),
+		DeleteUser:               application.NewDeleteUser(userRepo, publisher),
+		GetAPIKey:                application.NewGetAPIKey(apikeyRepo),
+		GetAccount:               application.NewGetAccount(accountRepo),
+		GetCurrentUser:           application.NewGetCurrentUser(),
+		GetInvitation:            application.NewGetInvitation(invitationRepo),
+		GetMember:                application.NewGetMember(memberRepo),
+		GetOrganization:          application.NewGetOrganization(organizationRepo),
+		GetSession:               application.NewGetSession(sessionRepo),
+		GetUser:                  application.NewGetUser(userRepo),
+		LinkAccount:              application.NewLinkAccount(),
+		ListAPIKeys:              application.NewListAPIKeys(apikeyRepo),
+		ListAccounts:             application.NewListAccounts(accountRepo),
+		ListInvitations:          application.NewListInvitations(invitationRepo),
+		ListMembers:              application.NewListMembers(memberRepo),
+		ListOrganizations:        application.NewListOrganizations(organizationRepo),
+		ListSessions:             application.NewListSessions(sessionRepo),
+		ListUsers:                application.NewListUsers(userRepo),
+		Login:                    application.NewLogin(),
+		Logout:                   application.NewLogout(),
+		LogoutAll:                application.NewLogoutAll(),
+		OauthAuthorize:           application.NewOauthAuthorize(),
+		OauthCallback:            application.NewOauthCallback(),
+		Register:                 application.NewRegister(),
+		RequestEmailChange:       application.NewRequestEmailChange(),
+		RequestEmailVerification: application.NewRequestEmailVerification(),
+		RequestMagicLink:         application.NewRequestMagicLink(),
+		RequestPasswordReset:     application.NewRequestPasswordReset(),
+		UpdateAPIKey:             application.NewUpdateAPIKey(apikeyRepo, publisher),
+		UpdateAccount:            application.NewUpdateAccount(),
+		UpdateCurrentUser:        application.NewUpdateCurrentUser(),
+		UpdateInvitation:         application.NewUpdateInvitation(invitationRepo, publisher),
+		UpdateMember:             application.NewUpdateMember(memberRepo, publisher),
+		UpdateOrganization:       application.NewUpdateOrganization(organizationRepo, publisher),
+		UpdateSession:            application.NewUpdateSession(),
+		UpdateUser:               application.NewUpdateUser(userRepo, publisher),
+		VerifyMagicLink:          application.NewVerifyMagicLink(),
 	}
 }

@@ -18,20 +18,18 @@ import (
 // DeleteInvitation - DELETE /organizations/{organizationID}/invitations/{id}
 // ============================================================================
 
-// Handler type
-
-// DeleteInvitationHandlerHTTP wraps the user handler for HTTP
-type DeleteInvitationHandlerHTTP struct {
-	handler application.DeleteInvitationHandler
+// DeleteInvitationHandler is the HTTP handler for DeleteInvitation.
+type DeleteInvitationHandler struct {
+	deleteInvitation application.DeleteInvitation
 }
 
-// NewDeleteInvitationHandlerHTTP creates a new HTTP handler wrapper
-func NewDeleteInvitationHandlerHTTP(handler application.DeleteInvitationHandler) *DeleteInvitationHandlerHTTP {
-	return &DeleteInvitationHandlerHTTP{handler: handler}
+// NewDeleteInvitationHandler creates a new HTTP handler.
+func NewDeleteInvitationHandler(deleteInvitation application.DeleteInvitation) *DeleteInvitationHandler {
+	return &DeleteInvitationHandler{deleteInvitation: deleteInvitation}
 }
 
-// RegisterDeleteInvitationRoute registers the HTTP route for DeleteInvitation
-func RegisterDeleteInvitationRoute(mux *http.ServeMux, handler *DeleteInvitationHandlerHTTP) {
+// RegisterDeleteInvitationRoute registers the HTTP route for DeleteInvitation.
+func RegisterDeleteInvitationRoute(mux *http.ServeMux, handler *DeleteInvitationHandler) {
 	mux.HandleFunc("DELETE /organizations/{organizationID}/invitations/{id}", handler.ServeHTTP)
 }
 
@@ -112,7 +110,7 @@ func (response DeleteInvitation500Response) VisitDeleteInvitationResponse(w http
 }
 
 // ServeHTTP handles the DELETE /organizations/{organizationID}/invitations/{id} endpoint.
-func (h *DeleteInvitationHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *DeleteInvitationHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Extract session ID from context for authenticated operations
@@ -157,8 +155,8 @@ func (h *DeleteInvitationHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.R
 	}
 	input.ID = id
 
-	// Execute handler
-	if err := h.handler.Execute(ctx, input); err != nil {
+	// Execute
+	if err := h.deleteInvitation.Execute(ctx, input); err != nil {
 		errorResp := DeleteInvitation500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

@@ -16,20 +16,18 @@ import (
 // GetHealth - GET /health
 // ============================================================================
 
-// Handler type
-
-// GetHealthHandlerHTTP wraps the user handler for HTTP
-type GetHealthHandlerHTTP struct {
-	handler application.GetHealthHandler
+// GetHealthHandler is the HTTP handler for GetHealth.
+type GetHealthHandler struct {
+	getHealth application.GetHealth
 }
 
-// NewGetHealthHandlerHTTP creates a new HTTP handler wrapper
-func NewGetHealthHandlerHTTP(handler application.GetHealthHandler) *GetHealthHandlerHTTP {
-	return &GetHealthHandlerHTTP{handler: handler}
+// NewGetHealthHandler creates a new HTTP handler.
+func NewGetHealthHandler(getHealth application.GetHealth) *GetHealthHandler {
+	return &GetHealthHandler{getHealth: getHealth}
 }
 
-// RegisterGetHealthRoute registers the HTTP route for GetHealth
-func RegisterGetHealthRoute(mux *http.ServeMux, handler *GetHealthHandlerHTTP) {
+// RegisterGetHealthRoute registers the HTTP route for GetHealth.
+func RegisterGetHealthRoute(mux *http.ServeMux, handler *GetHealthHandler) {
 	mux.HandleFunc("GET /health", handler.ServeHTTP)
 }
 
@@ -101,14 +99,14 @@ func (response GetHealth500Response) VisitGetHealthResponse(w http.ResponseWrite
 }
 
 // ServeHTTP handles the GET /health endpoint.
-func (h *GetHealthHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *GetHealthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Build input from request
 	input := &application.GetHealthInput{}
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.getHealth.Execute(ctx, input)
 	if err != nil {
 		errorResp := GetHealth500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

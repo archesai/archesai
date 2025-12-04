@@ -24,30 +24,30 @@ type DeleteInvitationInput struct {
 	ID             uuid.UUID
 }
 
-// DeleteInvitationHandler defines the interface for the DeleteInvitation operation.
-type DeleteInvitationHandler interface {
+// DeleteInvitation defines the interface for the DeleteInvitation operation.
+type DeleteInvitation interface {
 	Execute(ctx context.Context, input *DeleteInvitationInput) error
 }
 
-// DeleteInvitationHandlerImpl is the default implementation of DeleteInvitationHandler.
-type DeleteInvitationHandlerImpl struct {
+// DeleteInvitationImpl is the default implementation of DeleteInvitation.
+type DeleteInvitationImpl struct {
 	repo      repositories.InvitationRepository
 	publisher events.Publisher
 }
 
-// NewDeleteInvitationHandler creates a new DeleteInvitation handler.
-func NewDeleteInvitationHandler(
+// NewDeleteInvitation creates a new DeleteInvitation handler.
+func NewDeleteInvitation(
 	repo repositories.InvitationRepository,
 	publisher events.Publisher,
-) DeleteInvitationHandler {
-	return &DeleteInvitationHandlerImpl{
+) DeleteInvitation {
+	return &DeleteInvitationImpl{
 		repo:      repo,
 		publisher: publisher,
 	}
 }
 
 // Execute performs the DeleteInvitation operation.
-func (h *DeleteInvitationHandlerImpl) Execute(ctx context.Context, input *DeleteInvitationInput) error {
+func (h *DeleteInvitationImpl) Execute(ctx context.Context, input *DeleteInvitationInput) error {
 	// Delete from repository
 	if err := h.repo.Delete(ctx, input.ID); err != nil {
 		return fmt.Errorf("failed to delete invitation: %w", err)

@@ -18,20 +18,18 @@ import (
 // ConfirmEmailVerification - POST /auth/verify-email
 // ============================================================================
 
-// Handler type
-
-// ConfirmEmailVerificationHandlerHTTP wraps the user handler for HTTP
-type ConfirmEmailVerificationHandlerHTTP struct {
-	handler application.ConfirmEmailVerificationHandler
+// ConfirmEmailVerificationHandler is the HTTP handler for ConfirmEmailVerification.
+type ConfirmEmailVerificationHandler struct {
+	confirmEmailVerification application.ConfirmEmailVerification
 }
 
-// NewConfirmEmailVerificationHandlerHTTP creates a new HTTP handler wrapper
-func NewConfirmEmailVerificationHandlerHTTP(handler application.ConfirmEmailVerificationHandler) *ConfirmEmailVerificationHandlerHTTP {
-	return &ConfirmEmailVerificationHandlerHTTP{handler: handler}
+// NewConfirmEmailVerificationHandler creates a new HTTP handler.
+func NewConfirmEmailVerificationHandler(confirmEmailVerification application.ConfirmEmailVerification) *ConfirmEmailVerificationHandler {
+	return &ConfirmEmailVerificationHandler{confirmEmailVerification: confirmEmailVerification}
 }
 
-// RegisterConfirmEmailVerificationRoute registers the HTTP route for ConfirmEmailVerification
-func RegisterConfirmEmailVerificationRoute(mux *http.ServeMux, handler *ConfirmEmailVerificationHandlerHTTP) {
+// RegisterConfirmEmailVerificationRoute registers the HTTP route for ConfirmEmailVerification.
+func RegisterConfirmEmailVerificationRoute(mux *http.ServeMux, handler *ConfirmEmailVerificationHandler) {
 	mux.HandleFunc("POST /auth/verify-email", handler.ServeHTTP)
 }
 
@@ -120,7 +118,7 @@ func (response ConfirmEmailVerification500Response) VisitConfirmEmailVerificatio
 }
 
 // ServeHTTP handles the POST /auth/verify-email endpoint.
-func (h *ConfirmEmailVerificationHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *ConfirmEmailVerificationHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Extract session ID from context for authenticated operations
@@ -152,8 +150,8 @@ func (h *ConfirmEmailVerificationHandlerHTTP) ServeHTTP(w http.ResponseWriter, r
 	}
 	input.Token = body.Token
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.confirmEmailVerification.Execute(ctx, input)
 	if err != nil {
 		errorResp := ConfirmEmailVerification500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

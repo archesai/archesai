@@ -22,7 +22,7 @@ type LogoutOutput struct {
 	Message string `json:"message"`
 }
 
-// LogoutHandler defines the interface for the Logout operation.
-type LogoutHandler interface {
+// Logout defines the interface for the Logout operation.
+type Logout interface {
 	Execute(ctx context.Context, input *LogoutInput) (*LogoutOutput, error)
 }

@@ -1,4 +1,4 @@
--- Generated at: 2025-12-03T20:15:09-05:00
+-- Generated at: 2025-12-04T02:13:17-05:00
 -- create "account" table
 CREATE TABLE `account` (`id` text NOT NULL DEFAULT (lower(hex(randomblob(16)))), `created_at` text NOT NULL DEFAULT (CURRENT_TIMESTAMP), `updated_at` text NOT NULL DEFAULT (CURRENT_TIMESTAMP), `access_token` text NULL, `access_token_expires_at` text NULL, `account_identifier` text NOT NULL, `id_token` text NULL, `provider` text NOT NULL, `refresh_token` text NULL, `refresh_token_expires_at` text NULL, `scope` text NULL, `user_id` text NOT NULL, PRIMARY KEY (`id`), CONSTRAINT `account_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON UPDATE NO ACTION ON DELETE CASCADE);
 -- create index "idx_account_user_id" to table: "account"

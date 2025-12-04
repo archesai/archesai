@@ -24,7 +24,7 @@ type GetCurrentUserOutput struct {
 	Data models.User `json:"data"`
 }
 
-// GetCurrentUserHandler defines the interface for the GetCurrentUser operation.
-type GetCurrentUserHandler interface {
+// GetCurrentUser defines the interface for the GetCurrentUser operation.
+type GetCurrentUser interface {
 	Execute(ctx context.Context, input *GetCurrentUserInput) (*GetCurrentUserOutput, error)
 }

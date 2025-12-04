@@ -19,20 +19,18 @@ import (
 // UpdateSession - PATCH /auth/sessions/{id}
 // ============================================================================
 
-// Handler type
-
-// UpdateSessionHandlerHTTP wraps the user handler for HTTP
-type UpdateSessionHandlerHTTP struct {
-	handler application.UpdateSessionHandler
+// UpdateSessionHandler is the HTTP handler for UpdateSession.
+type UpdateSessionHandler struct {
+	updateSession application.UpdateSession
 }
 
-// NewUpdateSessionHandlerHTTP creates a new HTTP handler wrapper
-func NewUpdateSessionHandlerHTTP(handler application.UpdateSessionHandler) *UpdateSessionHandlerHTTP {
-	return &UpdateSessionHandlerHTTP{handler: handler}
+// NewUpdateSessionHandler creates a new HTTP handler.
+func NewUpdateSessionHandler(updateSession application.UpdateSession) *UpdateSessionHandler {
+	return &UpdateSessionHandler{updateSession: updateSession}
 }
 
-// RegisterUpdateSessionRoute registers the HTTP route for UpdateSession
-func RegisterUpdateSessionRoute(mux *http.ServeMux, handler *UpdateSessionHandlerHTTP) {
+// RegisterUpdateSessionRoute registers the HTTP route for UpdateSession.
+func RegisterUpdateSessionRoute(mux *http.ServeMux, handler *UpdateSessionHandler) {
 	mux.HandleFunc("PATCH /auth/sessions/{id}", handler.ServeHTTP)
 }
 
@@ -120,7 +118,7 @@ func (response UpdateSession500Response) VisitUpdateSessionResponse(w http.Respo
 }
 
 // ServeHTTP handles the PATCH /auth/sessions/{id} endpoint.
-func (h *UpdateSessionHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *UpdateSessionHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Extract session ID from context for authenticated operations
@@ -165,8 +163,8 @@ func (h *UpdateSessionHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Requ
 	}
 	input.OrganizationID = body.OrganizationID
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.updateSession.Execute(ctx, input)
 	if err != nil {
 		errorResp := UpdateSession500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

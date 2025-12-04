@@ -29,30 +29,30 @@ type CreateToolOutput struct {
 	Data models.Tool `json:"data"`
 }
 
-// CreateToolHandler defines the interface for the CreateTool operation.
-type CreateToolHandler interface {
+// CreateTool defines the interface for the CreateTool operation.
+type CreateTool interface {
 	Execute(ctx context.Context, input *CreateToolInput) (*CreateToolOutput, error)
 }
 
-// CreateToolHandlerImpl is the default implementation of CreateToolHandler.
-type CreateToolHandlerImpl struct {
+// CreateToolImpl is the default implementation of CreateTool.
+type CreateToolImpl struct {
 	repo      repositories.ToolRepository
 	publisher events.Publisher
 }
 
-// NewCreateToolHandler creates a new CreateTool handler.
-func NewCreateToolHandler(
+// NewCreateTool creates a new CreateTool handler.
+func NewCreateTool(
 	repo repositories.ToolRepository,
 	publisher events.Publisher,
-) CreateToolHandler {
-	return &CreateToolHandlerImpl{
+) CreateTool {
+	return &CreateToolImpl{
 		repo:      repo,
 		publisher: publisher,
 	}
 }
 
 // Execute performs the CreateTool operation.
-func (h *CreateToolHandlerImpl) Execute(ctx context.Context, input *CreateToolInput) (*CreateToolOutput, error) {
+func (h *CreateToolImpl) Execute(ctx context.Context, input *CreateToolInput) (*CreateToolOutput, error) {
 	// Create entity
 	entity := &models.Tool{
 		ID:        uuid.New(),

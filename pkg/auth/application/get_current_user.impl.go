@@ -7,27 +7,27 @@ import (
 	"fmt"
 )
 
-// Ensure GetCurrentUserHandlerImpl implements GetCurrentUserHandler
-var _ GetCurrentUserHandler = (*GetCurrentUserHandlerImpl)(nil)
+// Ensure GetCurrentUserImpl implements GetCurrentUser
+var _ GetCurrentUser = (*GetCurrentUserImpl)(nil)
 
-// GetCurrentUserHandlerImpl implements the GetCurrentUserHandler interface.
-type GetCurrentUserHandlerImpl struct {
+// GetCurrentUserImpl implements the GetCurrentUser interface.
+type GetCurrentUserImpl struct {
 	// TODO: Add your dependencies here
 }
 
-// NewGetCurrentUserHandler creates a new GetCurrentUser handler.
-func NewGetCurrentUserHandler(
+// NewGetCurrentUser creates a new GetCurrentUser implementation.
+func NewGetCurrentUser(
 // TODO: Add your dependencies here
-) GetCurrentUserHandler {
-	return &GetCurrentUserHandlerImpl{
+) GetCurrentUser {
+	return &GetCurrentUserImpl{
 		// TODO: Initialize dependencies
 	}
 }
 
 // Execute performs the GetCurrentUser operation.
-func (h *GetCurrentUserHandlerImpl) Execute(
-	_ context.Context,
-	_ *GetCurrentUserInput,
+func (h *GetCurrentUserImpl) Execute(
+	ctx context.Context,
+	input *GetCurrentUserInput,
 ) (*GetCurrentUserOutput, error) {
 	// TODO: Implement GetCurrentUser logic
 	return nil, fmt.Errorf("not implemented")

@@ -19,20 +19,18 @@ import (
 // UpdateMember - PATCH /organizations/{organizationID}/members/{id}
 // ============================================================================
 
-// Handler type
-
-// UpdateMemberHandlerHTTP wraps the user handler for HTTP
-type UpdateMemberHandlerHTTP struct {
-	handler application.UpdateMemberHandler
+// UpdateMemberHandler is the HTTP handler for UpdateMember.
+type UpdateMemberHandler struct {
+	updateMember application.UpdateMember
 }
 
-// NewUpdateMemberHandlerHTTP creates a new HTTP handler wrapper
-func NewUpdateMemberHandlerHTTP(handler application.UpdateMemberHandler) *UpdateMemberHandlerHTTP {
-	return &UpdateMemberHandlerHTTP{handler: handler}
+// NewUpdateMemberHandler creates a new HTTP handler.
+func NewUpdateMemberHandler(updateMember application.UpdateMember) *UpdateMemberHandler {
+	return &UpdateMemberHandler{updateMember: updateMember}
 }
 
-// RegisterUpdateMemberRoute registers the HTTP route for UpdateMember
-func RegisterUpdateMemberRoute(mux *http.ServeMux, handler *UpdateMemberHandlerHTTP) {
+// RegisterUpdateMemberRoute registers the HTTP route for UpdateMember.
+func RegisterUpdateMemberRoute(mux *http.ServeMux, handler *UpdateMemberHandler) {
 	mux.HandleFunc("PATCH /organizations/{organizationID}/members/{id}", handler.ServeHTTP)
 }
 
@@ -120,7 +118,7 @@ func (response UpdateMember500Response) VisitUpdateMemberResponse(w http.Respons
 }
 
 // ServeHTTP handles the PATCH /organizations/{organizationID}/members/{id} endpoint.
-func (h *UpdateMemberHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *UpdateMemberHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Extract session ID from context for authenticated operations
@@ -178,8 +176,8 @@ func (h *UpdateMemberHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Reque
 	}
 	input.Role = body.Role
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.updateMember.Execute(ctx, input)
 	if err != nil {
 		errorResp := UpdateMember500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

@@ -26,27 +26,27 @@ type GetExecutorOutput struct {
 	Data models.Executor `json:"data"`
 }
 
-// GetExecutorHandler defines the interface for the GetExecutor operation.
-type GetExecutorHandler interface {
+// GetExecutor defines the interface for the GetExecutor operation.
+type GetExecutor interface {
 	Execute(ctx context.Context, input *GetExecutorInput) (*GetExecutorOutput, error)
 }
 
-// GetExecutorHandlerImpl is the default implementation of GetExecutorHandler.
-type GetExecutorHandlerImpl struct {
+// GetExecutorImpl is the default implementation of GetExecutor.
+type GetExecutorImpl struct {
 	repo repositories.ExecutorRepository
 }
 
-// NewGetExecutorHandler creates a new GetExecutor handler.
-func NewGetExecutorHandler(
+// NewGetExecutor creates a new GetExecutor handler.
+func NewGetExecutor(
 	repo repositories.ExecutorRepository,
-) GetExecutorHandler {
-	return &GetExecutorHandlerImpl{
+) GetExecutor {
+	return &GetExecutorImpl{
 		repo: repo,
 	}
 }
 
 // Execute performs the GetExecutor operation.
-func (h *GetExecutorHandlerImpl) Execute(ctx context.Context, input *GetExecutorInput) (*GetExecutorOutput, error) {
+func (h *GetExecutorImpl) Execute(ctx context.Context, input *GetExecutorInput) (*GetExecutorOutput, error) {
 	// Get from repository
 	result, err := h.repo.Get(ctx, input.ID)
 	if err != nil {

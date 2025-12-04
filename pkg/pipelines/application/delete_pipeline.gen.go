@@ -22,30 +22,30 @@ type DeletePipelineInput struct {
 	ID uuid.UUID
 }
 
-// DeletePipelineHandler defines the interface for the DeletePipeline operation.
-type DeletePipelineHandler interface {
+// DeletePipeline defines the interface for the DeletePipeline operation.
+type DeletePipeline interface {
 	Execute(ctx context.Context, input *DeletePipelineInput) error
 }
 
-// DeletePipelineHandlerImpl is the default implementation of DeletePipelineHandler.
-type DeletePipelineHandlerImpl struct {
+// DeletePipelineImpl is the default implementation of DeletePipeline.
+type DeletePipelineImpl struct {
 	repo      repositories.PipelineRepository
 	publisher events.Publisher
 }
 
-// NewDeletePipelineHandler creates a new DeletePipeline handler.
-func NewDeletePipelineHandler(
+// NewDeletePipeline creates a new DeletePipeline handler.
+func NewDeletePipeline(
 	repo repositories.PipelineRepository,
 	publisher events.Publisher,
-) DeletePipelineHandler {
-	return &DeletePipelineHandlerImpl{
+) DeletePipeline {
+	return &DeletePipelineImpl{
 		repo:      repo,
 		publisher: publisher,
 	}
 }
 
 // Execute performs the DeletePipeline operation.
-func (h *DeletePipelineHandlerImpl) Execute(ctx context.Context, input *DeletePipelineInput) error {
+func (h *DeletePipelineImpl) Execute(ctx context.Context, input *DeletePipelineInput) error {
 	// Delete from repository
 	if err := h.repo.Delete(ctx, input.ID); err != nil {
 		return fmt.Errorf("failed to delete pipeline: %w", err)

@@ -11,16 +11,11 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/archesai/archesai/internal/capabilities"
+	"github.com/archesai/archesai/internal/cli/flags"
 	"github.com/archesai/archesai/internal/tui"
 )
 
 const statusInstalled = "installed"
-
-var (
-	capabilitiesJSON bool
-	capabilitiesAll  bool
-	capabilitiesTUI  bool
-)
 
 var capabilitiesCmd = &cobra.Command{
 	Use:   "capabilities",
@@ -33,78 +28,19 @@ their versions. Use this to diagnose environment issues.
 Examples:
   archesai capabilities           # Check all capabilities
   archesai capabilities --json    # Output as JSON for scripting
-  archesai capabilities --all     # Show all, including optional
-  archesai capabilities --tui     # Display with TUI styling`,
-	RunE: func(_ *cobra.Command, _ []string) error {
-		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-		defer cancel()
-
-		detector := capabilities.DefaultDetector(slog.Default())
-		result := detector.Check(ctx)
-
-		if capabilitiesJSON {
-			return outputJSON(result)
-		}
-
-		if capabilitiesTUI {
-			return outputTUI(result)
-		}
-
-		return outputTable(result)
-	},
+  archesai capabilities --all     # Show all, including optional`,
+	RunE: runCapabilities,
 }
 
 func init() {
 	rootCmd.AddCommand(capabilitiesCmd)
-	capabilitiesCmd.Flags().BoolVar(&capabilitiesJSON, "json", false, "Output as JSON")
-	capabilitiesCmd.Flags().BoolVar(
-		&capabilitiesAll, "all", false, "Show all capabilities including optional",
-	)
-	capabilitiesCmd.Flags().
-		BoolVarP(&capabilitiesTUI, "tui", "t", false, "Display with TUI styling")
+	flags.SetCapabilitiesFlags(capabilitiesCmd)
 }
 
 func outputJSON(result capabilities.CheckResult) error {
-	type jsonCapability struct {
-		Name        string `json:"name"`
-		Command     string `json:"command"`
-		Version     string `json:"version,omitempty"`
-		Required    bool   `json:"required"`
-		Found       bool   `json:"found"`
-		Error       string `json:"error,omitempty"`
-		Description string `json:"description"`
-	}
-
-	type jsonResult struct {
-		Capabilities []jsonCapability `json:"capabilities"`
-		AllRequired  bool             `json:"allRequired"`
-		AllFound     bool             `json:"allFound"`
-	}
-
-	out := jsonResult{
-		Capabilities: make([]jsonCapability, len(result.Capabilities)),
-		AllRequired:  result.AllRequired,
-		AllFound:     result.AllFound,
-	}
-
-	for i, cap := range result.Capabilities {
-		jc := jsonCapability{
-			Name:        cap.Name,
-			Command:     cap.Command,
-			Version:     cap.Version,
-			Required:    cap.Required,
-			Found:       cap.Found,
-			Description: cap.Description,
-		}
-		if cap.Error != nil {
-			jc.Error = cap.Error.Error()
-		}
-		out.Capabilities[i] = jc
-	}
-
 	enc := json.NewEncoder(os.Stdout)
 	enc.SetIndent("", "  ")
-	return enc.Encode(out)
+	return enc.Encode(result)
 }
 
 func outputTUI(result capabilities.CheckResult) error {
@@ -149,7 +85,7 @@ func outputTUI(result capabilities.CheckResult) error {
 		}
 	}
 
-	if hasOptional && capabilitiesAll {
+	if hasOptional && flags.Capabilities.All {
 		runner.PrintNewline()
 		optionalTable := tui.NewTable(
 			"Optional Dependencies",
@@ -220,69 +156,16 @@ func outputTUI(result capabilities.CheckResult) error {
 	return nil
 }
 
-func outputTable(result capabilities.CheckResult) error {
-	fmt.Println("System Capabilities")
-	fmt.Println("===================")
-	fmt.Println()
+func runCapabilities(_ *cobra.Command, _ []string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
 
-	// Required capabilities
-	fmt.Println("Required:")
-	for _, cap := range result.Capabilities {
-		if !cap.Required && !capabilitiesAll {
-			continue
-		}
-		if cap.Required {
-			printCapability(cap)
-		}
+	detector := capabilities.DefaultDetector(slog.Default())
+	result := detector.Check(ctx)
+
+	if flags.Capabilities.JSON {
+		return outputJSON(result)
 	}
 
-	// Optional capabilities
-	hasOptional := false
-	for _, capability := range result.Capabilities {
-		if !capability.Required {
-			hasOptional = true
-			break
-		}
-	}
-
-	if hasOptional {
-		fmt.Println()
-		fmt.Println("Optional:")
-		for _, capability := range result.Capabilities {
-			if !capability.Required {
-				printCapability(capability)
-			}
-		}
-	}
-
-	fmt.Println()
-
-	// Summary
-	if !result.AllRequired {
-		missing := result.RequiredMissing()
-		fmt.Printf("Missing required dependencies (%d):\n", len(missing))
-		for _, cap := range missing {
-			fmt.Printf("  - %s (%s)\n", cap.Name, cap.Command)
-		}
-		return fmt.Errorf("missing required dependencies")
-	}
-
-	fmt.Println("All required dependencies are installed.")
-	return nil
-}
-
-func printCapability(c capabilities.Capability) {
-	status := "OK"
-	if !c.Found {
-		status = "MISSING"
-	}
-
-	version := c.Version
-	if version == "" && c.Found {
-		version = statusInstalled
-	} else if version == "" {
-		version = "-"
-	}
-
-	fmt.Printf("  [%s] %-12s %-20s %s\n", status, c.Name, version, c.Description)
+	return outputTUI(result)
 }

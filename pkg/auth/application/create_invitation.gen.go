@@ -31,30 +31,30 @@ type CreateInvitationOutput struct {
 	Data models.Invitation `json:"data"`
 }
 
-// CreateInvitationHandler defines the interface for the CreateInvitation operation.
-type CreateInvitationHandler interface {
+// CreateInvitation defines the interface for the CreateInvitation operation.
+type CreateInvitation interface {
 	Execute(ctx context.Context, input *CreateInvitationInput) (*CreateInvitationOutput, error)
 }
 
-// CreateInvitationHandlerImpl is the default implementation of CreateInvitationHandler.
-type CreateInvitationHandlerImpl struct {
+// CreateInvitationImpl is the default implementation of CreateInvitation.
+type CreateInvitationImpl struct {
 	repo      repositories.InvitationRepository
 	publisher events.Publisher
 }
 
-// NewCreateInvitationHandler creates a new CreateInvitation handler.
-func NewCreateInvitationHandler(
+// NewCreateInvitation creates a new CreateInvitation handler.
+func NewCreateInvitation(
 	repo repositories.InvitationRepository,
 	publisher events.Publisher,
-) CreateInvitationHandler {
-	return &CreateInvitationHandlerImpl{
+) CreateInvitation {
+	return &CreateInvitationImpl{
 		repo:      repo,
 		publisher: publisher,
 	}
 }
 
 // Execute performs the CreateInvitation operation.
-func (h *CreateInvitationHandlerImpl) Execute(ctx context.Context, input *CreateInvitationInput) (*CreateInvitationOutput, error) {
+func (h *CreateInvitationImpl) Execute(ctx context.Context, input *CreateInvitationInput) (*CreateInvitationOutput, error) {
 	// Create entity
 	entity := &models.Invitation{
 		ID:        uuid.New(),

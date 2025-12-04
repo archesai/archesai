@@ -32,30 +32,30 @@ type UpdateInvitationOutput struct {
 	Data models.Invitation `json:"data"`
 }
 
-// UpdateInvitationHandler defines the interface for the UpdateInvitation operation.
-type UpdateInvitationHandler interface {
+// UpdateInvitation defines the interface for the UpdateInvitation operation.
+type UpdateInvitation interface {
 	Execute(ctx context.Context, input *UpdateInvitationInput) (*UpdateInvitationOutput, error)
 }
 
-// UpdateInvitationHandlerImpl is the default implementation of UpdateInvitationHandler.
-type UpdateInvitationHandlerImpl struct {
+// UpdateInvitationImpl is the default implementation of UpdateInvitation.
+type UpdateInvitationImpl struct {
 	repo      repositories.InvitationRepository
 	publisher events.Publisher
 }
 
-// NewUpdateInvitationHandler creates a new UpdateInvitation handler.
-func NewUpdateInvitationHandler(
+// NewUpdateInvitation creates a new UpdateInvitation handler.
+func NewUpdateInvitation(
 	repo repositories.InvitationRepository,
 	publisher events.Publisher,
-) UpdateInvitationHandler {
-	return &UpdateInvitationHandlerImpl{
+) UpdateInvitation {
+	return &UpdateInvitationImpl{
 		repo:      repo,
 		publisher: publisher,
 	}
 }
 
 // Execute performs the UpdateInvitation operation.
-func (h *UpdateInvitationHandlerImpl) Execute(ctx context.Context, input *UpdateInvitationInput) (*UpdateInvitationOutput, error) {
+func (h *UpdateInvitationImpl) Execute(ctx context.Context, input *UpdateInvitationInput) (*UpdateInvitationOutput, error) {
 	// Get existing entity
 	existing, err := h.repo.Get(ctx, input.ID)
 	if err != nil {

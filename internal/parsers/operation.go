@@ -33,6 +33,27 @@ func (o *OperationDef) IsInternal(context string) bool {
 	return o.XInternal != context
 }
 
+// NeedsServerModels returns true if this operation references any types from the server package.
+func (o *OperationDef) NeedsServerModels() bool {
+	// Check responses
+	for _, resp := range o.Responses {
+		if resp.SchemaDef != nil && resp.NeedsServerModels() {
+			return true
+		}
+	}
+	// Check request body
+	if o.RequestBody != nil && o.RequestBody.SchemaDef != nil && o.RequestBody.NeedsServerModels() {
+		return true
+	}
+	// Check parameters
+	for _, param := range o.Parameters {
+		if param.SchemaDef != nil && param.NeedsServerModels() {
+			return true
+		}
+	}
+	return false
+}
+
 // ParamDef represents a parameter in an operation
 type ParamDef struct {
 	*SchemaDef        // Embed schema definition
@@ -124,6 +145,20 @@ func (o *OperationDef) HasBearerAuth() bool {
 func (o *OperationDef) HasCookieAuth() bool {
 	for _, sec := range o.Security {
 		if sec.Type == "apiKey" && strings.EqualFold(sec.Scheme, "cookie") {
+			return true
+		}
+	}
+	return false
+}
+
+// NeedsUUID returns true if the operation requires the UUID package.
+// This is true if the operation uses bearer/cookie auth or has UUID path parameters.
+func (o *OperationDef) NeedsUUID() bool {
+	if o.HasBearerAuth() || o.HasCookieAuth() {
+		return true
+	}
+	for _, p := range o.GetPathParams() {
+		if p.GoType == goTypeUUID {
 			return true
 		}
 	}

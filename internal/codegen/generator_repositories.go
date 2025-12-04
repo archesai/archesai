@@ -1,7 +1,6 @@
 package codegen
 
 import (
-	"bytes"
 	"fmt"
 	"path/filepath"
 	"strings"
@@ -28,20 +27,8 @@ func (g *RepositoriesGenerator) Priority() int { return PriorityNormal }
 
 // Generate creates repository interface code for each entity schema.
 func (g *RepositoriesGenerator) Generate(ctx *GeneratorContext) error {
-	internalContext := ctx.InternalContext()
-	for _, schema := range ctx.SpecDef.Schemas {
-		if schema.XCodegenSchemaType != parsers.XCodegenSchemaTypeEntity {
-			continue
-		}
-		if schema.IsInternal(internalContext) {
-			continue
-		}
-
-		modelImportPath, repositoryInterface := getRepositoryImportPaths(
-			ctx.ProjectName,
-			internalContext,
-			schema,
-		)
+	for _, schema := range ctx.OwnEntitySchemas() {
+		modelImportPath, repositoryInterface := getRepositoryImportPaths(ctx, schema)
 		data := &RepositoriesTemplateData{
 			Entity:              schema,
 			ProjectName:         ctx.ProjectName,
@@ -49,29 +36,29 @@ func (g *RepositoriesGenerator) Generate(ctx *GeneratorContext) error {
 			RepositoryInterface: repositoryInterface,
 		}
 
-		var buf bytes.Buffer
-		if err := ctx.Renderer.Render(&buf, "repository.go.tmpl", data); err != nil {
-			return fmt.Errorf("failed to render repository interface for %s: %w", schema.Name, err)
-		}
-
 		outputPath := filepath.Join("repositories", strings.ToLower(schema.Name)+".gen.go")
-		if err := ctx.Storage.WriteFile(outputPath, buf.Bytes(), 0644); err != nil {
-			return fmt.Errorf("failed to write repository interface for %s: %w", schema.Name, err)
+		if err := ctx.RenderToFile("repository.go.tmpl", outputPath, data); err != nil {
+			return fmt.Errorf(
+				"failed to generate repository interface for %s: %w",
+				schema.Name,
+				err,
+			)
 		}
 	}
 	return nil
 }
 
 func getRepositoryImportPaths(
-	projectName, internalContext string,
+	ctx *GeneratorContext,
 	schema *parsers.SchemaDef,
 ) (modelImportPath, repositoryInterface string) {
+	internalContext := ctx.InternalContext()
 	if schema.IsInternal(internalContext) && schema.XInternal != "" {
-		modelImportPath = "github.com/archesai/archesai/pkg/" + schema.XInternal + "/models"
-		repositoryInterface = "github.com/archesai/archesai/pkg/" + schema.XInternal + "/repositories"
+		modelImportPath = InternalPackageModelsPath(schema.XInternal)
+		repositoryInterface = InternalPackageRepositoriesPath(schema.XInternal)
 	} else {
-		modelImportPath = projectName + "/models"
-		repositoryInterface = projectName + "/repositories"
+		modelImportPath = ctx.ProjectName + "/models"
+		repositoryInterface = ctx.ProjectName + "/repositories"
 	}
 	return
 }

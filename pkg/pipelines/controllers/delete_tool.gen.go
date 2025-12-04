@@ -18,20 +18,18 @@ import (
 // DeleteTool - DELETE /tools/{id}
 // ============================================================================
 
-// Handler type
-
-// DeleteToolHandlerHTTP wraps the user handler for HTTP
-type DeleteToolHandlerHTTP struct {
-	handler application.DeleteToolHandler
+// DeleteToolHandler is the HTTP handler for DeleteTool.
+type DeleteToolHandler struct {
+	deleteTool application.DeleteTool
 }
 
-// NewDeleteToolHandlerHTTP creates a new HTTP handler wrapper
-func NewDeleteToolHandlerHTTP(handler application.DeleteToolHandler) *DeleteToolHandlerHTTP {
-	return &DeleteToolHandlerHTTP{handler: handler}
+// NewDeleteToolHandler creates a new HTTP handler.
+func NewDeleteToolHandler(deleteTool application.DeleteTool) *DeleteToolHandler {
+	return &DeleteToolHandler{deleteTool: deleteTool}
 }
 
-// RegisterDeleteToolRoute registers the HTTP route for DeleteTool
-func RegisterDeleteToolRoute(mux *http.ServeMux, handler *DeleteToolHandlerHTTP) {
+// RegisterDeleteToolRoute registers the HTTP route for DeleteTool.
+func RegisterDeleteToolRoute(mux *http.ServeMux, handler *DeleteToolHandler) {
 	mux.HandleFunc("DELETE /tools/{id}", handler.ServeHTTP)
 }
 
@@ -112,7 +110,7 @@ func (response DeleteTool500Response) VisitDeleteToolResponse(w http.ResponseWri
 }
 
 // ServeHTTP handles the DELETE /tools/{id} endpoint.
-func (h *DeleteToolHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *DeleteToolHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Build input from request
@@ -131,8 +129,8 @@ func (h *DeleteToolHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request
 	}
 	input.ID = id
 
-	// Execute handler
-	if err := h.handler.Execute(ctx, input); err != nil {
+	// Execute
+	if err := h.deleteTool.Execute(ctx, input); err != nil {
 		errorResp := DeleteTool500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

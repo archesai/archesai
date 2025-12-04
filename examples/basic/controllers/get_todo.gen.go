@@ -16,20 +16,18 @@ import (
 // GetTodo - GET /todos
 // ============================================================================
 
-// Handler type
-
-// GetTodoHandlerHTTP wraps the user handler for HTTP
-type GetTodoHandlerHTTP struct {
-	handler application.GetTodoHandler
+// GetTodoHandler is the HTTP handler for GetTodo.
+type GetTodoHandler struct {
+	getTodo application.GetTodo
 }
 
-// NewGetTodoHandlerHTTP creates a new HTTP handler wrapper
-func NewGetTodoHandlerHTTP(handler application.GetTodoHandler) *GetTodoHandlerHTTP {
-	return &GetTodoHandlerHTTP{handler: handler}
+// NewGetTodoHandler creates a new HTTP handler.
+func NewGetTodoHandler(getTodo application.GetTodo) *GetTodoHandler {
+	return &GetTodoHandler{getTodo: getTodo}
 }
 
-// RegisterGetTodoRoute registers the HTTP route for GetTodo
-func RegisterGetTodoRoute(mux *http.ServeMux, handler *GetTodoHandlerHTTP) {
+// RegisterGetTodoRoute registers the HTTP route for GetTodo.
+func RegisterGetTodoRoute(mux *http.ServeMux, handler *GetTodoHandler) {
 	mux.HandleFunc("GET /todos", handler.ServeHTTP)
 }
 
@@ -68,8 +66,8 @@ func (h *GetTodoHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Build input from request
 	input := &application.GetTodoInput{}
 
-	// Execute handler
-	result, err := h.handler.Execute(ctx, input)
+	// Execute
+	result, err := h.getTodo.Execute(ctx, input)
 	if err != nil {
 		errorResp := GetTodo500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),

@@ -1,7 +1,6 @@
 package codegen
 
 import (
-	"bytes"
 	"fmt"
 	"path/filepath"
 )
@@ -32,10 +31,9 @@ func (g *AppGenerator) Generate(ctx *GeneratorContext) error {
 		ProjectName: ctx.ProjectName,
 	}
 
-	var buf bytes.Buffer
-	if err := ctx.Renderer.Render(&buf, "app.go.tmpl", data); err != nil {
-		return fmt.Errorf("failed to render app.go.tmpl: %w", err)
+	outputPath := filepath.Join("bootstrap", "app.gen.go")
+	if err := ctx.RenderToFile("app.go.tmpl", outputPath, data); err != nil {
+		return fmt.Errorf("failed to generate app bootstrap: %w", err)
 	}
-
-	return ctx.Storage.WriteFile(filepath.Join("bootstrap", "app.gen.go"), buf.Bytes(), 0644)
+	return nil
 }

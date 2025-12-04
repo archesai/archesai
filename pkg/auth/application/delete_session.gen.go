@@ -18,7 +18,7 @@ type DeleteSessionInput struct {
 	ID        uuid.UUID
 }
 
-// DeleteSessionHandler defines the interface for the DeleteSession operation.
-type DeleteSessionHandler interface {
+// DeleteSession defines the interface for the DeleteSession operation.
+type DeleteSession interface {
 	Execute(ctx context.Context, input *DeleteSessionInput) error
 }

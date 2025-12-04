@@ -38,7 +38,7 @@ type OauthCallbackOutput struct {
 	UserID         uuid.UUID  `json:"userID"`
 }
 
-// OauthCallbackHandler defines the interface for the OauthCallback operation.
-type OauthCallbackHandler interface {
+// OauthCallback defines the interface for the OauthCallback operation.
+type OauthCallback interface {
 	Execute(ctx context.Context, input *OauthCallbackInput) (*OauthCallbackOutput, error)
 }

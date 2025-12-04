@@ -1,7 +1,6 @@
 package codegen
 
 import (
-	"bytes"
 	"fmt"
 	"path/filepath"
 	"strings"
@@ -37,19 +36,14 @@ func (g *SchemasGenerator) Generate(ctx *GeneratorContext) error {
 			Schema:  schema,
 		}
 
-		var buf bytes.Buffer
-		if err := ctx.Renderer.Render(&buf, "schema.go.tmpl", data); err != nil {
+		outputPath := filepath.Join("models", strings.ToLower(schema.Name)+".gen.go")
+		if err := ctx.RenderToFile("schema.go.tmpl", outputPath, data); err != nil {
 			return fmt.Errorf(
 				"failed to generate %s %s: %w",
 				schema.XCodegenSchemaType,
 				schema.Name,
 				err,
 			)
-		}
-
-		outputPath := filepath.Join("models", strings.ToLower(schema.Name)+".gen.go")
-		if err := ctx.Storage.WriteFile(outputPath, buf.Bytes(), 0644); err != nil {
-			return fmt.Errorf("failed to write file %s: %w", outputPath, err)
 		}
 	}
 	return nil

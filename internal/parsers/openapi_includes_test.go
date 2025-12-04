@@ -1,6 +1,8 @@
 package parsers
 
 import (
+	"embed"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"testing"
@@ -9,6 +11,49 @@ import (
 	"github.com/stretchr/testify/require"
 	"gopkg.in/yaml.v3"
 )
+
+// testIncludeSpecRaw is the raw embedded spec for testing include merging.
+// After embedding, we use fs.Sub to strip the "testdata" prefix so files are at spec/openapi.yaml.
+//
+//go:embed testdata/spec
+var testIncludeSpecRaw embed.FS
+
+// subFS wraps a fs.FS to implement IncludeFS interface for testing.
+type subFS struct {
+	fs.FS
+}
+
+func (s subFS) ReadDir(name string) ([]fs.DirEntry, error) {
+	return fs.ReadDir(s.FS, name)
+}
+
+func (s subFS) ReadFile(name string) ([]byte, error) {
+	return fs.ReadFile(s.FS, name)
+}
+
+// testIncludeSpec returns an IncludeFS with the correct path structure.
+// The IncludeMerger expects files at spec/openapi.yaml, so we strip the "testdata" prefix.
+func testIncludeSpec() IncludeFS {
+	sub, err := fs.Sub(testIncludeSpecRaw, "testdata")
+	if err != nil {
+		panic("failed to create sub filesystem for test include spec: " + err.Error())
+	}
+	return subFS{sub}
+}
+
+// newTestIncludeMerger creates an IncludeMerger with test includes registered.
+// This is used instead of NewDefaultIncludeMerger to avoid circular dependencies.
+func newTestIncludeMerger() *IncludeMerger {
+	merger := NewIncludeMerger()
+	spec := testIncludeSpec()
+	merger.RegisterInclude("auth", spec)
+	merger.RegisterInclude("config", spec)
+	merger.RegisterInclude("server", spec)
+	merger.RegisterInclude("storage", spec)
+	merger.RegisterInclude("pipelines", spec)
+	merger.RegisterInclude("executor", spec)
+	return merger
+}
 
 func TestIncludeMerger_FindEnabledIncludes(t *testing.T) {
 	tests := []struct {
@@ -70,7 +115,7 @@ paths: {}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			merger := NewDefaultIncludeMerger()
+			merger := newTestIncludeMerger()
 
 			var doc yaml.Node
 			err := yaml.Unmarshal([]byte(tt.specYAML), &doc)
@@ -351,10 +396,10 @@ paths: {}
 }
 
 func TestIncludeMerger_ProcessIncludes_WithIncludes(t *testing.T) {
-	// This test uses the real embedded specs
-	merger := NewDefaultIncludeMerger()
+	// This test uses the test embedded specs
+	merger := newTestIncludeMerger()
 
-	// Create a temp spec that includes auth
+	// Create a temp spec that includes server
 	tempDir := t.TempDir()
 	specPath := filepath.Join(tempDir, "openapi.yaml")
 
@@ -391,12 +436,12 @@ paths: {}
 	// Should not have x-include-server anymore
 	assert.False(t, merger.hasKey(root, "x-include-server"))
 
-	// Should have paths from server (like /health)
+	// Should have paths from test server spec (like /health)
 	paths := merger.findMapping(root, "paths")
 	require.NotNil(t, paths, "paths should exist after merge")
 	assert.True(t, merger.hasKey(paths, "/health"), "should have /health path from server include")
 
-	// Should have tags from server
+	// Should have tags from test server spec
 	tags := merger.findSequence(root, "tags")
 	require.NotNil(t, tags, "tags should exist after merge")
 }
