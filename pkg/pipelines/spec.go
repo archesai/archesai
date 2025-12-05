@@ -1,4 +1,4 @@
-//go:generate go run ../../cmd/archesai/main.go generate --spec ./spec/openapi.yaml --output . --only bundle,models,controllers,application,repositories,routes,bootstrap_handlers --pretty
+//go:generate go run ../../cmd/archesai generate --spec ./spec/openapi.yaml --output . --only models,controllers,application,repositories,routes,bootstrap_handlers --pretty
 package pipelines
 
 import "embed"

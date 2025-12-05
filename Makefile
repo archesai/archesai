@@ -39,7 +39,7 @@ BINARY_PATH := ./bin
 .PHONY: build
 build: ## Build archesai binary
 	@echo -e "$(YELLOW)▶ Building archesai...$(NC)"
-	@go build -o $(BINARY_PATH)/archesai  cmd/archesai/main.go
+	@go build -o $(BINARY_PATH)/archesai  cmd/archesai
 	@echo -e "$(GREEN)✓ archesai built: $(BINARY_PATH)/archesai $(NC)"
 
 .PHONY: build-studio
@@ -60,7 +60,7 @@ build-docs: prepare-docs ## Build documentation site
 .PHONY: run-studio
 run-studio: build ## Run the API server (production mode)
 	@echo -e "$(YELLOW)▶ Starting API server...$(NC)"
-	@go run cmd/archesai/main.go api
+	@go run ./cmd/archesai api
 
 .PHONY: run-docs
 run-docs: prepare-docs ## Run documentation site (production build)
@@ -112,12 +112,12 @@ generate-packages: ## Generate all packages
 	
 .PHONY: generate-studio
 generate-studio: ## Generate codegen
-	@go run cmd/archesai/main.go generate --spec ./api/openapi.yaml --output ./apps/studio --pretty --orval-fix --tui
+	@go run ./cmd/archesai generate --spec ./api/openapi.yaml --output ./apps/studio --pretty --orval-fix --tui
 
 .PHONY: generate-examples ## Generate example configurations
 generate-examples:
-	@go run cmd/archesai/main.go generate --spec ./examples/basic/spec/openapi.yaml --output ./examples/basic --pretty --tui
-	@go run cmd/archesai/main.go generate --spec ./examples/authentication/spec/openapi.yaml --output ./examples/authentication --pretty --tui
+	@go run ./cmd/archesai generate --spec ./examples/basic/spec/openapi.yaml --output ./examples/basic --pretty --tui
+	@go run ./cmd/archesai generate --spec ./examples/authentication/spec/openapi.yaml --output ./examples/authentication --pretty --tui
 
 # ------------------------------------------
 # Test Commands
@@ -215,7 +215,7 @@ lint-ts: lint-typecheck ## Run Node.js linter (includes typecheck)
 
 .PHONY: lint-openapi
 lint-openapi: ## Lint OpenAPI specification
-	@go run cmd/archesai/main.go generate --spec ./api/openapi.yaml --output ./apps/studio --only bundle --lint
+	@go run cmd/archesai generate --spec ./api/openapi.yaml --output ./apps/studio --only bundle --lint
 
 .PHONY: lint-typecheck
 lint-typecheck: ## Run TypeScript type checking
@@ -316,7 +316,7 @@ prepare-docs: bundle-openapi ## Copy markdown docs to apps/docs/docs FIXME: bund
 
 .PHONY: bundle-openapi
 bundle-openapi:  ## Bundle OpenAPI into single file
-	@go run cmd/archesai/main.go generate --spec ./api/openapi.yaml --output ./apps/studio --only bundle
+	@go run cmd/archesai generate --spec ./api/openapi.yaml --output ./apps/studio --only bundle
 	
 # ------------------------------------------
 # Dependency Commands

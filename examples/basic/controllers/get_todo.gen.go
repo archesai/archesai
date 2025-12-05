@@ -49,18 +49,8 @@ func (response GetTodo200Response) VisitGetTodoResponse(w http.ResponseWriter) e
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetTodo500Response struct {
-	server.ProblemDetails
-}
-
-func (response GetTodo500Response) VisitGetTodoResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(500)
-	return json.NewEncoder(w).Encode(response.ProblemDetails)
-}
-
 // ServeHTTP handles the GET /todos endpoint.
-func (h *GetTodoHandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *GetTodoHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Build input from request

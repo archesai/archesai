@@ -2,9 +2,13 @@
 package main
 
 import (
-	"github.com/archesai/archesai/internal/cli"
+	"fmt"
+	"os"
 )
 
 func main() {
-	cli.Execute()
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
 }

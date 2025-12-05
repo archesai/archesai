@@ -458,8 +458,6 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/TodoListResponse'
-        500:
-          $ref: '#/components/responses/InternalServerError'
 tags:
   - name: Health
     description: Health check operations
