@@ -73,6 +73,7 @@ patch:
               description: When this API key expires
               type: string
               format: date-time
+              maxLength: 255
               example: '2025-01-15T09:30:00Z'
   responses:
     '200':

@@ -1,4 +1,4 @@
-// Package codegen provides file writing utilities for code generation.
+// Package templates provides file writing utilities for code generation.
 package templates
 
 import (

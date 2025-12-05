@@ -8,8 +8,8 @@ import (
 	"net/http"
 
 	"github.com/archesai/archesai/pkg/server"
-	"github.com/archesai/examples/basic/application"
-	"github.com/archesai/examples/basic/models"
+	"github.com/archesai/examples/basic/gen/application"
+	"github.com/archesai/examples/basic/gen/models"
 )
 
 // ============================================================================

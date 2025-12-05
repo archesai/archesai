@@ -5,8 +5,8 @@ package bootstrap
 import (
 	"net/http"
 
-	authbootstrap "github.com/archesai/archesai/pkg/auth/bootstrap"
-	serverbootstrap "github.com/archesai/archesai/pkg/server/bootstrap"
+	authbootstrap "github.com/archesai/archesai/pkg/auth/gen/bootstrap"
+	serverbootstrap "github.com/archesai/archesai/pkg/server/gen/bootstrap"
 )
 
 // Handlers composes all handlers from internal packages.

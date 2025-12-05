@@ -1,3 +1,4 @@
+// Package typeconv provides type conversion utilities between OpenAPI schemas and Go types.
 package typeconv
 
 import (

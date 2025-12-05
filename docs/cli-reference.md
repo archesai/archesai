@@ -81,9 +81,6 @@ archesai generate [flags]
 **Optional Flags:**
 
 - `--spec` - Path to OpenAPI specification file (default: `api/openapi.bundled.yaml`)
-- `--bundle` - Bundle OpenAPI spec into single file instead of generating code
-- `--orval-fix` - Apply fixes for Orval compatibility (only with --bundle)
-- `--dry-run` - Show what files would be generated without writing them
 
 **Example:**
 
@@ -94,14 +91,8 @@ archesai generate --output ./generated
 # Generate from a specific OpenAPI spec
 archesai generate --spec api/openapi.yaml --output ./generated
 
-# Preview what would be generated without writing files
-archesai generate --spec api/openapi.yaml --output ./generated --dry-run
-
 # Bundle a multi-file OpenAPI spec into a single file
 archesai generate --spec api/openapi.yaml --bundle --output api/bundled.yaml
-
-# Bundle with Orval compatibility fixes
-archesai generate --spec api/openapi.yaml --bundle --orval-fix --output api/bundled.yaml
 ```
 
 **Generated Structure:**

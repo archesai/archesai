@@ -8,9 +8,6 @@ Arches generates complete applications from OpenAPI specifications. Use `x-codeg
 # Generate from OpenAPI spec
 archesai generate --spec api.yaml --output ./myapp
 
-# Preview without writing files
-archesai generate --spec api.yaml --output ./myapp --dry-run
-
 # Bundle multi-file spec into single file
 archesai generate --spec api.yaml --bundle --output bundled.yaml
 ```

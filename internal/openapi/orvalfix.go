@@ -8,6 +8,8 @@ import (
 	"go.yaml.in/yaml/v4"
 )
 
+const yamlNullValue = "null"
+
 // resolvePathItems resolves pathItems references by inlining content into paths
 func resolvePathItems(filePath string) error {
 	// Read the YAML file
@@ -167,6 +169,9 @@ func cleanupComposedBundle(data []byte) ([]byte, error) {
 	// Update all $ref values throughout the document to remove suffixes
 	updateRefs(docNode)
 
+	// // Fix nullable types with string constraints (OpenAPI 3.1 compliance)
+	// fixNullableConstraints(docNode)
+
 	// Marshal back
 	output, err := yaml.Marshal(&rootNode)
 	if err != nil {
@@ -253,4 +258,133 @@ func removeRefSuffix(ref string) string {
 		ref = strings.ReplaceAll(ref, suffix, "")
 	}
 	return ref
+}
+
+// FixNullableConstraints fixes OpenAPI 3.1 nullable types that have string constraints.
+// When type is [string, null], constraints like minLength/maxLength/pattern only apply to strings.
+// This function converts them to oneOf structure to properly separate string (with constraints) from null.
+// FIXME: This function is currently not invoked in cleanupComposedBundle. Uncomment the call to enable it.
+func FixNullableConstraints(node *yaml.Node) {
+	if node == nil {
+		return
+	}
+
+	switch node.Kind {
+	case yaml.MappingNode:
+		// Check if this is a schema with nullable type and string constraints
+		typeNode := findMapValueOrval(node, "type")
+		if typeNode != nil && typeNode.Kind == yaml.SequenceNode && hasNullType(typeNode) &&
+			hasStringConstraints(node) {
+			// Convert to oneOf structure
+			convertToOneOf(node, typeNode)
+		}
+
+		// Recurse into all values
+		for i := 1; i < len(node.Content); i += 2 {
+			FixNullableConstraints(node.Content[i])
+		}
+	case yaml.SequenceNode:
+		for _, child := range node.Content {
+			FixNullableConstraints(child)
+		}
+	}
+}
+
+// hasNullType checks if a type sequence node contains "null"
+func hasNullType(typeNode *yaml.Node) bool {
+	if typeNode.Kind != yaml.SequenceNode {
+		return false
+	}
+	for _, item := range typeNode.Content {
+		if item.Kind == yaml.ScalarNode && item.Value == yamlNullValue {
+			return true
+		}
+	}
+	return false
+}
+
+// hasStringConstraints checks if a node has minLength, maxLength, or pattern
+func hasStringConstraints(node *yaml.Node) bool {
+	constraints := []string{"minLength", "maxLength", "pattern"}
+	for _, c := range constraints {
+		if findMapValueOrval(node, c) != nil {
+			return true
+		}
+	}
+	return false
+}
+
+// convertToOneOf converts a nullable type with constraints to oneOf structure
+func convertToOneOf(node *yaml.Node, typeNode *yaml.Node) {
+	// Extract string constraints
+	var stringType string
+	for _, item := range typeNode.Content {
+		if item.Kind == yaml.ScalarNode && item.Value != yamlNullValue {
+			stringType = item.Value
+			break
+		}
+	}
+	if stringType == "" {
+		stringType = "string"
+	}
+
+	// Build string schema with constraints
+	stringSchema := &yaml.Node{Kind: yaml.MappingNode}
+	stringSchema.Content = append(stringSchema.Content,
+		&yaml.Node{Kind: yaml.ScalarNode, Value: "type"},
+		&yaml.Node{Kind: yaml.ScalarNode, Value: stringType},
+	)
+
+	// Move constraints to string schema
+	constraints := []string{"minLength", "maxLength", "pattern", "format"}
+	for _, c := range constraints {
+		val := findMapValueOrval(node, c)
+		if val != nil {
+			stringSchema.Content = append(stringSchema.Content,
+				&yaml.Node{Kind: yaml.ScalarNode, Value: c},
+				cloneNodeOrval(val),
+			)
+		}
+	}
+
+	// Build null schema
+	nullSchema := &yaml.Node{Kind: yaml.MappingNode}
+	nullSchema.Content = append(nullSchema.Content,
+		&yaml.Node{Kind: yaml.ScalarNode, Value: "type"},
+		&yaml.Node{Kind: yaml.ScalarNode, Value: yamlNullValue},
+	)
+
+	// Build oneOf array
+	oneOfArray := &yaml.Node{Kind: yaml.SequenceNode}
+	oneOfArray.Content = append(oneOfArray.Content, stringSchema, nullSchema)
+
+	// Remove old type and constraints from node
+	removeMapKeyOrval(node, "type")
+	for _, c := range constraints {
+		removeMapKeyOrval(node, c)
+	}
+
+	// Add oneOf to node
+	node.Content = append(node.Content,
+		&yaml.Node{Kind: yaml.ScalarNode, Value: "oneOf"},
+		oneOfArray,
+	)
+}
+
+// cloneNodeOrval creates a deep copy of a yaml.Node
+func cloneNodeOrval(node *yaml.Node) *yaml.Node {
+	if node == nil {
+		return nil
+	}
+	clone := &yaml.Node{
+		Kind:   node.Kind,
+		Style:  node.Style,
+		Tag:    node.Tag,
+		Value:  node.Value,
+		Anchor: node.Anchor,
+	}
+	for _, child := range node.Content {
+		clone.Content = append(clone.Content, cloneNodeOrval(child))
+	}
+	return clone
 }

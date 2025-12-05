@@ -734,8 +734,8 @@ paths:
       x-internal: auth
       operationId: Login
       x-public-endpoint: true
-      summary: Login
       x-codegen-custom-handler: true
+      summary: Login
       tags:
         - Auth
       description: Authenticate user and create a session
@@ -835,8 +835,8 @@ paths:
       x-internal: auth
       operationId: Register
       x-public-endpoint: true
-      summary: Register
       x-codegen-custom-handler: true
+      summary: Register
       tags:
         - Auth
       description: Register a new user account with email and password
@@ -894,8 +894,8 @@ paths:
       x-internal: auth
       operationId: RequestMagicLink
       x-public-endpoint: true
-      summary: Request a magic link
       x-codegen-custom-handler: true
+      summary: Request a magic link
       description: Request a magic link to be sent via email or generate an OTP code
       tags:
         - Auth
@@ -992,8 +992,8 @@ paths:
       x-internal: auth
       operationId: VerifyMagicLink
       x-public-endpoint: true
-      summary: Verify a magic link token
       x-codegen-custom-handler: true
+      summary: Verify a magic link token
       description: Verify a magic link token or OTP code and create a session
       tags:
         - Auth
@@ -1090,8 +1090,8 @@ paths:
       x-internal: auth
       operationId: ConfirmPasswordReset
       x-public-endpoint: true
-      summary: Verify password reset
       x-codegen-custom-handler: true
+      summary: Verify password reset
       tags:
         - Auth
       description: This endpoint will verify your password change with a token
@@ -1602,10 +1602,9 @@ paths:
     get:
       x-internal: auth
       operationId: ListAccounts
-      x-codegen-repository: Account
       summary: List linked accounts
       tags:
-        - Auth
+        - Account
       description: List all linked authentication providers for the current user
       security:
         - bearerAuth: []
@@ -1627,10 +1626,9 @@ paths:
     get:
       x-internal: auth
       operationId: GetAccount
-      x-codegen-repository: Account
       summary: Find an account
       tags:
-        - Auth
+        - Account
       parameters:
         - in: path
           name: id
@@ -1767,10 +1765,9 @@ paths:
     get:
       x-internal: auth
       operationId: ListSessions
-      x-codegen-repository: Session
       summary: List sessions
       tags:
-        - Auth
+        - Session
       description: List all active sessions for the current user
       security:
         - bearerAuth: []
@@ -1795,10 +1792,9 @@ paths:
     get:
       x-internal: auth
       operationId: GetSession
-      x-codegen-repository: Session
       summary: Find a session
       tags:
-        - Auth
+        - Session
       description: Find a session
       parameters:
         - $ref: '#/components/parameters/ResourceID'
@@ -2175,6 +2171,8 @@ paths:
                   description: The organization this API key belongs to
                   type: string
                   format: uuid
+                  minLength: 36
+                  maxLength: 36
                   example: 550e8400-e29b-41d4-a716-446655440000
                 scopes:
                   description: List of scopes for the API key
@@ -2200,6 +2198,7 @@ paths:
                   description: When this API key expires
                   type: string
                   format: date-time
+                  maxLength: 255
                   example: '2025-01-15T09:30:00Z'
               required:
                 - organizationID
@@ -2292,6 +2291,7 @@ paths:
                   description: When this API key expires
                   type: string
                   format: date-time
+                  maxLength: 255
                   example: '2025-01-15T09:30:00Z'
       responses:
         '200':
@@ -5147,37 +5147,6 @@ components:
             - name
             - organizationID
       unevaluatedProperties: false
-    Base:
-      title: Base
-      description: Base schema for all entities with common fields
-      x-internal: server
-      type: object
-      properties:
-        id:
-          description: Unique identifier for the resource
-          type: string
-          format: uuid
-          example: 550e8400-e29b-41d4-a716-446655440000
-          minLength: 36
-          maxLength: 36
-        createdAt:
-          description: The date and time when the resource was created
-          type: string
-          format: date-time
-          example: '2024-01-15T09:30:00Z'
-          minLength: 1
-          maxLength: 255
-        updatedAt:
-          description: The date and time when the resource was last updated
-          type: string
-          format: date-time
-          example: '2024-01-15T10:45:00Z'
-          minLength: 1
-          maxLength: 255
-      required:
-        - id
-        - createdAt
-        - updatedAt
     ConfigAPI:
       title: APIConfig
       description: Configuration schema for the API server
@@ -5261,8 +5230,6 @@ components:
           type: boolean
           default: true
           example: true
-        firebase:
-          $ref: '#/components/schemas/ConfigAuthFirebase'
         local:
           $ref: '#/components/schemas/ConfigAuthLocal'
         magicLink:
@@ -5278,137 +5245,456 @@ components:
       required:
         - enabled
       additionalProperties: false
-    ConfigAuthFirebase:
-      description: Firebase authentication configuration
+    ConfigBilling:
+      description: Billing configuration for Stripe
       x-internal: config
       type: object
       x-codegen-schema-type: valueobject
-      title: FirebaseAuthConfig
+      title: BillingConfig
       properties:
         enabled:
-          description: Enable Firebase authentication
+          description: Enable billing functionality
           type: boolean
           default: false
           example: true
-        clientEmail:
-          description: Firebase service account client email address
+        stripe:
+          $ref: '#/components/schemas/ConfigStripe'
+      required:
+        - enabled
+      additionalProperties: false
+    ConfigDatabase:
+      title: DatabaseConfig
+      description: Database configuration for PostgreSQL
+      x-internal: config
+      type: object
+      x-codegen-schema-type: valueobject
+      properties:
+        enabled:
+          description: Enable database
+          type: boolean
+          default: true
+          example: true
+        url:
+          description: Database connection url/string
+          type: string
+          format: uri
+          default: postgresql://admin:password@127.0.0.1:5432/archesai
+          minLength: 1
+          example: postgresql://admin:password@127.0.0.1:5432/archesai
+          maxLength: 2048
+        type:
+          description: Database type (postgresql or sqlite)
+          type: string
+          enum:
+            - postgresql
+            - sqlite
+          default: postgresql
+          example: postgresql
+        maxConns:
+          description: Maximum number of connections in pool (PostgreSQL)
+          type: integer
+          minimum: 1
+          maximum: 2147483647
+          format: int32
+          default: 25
+          example: 25
+        minConns:
+          description: Minimum number of connections in pool (PostgreSQL)
+          type: integer
+          format: int32
+          minimum: 0
+          maximum: 2147483647
+          default: 5
+          example: 5
+        connMaxLifetime:
+          description: Maximum connection lifetime (e.g., "30m")
+          type: string
+          pattern: ^(\d+[smh])+$
+          minLength: 2
+          maxLength: 20
+          example: 30m
+        connMaxIdleTime:
+          description: Maximum connection idle time (e.g., "5m")
+          type: string
+          pattern: ^(\d+[smh])+$
+          minLength: 2
+          maxLength: 20
+          example: 5m
+        healthCheckPeriod:
+          description: Health check period for connections (PostgreSQL)
+          type: string
+          pattern: ^(\d+[smh])+$
+          minLength: 2
+          maxLength: 20
+          example: 30s
+        runMigrations:
+          description: Automatically run database migrations on startup
+          type: boolean
+          default: false
+          example: true
+        managed:
+          description: Use managed database deployment
+          type: boolean
+          default: false
+          example: true
+        image:
+          $ref: '#/components/schemas/ConfigImage'
+        persistence:
+          $ref: '#/components/schemas/ConfigPersistence'
+        resources:
+          $ref: '#/components/schemas/ConfigResource'
+      required:
+        - enabled
+        - url
+        - type
+        - maxConns
+        - minConns
+        - runMigrations
+        - managed
+      additionalProperties: false
+    ConfigIntelligence:
+      description: Intelligence configuration (LLMs, embeddings, scraper, speech, etc.)
+      x-internal: config
+      type: object
+      x-codegen-schema-type: valueobject
+      title: IntelligenceConfig
+      properties:
+        embedding:
+          $ref: '#/components/schemas/ConfigLLM'
+        llm:
+          $ref: '#/components/schemas/ConfigLLM'
+        runpod:
+          $ref: '#/components/schemas/ConfigRunPod'
+        scraper:
+          $ref: '#/components/schemas/ConfigScraper'
+        speech:
+          $ref: '#/components/schemas/ConfigSpeech'
+        unstructured:
+          $ref: '#/components/schemas/ConfigUnstructured'
+      additionalProperties: false
+    ConfigLogging:
+      description: Logging configuration
+      x-internal: config
+      type: object
+      x-codegen-schema-type: valueobject
+      title: LoggingConfig
+      properties:
+        level:
+          description: Minimum log level to output
+          type: string
+          enum:
+            - fatal
+            - error
+            - warn
+            - info
+            - debug
+            - trace
+            - silent
+          default: info
+          example: fatal
+        pretty:
+          description: Enable pretty-printed logs for development
+          type: boolean
+          default: false
+          example: true
+      required:
+        - level
+        - pretty
+      additionalProperties: false
+    ConfigPlatform:
+      description: Platform configuration (host, image, resources)
+      x-internal: config
+      type: object
+      x-codegen-schema-type: valueobject
+      title: PlatformConfig
+      properties:
+        enabled:
+          description: Enable platform service
+          type: boolean
+          default: false
+          example: true
+        managed:
+          description: Use managed platform deployment
+          type: boolean
+          default: false
+          example: true
+        url:
+          description: Platform URL
+          type: string
+          default: http://localhost:3000
+          format: uri
+          example: https://platform.archesai.dev
+          maxLength: 2048
+        image:
+          $ref: '#/components/schemas/ConfigImage'
+        resources:
+          $ref: '#/components/schemas/ConfigResource'
+      required:
+        - enabled
+      additionalProperties: false
+    ConfigRedis:
+      description: Redis configuration
+      x-internal: config
+      type: object
+      x-codegen-schema-type: valueobject
+      title: RedisConfig
+      properties:
+        enabled:
+          description: Enable Redis
+          type: boolean
+          default: false
+          example: true
+        managed:
+          description: Use managed Redis deployment
+          type: boolean
+          default: false
+          example: true
+        auth:
+          description: Redis authentication password
+          type: string
+          default: password
+          minLength: 1
+          example: secure-redis-password
+          maxLength: 72
+          pattern: ^[\w\-@./#&+!*()]+$
+        ca:
+          description: Certificate Authority for TLS (optional)
+          type: string
+          minLength: 1
+          example: /etc/ssl/certs/ca.pem
+          maxLength: 255
+          pattern: ^[\w\s\-./]+$
+        host:
+          description: Redis hostname or IP
+          type: string
+          default: localhost
+          minLength: 1
+          example: redis.example.com
+          maxLength: 255
+          pattern: ^[a-zA-Z0-9.\-]+$
+        port:
+          description: Redis port number
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 65535
+          default: 6379
+          example: 6379
+        image:
+          $ref: '#/components/schemas/ConfigImage'
+        persistence:
+          $ref: '#/components/schemas/ConfigPersistence'
+        resources:
+          $ref: '#/components/schemas/ConfigResource'
+      required:
+        - enabled
+        - auth
+        - host
+        - port
+      additionalProperties: false
+    ConfigStorage:
+      description: Object storage configuration for MinIO or S3-compatible services
+      x-internal: config
+      type: object
+      x-codegen-schema-type: valueobject
+      properties:
+        enabled:
+          description: Enable object storage
+          type: boolean
+          default: false
+          example: true
+        managed:
+          description: Use managed storage deployment
+          type: boolean
+          default: false
+          example: true
+        accesskey:
+          description: MinIO/S3 access key ID
+          type: string
+          default: minioadmin
+          minLength: 1
+          example: AKIAIOSFODNN7EXAMPLE
+          maxLength: 255
+          pattern: ^[A-Z0-9]+$
+        bucket:
+          description: S3 bucket name
+          type: string
+          default: archesai
+          minLength: 1
+          example: archesai
+          maxLength: 255
+          pattern: ^[a-z0-9][a-z0-9\-]*[a-z0-9]$
+        endpoint:
+          description: MinIO server endpoint URL
+          type: string
+          format: uri
+          default: http://localhost:9000
+          minLength: 1
+          example: http://localhost:9000
+          maxLength: 2048
+        secretkey:
+          description: MinIO/S3 secret access key
+          type: string
+          default: minioadmin
+          minLength: 1
+          example: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+          maxLength: 255
+          pattern: ^[A-Za-z0-9+/=]+$
+        image:
+          $ref: '#/components/schemas/ConfigImage'
+        persistence:
+          $ref: '#/components/schemas/ConfigPersistence'
+        resources:
+          $ref: '#/components/schemas/ConfigResource'
+      required:
+        - enabled
+        - accesskey
+        - bucket
+        - endpoint
+        - secretkey
+      additionalProperties: false
+      title: StorageConfig
+    ConfigKubernetes:
+      x-internal: config
+      type: object
+      x-codegen-schema-type: valueobject
+      title: KubernetesConfig
+      description: Kubernetes-specific deployment configuration
+      properties:
+        infrastructure:
+          $ref: '#/components/schemas/ConfigInfrastructure'
+        ingress:
+          $ref: '#/components/schemas/ConfigIngress'
+        monitoring:
+          $ref: '#/components/schemas/ConfigMonitoring'
+      additionalProperties: false
+    ConfigEmail:
+      description: Email configuration for sending emails
+      x-internal: config
+      type: object
+      x-codegen-schema-type: valueobject
+      title: EmailConfig
+      properties:
+        enabled:
+          description: Enable email functionality
+          type: boolean
+          default: false
+          example: true
+        service:
+          description: Email service provider (e.g., "gmail", "sendgrid", etc.)
+          type: string
+          pattern: ^[\w\-]+$
+          example: sendgrid
+          maxLength: 255
+        user:
+          description: Username for the email service
           type: string
           format: email
-          example: firebase@project.iam.gserviceaccount.com
-          maxLength: 255
           pattern: ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
-        privateKey:
-          description: Firebase service account private key (PEM format)
-          type: string
-          minLength: 1
-          maxLength: 10000
-          pattern: ^[\w\s\-.,!?()@#+/=\n\r]*$
-        projectID:
-          description: Firebase project ID for authentication
-          type: string
+          example: user@example.com
           maxLength: 255
-          pattern: ^[\w\-]+$
-          example: example-id-123
+        password:
+          description: Password for the email service
+          type: string
+          pattern: ^[\w\s\-.,!?()@#+/=]*$
+          example: secret-password-123
+          maxLength: 255
       required:
         - enabled
       additionalProperties: false
-    ConfigAuthGithub:
-      description: GitHub OAuth configuration
+    ConfigImage:
+      description: Container image configuration
       x-internal: config
       type: object
       x-codegen-schema-type: valueobject
-      title: GitHubAuthConfig
+      title: ImageConfig
       properties:
-        enabled:
-          description: Enable GitHub OAuth
-          type: boolean
-          default: false
-          example: false
-        clientId:
-          description: GitHub OAuth App client ID
+        pullPolicy:
+          description: Kubernetes image pull policy
+          type: string
+          enum:
+            - Always
+            - IfNotPresent
+            - Never
+          default: IfNotPresent
+          example: Always
+        repository:
+          description: Container image repository
           type: string
           minLength: 1
+          example: archesai/archesai
           maxLength: 255
-          pattern: ^[\w\.\-]+$
-          example: Iv1.abc123def456ghi7
-        clientSecret:
-          description: GitHub OAuth App client secret
+          pattern: ^[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*(\/[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*)*$
+        tag:
+          description: Container image tag
           type: string
+          default: latest
           minLength: 1
+          example: v1.0.0
           maxLength: 255
-          pattern: ^[\w\-]+$
-          example: abc123def456ghi789jkl012mno345pqr678stu901
-        redirectUrl:
-          description: OAuth callback URL
-          type: string
-          format: uri
-          example: http://localhost:8080/auth/oauth/github/callback
-          maxLength: 2048
-        scopes:
-          description: OAuth scopes to request
-          type: array
-          items:
-            type: string
-            maxLength: 255
-            pattern: ^[\w\s\-:]+$
-          default:
-            - user:email
-          example:
-            - read:user
-          maxItems: 1000
+          pattern: ^[a-zA-Z0-9_][a-zA-Z0-9._-]*$
       required:
-        - enabled
+        - pullPolicy
+        - tag
       additionalProperties: false
-    ConfigAuthGoogle:
-      description: Google OAuth configuration
+    ConfigResource:
+      description: Kubernetes resource configuration
       x-internal: config
       type: object
       x-codegen-schema-type: valueobject
-      title: GoogleAuthConfig
+      title: ResourceConfig
       properties:
-        enabled:
-          description: Enable Google OAuth
-          type: boolean
-          default: false
-          example: false
-        clientId:
-          description: Google OAuth client ID
-          type: string
-          minLength: 1
-          maxLength: 255
-          pattern: ^[\w\.\-]+$
-          example: 123456789012-abcdefghijklmnopqrstuvwxyz123456.apps.googleusercontent.com
-        clientSecret:
-          description: Google OAuth client secret
-          type: string
-          minLength: 1
-          maxLength: 255
-          pattern: ^[\w\-]+$
-          example: GOCSPX-abc123def456ghi789jkl012
-        redirectUrl:
-          description: OAuth callback URL
-          type: string
-          format: uri
-          example: http://localhost:8080/auth/oauth/google/callback
-          maxLength: 2048
-        scopes:
-          description: OAuth scopes to request
-          type: array
-          items:
-            type: string
-            minLength: 1
-            maxLength: 255
-            pattern: ^[\w\s\-:\.]+$
-          default:
-            - openid
-            - profile
-            - email
-          example:
-            - openid
-            - profile
-          maxItems: 1000
+        limits:
+          description: Resource limits
+          type: object
+          properties:
+            cpu:
+              description: Maximum CPU allocation
+              type: string
+              pattern: ^\d+m?$
+              default: 1000m
+              minLength: 1
+              example: 1000m
+              maxLength: 255
+            memory:
+              description: Maximum memory allocation
+              type: string
+              pattern: ^\d+(Mi|Gi|Ki)?$
+              default: 1Gi
+              minLength: 1
+              example: 1Gi
+              maxLength: 255
+          required:
+            - cpu
+            - memory
+          additionalProperties: false
+        requests:
+          description: Resource requests
+          type: object
+          properties:
+            cpu:
+              description: Requested CPU allocation
+              type: string
+              pattern: ^\d+m?$
+              default: 100m
+              minLength: 1
+              example: 100m
+              maxLength: 255
+            memory:
+              description: Requested memory allocation
+              type: string
+              pattern: ^\d+(Mi|Gi|Ki)?$
+              default: 128Mi
+              minLength: 1
+              example: 128Mi
+              maxLength: 255
+          required:
+            - cpu
+            - memory
+          additionalProperties: false
       required:
-        - enabled
+        - limits
+        - requests
       additionalProperties: false
     ConfigAuthLocal:
       description: Local username/password authentication
@@ -5552,6 +5838,138 @@ components:
       required:
         - enabled
       additionalProperties: false
+    ConfigAuthTwitter:
+      description: Twitter OAuth configuration
+      x-internal: config
+      type: object
+      x-codegen-schema-type: valueobject
+      title: TwitterAuthConfig
+      properties:
+        enabled:
+          description: Enable Twitter OAuth
+          type: boolean
+          default: false
+          example: true
+        callbackURL:
+          description: OAuth callback URL
+          type: string
+          format: uri
+          minLength: 1
+          example: http://localhost:8080/auth/oauth/twitter/callback
+          maxLength: 2048
+        consumerKey:
+          description: Twitter API consumer key
+          type: string
+          minLength: 1
+          maxLength: 255
+          pattern: ^[\w\-]+$
+        consumerSecret:
+          description: Twitter API consumer secret
+          type: string
+          minLength: 1
+          maxLength: 255
+          pattern: ^[\w\-]+$
+      required:
+        - enabled
+      additionalProperties: false
+    ConfigAuthGoogle:
+      description: Google OAuth configuration
+      x-internal: config
+      type: object
+      x-codegen-schema-type: valueobject
+      title: GoogleAuthConfig
+      properties:
+        enabled:
+          description: Enable Google OAuth
+          type: boolean
+          default: false
+          example: false
+        clientId:
+          description: Google OAuth client ID
+          type: string
+          minLength: 1
+          maxLength: 255
+          pattern: ^[\w\.\-]+$
+          example: 123456789012-abcdefghijklmnopqrstuvwxyz123456.apps.googleusercontent.com
+        clientSecret:
+          description: Google OAuth client secret
+          type: string
+          minLength: 1
+          maxLength: 255
+          pattern: ^[\w\-]+$
+          example: GOCSPX-abc123def456ghi789jkl012
+        redirectUrl:
+          description: OAuth callback URL
+          type: string
+          format: uri
+          example: http://localhost:8080/auth/oauth/google/callback
+          maxLength: 2048
+        scopes:
+          description: OAuth scopes to request
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 255
+            pattern: ^[\w\s\-:\.]+$
+          default:
+            - openid
+            - profile
+            - email
+          example:
+            - openid
+            - profile
+          maxItems: 1000
+      required:
+        - enabled
+      additionalProperties: false
+    ConfigAuthGithub:
+      description: GitHub OAuth configuration
+      x-internal: config
+      type: object
+      x-codegen-schema-type: valueobject
+      title: GitHubAuthConfig
+      properties:
+        enabled:
+          description: Enable GitHub OAuth
+          type: boolean
+          default: false
+          example: false
+        clientId:
+          description: GitHub OAuth App client ID
+          type: string
+          minLength: 1
+          maxLength: 255
+          pattern: ^[\w\.\-]+$
+          example: Iv1.abc123def456ghi7
+        clientSecret:
+          description: GitHub OAuth App client secret
+          type: string
+          minLength: 1
+          maxLength: 255
+          pattern: ^[\w\-]+$
+          example: abc123def456ghi789jkl012mno345pqr678stu901
+        redirectUrl:
+          description: OAuth callback URL
+          type: string
+          format: uri
+          example: http://localhost:8080/auth/oauth/github/callback
+          maxLength: 2048
+        scopes:
+          description: OAuth scopes to request
+          type: array
+          items:
+            type: string
+            maxLength: 255
+            pattern: ^[\w\s\-:]+$
+          default:
+            - user:email
+          example:
+            - read:user
+          maxItems: 1000
+      required:
+        - enabled
+      additionalProperties: false
     ConfigAuthMicrosoft:
       description: Microsoft/Azure AD OAuth configuration
       x-internal: config
@@ -5611,354 +6029,54 @@ components:
       required:
         - enabled
       additionalProperties: false
-    ConfigAuthTwitter:
-      description: Twitter OAuth configuration
+    ConfigStripe:
+      description: Stripe payment configuration
       x-internal: config
       type: object
       x-codegen-schema-type: valueobject
-      title: TwitterAuthConfig
+      title: StripeConfig
       properties:
-        enabled:
-          description: Enable Twitter OAuth
-          type: boolean
-          default: false
-          example: true
-        callbackURL:
-          description: OAuth callback URL
-          type: string
-          format: uri
-          minLength: 1
-          example: http://localhost:8080/auth/oauth/twitter/callback
-          maxLength: 2048
-        consumerKey:
-          description: Twitter API consumer key
+        token:
+          description: Stripe secret API key
           type: string
           minLength: 1
+          example: sk_test_51H...
+          maxLength: 512
+          pattern: ^[a-zA-Z0-9_]+$
+        whsec:
+          description: Stripe webhook endpoint secret
+          type: string
+          minLength: 1
+          example: whsec_...
           maxLength: 255
-          pattern: ^[\w\-]+$
-        consumerSecret:
-          description: Twitter API consumer secret
-          type: string
-          minLength: 1
-          maxLength: 255
-          pattern: ^[\w\-]+$
+          pattern: ^[a-zA-Z0-9_]+$
       required:
-        - enabled
+        - token
+        - whsec
       additionalProperties: false
-    ConfigBilling:
-      description: Billing configuration for Stripe
+    ConfigPersistence:
+      description: Persistent storage configuration
       x-internal: config
       type: object
       x-codegen-schema-type: valueobject
-      title: BillingConfig
+      title: PersistenceConfig
       properties:
         enabled:
-          description: Enable billing functionality
-          type: boolean
-          default: false
-          example: true
-        stripe:
-          $ref: '#/components/schemas/ConfigStripe'
-      required:
-        - enabled
-      additionalProperties: false
-    ConfigDatabase:
-      title: DatabaseConfig
-      description: Database configuration for PostgreSQL
-      x-internal: config
-      type: object
-      x-codegen-schema-type: valueobject
-      properties:
-        enabled:
-          description: Enable database
+          description: Enable persistent storage
           type: boolean
           default: true
           example: true
-        url:
-          description: Database connection url/string
+        size:
+          description: Size of persistent volume
           type: string
-          format: uri
-          default: postgresql://admin:password@127.0.0.1:5432/archesai
+          default: 10Gi
           minLength: 1
-          example: postgresql://admin:password@127.0.0.1:5432/archesai
-          maxLength: 2048
-        type:
-          description: Database type (postgresql or sqlite)
-          type: string
-          enum:
-            - postgresql
-            - sqlite
-          default: postgresql
-          example: postgresql
-        maxConns:
-          description: Maximum number of connections in pool (PostgreSQL)
-          type: integer
-          minimum: 1
-          maximum: 2147483647
-          format: int32
-          default: 25
-          example: 25
-        minConns:
-          description: Minimum number of connections in pool (PostgreSQL)
-          type: integer
-          format: int32
-          minimum: 0
-          maximum: 2147483647
-          default: 5
-          example: 5
-        connMaxLifetime:
-          description: Maximum connection lifetime (e.g., "30m")
-          type: string
-          pattern: ^(\d+[smh])+$
-          minLength: 2
-          maxLength: 20
-          example: 30m
-        connMaxIdleTime:
-          description: Maximum connection idle time (e.g., "5m")
-          type: string
-          pattern: ^(\d+[smh])+$
-          minLength: 2
-          maxLength: 20
-          example: 5m
-        healthCheckPeriod:
-          description: Health check period for connections (PostgreSQL)
-          type: string
-          pattern: ^(\d+[smh])+$
-          minLength: 2
-          maxLength: 20
-          example: 30s
-        runMigrations:
-          description: Automatically run database migrations on startup
-          type: boolean
-          default: false
-          example: true
-        managed:
-          description: Use managed database deployment
-          type: boolean
-          default: false
-          example: true
-        image:
-          $ref: '#/components/schemas/ConfigImage'
-        persistence:
-          $ref: '#/components/schemas/ConfigPersistence'
-        resources:
-          $ref: '#/components/schemas/ConfigResource'
+          example: 10Gi
+          maxLength: 255
+          pattern: ^[0-9]+(Ei|Pi|Ti|Gi|Mi|Ki|E|P|T|G|M|K)?$
       required:
         - enabled
-        - url
-        - type
-        - maxConns
-        - minConns
-        - runMigrations
-        - managed
-      additionalProperties: false
-    ConfigEmail:
-      description: Email configuration for sending emails
-      x-internal: config
-      type: object
-      x-codegen-schema-type: valueobject
-      title: EmailConfig
-      properties:
-        enabled:
-          description: Enable email functionality
-          type: boolean
-          default: false
-          example: true
-        service:
-          description: Email service provider (e.g., "gmail", "sendgrid", etc.)
-          type: string
-          pattern: ^[\w\-]+$
-          example: sendgrid
-          maxLength: 255
-        user:
-          description: Username for the email service
-          type: string
-          format: email
-          pattern: ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
-          example: user@example.com
-          maxLength: 255
-        password:
-          description: Password for the email service
-          type: string
-          pattern: ^[\w\s\-.,!?()@#+/=]*$
-          example: secret-password-123
-          maxLength: 255
-      required:
-        - enabled
-      additionalProperties: false
-    ConfigGrafana:
-      description: Grafana monitoring dashboard configuration
-      x-internal: config
-      type: object
-      x-codegen-schema-type: valueobject
-      title: GrafanaConfig
-      properties:
-        enabled:
-          description: Enable Grafana
-          type: boolean
-          default: false
-          example: true
-        managed:
-          description: Use managed Grafana deployment
-          type: boolean
-          default: false
-          example: true
-        image:
-          $ref: '#/components/schemas/ConfigImage'
-        resources:
-          $ref: '#/components/schemas/ConfigResource'
-      required:
-        - enabled
-      additionalProperties: false
-    ConfigImage:
-      description: Container image configuration
-      x-internal: config
-      type: object
-      x-codegen-schema-type: valueobject
-      title: ImageConfig
-      properties:
-        pullPolicy:
-          description: Kubernetes image pull policy
-          type: string
-          enum:
-            - Always
-            - IfNotPresent
-            - Never
-          default: IfNotPresent
-          example: Always
-        repository:
-          description: Container image repository
-          type: string
-          minLength: 1
-          example: archesai/archesai
-          maxLength: 255
-          pattern: ^[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*(\/[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*)*$
-        tag:
-          description: Container image tag
-          type: string
-          default: latest
-          minLength: 1
-          example: v1.0.0
-          maxLength: 255
-          pattern: ^[a-zA-Z0-9_][a-zA-Z0-9._-]*$
-      required:
-        - pullPolicy
-        - tag
-      additionalProperties: false
-    ConfigImages:
-      description: Container image configuration
-      x-internal: config
-      type: object
-      x-codegen-schema-type: valueobject
-      title: ImagesConfig
-      properties:
-        imagePullSecrets:
-          description: List of Kubernetes secrets for pulling private images
-          type: array
-          items:
-            type: string
-            minLength: 1
-            example: regcred
-            maxLength: 255
-            pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
-          default: []
-          maxItems: 1000
-        imageRegistry:
-          description: Custom container registry URL (leave empty for Docker Hub)
-          type: string
-          default: ''
-          example: gcr.io
-          maxLength: 2048
-          pattern: ^(|[a-z0-9]([-a-z0-9\.]*[a-z0-9])?(:[0-9]+)?)$
-      required:
-        - imagePullSecrets
-        - imageRegistry
-      additionalProperties: false
-    ConfigInfrastructure:
-      description: Infrastructure configuration for Kubernetes deployments
-      x-internal: config
-      type: object
-      x-codegen-schema-type: valueobject
-      title: InfrastructureConfig
-      properties:
-        images:
-          $ref: '#/components/schemas/ConfigImages'
-        migrations:
-          $ref: '#/components/schemas/ConfigMigrations'
-        namespace:
-          description: Kubernetes namespace where all resources will be deployed
-          type: string
-          default: arches-system
-          minLength: 1
-          example: arches-system
-          maxLength: 255
-          pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
-        serviceAccount:
-          $ref: '#/components/schemas/ConfigServiceAccount'
-      required:
-        - images
-        - migrations
-        - namespace
-        - serviceAccount
-      additionalProperties: false
-    ConfigIngress:
-      description: Ingress configuration
-      x-internal: config
-      type: object
-      x-codegen-schema-type: valueobject
-      title: IngressConfig
-      properties:
-        enabled:
-          description: Enable ingress
-          type: boolean
-          default: false
-          example: true
-        domain:
-          description: Primary domain name for ingress routing
-          type: string
-          format: hostname
-          default: archesai.dev
-          minLength: 1
-          example: archesai.dev
-          maxLength: 255
-        tls:
-          $ref: '#/components/schemas/ConfigTLS'
-      required:
-        - enabled
-      additionalProperties: false
-    ConfigIntelligence:
-      description: Intelligence configuration (LLMs, embeddings, scraper, speech, etc.)
-      x-internal: config
-      type: object
-      x-codegen-schema-type: valueobject
-      title: IntelligenceConfig
-      properties:
-        embedding:
-          $ref: '#/components/schemas/ConfigLLM'
-        llm:
-          $ref: '#/components/schemas/ConfigLLM'
-        runpod:
-          $ref: '#/components/schemas/ConfigRunPod'
-        scraper:
-          $ref: '#/components/schemas/ConfigScraper'
-        speech:
-          $ref: '#/components/schemas/ConfigSpeech'
-        unstructured:
-          $ref: '#/components/schemas/ConfigUnstructured'
-      additionalProperties: false
-    ConfigKubernetes:
-      x-internal: config
-      type: object
-      x-codegen-schema-type: valueobject
-      title: KubernetesConfig
-      description: Kubernetes-specific deployment configuration
-      properties:
-        infrastructure:
-          $ref: '#/components/schemas/ConfigInfrastructure'
-        ingress:
-          $ref: '#/components/schemas/ConfigIngress'
-        monitoring:
-          $ref: '#/components/schemas/ConfigMonitoring'
+        - size
       additionalProperties: false
     ConfigLLM:
       description: Large Language Model configuration
@@ -5991,271 +6109,6 @@ components:
           pattern: ^[a-zA-Z0-9_\-\.]+$
       required:
         - type
-      additionalProperties: false
-    ConfigLogging:
-      description: Logging configuration
-      x-internal: config
-      type: object
-      x-codegen-schema-type: valueobject
-      title: LoggingConfig
-      properties:
-        level:
-          description: Minimum log level to output
-          type: string
-          enum:
-            - fatal
-            - error
-            - warn
-            - info
-            - debug
-            - trace
-            - silent
-          default: info
-          example: fatal
-        pretty:
-          description: Enable pretty-printed logs for development
-          type: boolean
-          default: false
-          example: true
-      required:
-        - level
-        - pretty
-      additionalProperties: false
-    ConfigLoki:
-      description: Loki log aggregation service configuration
-      x-internal: config
-      type: object
-      x-codegen-schema-type: valueobject
-      title: LokiConfig
-      properties:
-        enabled:
-          description: Enable Loki
-          type: boolean
-          default: false
-          example: true
-        managed:
-          description: Use managed Loki deployment
-          type: boolean
-          default: false
-          example: true
-        host:
-          description: Loki host URL
-          type: string
-          format: uri
-          default: http://localhost:3100
-          minLength: 1
-          example: http://localhost:3100
-          maxLength: 2048
-        image:
-          $ref: '#/components/schemas/ConfigImage'
-        resources:
-          $ref: '#/components/schemas/ConfigResource'
-      required:
-        - enabled
-      additionalProperties: false
-    ConfigMigrations:
-      description: Database migration configuration
-      x-internal: config
-      type: object
-      x-codegen-schema-type: valueobject
-      title: MigrationsConfig
-      properties:
-        enabled:
-          description: Enable automatic DB migrations
-          type: boolean
-          default: false
-          example: true
-      required:
-        - enabled
-      additionalProperties: false
-    ConfigMonitoring:
-      description: Monitoring configuration for Grafana and Loki
-      x-internal: config
-      type: object
-      x-codegen-schema-type: valueobject
-      title: MonitoringConfig
-      properties:
-        grafana:
-          $ref: '#/components/schemas/ConfigGrafana'
-        loki:
-          $ref: '#/components/schemas/ConfigLoki'
-      required:
-        - grafana
-        - loki
-      additionalProperties: false
-    ConfigPersistence:
-      description: Persistent storage configuration
-      x-internal: config
-      type: object
-      x-codegen-schema-type: valueobject
-      title: PersistenceConfig
-      properties:
-        enabled:
-          description: Enable persistent storage
-          type: boolean
-          default: true
-          example: true
-        size:
-          description: Size of persistent volume
-          type: string
-          default: 10Gi
-          minLength: 1
-          example: 10Gi
-          maxLength: 255
-          pattern: ^[0-9]+(Ei|Pi|Ti|Gi|Mi|Ki|E|P|T|G|M|K)?$
-      required:
-        - enabled
-        - size
-      additionalProperties: false
-    ConfigPlatform:
-      description: Platform configuration (host, image, resources)
-      x-internal: config
-      type: object
-      x-codegen-schema-type: valueobject
-      title: PlatformConfig
-      properties:
-        enabled:
-          description: Enable platform service
-          type: boolean
-          default: false
-          example: true
-        managed:
-          description: Use managed platform deployment
-          type: boolean
-          default: false
-          example: true
-        url:
-          description: Platform URL
-          type: string
-          default: http://localhost:3000
-          format: uri
-          example: https://platform.archesai.dev
-          maxLength: 2048
-        image:
-          $ref: '#/components/schemas/ConfigImage'
-        resources:
-          $ref: '#/components/schemas/ConfigResource'
-      required:
-        - enabled
-      additionalProperties: false
-    ConfigRedis:
-      description: Redis configuration
-      x-internal: config
-      type: object
-      x-codegen-schema-type: valueobject
-      title: RedisConfig
-      properties:
-        enabled:
-          description: Enable Redis
-          type: boolean
-          default: false
-          example: true
-        managed:
-          description: Use managed Redis deployment
-          type: boolean
-          default: false
-          example: true
-        auth:
-          description: Redis authentication password
-          type: string
-          default: password
-          minLength: 1
-          example: secure-redis-password
-          maxLength: 72
-          pattern: ^[\w\-@./#&+!*()]+$
-        ca:
-          description: Certificate Authority for TLS (optional)
-          type: string
-          minLength: 1
-          example: /etc/ssl/certs/ca.pem
-          maxLength: 255
-          pattern: ^[\w\s\-./]+$
-        host:
-          description: Redis hostname or IP
-          type: string
-          default: localhost
-          minLength: 1
-          example: redis.example.com
-          maxLength: 255
-          pattern: ^[a-zA-Z0-9.\-]+$
-        port:
-          description: Redis port number
-          type: integer
-          format: int32
-          minimum: 1
-          maximum: 65535
-          default: 6379
-          example: 6379
-        image:
-          $ref: '#/components/schemas/ConfigImage'
-        persistence:
-          $ref: '#/components/schemas/ConfigPersistence'
-        resources:
-          $ref: '#/components/schemas/ConfigResource'
-      required:
-        - enabled
-        - auth
-        - host
-        - port
-      additionalProperties: false
-    ConfigResource:
-      description: Kubernetes resource configuration
-      x-internal: config
-      type: object
-      x-codegen-schema-type: valueobject
-      title: ResourceConfig
-      properties:
-        limits:
-          description: Resource limits
-          type: object
-          properties:
-            cpu:
-              description: Maximum CPU allocation
-              type: string
-              pattern: ^\d+m?$
-              default: 1000m
-              minLength: 1
-              example: 1000m
-              maxLength: 255
-            memory:
-              description: Maximum memory allocation
-              type: string
-              pattern: ^\d+(Mi|Gi|Ki)?$
-              default: 1Gi
-              minLength: 1
-              example: 1Gi
-              maxLength: 255
-          required:
-            - cpu
-            - memory
-          additionalProperties: false
-        requests:
-          description: Resource requests
-          type: object
-          properties:
-            cpu:
-              description: Requested CPU allocation
-              type: string
-              pattern: ^\d+m?$
-              default: 100m
-              minLength: 1
-              example: 100m
-              maxLength: 255
-            memory:
-              description: Requested memory allocation
-              type: string
-              pattern: ^\d+(Mi|Gi|Ki)?$
-              default: 128Mi
-              minLength: 1
-              example: 128Mi
-              maxLength: 255
-          required:
-            - cpu
-            - memory
-          additionalProperties: false
-      required:
-        - limits
-        - requests
       additionalProperties: false
     ConfigRunPod:
       description: RunPod serverless GPU configuration
@@ -6310,29 +6163,6 @@ components:
       required:
         - enabled
       additionalProperties: false
-    ConfigServiceAccount:
-      description: Kubernetes service account configuration
-      x-internal: config
-      type: object
-      x-codegen-schema-type: valueobject
-      title: ServiceAccountConfig
-      properties:
-        create:
-          description: Create dedicated service account
-          type: boolean
-          default: true
-          example: true
-        name:
-          description: Custom service account name
-          type: string
-          default: ''
-          example: archesai-sa
-          maxLength: 255
-          pattern: ^(|[a-z0-9]([-a-z0-9]*[a-z0-9])?)$
-      required:
-        - create
-        - name
-      additionalProperties: false
     ConfigSpeech:
       description: Speech recognition and TTS services
       x-internal: config
@@ -6355,92 +6185,163 @@ components:
         - enabled
       additionalProperties: false
       title: SpeechConfig
-    ConfigStorage:
-      description: Object storage configuration for MinIO or S3-compatible services
+    ConfigUnstructured:
+      description: Unstructured.io service for document parsing
       x-internal: config
       type: object
       x-codegen-schema-type: valueobject
+      title: UnstructuredConfig
       properties:
         enabled:
-          description: Enable object storage
+          description: Enable unstructured document parsing
           type: boolean
           default: false
           example: true
         managed:
-          description: Use managed storage deployment
+          description: Use managed unstructured deployment
           type: boolean
           default: false
           example: true
-        accesskey:
-          description: MinIO/S3 access key ID
-          type: string
-          default: minioadmin
-          minLength: 1
-          example: AKIAIOSFODNN7EXAMPLE
-          maxLength: 255
-          pattern: ^[A-Z0-9]+$
-        bucket:
-          description: S3 bucket name
-          type: string
-          default: archesai
-          minLength: 1
-          example: archesai
-          maxLength: 255
-          pattern: ^[a-z0-9][a-z0-9\-]*[a-z0-9]$
-        endpoint:
-          description: MinIO server endpoint URL
-          type: string
-          format: uri
-          default: http://localhost:9000
-          minLength: 1
-          example: http://localhost:9000
-          maxLength: 2048
-        secretkey:
-          description: MinIO/S3 secret access key
-          type: string
-          default: minioadmin
-          minLength: 1
-          example: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
-          maxLength: 255
-          pattern: ^[A-Za-z0-9+/=]+$
         image:
           $ref: '#/components/schemas/ConfigImage'
-        persistence:
-          $ref: '#/components/schemas/ConfigPersistence'
         resources:
           $ref: '#/components/schemas/ConfigResource'
       required:
         - enabled
-        - accesskey
-        - bucket
-        - endpoint
-        - secretkey
       additionalProperties: false
-      title: StorageConfig
-    ConfigStripe:
-      description: Stripe payment configuration
+    ConfigInfrastructure:
+      description: Infrastructure configuration for Kubernetes deployments
       x-internal: config
       type: object
       x-codegen-schema-type: valueobject
-      title: StripeConfig
+      title: InfrastructureConfig
       properties:
-        token:
-          description: Stripe secret API key
+        images:
+          $ref: '#/components/schemas/ConfigImages'
+        migrations:
+          $ref: '#/components/schemas/ConfigMigrations'
+        namespace:
+          description: Kubernetes namespace where all resources will be deployed
           type: string
+          default: arches-system
           minLength: 1
-          example: sk_test_51H...
-          maxLength: 512
-          pattern: ^[a-zA-Z0-9_]+$
-        whsec:
-          description: Stripe webhook endpoint secret
-          type: string
-          minLength: 1
-          example: whsec_...
+          example: arches-system
           maxLength: 255
-          pattern: ^[a-zA-Z0-9_]+$
+          pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+        serviceAccount:
+          $ref: '#/components/schemas/ConfigServiceAccount'
       required:
-        - token
-        - whsec
+        - images
+        - migrations
+        - namespace
+        - serviceAccount
+      additionalProperties: false
+    ConfigIngress:
+      description: Ingress configuration
+      x-internal: config
+      type: object
+      x-codegen-schema-type: valueobject
+      title: IngressConfig
+      properties:
+        enabled:
+          description: Enable ingress
+          type: boolean
+          default: false
+          example: true
+        domain:
+          description: Primary domain name for ingress routing
+          type: string
+          format: hostname
+          default: archesai.dev
+          minLength: 1
+          example: archesai.dev
+          maxLength: 255
+        tls:
+          $ref: '#/components/schemas/ConfigTLS'
+      required:
+        - enabled
+      additionalProperties: false
+    ConfigMonitoring:
+      description: Monitoring configuration for Grafana and Loki
+      x-internal: config
+      type: object
+      x-codegen-schema-type: valueobject
+      title: MonitoringConfig
+      properties:
+        grafana:
+          $ref: '#/components/schemas/ConfigGrafana'
+        loki:
+          $ref: '#/components/schemas/ConfigLoki'
+      required:
+        - grafana
+        - loki
+      additionalProperties: false
+    ConfigImages:
+      description: Container image configuration
+      x-internal: config
+      type: object
+      x-codegen-schema-type: valueobject
+      title: ImagesConfig
+      properties:
+        imagePullSecrets:
+          description: List of Kubernetes secrets for pulling private images
+          type: array
+          items:
+            type: string
+            minLength: 1
+            example: regcred
+            maxLength: 255
+            pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+          default: []
+          maxItems: 1000
+        imageRegistry:
+          description: Custom container registry URL (leave empty for Docker Hub)
+          type: string
+          default: ''
+          example: gcr.io
+          maxLength: 2048
+          pattern: ^(|[a-z0-9]([-a-z0-9\.]*[a-z0-9])?(:[0-9]+)?)$
+      required:
+        - imagePullSecrets
+        - imageRegistry
+      additionalProperties: false
+    ConfigMigrations:
+      description: Database migration configuration
+      x-internal: config
+      type: object
+      x-codegen-schema-type: valueobject
+      title: MigrationsConfig
+      properties:
+        enabled:
+          description: Enable automatic DB migrations
+          type: boolean
+          default: false
+          example: true
+      required:
+        - enabled
+      additionalProperties: false
+    ConfigServiceAccount:
+      description: Kubernetes service account configuration
+      x-internal: config
+      type: object
+      x-codegen-schema-type: valueobject
+      title: ServiceAccountConfig
+      properties:
+        create:
+          description: Create dedicated service account
+          type: boolean
+          default: true
+          example: true
+        name:
+          description: Custom service account name
+          type: string
+          default: ''
+          example: archesai-sa
+          maxLength: 255
+          pattern: ^(|[a-z0-9]([-a-z0-9]*[a-z0-9])?)$
+      required:
+        - create
+        - name
       additionalProperties: false
     ConfigTLS:
       description: TLS configuration
@@ -6473,20 +6374,20 @@ components:
       required:
         - enabled
       additionalProperties: false
-    ConfigUnstructured:
-      description: Unstructured.io service for document parsing
+    ConfigGrafana:
+      description: Grafana monitoring dashboard configuration
       x-internal: config
       type: object
       x-codegen-schema-type: valueobject
-      title: UnstructuredConfig
+      title: GrafanaConfig
       properties:
         enabled:
-          description: Enable unstructured document parsing
+          description: Enable Grafana
           type: boolean
           default: false
           example: true
         managed:
-          description: Use managed unstructured deployment
+          description: Use managed Grafana deployment
           type: boolean
           default: false
           example: true
@@ -6497,6 +6398,100 @@ components:
       required:
         - enabled
       additionalProperties: false
+    ConfigLoki:
+      description: Loki log aggregation service configuration
+      x-internal: config
+      type: object
+      x-codegen-schema-type: valueobject
+      title: LokiConfig
+      properties:
+        enabled:
+          description: Enable Loki
+          type: boolean
+          default: false
+          example: true
+        managed:
+          description: Use managed Loki deployment
+          type: boolean
+          default: false
+          example: true
+        host:
+          description: Loki host URL
+          type: string
+          format: uri
+          default: http://localhost:3100
+          minLength: 1
+          example: http://localhost:3100
+          maxLength: 2048
+        image:
+          $ref: '#/components/schemas/ConfigImage'
+        resources:
+          $ref: '#/components/schemas/ConfigResource'
+      required:
+        - enabled
+      additionalProperties: false
+    Base:
+      title: Base
+      description: Base schema for all entities with common fields
+      x-internal: server
+      type: object
+      properties:
+        id:
+          description: Unique identifier for the resource
+          type: string
+          format: uuid
+          example: 550e8400-e29b-41d4-a716-446655440000
+          minLength: 36
+          maxLength: 36
+        createdAt:
+          description: The date and time when the resource was created
+          type: string
+          format: date-time
+          example: '2024-01-15T09:30:00Z'
+          minLength: 1
+          maxLength: 255
+        updatedAt:
+          description: The date and time when the resource was last updated
+          type: string
+          format: date-time
+          example: '2024-01-15T10:45:00Z'
+          minLength: 1
+          maxLength: 255
+      required:
+        - id
+        - createdAt
+        - updatedAt
+    Page:
+      description: Pagination parameters (limit & offset)
+      x-internal: server
+      type: object
+      title: Page
+      additionalProperties: false
+      properties:
+        limit:
+          description: Maximum number of items to return
+          type: integer
+          format: int32
+          minimum: 1
+          default: 10
+          maximum: 100
+          example: 10
+        offset:
+          description: Number of items to skip before starting to collect the result set
+          type: integer
+          format: int32
+          minimum: 0
+          default: 0
+          maximum: 9007199254740991
+          example: 0
+    UUID:
+      description: UUID identifier
+      x-internal: server
+      type: string
+      format: uuid
+      example: 550e8400-e29b-41d4-a716-446655440000
+      minLength: 36
+      maxLength: 36
     FilterNode:
       title: FilterNode
       description: A recursive filter node that can be a condition or group
@@ -6541,6 +6536,51 @@ components:
           example: example-value
       required:
         - type
+    Problem:
+      title: Problem
+      description: RFC 7807 (Problem Details) compliant error response
+      x-internal: server
+      type: object
+      additionalProperties: false
+      required:
+        - status
+        - title
+      properties:
+        status:
+          type: integer
+          format: int32
+          description: HTTP status code
+          minimum: 100
+          maximum: 599
+          example: 400
+        type:
+          type: string
+          format: uri
+          description: URI identifying the problem type
+          default: about:blank
+          example: https://api.example.com/errors/validation-failed
+          minLength: 1
+          maxLength: 2048
+        title:
+          type: string
+          description: Short, human-readable summary
+          example: Validation Failed
+          minLength: 1
+          maxLength: 255
+          pattern: ^[\w\s\-.,!?()]+$
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence
+          example: The request body contains invalid fields
+          minLength: 1
+          maxLength: 255
+          pattern: ^[\w\s\-.,!?()]+$
+        instance:
+          type: string
+          format: uri
+          description: URI identifying the specific occurrence
+          example: https://api.example.com/auth/users/123
+          maxLength: 2048
     Health:
       title: Health
       description: Health check response
@@ -6594,82 +6634,6 @@ components:
         - timestamp
         - uptime
       additionalProperties: false
-    Page:
-      description: Pagination parameters (limit & offset)
-      x-internal: server
-      type: object
-      title: Page
-      additionalProperties: false
-      properties:
-        limit:
-          description: Maximum number of items to return
-          type: integer
-          format: int32
-          minimum: 1
-          default: 10
-          maximum: 100
-          example: 10
-        offset:
-          description: Number of items to skip before starting to collect the result set
-          type: integer
-          format: int32
-          minimum: 0
-          default: 0
-          maximum: 9007199254740991
-          example: 0
-    Problem:
-      title: Problem
-      description: RFC 7807 (Problem Details) compliant error response
-      x-internal: server
-      type: object
-      additionalProperties: false
-      required:
-        - status
-        - title
-      properties:
-        status:
-          type: integer
-          format: int32
-          description: HTTP status code
-          minimum: 100
-          maximum: 599
-          example: 400
-        type:
-          type: string
-          format: uri
-          description: URI identifying the problem type
-          default: about:blank
-          example: https://api.example.com/errors/validation-failed
-          minLength: 1
-          maxLength: 2048
-        title:
-          type: string
-          description: Short, human-readable summary
-          example: Validation Failed
-          minLength: 1
-          maxLength: 255
-          pattern: ^[\w\s\-.,!?()]+$
-        detail:
-          type: string
-          description: Human-readable explanation specific to this occurrence
-          example: The request body contains invalid fields
-          minLength: 1
-          maxLength: 255
-          pattern: ^[\w\s\-.,!?()]+$
-        instance:
-          type: string
-          format: uri
-          description: URI identifying the specific occurrence
-          example: https://api.example.com/auth/users/123
-          maxLength: 2048
-    UUID:
-      description: UUID identifier
-      x-internal: server
-      type: string
-      format: uuid
-      example: 550e8400-e29b-41d4-a716-446655440000
-      minLength: 36
-      maxLength: 36
   parameters:
     PageQuery:
       in: query

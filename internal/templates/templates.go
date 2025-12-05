@@ -1,4 +1,4 @@
-// Package codegen provides template management and code generation for the archesai project.
+// Package templates provides template management and code generation for the archesai project.
 package templates
 
 import (

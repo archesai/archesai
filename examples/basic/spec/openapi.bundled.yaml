@@ -57,50 +57,51 @@ components:
       required:
         - total
       additionalProperties: false
-    FilterNode:
-      title: FilterNode
-      description: A recursive filter node that can be a condition or group
+    Problem:
+      title: Problem
+      description: RFC 7807 (Problem Details) compliant error response
       x-internal: server
-      x-codegen-schema-type: valueobject
       type: object
+      additionalProperties: false
+      required:
+        - status
+        - title
       properties:
+        status:
+          type: integer
+          format: int32
+          description: HTTP status code
+          minimum: 100
+          maximum: 599
+          example: 400
         type:
           type: string
-          enum:
-            - and
-            - or
-            - eq
-            - ne
-            - gt
-            - gte
-            - lt
-            - lte
-            - contains
-            - startsWith
-            - endsWith
-          description: The type of filter operation
-          example: eq
-        field:
+          format: uri
+          description: URI identifying the problem type
+          default: about:blank
+          example: https://api.example.com/errors/validation-failed
+          minLength: 1
+          maxLength: 2048
+        title:
           type: string
-          description: The field to filter on (for leaf conditions)
-          example: name
+          description: Short, human-readable summary
+          example: Validation Failed
           minLength: 1
           maxLength: 255
-          pattern: ^[a-zA-Z_][a-zA-Z0-9_]*$
-        value:
-          description: The value to compare against (for leaf conditions)
-          oneOf:
-            - type: string
-              maxLength: 1000
-              pattern: ^[\w\s\-.,!?()@#+/':;]+$
-            - type: integer
-              format: int64
-              minimum: -9223372036854776000
-              maximum: 9223372036854776000
-            - type: boolean
-          example: example-value
-      required:
-        - type
+          pattern: ^[\w\s\-.,!?()]+$
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence
+          example: The request body contains invalid fields
+          minLength: 1
+          maxLength: 255
+          pattern: ^[\w\s\-.,!?()]+$
+        instance:
+          type: string
+          format: uri
+          description: URI identifying the specific occurrence
+          example: https://api.example.com/auth/users/123
+          maxLength: 2048
     Health:
       title: Health
       description: Health check response
@@ -177,51 +178,6 @@ components:
           default: 0
           maximum: 9007199254740991
           example: 0
-    Problem:
-      title: Problem
-      description: RFC 7807 (Problem Details) compliant error response
-      x-internal: server
-      type: object
-      additionalProperties: false
-      required:
-        - status
-        - title
-      properties:
-        status:
-          type: integer
-          format: int32
-          description: HTTP status code
-          minimum: 100
-          maximum: 599
-          example: 400
-        type:
-          type: string
-          format: uri
-          description: URI identifying the problem type
-          default: about:blank
-          example: https://api.example.com/errors/validation-failed
-          minLength: 1
-          maxLength: 2048
-        title:
-          type: string
-          description: Short, human-readable summary
-          example: Validation Failed
-          minLength: 1
-          maxLength: 255
-          pattern: ^[\w\s\-.,!?()]+$
-        detail:
-          type: string
-          description: Human-readable explanation specific to this occurrence
-          example: The request body contains invalid fields
-          minLength: 1
-          maxLength: 255
-          pattern: ^[\w\s\-.,!?()]+$
-        instance:
-          type: string
-          format: uri
-          description: URI identifying the specific occurrence
-          example: https://api.example.com/auth/users/123
-          maxLength: 2048
     UUID:
       description: UUID identifier
       x-internal: server
@@ -423,32 +379,29 @@ components:
         minimum: 1
         maximum: 3600
       example: 60
-  pathItems:
-    health:
-      get:
-        x-internal: server
-        x-codegen-custom-handler: true
-        operationId: GetHealth
-        summary: Get health status
-        tags:
-          - Health
-        description: Check the health status of the application
-        responses:
-          '200':
-            $ref: '#/components/responses/HealthResponse'
-          '400':
-            $ref: '#/components/responses/BadRequest'
-          '401':
-            $ref: '#/components/responses/Unauthorized'
-          '429':
-            $ref: '#/components/responses/TooManyRequests'
-          '500':
-            $ref: '#/components/responses/InternalServerError'
-        security:
-          - {}
 paths:
   /health:
-    $ref: '#/components/pathItems/health'
+    get:
+      x-internal: server
+      x-codegen-custom-handler: true
+      operationId: GetHealth
+      summary: Get health status
+      tags:
+        - Health
+      description: Check the health status of the application
+      responses:
+        '200':
+          $ref: '#/components/responses/HealthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - {}
   /todos:
     get:
       operationId: GetTodo

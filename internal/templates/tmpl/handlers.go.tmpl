@@ -11,9 +11,9 @@ Expects:
 package bootstrap
 
 import (
-	"{{ .ProjectName }}/application"
+	"{{ .ProjectName }}/gen/application"
 {{- if .Repositories }}
-	"{{ .ProjectName }}/repositories"
+	"{{ .ProjectName }}/gen/repositories"
 {{- end }}
 {{- if .NeedsPublisher }}
 	"github.com/archesai/archesai/pkg/events"
@@ -41,9 +41,9 @@ func NewApplicationHandlers(
 {{- if .XCodegenCustomHandler }}
 		{{ .ID }}: application.New{{ .ID }}(),
 {{- else if eq .Method "GET" }}
-		{{ .ID }}: application.New{{ .ID }}({{ camelCase (or .XCodegenRepository .Tag) }}Repo),
+		{{ .ID }}: application.New{{ .ID }}({{ camelCase (or .Tag) }}Repo),
 {{- else }}
-		{{ .ID }}: application.New{{ .ID }}({{ camelCase (or .XCodegenRepository .Tag) }}Repo, publisher),
+		{{ .ID }}: application.New{{ .ID }}({{ camelCase (or .Tag) }}Repo, publisher),
 {{- end }}
 {{- end }}
 	}

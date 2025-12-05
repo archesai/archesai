@@ -3,8 +3,8 @@
 package bootstrap
 
 import (
-	"github.com/archesai/examples/basic/application"
-	"github.com/archesai/examples/basic/repositories"
+	"github.com/archesai/examples/basic/gen/application"
+	"github.com/archesai/examples/basic/gen/repositories"
 )
 
 // ApplicationHandlers holds all application-layer handlers for this package.

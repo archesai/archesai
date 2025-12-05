@@ -1,10 +1,9 @@
 get:
   x-internal: auth
   operationId: ListAccounts
-  x-codegen-repository: Account
   summary: List linked accounts
   tags:
-    - Auth
+    - Account
   description: List all linked authentication providers for the current user
   security:
     - bearerAuth: []

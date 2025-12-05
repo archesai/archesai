@@ -889,37 +889,6 @@ components:
       required:
         - total
       additionalProperties: false
-    Base:
-      title: Base
-      description: Base schema for all entities with common fields
-      x-internal: server
-      type: object
-      properties:
-        id:
-          description: Unique identifier for the resource
-          type: string
-          format: uuid
-          example: 550e8400-e29b-41d4-a716-446655440000
-          minLength: 36
-          maxLength: 36
-        createdAt:
-          description: The date and time when the resource was created
-          type: string
-          format: date-time
-          example: '2024-01-15T09:30:00Z'
-          minLength: 1
-          maxLength: 255
-        updatedAt:
-          description: The date and time when the resource was last updated
-          type: string
-          format: date-time
-          example: '2024-01-15T10:45:00Z'
-          minLength: 1
-          maxLength: 255
-      required:
-        - id
-        - createdAt
-        - updatedAt
     FilterNode:
       title: FilterNode
       description: A recursive filter node that can be a condition or group
@@ -964,6 +933,82 @@ components:
           example: example-value
       required:
         - type
+    Page:
+      description: Pagination parameters (limit & offset)
+      x-internal: server
+      type: object
+      title: Page
+      additionalProperties: false
+      properties:
+        limit:
+          description: Maximum number of items to return
+          type: integer
+          format: int32
+          minimum: 1
+          default: 10
+          maximum: 100
+          example: 10
+        offset:
+          description: Number of items to skip before starting to collect the result set
+          type: integer
+          format: int32
+          minimum: 0
+          default: 0
+          maximum: 9007199254740991
+          example: 0
+    UUID:
+      description: UUID identifier
+      x-internal: server
+      type: string
+      format: uuid
+      example: 550e8400-e29b-41d4-a716-446655440000
+      minLength: 36
+      maxLength: 36
+    Problem:
+      title: Problem
+      description: RFC 7807 (Problem Details) compliant error response
+      x-internal: server
+      type: object
+      additionalProperties: false
+      required:
+        - status
+        - title
+      properties:
+        status:
+          type: integer
+          format: int32
+          description: HTTP status code
+          minimum: 100
+          maximum: 599
+          example: 400
+        type:
+          type: string
+          format: uri
+          description: URI identifying the problem type
+          default: about:blank
+          example: https://api.example.com/errors/validation-failed
+          minLength: 1
+          maxLength: 2048
+        title:
+          type: string
+          description: Short, human-readable summary
+          example: Validation Failed
+          minLength: 1
+          maxLength: 255
+          pattern: ^[\w\s\-.,!?()]+$
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence
+          example: The request body contains invalid fields
+          minLength: 1
+          maxLength: 255
+          pattern: ^[\w\s\-.,!?()]+$
+        instance:
+          type: string
+          format: uri
+          description: URI identifying the specific occurrence
+          example: https://api.example.com/auth/users/123
+          maxLength: 2048
     Health:
       title: Health
       description: Health check response
@@ -1017,82 +1062,37 @@ components:
         - timestamp
         - uptime
       additionalProperties: false
-    Page:
-      description: Pagination parameters (limit & offset)
+    Base:
+      title: Base
+      description: Base schema for all entities with common fields
       x-internal: server
       type: object
-      title: Page
-      additionalProperties: false
       properties:
-        limit:
-          description: Maximum number of items to return
-          type: integer
-          format: int32
-          minimum: 1
-          default: 10
-          maximum: 100
-          example: 10
-        offset:
-          description: Number of items to skip before starting to collect the result set
-          type: integer
-          format: int32
-          minimum: 0
-          default: 0
-          maximum: 9007199254740991
-          example: 0
-    Problem:
-      title: Problem
-      description: RFC 7807 (Problem Details) compliant error response
-      x-internal: server
-      type: object
-      additionalProperties: false
+        id:
+          description: Unique identifier for the resource
+          type: string
+          format: uuid
+          example: 550e8400-e29b-41d4-a716-446655440000
+          minLength: 36
+          maxLength: 36
+        createdAt:
+          description: The date and time when the resource was created
+          type: string
+          format: date-time
+          example: '2024-01-15T09:30:00Z'
+          minLength: 1
+          maxLength: 255
+        updatedAt:
+          description: The date and time when the resource was last updated
+          type: string
+          format: date-time
+          example: '2024-01-15T10:45:00Z'
+          minLength: 1
+          maxLength: 255
       required:
-        - status
-        - title
-      properties:
-        status:
-          type: integer
-          format: int32
-          description: HTTP status code
-          minimum: 100
-          maximum: 599
-          example: 400
-        type:
-          type: string
-          format: uri
-          description: URI identifying the problem type
-          default: about:blank
-          example: https://api.example.com/errors/validation-failed
-          minLength: 1
-          maxLength: 2048
-        title:
-          type: string
-          description: Short, human-readable summary
-          example: Validation Failed
-          minLength: 1
-          maxLength: 255
-          pattern: ^[\w\s\-.,!?()]+$
-        detail:
-          type: string
-          description: Human-readable explanation specific to this occurrence
-          example: The request body contains invalid fields
-          minLength: 1
-          maxLength: 255
-          pattern: ^[\w\s\-.,!?()]+$
-        instance:
-          type: string
-          format: uri
-          description: URI identifying the specific occurrence
-          example: https://api.example.com/auth/users/123
-          maxLength: 2048
-    UUID:
-      description: UUID identifier
-      x-internal: server
-      type: string
-      format: uuid
-      example: 550e8400-e29b-41d4-a716-446655440000
-      minLength: 36
-      maxLength: 36
+        - id
+        - createdAt
+        - updatedAt
   headers:
     RateLimitLimit:
       description: The maximum number of requests allowed per time window
@@ -1130,709 +1130,690 @@ components:
         minimum: 1
         maximum: 3600
       example: 60
-  pathItems:
-    pipelines_id_execution-plans:
-      get:
-        x-internal: pipelines
-        x-codegen-custom-handler: true
-        operationId: GetPipelineExecutionPlan
-        summary: Get execution plan for a pipeline
-        tags:
-          - Pipeline
-        description: Get the DAG execution plan showing which steps can run in parallel
-        parameters:
-          - $ref: '#/components/parameters/ResourceID'
-        security:
-          - bearerAuth: []
-        responses:
-          '200':
-            $ref: '#/components/responses/PipelineExecutionPlanResponse'
-          '400':
-            $ref: '#/components/responses/BadRequest'
-          '404':
-            $ref: '#/components/responses/NotFound'
-          '401':
-            $ref: '#/components/responses/Unauthorized'
-          '422':
-            $ref: '#/components/responses/UnprocessableEntity'
-          '429':
-            $ref: '#/components/responses/TooManyRequests'
-          '500':
-            $ref: '#/components/responses/InternalServerError'
-      post:
-        x-internal: pipelines
-        x-codegen-custom-handler: true
-        operationId: ValidatePipelineExecutionPlan
-        summary: Validate a pipeline configuration
-        tags:
-          - Pipeline
-        description: Validate that a pipeline can be executed without issues
-        parameters:
-          - $ref: '#/components/parameters/ResourceID'
-        security:
-          - bearerAuth: []
-        responses:
-          '200':
-            $ref: '#/components/responses/PipelineResponse'
-          '400':
-            $ref: '#/components/responses/BadRequest'
-          '404':
-            $ref: '#/components/responses/NotFound'
-          '401':
-            $ref: '#/components/responses/Unauthorized'
-          '422':
-            $ref: '#/components/responses/UnprocessableEntity'
-          '429':
-            $ref: '#/components/responses/TooManyRequests'
-          '500':
-            $ref: '#/components/responses/InternalServerError'
-    pipelines_id_steps:
-      get:
-        x-internal: pipelines
-        operationId: GetPipelineSteps
-        x-codegen-custom-handler: true
-        summary: Get all steps for a pipeline
-        tags:
-          - Pipeline
-        description: Retrieve all steps and their dependencies for a pipeline
-        parameters:
-          - $ref: '#/components/parameters/ResourceID'
-        security:
-          - bearerAuth: []
-        responses:
-          '200':
-            $ref: '#/components/responses/PipelineStepListResponse'
-          '400':
-            $ref: '#/components/responses/BadRequest'
-          '401':
-            $ref: '#/components/responses/Unauthorized'
-          '404':
-            $ref: '#/components/responses/NotFound'
-          '422':
-            $ref: '#/components/responses/UnprocessableEntity'
-          '429':
-            $ref: '#/components/responses/TooManyRequests'
-          '500':
-            $ref: '#/components/responses/InternalServerError'
-      post:
-        x-internal: pipelines
-        x-codegen-custom-handler: true
-        operationId: CreatePipelineStep
-        summary: Add a step to a pipeline
-        tags:
-          - Pipeline
-        description: Create a step in the pipeline
-        parameters:
-          - $ref: '#/components/parameters/ResourceID'
-        requestBody:
-          description: Pipeline step creation request
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  toolID:
-                    description: UUID identifier
-                    type: string
-                    format: uuid
-                    example: 550e8400-e29b-41d4-a716-446655440000
-                    minLength: 36
-                    maxLength: 36
-                  name:
-                    description: Name of the step
-                    type: string
-                    minLength: 1
-                    maxLength: 255
-                    example: Validate Input Data
-                    pattern: ^[\w\s\-.,!?()@#+/]*$
-                  description:
-                    description: Description of what this step does
-                    type: string
-                    maxLength: 1000
-                    example: Validates the input data against the configured schema
-                    pattern: ^[\w\s\-.,!?()@#+/]*$
-                  position:
-                    description: Position in the pipeline (for ordering)
-                    type: integer
-                    format: int32
-                    minimum: 0
-                    maximum: 2147483647
-                    example: 1
-                  dependencies:
-                    description: IDs of steps this step depends on
-                    type: array
-                    maxItems: 1000
-                    items:
-                      description: UUID identifier
-                      type: string
-                      format: uuid
-                      example: 550e8400-e29b-41d4-a716-446655440000
-                      minLength: 36
-                      maxLength: 36
-                    example:
-                      - 550e8400-e29b-41d4-a716-446655440001
-                      - 450e8400-e29b-41d4-a716-446655440002
-                required:
-                  - toolID
-                  - name
-          required: true
-        security:
-          - bearerAuth: []
-        responses:
-          '201':
-            $ref: '#/components/responses/PipelineStepResponse'
-          '400':
-            $ref: '#/components/responses/BadRequest'
-          '404':
-            $ref: '#/components/responses/NotFound'
-          '401':
-            $ref: '#/components/responses/Unauthorized'
-          '422':
-            $ref: '#/components/responses/UnprocessableEntity'
-          '429':
-            $ref: '#/components/responses/TooManyRequests'
-          '500':
-            $ref: '#/components/responses/InternalServerError'
-    pipelines_id:
-      get:
-        x-internal: pipelines
-        operationId: GetPipeline
-        summary: Find a pipeline
-        tags:
-          - Pipeline
-        description: Find a pipeline
-        parameters:
-          - $ref: '#/components/parameters/ResourceID'
-        security:
-          - bearerAuth: []
-        responses:
-          '200':
-            $ref: '#/components/responses/PipelineResponse'
-          '400':
-            $ref: '#/components/responses/BadRequest'
-          '401':
-            $ref: '#/components/responses/Unauthorized'
-          '404':
-            $ref: '#/components/responses/NotFound'
-          '422':
-            $ref: '#/components/responses/UnprocessableEntity'
-          '429':
-            $ref: '#/components/responses/TooManyRequests'
-          '500':
-            $ref: '#/components/responses/InternalServerError'
-      patch:
-        x-internal: pipelines
-        operationId: UpdatePipeline
-        summary: Update a pipeline
-        tags:
-          - Pipeline
-        description: Update a pipeline
-        requestBody:
-          description: Pipeline update data
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  description:
-                    description: The pipeline description
-                    type: string
-                    example: Example description text
-                    maxLength: 1000
-                    pattern: ^[\w\s\-.,!?()@#+/]*$
-                  name:
-                    description: The pipeline name
-                    type: string
-                    example: Example Name
-                    maxLength: 255
-                    pattern: ^[\w\s\-.,!?()@#+/]*$
-        parameters:
-          - $ref: '#/components/parameters/ResourceID'
-        security:
-          - bearerAuth: []
-        responses:
-          '200':
-            $ref: '#/components/responses/PipelineResponse'
-          '404':
-            $ref: '#/components/responses/NotFound'
-          '429':
-            $ref: '#/components/responses/TooManyRequests'
-          '500':
-            $ref: '#/components/responses/InternalServerError'
-          '400':
-            $ref: '#/components/responses/BadRequest'
-          '401':
-            $ref: '#/components/responses/Unauthorized'
-          '422':
-            $ref: '#/components/responses/UnprocessableEntity'
-      delete:
-        x-internal: pipelines
-        operationId: DeletePipeline
-        summary: Delete a pipeline
-        tags:
-          - Pipeline
-        description: Delete a pipeline
-        parameters:
-          - $ref: '#/components/parameters/ResourceID'
-        security:
-          - bearerAuth: []
-        responses:
-          '204':
-            $ref: '#/components/responses/NoContent'
-          '400':
-            $ref: '#/components/responses/BadRequest'
-          '401':
-            $ref: '#/components/responses/Unauthorized'
-          '404':
-            $ref: '#/components/responses/NotFound'
-          '422':
-            $ref: '#/components/responses/UnprocessableEntity'
-          '429':
-            $ref: '#/components/responses/TooManyRequests'
-          '500':
-            $ref: '#/components/responses/InternalServerError'
-    pipelines:
-      get:
-        x-internal: pipelines
-        operationId: ListPipelines
-        summary: List pipelines
-        tags:
-          - Pipeline
-        description: List pipelines
-        parameters:
-          - $ref: '#/components/parameters/PipelinesFilter'
-          - $ref: '#/components/parameters/PageQuery'
-          - $ref: '#/components/parameters/PipelinesSort'
-        security:
-          - bearerAuth: []
-        responses:
-          '200':
-            $ref: '#/components/responses/PipelineListResponse'
-          '400':
-            $ref: '#/components/responses/BadRequest'
-          '401':
-            $ref: '#/components/responses/Unauthorized'
-          '422':
-            $ref: '#/components/responses/UnprocessableEntity'
-          '429':
-            $ref: '#/components/responses/TooManyRequests'
-          '500':
-            $ref: '#/components/responses/InternalServerError'
-      post:
-        x-internal: pipelines
-        operationId: CreatePipeline
-        summary: Create a pipeline
-        tags:
-          - Pipeline
-        description: Create a pipeline
-        requestBody:
-          description: Pipeline creation request
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  description:
-                    description: The pipeline description
-                    type: string
-                    example: Example description text
-                    minLength: 1
-                    maxLength: 1000
-                    pattern: ^[\w\s\-.,!?()@#+/]*$
-                  name:
-                    description: The pipeline name
-                    type: string
-                    example: Example Name
-                    minLength: 1
-                    maxLength: 255
-                    pattern: ^[\w\s\-.,!?()@#+/]*$
-          required: true
-        security:
-          - bearerAuth: []
-        responses:
-          '201':
-            $ref: '#/components/responses/PipelineResponse'
-          '400':
-            $ref: '#/components/responses/BadRequest'
-          '401':
-            $ref: '#/components/responses/Unauthorized'
-          '422':
-            $ref: '#/components/responses/UnprocessableEntity'
-          '429':
-            $ref: '#/components/responses/TooManyRequests'
-          '500':
-            $ref: '#/components/responses/InternalServerError'
-    runs_id:
-      get:
-        x-internal: pipelines
-        operationId: GetRun
-        summary: Find a run
-        tags:
-          - Run
-        description: Find a run
-        parameters:
-          - $ref: '#/components/parameters/ResourceID'
-        security:
-          - bearerAuth: []
-        responses:
-          '200':
-            $ref: '#/components/responses/RunResponse'
-          '400':
-            $ref: '#/components/responses/BadRequest'
-          '401':
-            $ref: '#/components/responses/Unauthorized'
-          '404':
-            $ref: '#/components/responses/NotFound'
-          '422':
-            $ref: '#/components/responses/UnprocessableEntity'
-          '429':
-            $ref: '#/components/responses/TooManyRequests'
-          '500':
-            $ref: '#/components/responses/InternalServerError'
-      patch:
-        x-internal: pipelines
-        operationId: UpdateRun
-        summary: Update a run
-        tags:
-          - Run
-        description: Update a run
-        requestBody:
-          description: Run update data
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  pipelineID:
-                    description: UUID identifier
-                    type: string
-                    format: uuid
-                    example: 550e8400-e29b-41d4-a716-446655440000
-                    minLength: 36
-                    maxLength: 36
-        parameters:
-          - $ref: '#/components/parameters/ResourceID'
-        security:
-          - bearerAuth: []
-        responses:
-          '200':
-            $ref: '#/components/responses/RunResponse'
-          '404':
-            $ref: '#/components/responses/NotFound'
-          '429':
-            $ref: '#/components/responses/TooManyRequests'
-          '500':
-            $ref: '#/components/responses/InternalServerError'
-          '400':
-            $ref: '#/components/responses/BadRequest'
-          '401':
-            $ref: '#/components/responses/Unauthorized'
-          '422':
-            $ref: '#/components/responses/UnprocessableEntity'
-      delete:
-        x-internal: pipelines
-        operationId: DeleteRun
-        summary: Delete a run
-        tags:
-          - Run
-        description: Delete a run
-        parameters:
-          - $ref: '#/components/parameters/ResourceID'
-        security:
-          - bearerAuth: []
-        responses:
-          '204':
-            $ref: '#/components/responses/NoContent'
-          '400':
-            $ref: '#/components/responses/BadRequest'
-          '401':
-            $ref: '#/components/responses/Unauthorized'
-          '404':
-            $ref: '#/components/responses/NotFound'
-          '422':
-            $ref: '#/components/responses/UnprocessableEntity'
-          '429':
-            $ref: '#/components/responses/TooManyRequests'
-          '500':
-            $ref: '#/components/responses/InternalServerError'
-    runs:
-      get:
-        x-internal: pipelines
-        operationId: ListRuns
-        summary: List runs
-        tags:
-          - Run
-        description: List runs
-        parameters:
-          - $ref: '#/components/parameters/RunsFilter'
-          - $ref: '#/components/parameters/PageQuery'
-          - $ref: '#/components/parameters/RunsSort'
-        security:
-          - bearerAuth: []
-        responses:
-          '200':
-            $ref: '#/components/responses/RunListResponse'
-          '400':
-            $ref: '#/components/responses/BadRequest'
-          '401':
-            $ref: '#/components/responses/Unauthorized'
-          '422':
-            $ref: '#/components/responses/UnprocessableEntity'
-          '429':
-            $ref: '#/components/responses/TooManyRequests'
-          '500':
-            $ref: '#/components/responses/InternalServerError'
-      post:
-        x-internal: pipelines
-        operationId: CreateRun
-        summary: Create a run
-        tags:
-          - Run
-        description: Create a run
-        requestBody:
-          description: Run creation request
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  pipelineID:
-                    description: UUID identifier
-                    type: string
-                    format: uuid
-                    example: 550e8400-e29b-41d4-a716-446655440000
-                    minLength: 36
-                    maxLength: 36
-                required:
-                  - pipelineID
-          required: true
-        security:
-          - bearerAuth: []
-        responses:
-          '201':
-            $ref: '#/components/responses/RunResponse'
-          '400':
-            $ref: '#/components/responses/BadRequest'
-          '401':
-            $ref: '#/components/responses/Unauthorized'
-          '422':
-            $ref: '#/components/responses/UnprocessableEntity'
-          '429':
-            $ref: '#/components/responses/TooManyRequests'
-          '500':
-            $ref: '#/components/responses/InternalServerError'
-    tools_id:
-      get:
-        x-internal: pipelines
-        operationId: GetTool
-        summary: Find a tool
-        tags:
-          - Tool
-        description: Find a tool
-        parameters:
-          - $ref: '#/components/parameters/ResourceID'
-        security:
-          - bearerAuth: []
-        responses:
-          '200':
-            $ref: '#/components/responses/ToolResponse'
-          '400':
-            $ref: '#/components/responses/BadRequest'
-          '401':
-            $ref: '#/components/responses/Unauthorized'
-          '404':
-            $ref: '#/components/responses/NotFound'
-          '422':
-            $ref: '#/components/responses/UnprocessableEntity'
-          '429':
-            $ref: '#/components/responses/TooManyRequests'
-          '500':
-            $ref: '#/components/responses/InternalServerError'
-      patch:
-        x-internal: pipelines
-        operationId: UpdateTool
-        summary: Update a tool
-        tags:
-          - Tool
-        description: Update a tool
-        requestBody:
-          description: Tool update data
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  description:
-                    description: The tool description
-                    type: string
-                    minLength: 1
-                    example: Example description text
-                    maxLength: 1000
-                    pattern: ^[\w\s\-.,!?()@#+/]*$
-                  name:
-                    description: The name of the tool
-                    type: string
-                    minLength: 1
-                    example: Example Name
-                    maxLength: 255
-                    pattern: ^[\w\s\-.,!?()@#+/]*$
-        parameters:
-          - $ref: '#/components/parameters/ResourceID'
-        security:
-          - bearerAuth: []
-        responses:
-          '200':
-            $ref: '#/components/responses/ToolResponse'
-          '404':
-            $ref: '#/components/responses/NotFound'
-          '429':
-            $ref: '#/components/responses/TooManyRequests'
-          '500':
-            $ref: '#/components/responses/InternalServerError'
-          '400':
-            $ref: '#/components/responses/BadRequest'
-          '401':
-            $ref: '#/components/responses/Unauthorized'
-          '422':
-            $ref: '#/components/responses/UnprocessableEntity'
-      delete:
-        x-internal: pipelines
-        operationId: DeleteTool
-        summary: Delete a tool
-        tags:
-          - Tool
-        description: Delete a tool
-        parameters:
-          - $ref: '#/components/parameters/ResourceID'
-        security:
-          - bearerAuth: []
-        responses:
-          '204':
-            $ref: '#/components/responses/NoContent'
-          '400':
-            $ref: '#/components/responses/BadRequest'
-          '401':
-            $ref: '#/components/responses/Unauthorized'
-          '404':
-            $ref: '#/components/responses/NotFound'
-          '422':
-            $ref: '#/components/responses/UnprocessableEntity'
-          '429':
-            $ref: '#/components/responses/TooManyRequests'
-          '500':
-            $ref: '#/components/responses/InternalServerError'
-    tools:
-      get:
-        x-internal: pipelines
-        operationId: ListTools
-        summary: List tools
-        tags:
-          - Tool
-        description: List tools
-        parameters:
-          - $ref: '#/components/parameters/ToolsFilter'
-          - $ref: '#/components/parameters/PageQuery'
-          - $ref: '#/components/parameters/ToolsSort'
-        security:
-          - bearerAuth: []
-        responses:
-          '200':
-            $ref: '#/components/responses/ToolListResponse'
-          '400':
-            $ref: '#/components/responses/BadRequest'
-          '401':
-            $ref: '#/components/responses/Unauthorized'
-          '422':
-            $ref: '#/components/responses/UnprocessableEntity'
-          '429':
-            $ref: '#/components/responses/TooManyRequests'
-          '500':
-            $ref: '#/components/responses/InternalServerError'
-      post:
-        x-internal: pipelines
-        operationId: CreateTool
-        summary: Create a tool
-        tags:
-          - Tool
-        description: Create a tool
-        requestBody:
-          description: Tool creation request
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  description:
-                    description: The tool description
-                    type: string
-                    minLength: 1
-                    maxLength: 1000
-                    example: Example description text
-                    pattern: ^[\w\s\-.,!?()@#+/]*$
-                  name:
-                    description: The name of the tool
-                    type: string
-                    minLength: 1
-                    maxLength: 255
-                    example: Example Name
-                    pattern: ^[\w\s\-.,!?()@#+/]*$
-                required:
-                  - description
-                  - name
-          required: true
-        security:
-          - bearerAuth: []
-        responses:
-          '201':
-            $ref: '#/components/responses/ToolResponse'
-          '400':
-            $ref: '#/components/responses/BadRequest'
-          '401':
-            $ref: '#/components/responses/Unauthorized'
-          '422':
-            $ref: '#/components/responses/UnprocessableEntity'
-          '429':
-            $ref: '#/components/responses/TooManyRequests'
-          '500':
-            $ref: '#/components/responses/InternalServerError'
-    health:
-      get:
-        x-internal: server
-        x-codegen-custom-handler: true
-        operationId: GetHealth
-        summary: Get health status
-        tags:
-          - Health
-        description: Check the health status of the application
-        responses:
-          '200':
-            $ref: '#/components/responses/HealthResponse'
-          '400':
-            $ref: '#/components/responses/BadRequest'
-          '401':
-            $ref: '#/components/responses/Unauthorized'
-          '429':
-            $ref: '#/components/responses/TooManyRequests'
-          '500':
-            $ref: '#/components/responses/InternalServerError'
-        security:
-          - {}
 paths:
   /pipelines/{id}/execution-plans:
-    $ref: '#/components/pathItems/pipelines_id_execution-plans'
+    get:
+      x-internal: pipelines
+      x-codegen-custom-handler: true
+      operationId: GetPipelineExecutionPlan
+      summary: Get execution plan for a pipeline
+      tags:
+        - Pipeline
+      description: Get the DAG execution plan showing which steps can run in parallel
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/PipelineExecutionPlanResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      x-internal: pipelines
+      x-codegen-custom-handler: true
+      operationId: ValidatePipelineExecutionPlan
+      summary: Validate a pipeline configuration
+      tags:
+        - Pipeline
+      description: Validate that a pipeline can be executed without issues
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/PipelineResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /pipelines/{id}/steps:
-    $ref: '#/components/pathItems/pipelines_id_steps'
+    get:
+      x-internal: pipelines
+      operationId: GetPipelineSteps
+      x-codegen-custom-handler: true
+      summary: Get all steps for a pipeline
+      tags:
+        - Pipeline
+      description: Retrieve all steps and their dependencies for a pipeline
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/PipelineStepListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      x-internal: pipelines
+      x-codegen-custom-handler: true
+      operationId: CreatePipelineStep
+      summary: Add a step to a pipeline
+      tags:
+        - Pipeline
+      description: Create a step in the pipeline
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      requestBody:
+        description: Pipeline step creation request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                toolID:
+                  description: UUID identifier
+                  type: string
+                  format: uuid
+                  example: 550e8400-e29b-41d4-a716-446655440000
+                  minLength: 36
+                  maxLength: 36
+                name:
+                  description: Name of the step
+                  type: string
+                  minLength: 1
+                  maxLength: 255
+                  example: Validate Input Data
+                  pattern: ^[\w\s\-.,!?()@#+/]*$
+                description:
+                  description: Description of what this step does
+                  type: string
+                  maxLength: 1000
+                  example: Validates the input data against the configured schema
+                  pattern: ^[\w\s\-.,!?()@#+/]*$
+                position:
+                  description: Position in the pipeline (for ordering)
+                  type: integer
+                  format: int32
+                  minimum: 0
+                  maximum: 2147483647
+                  example: 1
+                dependencies:
+                  description: IDs of steps this step depends on
+                  type: array
+                  maxItems: 1000
+                  items:
+                    description: UUID identifier
+                    type: string
+                    format: uuid
+                    example: 550e8400-e29b-41d4-a716-446655440000
+                    minLength: 36
+                    maxLength: 36
+                  example:
+                    - 550e8400-e29b-41d4-a716-446655440001
+                    - 450e8400-e29b-41d4-a716-446655440002
+              required:
+                - toolID
+                - name
+        required: true
+      security:
+        - bearerAuth: []
+      responses:
+        '201':
+          $ref: '#/components/responses/PipelineStepResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /pipelines/{id}:
-    $ref: '#/components/pathItems/pipelines_id'
+    get:
+      x-internal: pipelines
+      operationId: GetPipeline
+      summary: Find a pipeline
+      tags:
+        - Pipeline
+      description: Find a pipeline
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/PipelineResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    patch:
+      x-internal: pipelines
+      operationId: UpdatePipeline
+      summary: Update a pipeline
+      tags:
+        - Pipeline
+      description: Update a pipeline
+      requestBody:
+        description: Pipeline update data
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                description:
+                  description: The pipeline description
+                  type: string
+                  example: Example description text
+                  maxLength: 1000
+                  pattern: ^[\w\s\-.,!?()@#+/]*$
+                name:
+                  description: The pipeline name
+                  type: string
+                  example: Example Name
+                  maxLength: 255
+                  pattern: ^[\w\s\-.,!?()@#+/]*$
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/PipelineResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+    delete:
+      x-internal: pipelines
+      operationId: DeletePipeline
+      summary: Delete a pipeline
+      tags:
+        - Pipeline
+      description: Delete a pipeline
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /pipelines:
-    $ref: '#/components/pathItems/pipelines'
+    get:
+      x-internal: pipelines
+      operationId: ListPipelines
+      summary: List pipelines
+      tags:
+        - Pipeline
+      description: List pipelines
+      parameters:
+        - $ref: '#/components/parameters/PipelinesFilter'
+        - $ref: '#/components/parameters/PageQuery'
+        - $ref: '#/components/parameters/PipelinesSort'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/PipelineListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      x-internal: pipelines
+      operationId: CreatePipeline
+      summary: Create a pipeline
+      tags:
+        - Pipeline
+      description: Create a pipeline
+      requestBody:
+        description: Pipeline creation request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                description:
+                  description: The pipeline description
+                  type: string
+                  example: Example description text
+                  minLength: 1
+                  maxLength: 1000
+                  pattern: ^[\w\s\-.,!?()@#+/]*$
+                name:
+                  description: The pipeline name
+                  type: string
+                  example: Example Name
+                  minLength: 1
+                  maxLength: 255
+                  pattern: ^[\w\s\-.,!?()@#+/]*$
+        required: true
+      security:
+        - bearerAuth: []
+      responses:
+        '201':
+          $ref: '#/components/responses/PipelineResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /runs/{id}:
-    $ref: '#/components/pathItems/runs_id'
+    get:
+      x-internal: pipelines
+      operationId: GetRun
+      summary: Find a run
+      tags:
+        - Run
+      description: Find a run
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/RunResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    patch:
+      x-internal: pipelines
+      operationId: UpdateRun
+      summary: Update a run
+      tags:
+        - Run
+      description: Update a run
+      requestBody:
+        description: Run update data
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pipelineID:
+                  description: UUID identifier
+                  type: string
+                  format: uuid
+                  example: 550e8400-e29b-41d4-a716-446655440000
+                  minLength: 36
+                  maxLength: 36
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/RunResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+    delete:
+      x-internal: pipelines
+      operationId: DeleteRun
+      summary: Delete a run
+      tags:
+        - Run
+      description: Delete a run
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /runs:
-    $ref: '#/components/pathItems/runs'
+    get:
+      x-internal: pipelines
+      operationId: ListRuns
+      summary: List runs
+      tags:
+        - Run
+      description: List runs
+      parameters:
+        - $ref: '#/components/parameters/RunsFilter'
+        - $ref: '#/components/parameters/PageQuery'
+        - $ref: '#/components/parameters/RunsSort'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/RunListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      x-internal: pipelines
+      operationId: CreateRun
+      summary: Create a run
+      tags:
+        - Run
+      description: Create a run
+      requestBody:
+        description: Run creation request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pipelineID:
+                  description: UUID identifier
+                  type: string
+                  format: uuid
+                  example: 550e8400-e29b-41d4-a716-446655440000
+                  minLength: 36
+                  maxLength: 36
+              required:
+                - pipelineID
+        required: true
+      security:
+        - bearerAuth: []
+      responses:
+        '201':
+          $ref: '#/components/responses/RunResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /tools/{id}:
-    $ref: '#/components/pathItems/tools_id'
+    get:
+      x-internal: pipelines
+      operationId: GetTool
+      summary: Find a tool
+      tags:
+        - Tool
+      description: Find a tool
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/ToolResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    patch:
+      x-internal: pipelines
+      operationId: UpdateTool
+      summary: Update a tool
+      tags:
+        - Tool
+      description: Update a tool
+      requestBody:
+        description: Tool update data
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                description:
+                  description: The tool description
+                  type: string
+                  minLength: 1
+                  example: Example description text
+                  maxLength: 1000
+                  pattern: ^[\w\s\-.,!?()@#+/]*$
+                name:
+                  description: The name of the tool
+                  type: string
+                  minLength: 1
+                  example: Example Name
+                  maxLength: 255
+                  pattern: ^[\w\s\-.,!?()@#+/]*$
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/ToolResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+    delete:
+      x-internal: pipelines
+      operationId: DeleteTool
+      summary: Delete a tool
+      tags:
+        - Tool
+      description: Delete a tool
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /tools:
-    $ref: '#/components/pathItems/tools'
+    get:
+      x-internal: pipelines
+      operationId: ListTools
+      summary: List tools
+      tags:
+        - Tool
+      description: List tools
+      parameters:
+        - $ref: '#/components/parameters/ToolsFilter'
+        - $ref: '#/components/parameters/PageQuery'
+        - $ref: '#/components/parameters/ToolsSort'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/ToolListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      x-internal: pipelines
+      operationId: CreateTool
+      summary: Create a tool
+      tags:
+        - Tool
+      description: Create a tool
+      requestBody:
+        description: Tool creation request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                description:
+                  description: The tool description
+                  type: string
+                  minLength: 1
+                  maxLength: 1000
+                  example: Example description text
+                  pattern: ^[\w\s\-.,!?()@#+/]*$
+                name:
+                  description: The name of the tool
+                  type: string
+                  minLength: 1
+                  maxLength: 255
+                  example: Example Name
+                  pattern: ^[\w\s\-.,!?()@#+/]*$
+              required:
+                - description
+                - name
+        required: true
+      security:
+        - bearerAuth: []
+      responses:
+        '201':
+          $ref: '#/components/responses/ToolResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /health:
-    $ref: '#/components/pathItems/health'
+    get:
+      x-internal: server
+      x-codegen-custom-handler: true
+      operationId: GetHealth
+      summary: Get health status
+      tags:
+        - Health
+      description: Check the health status of the application
+      responses:
+        '200':
+          $ref: '#/components/responses/HealthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - {}

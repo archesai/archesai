@@ -13,10 +13,10 @@ import (
 
 	"github.com/google/uuid"
 
-	"{{ .ProjectName }}/models"
-	"{{ .ProjectName }}/repositories"
+	"{{ .ProjectName }}/gen/models"
+	"{{ .ProjectName }}/gen/repositories"
 	"github.com/archesai/archesai/pkg/events"
-	servermodels "github.com/archesai/archesai/pkg/server/models"
+	servermodels "github.com/archesai/archesai/pkg/server/gen/models"
 )
 
 // ============================================================================
@@ -105,7 +105,7 @@ type {{ .Operation.ID }} interface {
 
 // {{ .Operation.ID }}Impl is the default implementation of {{ .Operation.ID }}.
 type {{ .Operation.ID }}Impl struct {
-	repo      repositories.{{ if .Operation.XCodegenRepository }}{{ .Operation.XCodegenRepository }}{{ else }}{{ .Operation.Tag }}{{ end }}Repository
+	repo      repositories.{{ .Operation.Tag }}Repository
 {{- if ne .Operation.Method "GET" }}
 	publisher events.Publisher
 {{- end }}
@@ -113,7 +113,7 @@ type {{ .Operation.ID }}Impl struct {
 
 // New{{ .Operation.ID }} creates a new {{ .Operation.ID }} handler.
 func New{{ .Operation.ID }}(
-	repo repositories.{{ if .Operation.XCodegenRepository }}{{ .Operation.XCodegenRepository }}{{ else }}{{ .Operation.Tag }}{{ end }}Repository,
+	repo repositories.{{ .Operation.Tag }}Repository,
 {{- if ne .Operation.Method "GET" }}
 	publisher events.Publisher,
 {{- end }}
@@ -136,7 +136,7 @@ func (h *{{ .Operation.ID }}Impl) Execute(ctx context.Context, input *{{ .Operat
 	}
 
 	// Publish domain event
-	event := models.New{{ if .Operation.XCodegenRepository }}{{ .Operation.XCodegenRepository }}{{ else }}{{ .Operation.Tag }}{{ end }}DeletedEvent(input.ID)
+	event := models.New{{ .Operation.Tag }}DeletedEvent(input.ID)
 	_ = h.publisher.Publish(ctx, event)
 
 	return nil
@@ -190,7 +190,7 @@ func (h *{{ .Operation.ID }}Impl) Execute(ctx context.Context, input *{{ .Operat
 {{- end }}
 {{- else if eq .Operation.Method "POST" }}
 	// Create entity
-	entity := &models.{{ if .Operation.XCodegenRepository }}{{ .Operation.XCodegenRepository }}{{ else }}{{ .Operation.Tag }}{{ end }}{
+	entity := &models.{{ .Operation.Tag }}{
 		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
@@ -204,7 +204,7 @@ func (h *{{ .Operation.ID }}Impl) Execute(ctx context.Context, input *{{ .Operat
 	}
 
 	// Publish event
-	event := models.New{{ if .Operation.XCodegenRepository }}{{ .Operation.XCodegenRepository }}{{ else }}{{ .Operation.Tag }}{{ end }}CreatedEvent(created.ID)
+	event := models.New{{ .Operation.Tag }}CreatedEvent(created.ID)
 	_ = h.publisher.Publish(ctx, event)
 
 	// Map to output
@@ -232,7 +232,7 @@ func (h *{{ .Operation.ID }}Impl) Execute(ctx context.Context, input *{{ .Operat
 	}
 
 	// Publish event
-	event := models.New{{ if .Operation.XCodegenRepository }}{{ .Operation.XCodegenRepository }}{{ else }}{{ .Operation.Tag }}{{ end }}UpdatedEvent(updated.ID)
+	event := models.New{{ .Operation.Tag }}UpdatedEvent(updated.ID)
 	_ = h.publisher.Publish(ctx, event)
 
 	// Map to output

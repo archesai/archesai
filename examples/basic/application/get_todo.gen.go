@@ -8,8 +8,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/examples/basic/models"
-	"github.com/archesai/examples/basic/repositories"
+	"github.com/archesai/examples/basic/gen/models"
+	"github.com/archesai/examples/basic/gen/repositories"
 )
 
 // ============================================================================

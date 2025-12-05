@@ -1,10 +1,9 @@
 get:
   x-internal: auth
   operationId: ListSessions
-  x-codegen-repository: Session
   summary: List sessions
   tags:
-    - Auth
+    - Session
   description: List all active sessions for the current user
   security:
     - bearerAuth: []

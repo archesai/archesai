@@ -11,8 +11,6 @@ package application
 import (
 	"context"
 	"fmt"
-
-	"github.com/google/uuid"
 )
 
 // Ensure {{ .Operation.ID }}Impl implements {{ .Operation.ID }}
@@ -35,12 +33,12 @@ func New{{ .Operation.ID }}(
 // Execute performs the {{ .Operation.ID }} operation.
 {{- $successResponse := .Operation.GetSuccessResponse }}
 {{- if and $successResponse (eq $successResponse.StatusCode "204") }}
-func (h *{{ .Operation.ID }}Impl) Execute(ctx context.Context, input *{{ .Operation.ID }}Input) error {
+func (h *{{ .Operation.ID }}Impl) Execute(_ context.Context, _ *{{ .Operation.ID }}Input) error {
 	// TODO: Implement {{ .Operation.ID }} logic
 	return fmt.Errorf("not implemented")
 }
 {{- else }}
-func (h *{{ .Operation.ID }}Impl) Execute(ctx context.Context, input *{{ .Operation.ID }}Input) (*{{ .Operation.ID }}Output, error) {
+func (h *{{ .Operation.ID }}Impl) Execute(_ context.Context, _ *{{ .Operation.ID }}Input) (*{{ .Operation.ID }}Output, error) {
 	// TODO: Implement {{ .Operation.ID }} logic
 	return nil, fmt.Errorf("not implemented")
 }

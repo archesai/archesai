@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 
 	"github.com/archesai/archesai/cmd/archesai/flags"
@@ -31,10 +29,7 @@ Use --only to generate specific components (comma-separated):
 By default (no --only flag), all components are generated.
 
 The --lint flag enables strict OpenAPI linting. If ANY violations are found,
-code generation will be blocked.
-
-The --dry-run flag will show what files would be generated without actually
-writing them to disk.`,
+code generation will be blocked.`,
 	SilenceErrors: true,
 	SilenceUsage:  true,
 	RunE:          runGenerate,
@@ -46,21 +41,9 @@ func init() {
 }
 
 func runGenerate(_ *cobra.Command, _ []string) error {
-	// Output is always required
-	if flags.Generate.OutputPath == "" {
-		return fmt.Errorf("--output flag is required")
-	}
-
-	// Spec path is required
-	if flags.Generate.SpecPath == "" {
-		return fmt.Errorf("--spec flag is required")
-	}
-
 	opts := codegen.Options{
 		OutputPath: flags.Generate.OutputPath,
 		SpecPath:   flags.Generate.SpecPath,
-		OrvalFix:   flags.Generate.OrvalFix,
-		DryRun:     flags.Generate.DryRun,
 		Lint:       flags.Generate.Lint,
 		Only:       flags.Generate.Only,
 	}

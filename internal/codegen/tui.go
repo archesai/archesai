@@ -5,7 +5,6 @@ import (
 	"sync"
 
 	"github.com/archesai/archesai/internal/tui"
-	"github.com/archesai/archesai/pkg/storage"
 )
 
 // RunTUI executes code generation with TUI progress display.
@@ -22,10 +21,6 @@ func RunTUI(opts Options) error {
 		{ID: "prepare", Title: "Preparing code generation"},
 		{ID: "init", Title: "Initializing code generator"},
 		{ID: "generate", Title: "Generating code"},
-	}
-
-	if opts.DryRun {
-		steps = append(steps, tui.StepDef{ID: "summary", Title: "Preparing summary"})
 	}
 
 	var prep *PreparedGeneration
@@ -69,13 +64,6 @@ func RunTUI(opts Options) error {
 
 			return fmt.Sprintf("Generated %d components", count), nil
 
-		case "summary":
-			if opts.DryRun && prep != nil {
-				memStorage := prep.Orchestrator.GetStorage().(*storage.MemoryStorage)
-				files := memStorage.GetFiles()
-				return fmt.Sprintf("%d files would be created", len(files)), nil
-			}
-			return "", nil
 		}
 
 		return "", nil
@@ -87,10 +75,6 @@ func RunTUI(opts Options) error {
 
 	// Show final summary
 	runner.PrintNewline()
-
-	if opts.DryRun && prep != nil {
-		return printDryRunResultsTUI(runner, prep.Orchestrator, opts.OutputPath)
-	}
 
 	// Show what was generated
 	mu.Lock()

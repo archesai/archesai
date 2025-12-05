@@ -29,6 +29,7 @@ require (
 	github.com/testcontainers/testcontainers-go v0.40.0
 	github.com/testcontainers/testcontainers-go/modules/postgres v0.40.0
 	github.com/testcontainers/testcontainers-go/modules/redis v0.40.0
+	go.yaml.in/yaml/v3 v3.0.4
 	go.yaml.in/yaml/v4 v4.0.0-rc.3
 	golang.org/x/crypto v0.45.0
 	golang.org/x/sync v0.18.0
@@ -197,7 +198,6 @@ require (
 	go.uber.org/atomic v1.11.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.1 // indirect
-	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/exp v0.0.0-20251125195548-87e1e737ad39 // indirect
 	golang.org/x/mod v0.30.0 // indirect
 	golang.org/x/net v0.47.0 // indirect

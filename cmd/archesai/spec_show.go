@@ -34,9 +34,9 @@ func init() {
 }
 
 func runSpecShow(_ *cobra.Command, _ []string) error {
-	specPath := flags.SpecShow.SpecPath
-	if specPath == "" {
-		return fmt.Errorf("--spec flag is required")
+	parser := openapi.NewParser()
+	if _, err := parser.Parse(flags.SpecShow.SpecPath); err != nil {
+		return fmt.Errorf("failed to parse spec: %w", err)
 	}
 
 	// Determine output format
@@ -45,9 +45,8 @@ func runSpecShow(_ *cobra.Command, _ []string) error {
 		format = openapi.RenderFormatJSON
 	}
 
-	// Parse and render spec (handles x-include processing)
-	parser := openapi.NewParser()
-	output, err := parser.ParseAndRender(specPath, format)
+	// Render document
+	output, err := parser.RenderDocument(format)
 	if err != nil {
 		return fmt.Errorf("failed to render spec: %w", err)
 	}

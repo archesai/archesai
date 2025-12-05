@@ -1,10 +1,9 @@
 get:
   x-internal: auth
   operationId: GetAccount
-  x-codegen-repository: Account
   summary: Find an account
   tags:
-    - Auth
+    - Account
   parameters:
     - in: path
       name: id

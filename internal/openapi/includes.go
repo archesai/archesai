@@ -2,6 +2,7 @@ package openapi
 
 import (
 	"fmt"
+	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -47,8 +48,6 @@ func NewIncludeMerger() *IncludeMerger {
 }
 
 // NewDefaultIncludeMerger creates an IncludeMerger with all standard includes registered.
-// This is defined in codegen (not openapi) to avoid circular dependencies between
-// internal/openapi and pkg/* packages that use go:generate to run archesai.
 func NewDefaultIncludeMerger() *IncludeMerger {
 	merger := NewIncludeMerger()
 	merger.RegisterInclude("auth", auth.APISpec)
@@ -70,75 +69,115 @@ func (m *IncludeMerger) RegisterInclude(name string, fsys IncludeFS) *IncludeMer
 	return m
 }
 
-// ProcessIncludes reads a spec file, finds x-include-* extensions, and prepares
-// a working directory with all necessary files for bundling.
-// Returns the path to the merged spec file, a cleanup function, and the names of enabled includes.
-func (m *IncludeMerger) ProcessIncludes(
-	specPath string,
-) (mergedSpecPath string, cleanup func(), enabledNames []string, err error) {
-	// Read main spec
+// BuildCompositeFS creates a composite filesystem from the spec path and enabled includes.
+// This allows libopenapi to resolve $ref references from both the local spec directory
+// and embedded include filesystems.
+func (m *IncludeMerger) BuildCompositeFS(specPath string) (*CompositeFS, []string, error) {
+	// Read main spec to find enabled includes
 	mainSpecBytes, err := os.ReadFile(specPath)
 	if err != nil {
-		return "", nil, nil, fmt.Errorf("failed to read main spec: %w", err)
+		return nil, nil, fmt.Errorf("failed to read main spec: %w", err)
 	}
 
 	// Parse as YAML node to find includes
 	var mainSpec yaml.Node
 	if err := yaml.Unmarshal(mainSpecBytes, &mainSpec); err != nil {
-		return "", nil, nil, fmt.Errorf("failed to parse main spec: %w", err)
+		return nil, nil, fmt.Errorf("failed to parse main spec: %w", err)
 	}
 
 	// Find enabled includes
 	enabledIncludes := m.findEnabledIncludes(&mainSpec)
 
 	// Build list of enabled include names
+	var enabledNames []string
 	for _, include := range enabledIncludes {
 		enabledNames = append(enabledNames, include.Name)
 	}
 
-	// If no includes, return original path with no-op cleanup
-	if len(enabledIncludes) == 0 {
-		return specPath, func() {}, enabledNames, nil
-	}
+	// Create base filesystem from the spec's directory
+	specDir := filepath.Dir(specPath)
+	baseFS := os.DirFS(specDir)
 
-	// Create temp directory for merged spec
-	tempDir, err := os.MkdirTemp("", "archesai-bundle-*")
-	if err != nil {
-		return "", nil, nil, fmt.Errorf("failed to create temp directory: %w", err)
-	}
+	// Create composite filesystem
+	composite := NewCompositeFS(baseFS)
 
-	cleanup = func() {
-		_ = os.RemoveAll(tempDir)
-	}
-
-	// Copy main spec's directory structure to temp
-	mainSpecDir := filepath.Dir(specPath)
-	if err := m.copyDir(mainSpecDir, tempDir); err != nil {
-		cleanup()
-		return "", nil, nil, fmt.Errorf("failed to copy main spec directory: %w", err)
-	}
-
-	// Extract each included spec's components directly to the main components directories
-	// This allows internal refs like #/components/responses/BadRequest to resolve correctly
+	// Add each enabled include
 	for _, include := range enabledIncludes {
-		if err := m.extractComponentsToMain(include.FS, tempDir); err != nil {
-			cleanup()
-			return "", nil, nil, fmt.Errorf(
-				"failed to extract components from %s: %w",
-				include.Name,
-				err,
-			)
+		composite.AddInclude(include.Name, include.FS)
+	}
+
+	return composite, enabledNames, nil
+}
+
+// MergeSpec reads a spec file, finds x-include-* extensions, and returns merged spec bytes.
+// The composite filesystem should be used with libopenapi to resolve $ref references.
+func (m *IncludeMerger) MergeSpec(specPath string) ([]byte, []string, error) {
+	// Read main spec
+	mainSpecBytes, err := os.ReadFile(specPath)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to read main spec: %w", err)
+	}
+
+	// Parse as YAML node
+	var mainSpec yaml.Node
+	if err := yaml.Unmarshal(mainSpecBytes, &mainSpec); err != nil {
+		return nil, nil, fmt.Errorf("failed to parse main spec: %w", err)
+	}
+
+	// Find enabled includes
+	enabledIncludes := m.findEnabledIncludes(&mainSpec)
+
+	// Build list of enabled include names
+	var enabledNames []string
+	for _, include := range enabledIncludes {
+		enabledNames = append(enabledNames, include.Name)
+	}
+
+	// If no includes, return original spec bytes
+	if len(enabledIncludes) == 0 {
+		return mainSpecBytes, enabledNames, nil
+	}
+
+	if mainSpec.Kind != yaml.DocumentNode || len(mainSpec.Content) == 0 {
+		return nil, nil, fmt.Errorf("invalid spec structure")
+	}
+
+	mainRoot := mainSpec.Content[0]
+
+	// For each include, read its spec and merge paths/tags/components/security
+	for _, include := range enabledIncludes {
+		includeBytes, err := include.FS.ReadFile("spec/openapi.yaml")
+		if err != nil {
+			return nil, nil, fmt.Errorf("failed to read include spec %s: %w", include.Name, err)
 		}
+
+		var includeSpec yaml.Node
+		if err := yaml.Unmarshal(includeBytes, &includeSpec); err != nil {
+			return nil, nil, fmt.Errorf("failed to parse include spec %s: %w", include.Name, err)
+		}
+
+		if includeSpec.Kind != yaml.DocumentNode || len(includeSpec.Content) == 0 {
+			continue
+		}
+
+		includeRoot := includeSpec.Content[0]
+
+		m.mergePaths(mainRoot, includeRoot)
+		m.mergeTags(mainRoot, includeRoot)
+		m.mergeComponents(mainRoot, includeRoot)
+		m.mergeSecurity(mainRoot, includeRoot)
 	}
 
-	// Rewrite main spec to include the merged components
-	mainSpecInTemp := filepath.Join(tempDir, filepath.Base(specPath))
-	if err := m.mergeAndRewriteSpec(mainSpecInTemp, enabledIncludes, tempDir); err != nil {
-		cleanup()
-		return "", nil, nil, fmt.Errorf("failed to merge specs: %w", err)
+	// Remove x-include-* extensions from output
+	m.removeIncludeExtensions(mainRoot)
+
+	// Marshal merged spec
+	mergedBytes, err := yaml.Marshal(&mainSpec)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to marshal merged spec: %w", err)
 	}
 
-	return mainSpecInTemp, cleanup, enabledNames, nil
+	return mergedBytes, enabledNames, nil
 }
 
 // findEnabledIncludes finds all x-include-* extensions set to true
@@ -179,286 +218,6 @@ func (m *IncludeMerger) findEnabledIncludes(doc *yaml.Node) []IncludeSpec {
 	}
 
 	return enabled
-}
-
-// copyDir copies a directory recursively
-func (m *IncludeMerger) copyDir(src, dst string) error {
-	return filepath.Walk(src, func(path string, info fs.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-
-		// Calculate relative path
-		relPath, err := filepath.Rel(src, path)
-		if err != nil {
-			return err
-		}
-
-		dstPath := filepath.Join(dst, relPath)
-
-		if info.IsDir() {
-			return os.MkdirAll(dstPath, info.Mode())
-		}
-
-		// Copy file
-		data, err := os.ReadFile(path)
-		if err != nil {
-			return err
-		}
-
-		return os.WriteFile(dstPath, data, info.Mode())
-	})
-}
-
-// extractComponentsToMain extracts component files from an included spec to the main spec's
-// components directories. This allows internal refs like #/components/responses/BadRequest
-// to resolve correctly.
-func (m *IncludeMerger) extractComponentsToMain(embedFS IncludeFS, mainDir string) error {
-	// Component directories to copy
-	componentDirs := []string{
-		"components/schemas",
-		"components/responses",
-		"components/parameters",
-		"components/headers",
-		"components/requestBodies",
-		"components/securitySchemes",
-		"components/examples",
-		"components/links",
-		"components/callbacks",
-		"components/pathItems",
-		"paths",
-	}
-
-	for _, compDir := range componentDirs {
-		srcPath := filepath.Join("spec", compDir)
-
-		// Check if this directory exists in the embedded FS
-		entries, err := embedFS.ReadDir(srcPath)
-		if err != nil {
-			// Directory doesn't exist, skip
-			continue
-		}
-
-		// Create target directory if needed
-		dstPath := filepath.Join(mainDir, compDir)
-		if err := os.MkdirAll(dstPath, 0755); err != nil {
-			return fmt.Errorf("failed to create directory %s: %w", dstPath, err)
-		}
-
-		// Copy each file
-		for _, entry := range entries {
-			if entry.IsDir() {
-				// Recursively copy subdirectories
-				subSrc := filepath.Join(srcPath, entry.Name())
-				subDst := filepath.Join(dstPath, entry.Name())
-				if err := m.extractEmbedFSDir(embedFS, subSrc, subDst); err != nil {
-					return err
-				}
-				continue
-			}
-
-			srcFile := filepath.Join(srcPath, entry.Name())
-			dstFile := filepath.Join(dstPath, entry.Name())
-
-			// Only copy if file doesn't already exist (don't overwrite main spec's files)
-			if _, err := os.Stat(dstFile); err == nil {
-				continue
-			}
-
-			data, err := embedFS.ReadFile(srcFile)
-			if err != nil {
-				return fmt.Errorf("failed to read %s: %w", srcFile, err)
-			}
-
-			if err := os.WriteFile(dstFile, data, 0644); err != nil {
-				return fmt.Errorf("failed to write %s: %w", dstFile, err)
-			}
-		}
-	}
-
-	return nil
-}
-
-// extractEmbedFSDir recursively extracts a directory from embedded FS
-func (m *IncludeMerger) extractEmbedFSDir(embedFS IncludeFS, srcDir, dstDir string) error {
-	if err := os.MkdirAll(dstDir, 0755); err != nil {
-		return err
-	}
-
-	entries, err := embedFS.ReadDir(srcDir)
-	if err != nil {
-		return err
-	}
-
-	for _, entry := range entries {
-		srcPath := filepath.Join(srcDir, entry.Name())
-		dstPath := filepath.Join(dstDir, entry.Name())
-
-		if entry.IsDir() {
-			if err := m.extractEmbedFSDir(embedFS, srcPath, dstPath); err != nil {
-				return err
-			}
-			continue
-		}
-
-		// Only copy if file doesn't already exist
-		if _, err := os.Stat(dstPath); err == nil {
-			continue
-		}
-
-		data, err := embedFS.ReadFile(srcPath)
-		if err != nil {
-			return err
-		}
-
-		if err := os.WriteFile(dstPath, data, 0644); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// mergeAndRewriteSpec merges included specs into the main spec.
-// Since component files are already copied to the main directories, we just need to
-// update the main spec's components section to include refs to those files.
-func (m *IncludeMerger) mergeAndRewriteSpec(
-	specPath string,
-	includes []IncludeSpec,
-	tempDir string,
-) error {
-	// Read main spec
-	mainSpecBytes, err := os.ReadFile(specPath)
-	if err != nil {
-		return fmt.Errorf("failed to read spec: %w", err)
-	}
-
-	var mainSpec yaml.Node
-	if err := yaml.Unmarshal(mainSpecBytes, &mainSpec); err != nil {
-		return fmt.Errorf("failed to parse spec: %w", err)
-	}
-
-	if mainSpec.Kind != yaml.DocumentNode || len(mainSpec.Content) == 0 {
-		return fmt.Errorf("invalid spec structure")
-	}
-
-	mainRoot := mainSpec.Content[0]
-
-	// For each include, read its spec and merge the component declarations
-	for _, include := range includes {
-		// Read the included spec from embedded FS
-		includeBytes, err := include.FS.ReadFile("spec/openapi.yaml")
-		if err != nil {
-			return fmt.Errorf("failed to read include spec %s: %w", include.Name, err)
-		}
-
-		var includeSpec yaml.Node
-		if err := yaml.Unmarshal(includeBytes, &includeSpec); err != nil {
-			return fmt.Errorf("failed to parse include spec %s: %w", include.Name, err)
-		}
-
-		if includeSpec.Kind != yaml.DocumentNode || len(includeSpec.Content) == 0 {
-			continue
-		}
-
-		includeRoot := includeSpec.Content[0]
-
-		// DON'T rewrite refs - component files are already in the main directory
-		// Just merge the component declarations, paths, and tags
-		m.mergePaths(mainRoot, includeRoot)
-		m.mergeTags(mainRoot, includeRoot)
-		m.mergeComponents(mainRoot, includeRoot)
-		m.mergeSecurity(mainRoot, includeRoot)
-	}
-
-	// Scan the temp directory and add any component files that aren't already declared
-	m.addUndeclaredComponents(mainRoot, tempDir)
-
-	// Remove x-include-* extensions from output
-	m.removeIncludeExtensions(mainRoot)
-
-	// Write merged spec back
-	mergedBytes, err := yaml.Marshal(&mainSpec)
-	if err != nil {
-		return fmt.Errorf("failed to marshal merged spec: %w", err)
-	}
-
-	return os.WriteFile(specPath, mergedBytes, 0644)
-}
-
-// addUndeclaredComponents scans the component directories and adds refs for any
-// files that aren't already declared in the spec's components section.
-func (m *IncludeMerger) addUndeclaredComponents(mainRoot *yaml.Node, tempDir string) {
-	componentTypes := map[string]string{
-		"components/schemas":         "schemas",
-		"components/responses":       "responses",
-		"components/parameters":      "parameters",
-		"components/headers":         "headers",
-		"components/requestBodies":   "requestBodies",
-		"components/securitySchemes": "securitySchemes",
-		"components/examples":        "examples",
-		"components/links":           "links",
-		"components/callbacks":       "callbacks",
-		"components/pathItems":       "pathItems",
-	}
-
-	// Get or create components section
-	components := m.findMapping(mainRoot, "components")
-	if components == nil {
-		components = &yaml.Node{Kind: yaml.MappingNode}
-		mainRoot.Content = append(mainRoot.Content,
-			&yaml.Node{Kind: yaml.ScalarNode, Value: "components"},
-			components,
-		)
-	}
-
-	for dirPath, compType := range componentTypes {
-		fullPath := filepath.Join(tempDir, dirPath)
-		entries, err := os.ReadDir(fullPath)
-		if err != nil {
-			// Directory doesn't exist, skip
-			continue
-		}
-
-		// Get or create this component type section
-		section := m.findMapping(components, compType)
-		if section == nil {
-			section = &yaml.Node{Kind: yaml.MappingNode}
-			components.Content = append(components.Content,
-				&yaml.Node{Kind: yaml.ScalarNode, Value: compType},
-				section,
-			)
-		}
-
-		for _, entry := range entries {
-			if entry.IsDir() {
-				continue
-			}
-
-			name := entry.Name()
-			if !strings.HasSuffix(name, ".yaml") && !strings.HasSuffix(name, ".yml") {
-				continue
-			}
-
-			// Component name is filename without extension
-			compName := strings.TrimSuffix(strings.TrimSuffix(name, ".yaml"), ".yml")
-
-			// Add if not already declared
-			if !m.hasKey(section, compName) {
-				refPath := filepath.Join(dirPath, name)
-				section.Content = append(section.Content,
-					&yaml.Node{Kind: yaml.ScalarNode, Value: compName},
-					&yaml.Node{
-						Kind: yaml.MappingNode,
-						Content: []*yaml.Node{
-							{Kind: yaml.ScalarNode, Value: "$ref"},
-							{Kind: yaml.ScalarNode, Value: refPath},
-						},
-					},
-				)
-			}
-		}
-	}
 }
 
 // mergePaths merges paths from included spec into main spec
@@ -705,4 +464,127 @@ func (m *IncludeMerger) cloneNode(node *yaml.Node) *yaml.Node {
 	}
 
 	return clone
+}
+
+// CompositeFS is a filesystem that overlays multiple filesystems.
+// It first checks the base filesystem (local disk), then falls back to embedded includes.
+// This allows libopenapi to resolve references from both local files and embedded specs.
+type CompositeFS struct {
+	base     fs.FS           // Primary filesystem (local disk)
+	includes []includeFSInfo // Embedded filesystems with their mount points
+}
+
+// includeFSInfo holds an embedded filesystem and its virtual mount point.
+type includeFSInfo struct {
+	name string    // Include name (e.g., "auth", "config")
+	fsys IncludeFS // The embedded filesystem
+}
+
+// NewCompositeFS creates a new composite filesystem.
+// The base filesystem is checked first, then includes are checked in order.
+func NewCompositeFS(base fs.FS) *CompositeFS {
+	return &CompositeFS{
+		base:     base,
+		includes: make([]includeFSInfo, 0),
+	}
+}
+
+// AddInclude adds an embedded filesystem as an overlay.
+// Files from the include's spec/ directory are accessible at the root.
+func (c *CompositeFS) AddInclude(name string, fsys IncludeFS) {
+	c.includes = append(c.includes, includeFSInfo{
+		name: name,
+		fsys: fsys,
+	})
+}
+
+// Open implements fs.FS by first checking the base filesystem, then includes.
+func (c *CompositeFS) Open(name string) (fs.File, error) {
+	// Clean the path
+	name = filepath.Clean(name)
+	name = strings.TrimPrefix(name, "/")
+
+	// Try base filesystem first
+	if f, err := c.base.Open(name); err == nil {
+		return f, nil
+	}
+
+	// Try each include's embedded filesystem
+	// Include files are under spec/ in the embed, but we want them at root
+	for _, inc := range c.includes {
+		embedPath := filepath.Join("spec", name)
+		if f, err := inc.fsys.Open(embedPath); err == nil {
+			return f, nil
+		}
+	}
+
+	return nil, &fs.PathError{Op: "open", Path: name, Err: fs.ErrNotExist}
+}
+
+// ReadDir implements fs.ReadDirFS by merging directory entries from all filesystems.
+func (c *CompositeFS) ReadDir(name string) ([]fs.DirEntry, error) {
+	name = filepath.Clean(name)
+	name = strings.TrimPrefix(name, "/")
+
+	entries := make(map[string]fs.DirEntry)
+
+	// Read from base filesystem
+	if baseDir, ok := c.base.(fs.ReadDirFS); ok {
+		if dirEntries, err := baseDir.ReadDir(name); err == nil {
+			for _, e := range dirEntries {
+				entries[e.Name()] = e
+			}
+		}
+	}
+
+	// Read from each include (only add if not already present)
+	for _, inc := range c.includes {
+		embedPath := filepath.Join("spec", name)
+		if dirEntries, err := inc.fsys.ReadDir(embedPath); err == nil {
+			for _, e := range dirEntries {
+				if _, exists := entries[e.Name()]; !exists {
+					entries[e.Name()] = e
+				}
+			}
+		}
+	}
+
+	if len(entries) == 0 {
+		return nil, &fs.PathError{Op: "readdir", Path: name, Err: fs.ErrNotExist}
+	}
+
+	// Convert map to slice
+	result := make([]fs.DirEntry, 0, len(entries))
+	for _, e := range entries {
+		result = append(result, e)
+	}
+	return result, nil
+}
+
+// ReadFile implements fs.ReadFileFS.
+func (c *CompositeFS) ReadFile(name string) (data []byte, err error) {
+	f, err := c.Open(name)
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		if cerr := f.Close(); cerr != nil && err == nil {
+			err = cerr
+		}
+	}()
+	return io.ReadAll(f)
+}
+
+// Stat implements fs.StatFS.
+func (c *CompositeFS) Stat(name string) (info fs.FileInfo, err error) {
+	f, err := c.Open(name)
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		if cerr := f.Close(); cerr != nil && err == nil {
+			err = cerr
+		}
+	}()
+	return f.Stat()
 }

@@ -1,3 +1,4 @@
+// Package spec provides data structures and constants for OpenAPI specifications.
 package spec
 
 // Schema type constants

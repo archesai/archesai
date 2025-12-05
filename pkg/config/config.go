@@ -37,7 +37,7 @@ var ConfigFileNames = []string{
 // Any struct with a Validate method can be used as a configuration.
 type Config interface {
 	// Validate checks if the configuration is valid.
-	Validate() error
+	// Validate() error
 }
 
 // Parser handles loading and parsing of configuration.

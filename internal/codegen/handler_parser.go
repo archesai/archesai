@@ -31,7 +31,7 @@ type ConstructorDef struct {
 type DependencyDef struct {
 	Name       string // e.g., "authService"
 	Type       string // e.g., "*auth.Service"
-	Package    string // e.g., "github.com/archesai/archesai/pkg/auth"
+	Package    string // e.g.,
 	IsPointer  bool   // Whether it's a pointer type
 	Resolution string // e.g., "infra.AuthService" - how to resolve this dep
 }
@@ -49,7 +49,7 @@ type DependencyRegistry struct {
 
 // DependencyResolution describes how to resolve a dependency
 type DependencyResolution struct {
-	ImportPath string // e.g., "github.com/archesai/archesai/pkg/auth"
+	ImportPath string // e.g.,
 	Resolution string // e.g., "infra.AuthService"
 }
 

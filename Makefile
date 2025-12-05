@@ -98,26 +98,23 @@ deploy-docs: ## Manually trigger documentation deployment to GitHub Pages
 # Generate Commands
 # ------------------------------------------
 
-.PHONY: generate
-generate: generate-packages ## Generate all code
-	@$(MAKE) generate-studio
-
-generate-all: ## Regenerate example configurations
-	@$(MAKE) generate
-	@$(MAKE) generate-examples
+generate: ## Regenerate example configurations
+	@$(MAKE) generate-packages
+	@$(MAKE) generate-examples generate-studio
+	@$(MAKE) format-prettier
 
 .PHONY: generate-packages
 generate-packages: ## Generate all packages
 	@go generate ./...
-	
-.PHONY: generate-studio
+
+.PHONY:
 generate-studio: ## Generate codegen
-	@go run ./cmd/archesai generate --spec ./api/openapi.yaml --output ./apps/studio --pretty --orval-fix --tui
+	@go run ./cmd/archesai generate --spec ./api/openapi.yaml --output ./apps/studio --pretty
 
 .PHONY: generate-examples ## Generate example configurations
 generate-examples:
-	@go run ./cmd/archesai generate --spec ./examples/basic/spec/openapi.yaml --output ./examples/basic --pretty --tui
-	@go run ./cmd/archesai generate --spec ./examples/authentication/spec/openapi.yaml --output ./examples/authentication --pretty --tui
+	@go run ./cmd/archesai generate --spec ./examples/basic/spec/openapi.yaml --output ./examples/basic --pretty
+	@go run ./cmd/archesai generate --spec ./examples/authentication/spec/openapi.yaml --output ./examples/authentication --pretty
 
 # ------------------------------------------
 # Test Commands
@@ -183,7 +180,7 @@ list-workflows: ## List all available GitHub workflows
 # ------------------------------------------
 
 .PHONY: lint
-lint: lint-go lint-ts lint-docs ## Run all linters 
+lint: lint-go lint-ts lint-docs ## Run all linters
 	@$(MAKE) lint-openapi
 	@echo -e "$(GREEN)✓ All linting complete!$(NC)"
 
@@ -215,7 +212,7 @@ lint-ts: lint-typecheck ## Run Node.js linter (includes typecheck)
 
 .PHONY: lint-openapi
 lint-openapi: ## Lint OpenAPI specification
-	@go run cmd/archesai generate --spec ./api/openapi.yaml --output ./apps/studio --only bundle --lint
+	@go run ./cmd/archesai spec lint --spec ./api/openapi.yaml
 
 .PHONY: lint-typecheck
 lint-typecheck: ## Run TypeScript type checking
@@ -273,7 +270,7 @@ clean-go: ## Clean Go build artifacts
 
 .PHONY: clean-generated
 clean-generated: ## Clean all generated code
-	@find . -type f -name "*.gen.*" -not -path "./internal/codegen/tmpl/*" -not -path "./pkg/auth/repositories/*" -not -path "./pkg/auth/models/*" -exec rm -f {} +
+	@find . -type f -name "*.gen.*" -not -path "./internal/codegen/tmpl/*" -not -path "./pkg/auth/gen/repositories/*" -not -path "./pkg/auth/gen/models/*" -exec rm -f {} +
 	@find . -type d -empty -delete 2>/dev/null || true
 	@rm -rf ./pkg/client/src/generated
 	@rm -f ./deployments/helm-minimal/values.schema.json
@@ -317,7 +314,7 @@ prepare-docs: bundle-openapi ## Copy markdown docs to apps/docs/docs FIXME: bund
 .PHONY: bundle-openapi
 bundle-openapi:  ## Bundle OpenAPI into single file
 	@go run cmd/archesai generate --spec ./api/openapi.yaml --output ./apps/studio --only bundle
-	
+
 # ------------------------------------------
 # Dependency Commands
 # ------------------------------------------

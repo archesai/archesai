@@ -1,3 +1,4 @@
+// Package generators provides code generation for various components of the archesai project.
 package generators
 
 import (

@@ -13,7 +13,7 @@ package bootstrap
 import (
 	"net/http"
 {{- range .InternalPackages }}
-	{{ .Alias }}bootstrap "{{ .ImportPath }}/bootstrap"
+	{{ .Alias }}bootstrap "{{ .ImportPath }}/gen/bootstrap"
 {{- end }}
 )
 
@@ -35,7 +35,7 @@ import (
 	"log/slog"
 	"net/http"
 
-	"{{ .ProjectName }}/controllers"
+	"{{ .ProjectName }}/gen/controllers"
 )
 
 // HTTPHandlers holds all HTTP handlers for this package.

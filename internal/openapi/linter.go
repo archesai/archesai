@@ -16,22 +16,30 @@ const (
 	ErrorSeverity = "error"
 )
 
-// LintWithBasePath performs strict linting with a specified base path for resolving references
-func (p *Parser) Lint(specBytes []byte) error {
+// Lint performs strict linting with a specified base path for resolving references.
+func (p *Parser) Lint() error {
 	logger := slog.Default()
 	logger.Info("Starting OpenAPI specification linting...")
+
+	// Build rule sets
 	defaultRuleSets := rulesets.BuildDefaultRuleSetsWithLogger(logger)
 	selectedRS := defaultRuleSets.GenerateOpenAPIRecommendedRuleSet()
 	owaspRules := rulesets.GetAllOWASPRules()
 	maps.Copy(selectedRS.Rules, owaspRules)
-	// Create rule execution with base path if provided
+
+	// Prepare spec bytes for linting
+	specBytes, err := p.RenderDocument(RenderFormatYAML)
+	if err != nil {
+		return fmt.Errorf("failed to render document for linting: %w", err)
+	}
+
+	// Create rule set execution context
 	execution := &motor.RuleSetExecution{
 		RuleSet: selectedRS,
 		Spec:    specBytes,
 		Logger:  logger,
 		Base:    p.basePath,
 	}
-
 	lintingResults := motor.ApplyRulesToRuleSet(execution)
 
 	// Check if there are any results (violations)

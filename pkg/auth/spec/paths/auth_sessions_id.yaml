@@ -1,10 +1,9 @@
 get:
   x-internal: auth
   operationId: GetSession
-  x-codegen-repository: Session
   summary: Find a session
   tags:
-    - Auth
+    - Session
   description: Find a session
   parameters:
     - $ref: ../components/parameters/ResourceID.yaml

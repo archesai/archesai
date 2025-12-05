@@ -2,15 +2,19 @@ package openapi
 
 import (
 	"fmt"
+	"os"
 )
 
+// RenderFormat specifies the output format for rendering OpenAPI documents.
 type RenderFormat string
 
+// Render format constants.
 const (
 	RenderFormatYAML RenderFormat = "yaml"
 	RenderFormatJSON RenderFormat = "json"
 )
 
+// RenderOptions configures document rendering.
 type RenderOptions struct {
 	Format RenderFormat
 }
@@ -31,11 +35,21 @@ func (p *Parser) RenderDocument(format RenderFormat) ([]byte, error) {
 	}
 }
 
-// ParseAndRender parses an OpenAPI specification from a file and renders it in the specified format.
-// This is a convenience method that combines Parse and RenderDocument.
-func (p *Parser) ParseAndRender(path string, format RenderFormat) ([]byte, error) {
-	if _, err := p.Parse(path); err != nil {
-		return nil, fmt.Errorf("failed to parse spec: %w", err)
+// RenderToFile renders the parsed document and writes it to the specified path.
+func (p *Parser) RenderToFile(outputPath string) (string, error) {
+	output, err := p.RenderDocument(RenderFormatYAML)
+	if err != nil {
+		return "", err
 	}
-	return p.RenderDocument(format)
+
+	if err := os.WriteFile(outputPath, output, 0644); err != nil {
+		return "", fmt.Errorf("failed to write file: %w", err)
+	}
+
+	// Resolve pathItems for compatibility
+	if err := resolvePathItems(outputPath); err != nil {
+		return "", fmt.Errorf("failed to resolve pathItems: %w", err)
+	}
+
+	return outputPath, nil
 }

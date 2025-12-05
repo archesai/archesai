@@ -1,8 +1,8 @@
 package auth
 
 import (
-	"github.com/archesai/archesai/pkg/auth/models"
-	"github.com/archesai/archesai/pkg/auth/repositories"
+	"github.com/archesai/archesai/pkg/auth/gen/models"
+	"github.com/archesai/archesai/pkg/auth/gen/repositories"
 )
 
 const (

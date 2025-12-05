@@ -6,7 +6,7 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/archesai/examples/basic/controllers"
+	"github.com/archesai/examples/basic/gen/controllers"
 )
 
 // HTTPHandlers holds all HTTP handlers for this package.

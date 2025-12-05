@@ -13,7 +13,7 @@ import (
 	"github.com/archesai/archesai/pkg/database"
 	"github.com/archesai/archesai/pkg/events"
 {{- range .InternalPackages }}
-	{{ .Alias }}bootstrap "{{ .ImportPath }}/bootstrap"
+	{{ .Alias }}bootstrap "{{ .ImportPath }}/gen/bootstrap"
 {{- end }}
 	postgresrepos "{{ .ProjectName }}/infrastructure/postgres/repositories"
 	sqliterepos "{{ .ProjectName }}/infrastructure/sqlite/repositories"

@@ -9,7 +9,27 @@ tags:
     description: Health check operations
 paths:
   /health:
-    $ref: '#/components/pathItems/health'
+    get:
+      x-internal: server
+      x-codegen-custom-handler: true
+      operationId: GetHealth
+      summary: Get health status
+      tags:
+        - Health
+      description: Check the health status of the application
+      responses:
+        '200':
+          $ref: '#/components/responses/HealthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - {}
 components:
   headers:
     RateLimitLimit:
@@ -331,26 +351,3 @@ components:
           $ref: '#/components/headers/RateLimitRemaining'
         X-RateLimit-Reset:
           $ref: '#/components/headers/RateLimitReset'
-  pathItems:
-    health:
-      get:
-        x-internal: server
-        x-codegen-custom-handler: true
-        operationId: GetHealth
-        summary: Get health status
-        tags:
-          - Health
-        description: Check the health status of the application
-        responses:
-          '200':
-            $ref: '#/components/responses/HealthResponse'
-          '400':
-            $ref: '#/components/responses/BadRequest'
-          '401':
-            $ref: '#/components/responses/Unauthorized'
-          '429':
-            $ref: '#/components/responses/TooManyRequests'
-          '500':
-            $ref: '#/components/responses/InternalServerError'
-        security:
-          - {}

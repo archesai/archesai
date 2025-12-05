@@ -43,13 +43,7 @@ func (g *BootstrapHandlersGenerator) Generate(ctx *GeneratorContext) error {
 		if op.XCodegenCustomHandler {
 			continue
 		}
-		repoName := op.XCodegenRepository
-		if repoName == "" {
-			repoName = op.Tag
-		}
-		if repoName != "" {
-			repoMap[repoName] = true
-		}
+		repoMap[op.Tag] = true
 	}
 
 	var repositories []string

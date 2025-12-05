@@ -54,6 +54,8 @@ post:
               description: The organization this API key belongs to
               type: string
               format: uuid
+              minLength: 36
+              maxLength: 36
               example: 550e8400-e29b-41d4-a716-446655440000
             scopes:
               description: List of scopes for the API key
@@ -79,6 +81,7 @@ post:
               description: When this API key expires
               type: string
               format: date-time
+              maxLength: 255
               example: '2025-01-15T09:30:00Z'
           required:
             - organizationID

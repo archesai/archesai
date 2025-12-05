@@ -124,7 +124,6 @@ func extractOperations(doc *v3.Document) ([]spec.Operation, error) {
 				Security:              extractSecurityRequirements(doc, op),
 				Responses:             responses,
 				XCodegenCustomHandler: extractXCodegenCustomHandler(op),
-				XCodegenRepository:    extractXCodegenRepository(op),
 				XInternal:             extractXInternal(op),
 				RequestBody:           requestBody,
 			}
@@ -475,20 +474,6 @@ func extractXCodegenCustomHandler(op *v3.Operation) bool {
 		}
 	}
 	return false
-}
-
-// extractXCodegenRepository extracts the repository name from x-codegen-repository extension
-func extractXCodegenRepository(op *v3.Operation) string {
-	if op.Extensions == nil {
-		return ""
-	}
-	if val, ok := op.Extensions.Get("x-codegen-repository"); ok {
-		var strVal string
-		if err := val.Decode(&strVal); err == nil {
-			return strVal
-		}
-	}
-	return ""
 }
 
 // extractXInternal extracts the x-internal extension value (e.g., "server", "config")

@@ -14,7 +14,6 @@ type Operation struct {
 	Security              []Security    // Security requirements
 	RequestBody           *RequestBody  // Processed request body schema
 	XCodegenCustomHandler bool          // Whether this operation has a custom handler implementation
-	XCodegenRepository    string        // Custom repository name from x-codegen-repository extension
 	XInternal             string        // When set (e.g., "server", "config"), this operation should be imported not generated
 }
 

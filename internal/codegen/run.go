@@ -5,7 +5,6 @@ import (
 	"path/filepath"
 
 	"github.com/archesai/archesai/internal/openapi"
-	"github.com/archesai/archesai/pkg/storage"
 )
 
 // PreparedGeneration contains the bundled spec path and configured orchestrator
@@ -25,10 +24,10 @@ func prepareGeneration(opts Options) (*PreparedGeneration, error) {
 		return nil, fmt.Errorf("failed to parse OpenAPI spec: %w", err)
 	}
 
-	// Bundle spec
+	// Write bundled spec to file (Parse already bundles internally)
 	dir := filepath.Dir(opts.SpecPath)
 	bundledPath := filepath.Join(dir, "openapi.bundled.yaml")
-	_, err = parser.Bundle(bundledPath, opts.OrvalFix)
+	_, err = parser.RenderToFile(bundledPath)
 	if err != nil {
 		return nil, err
 	}
@@ -37,9 +36,6 @@ func prepareGeneration(opts Options) (*PreparedGeneration, error) {
 	orch := NewOrchestrator(opts.OutputPath)
 	if opts.Only != "" {
 		orch = orch.WithOnly(opts.Only)
-	}
-	if opts.DryRun {
-		orch = orch.WithStorage(storage.NewMemoryStorage())
 	}
 
 	return &PreparedGeneration{
@@ -61,10 +57,6 @@ func Run(opts Options) error {
 
 	if err := prep.Orchestrator.Generate(prep.BundledPath); err != nil {
 		return fmt.Errorf("code generation failed: %w", err)
-	}
-
-	if opts.DryRun {
-		return printDryRunResults(prep.Orchestrator, opts.OutputPath)
 	}
 
 	return nil

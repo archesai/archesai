@@ -90,19 +90,7 @@ export const getConfigResponseDataApiResourcesRequestsMemoryMax = 255;
 
 
 export const getConfigResponseDataApiResourcesRequestsMemoryRegExp = new RegExp('^\\d+(Mi|Gi|Ki)?$');
-export const getConfigResponseDataAuthEnabledDefault = true;export const getConfigResponseDataAuthFirebaseEnabledDefault = false;export const getConfigResponseDataAuthFirebaseClientEmailMax = 255;
-
-
-export const getConfigResponseDataAuthFirebaseClientEmailRegExp = new RegExp('^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_\'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$');
-export const getConfigResponseDataAuthFirebasePrivateKeyMax = 10000;
-
-
-export const getConfigResponseDataAuthFirebasePrivateKeyRegExp = new RegExp('^[\\w\\s\\-.,!?()@#+/=\\n\\r]*$');
-export const getConfigResponseDataAuthFirebaseProjectIDMax = 255;
-
-
-export const getConfigResponseDataAuthFirebaseProjectIDRegExp = new RegExp('^[\\w\\-]+$');
-export const getConfigResponseDataAuthLocalEnabledDefault = true;export const getConfigResponseDataAuthLocalJwtSecretDefault = "change-me-in-production";
+export const getConfigResponseDataAuthEnabledDefault = true;export const getConfigResponseDataAuthLocalEnabledDefault = true;export const getConfigResponseDataAuthLocalJwtSecretDefault = "change-me-in-production";
 export const getConfigResponseDataAuthLocalJwtSecretMin = 32;
 export const getConfigResponseDataAuthLocalJwtSecretMax = 512;
 
@@ -615,12 +603,6 @@ export const getConfigResponse = zod.object({
 }).optional().describe('Configuration schema for the API server'),
   "auth": zod.object({
   "enabled": zod.boolean().describe('Enable authentication'),
-  "firebase": zod.object({
-  "enabled": zod.boolean().describe('Enable Firebase authentication'),
-  "clientEmail": zod.string().email().max(getConfigResponseDataAuthFirebaseClientEmailMax).regex(getConfigResponseDataAuthFirebaseClientEmailRegExp).optional().describe('Firebase service account client email address'),
-  "privateKey": zod.string().min(1).max(getConfigResponseDataAuthFirebasePrivateKeyMax).regex(getConfigResponseDataAuthFirebasePrivateKeyRegExp).optional().describe('Firebase service account private key (PEM format)'),
-  "projectID": zod.string().max(getConfigResponseDataAuthFirebaseProjectIDMax).regex(getConfigResponseDataAuthFirebaseProjectIDRegExp).optional().describe('Firebase project ID for authentication')
-}).optional().describe('Firebase authentication configuration'),
   "local": zod.object({
   "enabled": zod.boolean().describe('Enable local authentication'),
   "jwtSecret": zod.string().min(getConfigResponseDataAuthLocalJwtSecretMin).max(getConfigResponseDataAuthLocalJwtSecretMax).regex(getConfigResponseDataAuthLocalJwtSecretRegExp).describe('Secret key for JWT token signing'),
@@ -3225,6 +3207,9 @@ export const createAPIKeyBodyNameMax = 255;
 
 
 export const createAPIKeyBodyNameRegExp = new RegExp('^[\\w\\s\\-.,!?()@#+/\']+$');
+export const createAPIKeyBodyOrganizationIDMin = 36;
+export const createAPIKeyBodyOrganizationIDMax = 36;
+
 export const createAPIKeyBodyScopesItemMax = 255;
 
 
@@ -3235,14 +3220,16 @@ export const createAPIKeyBodyScopesMax = 1000;
 export const createAPIKeyBodyRateLimitDefault = 60;
 export const createAPIKeyBodyRateLimitMax = 2147483647;
 
+export const createAPIKeyBodyExpiresAtMax = 255;
+
 
 
 export const createAPIKeyBody = zod.object({
   "name": zod.string().min(1).max(createAPIKeyBodyNameMax).regex(createAPIKeyBodyNameRegExp).optional().describe('A friendly name for the API key'),
-  "organizationID": zod.string().uuid().describe('The organization this API key belongs to'),
+  "organizationID": zod.string().uuid().min(createAPIKeyBodyOrganizationIDMin).max(createAPIKeyBodyOrganizationIDMax).describe('The organization this API key belongs to'),
   "scopes": zod.array(zod.string().max(createAPIKeyBodyScopesItemMax).regex(createAPIKeyBodyScopesItemRegExp)).max(createAPIKeyBodyScopesMax).default(createAPIKeyBodyScopesDefault).describe('List of scopes for the API key'),
   "rateLimit": zod.number().min(1).max(createAPIKeyBodyRateLimitMax).default(createAPIKeyBodyRateLimitDefault).describe('Requests per minute allowed for this API key'),
-  "expiresAt": zod.string().datetime({}).optional().describe('When this API key expires')
+  "expiresAt": zod.string().datetime({}).max(createAPIKeyBodyExpiresAtMax).optional().describe('When this API key expires')
 })
 
 
@@ -3344,13 +3331,15 @@ export const updateAPIKeyBodyScopesMax = 1000;
 
 export const updateAPIKeyBodyRateLimitMax = 2147483647;
 
+export const updateAPIKeyBodyExpiresAtMax = 255;
+
 
 
 export const updateAPIKeyBody = zod.object({
   "name": zod.string().min(1).max(updateAPIKeyBodyNameMax).regex(updateAPIKeyBodyNameRegExp).optional().describe('A friendly name for the API key'),
   "scopes": zod.array(zod.string().max(updateAPIKeyBodyScopesItemMax).regex(updateAPIKeyBodyScopesItemRegExp)).max(updateAPIKeyBodyScopesMax).optional().describe('List of scopes for the API key'),
   "rateLimit": zod.number().min(1).max(updateAPIKeyBodyRateLimitMax).optional().describe('Requests per minute allowed for this API key'),
-  "expiresAt": zod.string().datetime({}).optional().describe('When this API key expires')
+  "expiresAt": zod.string().datetime({}).max(updateAPIKeyBodyExpiresAtMax).optional().describe('When this API key expires')
 })
 
 export const updateAPIKeyResponseDataIdMin = 36;

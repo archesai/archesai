@@ -5,7 +5,7 @@ package bootstrap
 import (
 	"github.com/archesai/archesai/pkg/database"
 	"github.com/archesai/archesai/pkg/events"
-	serverbootstrap "github.com/archesai/archesai/pkg/server/bootstrap"
+	serverbootstrap "github.com/archesai/archesai/pkg/server/gen/bootstrap"
 )
 
 // Services holds shared dependencies for all handlers.

@@ -36,7 +36,7 @@ func NewJSONSchemaParser(doc *v3.Document) *JSONSchemaParser {
 	}
 }
 
-// ParseFile reads and parses a JSON Schema from a file
+// Parse reads and parses a JSON Schema from a file at the given path.
 func (p *JSONSchemaParser) Parse(path string) (*spec.Schema, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
@@ -45,7 +45,7 @@ func (p *JSONSchemaParser) Parse(path string) (*spec.Schema, error) {
 	return p.ParseBytes(data)
 }
 
-// Parse parses a JSON Schema from bytes
+// ParseBytes parses a JSON Schema from bytes.
 func (p *JSONSchemaParser) ParseBytes(data []byte) (*spec.Schema, error) {
 	// Parse as YAML node first
 	var rootNode yaml.Node
