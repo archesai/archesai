@@ -3,6 +3,41 @@ x-project-name: github.com/archesai/examples/basic
 info:
   title: My API
   version: 1.0.0
+tags:
+  - name: Health
+    description: Health check operations
+paths:
+  /health:
+    get:
+      operationId: GetHealth
+      summary: Get health status
+      description: Check the health status of the application
+      security:
+        - {}
+      tags:
+        - Health
+      responses:
+        '200':
+          $ref: '#/components/responses/HealthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      x-codegen-custom-handler: true
+      x-internal: server
+  /todos:
+    get:
+      operationId: GetTodo
+      summary: Get todo items
+      tags:
+        - Todo
+      responses:
+        '200':
+          $ref: '#/components/responses/TodoListResponse'
 components:
   schemas:
     Base:
@@ -10,14 +45,14 @@ components:
       description: Base schema for all entities with common fields
       type: object
       properties:
-        id:
-          description: Unique identifier for the resource
-          type: string
-          format: uuid
         createdAt:
           description: The date and time when the resource was created
           type: string
           format: date-time
+        id:
+          description: Unique identifier for the resource
+          type: string
+          format: uuid
         updatedAt:
           description: The date and time when the resource was last updated
           type: string
@@ -26,87 +61,9 @@ components:
         - id
         - createdAt
         - updatedAt
-    Todo:
-      title: Todo
-      x-codegen-schema-type: entity
-      allOf:
-        - $ref: '#/components/schemas/Base'
-        - type: object
-          required:
-            - title
-            - completed
-          properties:
-            title:
-              type: string
-            completed:
-              type: boolean
-    PaginationMeta:
-      description: Pagination metadata
-      title: PaginationMeta
-      type: object
-      x-internal: server
-      x-codegen-schema-type: valueobject
-      properties:
-        total:
-          description: Total number of items in the collection
-          type: integer
-          format: int32
-          minimum: 0
-          maximum: 2147483647
-          example: 42
-      required:
-        - total
-      additionalProperties: false
-    Problem:
-      title: Problem
-      description: RFC 7807 (Problem Details) compliant error response
-      x-internal: server
-      type: object
-      additionalProperties: false
-      required:
-        - status
-        - title
-      properties:
-        status:
-          type: integer
-          format: int32
-          description: HTTP status code
-          minimum: 100
-          maximum: 599
-          example: 400
-        type:
-          type: string
-          format: uri
-          description: URI identifying the problem type
-          default: about:blank
-          example: https://api.example.com/errors/validation-failed
-          minLength: 1
-          maxLength: 2048
-        title:
-          type: string
-          description: Short, human-readable summary
-          example: Validation Failed
-          minLength: 1
-          maxLength: 255
-          pattern: ^[\w\s\-.,!?()]+$
-        detail:
-          type: string
-          description: Human-readable explanation specific to this occurrence
-          example: The request body contains invalid fields
-          minLength: 1
-          maxLength: 255
-          pattern: ^[\w\s\-.,!?()]+$
-        instance:
-          type: string
-          format: uri
-          description: URI identifying the specific occurrence
-          example: https://api.example.com/auth/users/123
-          maxLength: 2048
     Health:
       title: Health
       description: Health check response
-      x-internal: server
-      x-codegen-schema-type: valueobject
       type: object
       properties:
         services:
@@ -114,30 +71,30 @@ components:
           properties:
             database:
               type: string
-              example: healthy
               enum:
                 - healthy
                 - unhealthy
                 - degraded
+              example: healthy
             email:
               type: string
-              example: healthy
               enum:
                 - healthy
                 - unhealthy
                 - degraded
+              example: healthy
             redis:
               type: string
-              example: healthy
               enum:
                 - healthy
                 - unhealthy
                 - degraded
+              example: healthy
+          additionalProperties: false
           required:
             - database
             - email
             - redis
-          additionalProperties: false
         timestamp:
           type: string
           format: date-time
@@ -150,43 +107,195 @@ components:
           minimum: 0
           maximum: 9223372036854776000
           example: 86400
+      additionalProperties: false
       required:
         - services
         - timestamp
         - uptime
-      additionalProperties: false
-    Page:
-      description: Pagination parameters (limit & offset)
+      x-codegen-schema-type: valueobject
       x-internal: server
-      type: object
+    Page:
       title: Page
-      additionalProperties: false
+      description: Pagination parameters (limit & offset)
+      type: object
       properties:
         limit:
           description: Maximum number of items to return
           type: integer
+          default: 10
           format: int32
           minimum: 1
-          default: 10
           maximum: 100
           example: 10
         offset:
           description: Number of items to skip before starting to collect the result set
           type: integer
+          default: 0
           format: int32
           minimum: 0
-          default: 0
           maximum: 9007199254740991
           example: 0
+      additionalProperties: false
+      x-internal: server
+    PaginationMeta:
+      title: PaginationMeta
+      description: Pagination metadata
+      type: object
+      properties:
+        total:
+          description: Total number of items in the collection
+          type: integer
+          format: int32
+          minimum: 0
+          maximum: 2147483647
+          example: 42
+      additionalProperties: false
+      required:
+        - total
+      x-codegen-schema-type: valueobject
+      x-internal: server
+    Problem:
+      title: Problem
+      description: RFC 7807 (Problem Details) compliant error response
+      type: object
+      properties:
+        title:
+          description: Short, human-readable summary
+          type: string
+          minLength: 1
+          maxLength: 255
+          pattern: ^[\w\s\-.,!?()]+$
+          example: Validation Failed
+        type:
+          description: URI identifying the problem type
+          type: string
+          default: about:blank
+          format: uri
+          minLength: 1
+          maxLength: 2048
+          example: https://api.example.com/errors/validation-failed
+        detail:
+          description: Human-readable explanation specific to this occurrence
+          type: string
+          minLength: 1
+          maxLength: 255
+          pattern: ^[\w\s\-.,!?()]+$
+          example: The request body contains invalid fields
+        instance:
+          description: URI identifying the specific occurrence
+          type: string
+          format: uri
+          maxLength: 2048
+          example: https://api.example.com/auth/users/123
+        status:
+          description: HTTP status code
+          type: integer
+          format: int32
+          minimum: 100
+          maximum: 599
+          example: 400
+      additionalProperties: false
+      required:
+        - status
+        - title
+      x-internal: server
+    Todo:
+      title: Todo
+      allOf:
+        - $ref: '#/components/schemas/Base'
+        - type: object
+          properties:
+            title:
+              type: string
+            completed:
+              type: boolean
+          required:
+            - title
+            - completed
+      x-codegen-schema-type: entity
     UUID:
       description: UUID identifier
-      x-internal: server
       type: string
       format: uuid
-      example: 550e8400-e29b-41d4-a716-446655440000
       minLength: 36
       maxLength: 36
+      example: 550e8400-e29b-41d4-a716-446655440000
+      x-internal: server
   responses:
+    BadRequest:
+      description: 400 Bad Request
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    Conflict:
+      description: 409 Conflict
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    HealthResponse:
+      description: Health status retrieved successfully
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Health'
+    InternalServerError:
+      description: Internal server error
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    NoContent:
+      description: 204 No Content
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    NotFound:
+      description: 404 Not Found
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
     TodoListResponse:
       description: A list of todo items
       content:
@@ -207,101 +316,23 @@ components:
             properties:
               data:
                 $ref: '#/components/schemas/Todo'
-    BadRequest:
-      description: 400 Bad Request
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/Problem'
-      headers:
-        X-RateLimit-Limit:
-          $ref: '#/components/headers/RateLimitLimit'
-        X-RateLimit-Remaining:
-          $ref: '#/components/headers/RateLimitRemaining'
-        X-RateLimit-Reset:
-          $ref: '#/components/headers/RateLimitReset'
-    Conflict:
-      description: 409 Conflict
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/Problem'
-      headers:
-        X-RateLimit-Limit:
-          $ref: '#/components/headers/RateLimitLimit'
-        X-RateLimit-Remaining:
-          $ref: '#/components/headers/RateLimitRemaining'
-        X-RateLimit-Reset:
-          $ref: '#/components/headers/RateLimitReset'
-    HealthResponse:
-      description: Health status retrieved successfully
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Health'
-      headers:
-        X-RateLimit-Limit:
-          $ref: '#/components/headers/RateLimitLimit'
-        X-RateLimit-Remaining:
-          $ref: '#/components/headers/RateLimitRemaining'
-        X-RateLimit-Reset:
-          $ref: '#/components/headers/RateLimitReset'
-    InternalServerError:
-      description: Internal server error
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/Problem'
-      headers:
-        X-RateLimit-Limit:
-          $ref: '#/components/headers/RateLimitLimit'
-        X-RateLimit-Remaining:
-          $ref: '#/components/headers/RateLimitRemaining'
-        X-RateLimit-Reset:
-          $ref: '#/components/headers/RateLimitReset'
-    NoContent:
-      description: 204 No Content
-      headers:
-        X-RateLimit-Limit:
-          $ref: '#/components/headers/RateLimitLimit'
-        X-RateLimit-Remaining:
-          $ref: '#/components/headers/RateLimitRemaining'
-        X-RateLimit-Reset:
-          $ref: '#/components/headers/RateLimitReset'
-    NotFound:
-      description: 404 Not Found
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/Problem'
-      headers:
-        X-RateLimit-Limit:
-          $ref: '#/components/headers/RateLimitLimit'
-        X-RateLimit-Remaining:
-          $ref: '#/components/headers/RateLimitRemaining'
-        X-RateLimit-Reset:
-          $ref: '#/components/headers/RateLimitReset'
     TooManyRequests:
       description: Too many requests - rate limit exceeded
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/Problem'
       headers:
-        X-RateLimit-Limit:
-          $ref: '#/components/headers/RateLimitLimit'
-        X-RateLimit-Remaining:
-          $ref: '#/components/headers/RateLimitRemaining'
-        X-RateLimit-Reset:
-          $ref: '#/components/headers/RateLimitReset'
         Retry-After:
           $ref: '#/components/headers/RetryAfter'
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
     Unauthorized:
       description: 401 Unauthorized
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/Problem'
       headers:
         X-RateLimit-Limit:
           $ref: '#/components/headers/RateLimitLimit'
@@ -309,12 +340,12 @@ components:
           $ref: '#/components/headers/RateLimitRemaining'
         X-RateLimit-Reset:
           $ref: '#/components/headers/RateLimitReset'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
     UnprocessableEntity:
       description: 422 Unprocessable Entity
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/Problem'
       headers:
         X-RateLimit-Limit:
           $ref: '#/components/headers/RateLimitLimit'
@@ -322,95 +353,64 @@ components:
           $ref: '#/components/headers/RateLimitRemaining'
         X-RateLimit-Reset:
           $ref: '#/components/headers/RateLimitReset'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
   parameters:
     PageQuery:
-      in: query
       name: page
+      description: The page parameter
       required: false
-      style: form
-      explode: true
       schema:
         $ref: '#/components/schemas/Page'
-      description: The page parameter
       example:
         limit: 10
         offset: 0
+      in: query
+      style: form
+      explode: true
     ResourceID:
+      name: id
+      description: The unique identifier of the resource.
+      required: true
       schema:
         $ref: '#/components/schemas/UUID'
       in: path
-      name: id
-      required: true
-      description: The unique identifier of the resource.
   headers:
     RateLimitLimit:
       description: The maximum number of requests allowed per time window
       schema:
         type: integer
-        example: 1000
         format: int32
         minimum: 1
         maximum: 1000000
+        example: 1000
       example: 1000
     RateLimitRemaining:
       description: The number of requests remaining in the current time window
       schema:
         type: integer
-        example: 999
         format: int32
         minimum: 0
         maximum: 1000000
+        example: 999
       example: 999
     RateLimitReset:
       description: The time at which the current rate limit window resets (Unix timestamp)
       schema:
         type: integer
-        example: 1640995200
         format: int64
         minimum: 0
         maximum: 9223372036854776000
+        example: 1640995200
       example: 1640995200
     RetryAfter:
       description: Number of seconds to wait before making a new request
       schema:
         type: integer
-        example: 60
         format: int32
         minimum: 1
         maximum: 3600
+        example: 60
       example: 60
-paths:
-  /health:
-    get:
-      x-internal: server
-      x-codegen-custom-handler: true
-      operationId: GetHealth
-      summary: Get health status
-      tags:
-        - Health
-      description: Check the health status of the application
-      responses:
-        '200':
-          $ref: '#/components/responses/HealthResponse'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-      security:
-        - {}
-  /todos:
-    get:
-      operationId: GetTodo
-      tags:
-        - Todo
-      summary: Get todo items
-      responses:
-        '200':
-          $ref: '#/components/responses/TodoListResponse'
-tags:
-  - name: Health
-    description: Health check operations

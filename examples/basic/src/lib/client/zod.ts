@@ -33,8 +33,8 @@ export const getHealthResponse = zod.object({
  */
 export const getTodoResponse = zod.object({
   "data": zod.array(zod.object({
-  "id": zod.string().uuid().describe('Unique identifier for the resource'),
   "createdAt": zod.string().datetime({}).describe('The date and time when the resource was created'),
+  "id": zod.string().uuid().describe('Unique identifier for the resource'),
   "updatedAt": zod.string().datetime({}).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
   "title": zod.string(),

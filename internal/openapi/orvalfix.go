@@ -79,8 +79,8 @@ func resolvePathItems(filePath string) error {
 	// Remove pathItems from components
 	removeMapKeyOrval(componentsNode, "pathItems")
 
-	// Marshal back to YAML
-	output, err := yaml.Marshal(&rootNode)
+	// Marshal back to YAML with 2-space indent and consistent ordering
+	output, err := marshalYAML(&rootNode)
 	if err != nil {
 		return fmt.Errorf("failed to marshal YAML: %w", err)
 	}
@@ -172,8 +172,8 @@ func cleanupComposedBundle(data []byte) ([]byte, error) {
 	// // Fix nullable types with string constraints (OpenAPI 3.1 compliance)
 	// fixNullableConstraints(docNode)
 
-	// Marshal back
-	output, err := yaml.Marshal(&rootNode)
+	// Marshal back with 2-space indent and consistent ordering
+	output, err := marshalYAML(&rootNode)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal YAML: %w", err)
 	}
