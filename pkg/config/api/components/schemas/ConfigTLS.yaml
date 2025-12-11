@@ -1,7 +1,7 @@
 description: TLS configuration
 x-internal: config
 type: object
-title: TLSConfig
+title: ConfigTLS
 properties:
   enabled:
     description: Enable TLS/SSL

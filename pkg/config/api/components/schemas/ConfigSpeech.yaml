@@ -18,4 +18,4 @@ required:
   - enabled
 additionalProperties: false
 x-codegen-schema-type: valueobject
-title: SpeechConfig
+title: ConfigSpeech

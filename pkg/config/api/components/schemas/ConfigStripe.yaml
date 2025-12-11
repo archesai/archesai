@@ -1,7 +1,7 @@
 description: Stripe payment configuration
 x-internal: config
 type: object
-title: StripeConfig
+title: ConfigStripe
 properties:
   token:
     description: Stripe secret API key

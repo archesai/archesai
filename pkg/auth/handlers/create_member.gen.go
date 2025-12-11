@@ -10,7 +10,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/pkg/auth/models"
-	"github.com/archesai/archesai/pkg/auth/repositories"
 	"github.com/archesai/archesai/pkg/events"
 )
 
@@ -37,13 +36,13 @@ type CreateMember interface {
 
 // CreateMemberImpl is the default implementation of CreateMember.
 type CreateMemberImpl struct {
-	repo      repositories.MemberRepository
+	repo      models.MemberRepository
 	publisher events.Publisher
 }
 
 // NewCreateMember creates a new CreateMember handler.
 func NewCreateMember(
-	repo repositories.MemberRepository,
+	repo models.MemberRepository,
 	publisher events.Publisher,
 ) CreateMember {
 	return &CreateMemberImpl{

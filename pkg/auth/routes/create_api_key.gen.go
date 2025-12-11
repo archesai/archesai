@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -151,6 +152,7 @@ func (h *CreateAPIKeyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 	// Execute
 	result, err := h.createAPIKey.Execute(ctx, input)
 	if err != nil {
+		slog.Error("handler error", "operation", "CreateAPIKey", "error", err)
 		errorResp := CreateAPIKey500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

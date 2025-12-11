@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -144,6 +145,7 @@ func (h *UpdateCurrentUserHandler) ServeHTTP(w http.ResponseWriter, r *http.Requ
 	// Execute
 	result, err := h.updateCurrentUser.Execute(ctx, input)
 	if err != nil {
+		slog.Error("handler error", "operation", "UpdateCurrentUser", "error", err)
 		errorResp := UpdateCurrentUser500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

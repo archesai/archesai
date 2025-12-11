@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/archesai/archesai/pkg/auth/handlers"
@@ -134,6 +135,7 @@ func (h *RequestMagicLinkHandler) ServeHTTP(w http.ResponseWriter, r *http.Reque
 	// Execute
 	result, err := h.requestMagicLink.Execute(ctx, input)
 	if err != nil {
+		slog.Error("handler error", "operation", "RequestMagicLink", "error", err)
 		errorResp := RequestMagicLink500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

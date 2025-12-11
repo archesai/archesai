@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -153,6 +154,7 @@ func (h *ConfirmEmailVerificationHandler) ServeHTTP(w http.ResponseWriter, r *ht
 	// Execute
 	result, err := h.confirmEmailVerification.Execute(ctx, input)
 	if err != nil {
+		slog.Error("handler error", "operation", "ConfirmEmailVerification", "error", err)
 		errorResp := ConfirmEmailVerification500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

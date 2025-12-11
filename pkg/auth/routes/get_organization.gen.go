@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -148,6 +149,7 @@ func (h *GetOrganizationHandler) ServeHTTP(w http.ResponseWriter, r *http.Reques
 	// Execute
 	result, err := h.getOrganization.Execute(ctx, input)
 	if err != nil {
+		slog.Error("handler error", "operation", "GetOrganization", "error", err)
 		errorResp := GetOrganization500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

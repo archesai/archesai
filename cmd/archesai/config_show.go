@@ -5,12 +5,10 @@ import (
 	"fmt"
 	"os"
 
-	tea "github.com/charmbracelet/bubbletea"
 	"github.com/spf13/cobra"
 	"go.yaml.in/yaml/v3"
 
 	"github.com/archesai/archesai/cmd/archesai/flags"
-	"github.com/archesai/archesai/internal/tui"
 	"github.com/archesai/archesai/pkg/config"
 )
 
@@ -23,8 +21,7 @@ environment variables, and config file values.
 
 Examples:
   archesai config show
-  archesai config show --output json
-  archesai config show -o tui`,
+  archesai config show --output json`,
 	SilenceErrors: true,
 	SilenceUsage:  true,
 	RunE:          runConfigShow,
@@ -36,7 +33,7 @@ func init() {
 }
 
 func runConfigShow(_ *cobra.Command, _ []string) error {
-	cfg, err := config.NewParser[any]().Load()
+	cfg, err := config.NewParser[any]().LoadFrom(flags.Root.ConfigFile)
 	if err != nil {
 		return fmt.Errorf("failed to load config: %w", err)
 	}
@@ -55,14 +52,10 @@ func runConfigShow(_ *cobra.Command, _ []string) error {
 			}
 		}()
 		return encoder.Encode(cfg.Config)
-	case "tui":
-		model := tui.NewConfigModel()
-		program := tea.NewProgram(model, tea.WithAltScreen())
-		if _, err := program.Run(); err != nil {
-			return fmt.Errorf("error running config TUI: %w", err)
-		}
-		return nil
 	default:
-		return fmt.Errorf("unsupported output format: %s", flags.ConfigShow.OutputFormat)
+		return fmt.Errorf(
+			"unsupported output format: %s (supported: yaml, json)",
+			flags.ConfigShow.OutputFormat,
+		)
 	}
 }

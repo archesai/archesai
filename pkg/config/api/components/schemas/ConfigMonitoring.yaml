@@ -1,7 +1,7 @@
 description: Monitoring configuration for Grafana and Loki
 x-internal: config
 type: object
-title: MonitoringConfig
+title: ConfigMonitoring
 properties:
   grafana:
     $ref: ./ConfigGrafana.yaml

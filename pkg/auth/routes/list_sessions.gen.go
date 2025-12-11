@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -39,8 +40,9 @@ func RegisterListSessionsRoute(mux *http.ServeMux, handler *ListSessionsHandler)
 
 // ListSessionsParams defines query parameters for ListSessions
 type ListSessionsParams struct {
-	Page map[string]any   `json:"page,omitempty"`
-	Sort []map[string]any `json:"sort,omitempty"`
+	SessionsFilter *servermodels.FilterNode `json:"sessionsFilter"`
+	SessionsSort   *servermodels.FilterNode `json:"sessionsSort"`
+	Page           servermodels.Page        `json:"page"`
 }
 
 // Response types
@@ -130,12 +132,10 @@ func (h *ListSessionsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 	input := &handlers.ListSessionsInput{}
 	input.SessionID = sessionID
 
-	// Query parameters
-
-	// Optional query parameter "page"
-	if err := runtime.BindQueryParameter("form", true, false, "page", r.URL.Query(), &input.Page); err != nil {
+	// Optional query parameter "sessionsFilter"
+	if err := runtime.BindQueryParameter("deepObject", true, false, "sessionsFilter", r.URL.Query(), &input.SessionsFilter); err != nil {
 		errorResp := ListSessions400Response{
-			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter page: %s", err), r.URL.Path),
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter sessionsFilter: %s", err), r.URL.Path),
 		}
 		if err := errorResp.VisitListSessionsResponse(w); err != nil {
 			fmt.Fprintf(w, "error writing response: %v", err)
@@ -143,10 +143,21 @@ func (h *ListSessionsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	// Optional query parameter "sort"
-	if err := runtime.BindQueryParameter("form", true, false, "sort", r.URL.Query(), &input.Sort); err != nil {
+	// Optional query parameter "sessionsSort"
+	if err := runtime.BindQueryParameter("deepObject", true, false, "sessionsSort", r.URL.Query(), &input.SessionsSort); err != nil {
 		errorResp := ListSessions400Response{
-			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter sort: %s", err), r.URL.Path),
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter sessionsSort: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitListSessionsResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
+	}
+
+	// Optional query parameter "page"
+	if err := runtime.BindQueryParameter("deepObject", true, false, "page", r.URL.Query(), &input.Page); err != nil {
+		errorResp := ListSessions400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter page: %s", err), r.URL.Path),
 		}
 		if err := errorResp.VisitListSessionsResponse(w); err != nil {
 			fmt.Fprintf(w, "error writing response: %v", err)
@@ -157,6 +168,7 @@ func (h *ListSessionsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 	// Execute
 	result, err := h.listSessions.Execute(ctx, input)
 	if err != nil {
+		slog.Error("handler error", "operation", "ListSessions", "error", err)
 		errorResp := ListSessions500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

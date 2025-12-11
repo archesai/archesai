@@ -1,7 +1,7 @@
 description: RunPod serverless GPU configuration
 x-internal: config
 type: object
-title: RunPodConfig
+title: ConfigRunPod
 properties:
   enabled:
     description: Enable RunPod integration

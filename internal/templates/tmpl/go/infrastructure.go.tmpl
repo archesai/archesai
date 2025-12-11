@@ -1,0 +1,50 @@
+{{- /*
+Template: infrastructure.go.tmpl
+Generates: Infrastructure struct that bundles all external dependencies.
+Expects:
+- Repositories: []string (unique repository names, for internal packages)
+- ProjectName: string
+- NeedsPublisher: bool (true if any non-GET, non-custom operations exist)
+- InternalPackages: []InternalPackage (for composition apps)
+*/ -}}
+{{- if .InternalPackages }}
+{{template "header" .}}
+package app
+
+import (
+{{- range .InternalPackages }}
+	{{ .Alias }}app "{{ .ImportPath }}/app"
+{{- end }}
+)
+
+// Infrastructure composes all infrastructure from internal packages.
+type Infrastructure struct {
+{{- range .InternalPackages }}
+	{{ pascalCase .Name }} *{{ .Alias }}app.Infrastructure
+{{- end }}
+}
+{{- else }}
+{{template "header" .}}
+package app
+
+{{- if or .Repositories .NeedsPublisher }}
+import (
+{{- if .Repositories }}
+	"{{ .ProjectName }}/models"
+{{- end }}
+{{- if .NeedsPublisher }}
+	"github.com/archesai/archesai/pkg/events"
+{{- end }}
+)
+{{- end }}
+
+// Infrastructure holds all external dependencies for handlers.
+type Infrastructure struct {
+{{- range .Repositories }}
+	{{ . }}Repo models.{{ . }}Repository
+{{- end }}
+{{- if .NeedsPublisher }}
+	Publisher events.Publisher
+{{- end }}
+}
+{{- end }}

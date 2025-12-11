@@ -1,7 +1,7 @@
 description: Database migration configuration
 x-internal: config
 type: object
-title: MigrationsConfig
+title: ConfigMigrations
 properties:
   enabled:
     description: Enable automatic DB migrations

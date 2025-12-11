@@ -20,7 +20,7 @@ x-codegen:
         returns: single
 x-internal: auth
 allOf:
-  - $ref: Base.yaml
+  - $ref: ./Base.yaml
   - type: object
     properties:
       email:
@@ -37,10 +37,12 @@ allOf:
         example: true
       image:
         description: The user's avatar image URL
-        type: [string, 'null']
-        minLength: 5
-        maxLength: 2048
-        format: uri
+        oneOf:
+          - type: string
+            format: uri
+            minLength: 5
+            maxLength: 2048
+          - type: 'null'
         example: https://example.com/avatar.jpg
       name:
         description: The user's display name

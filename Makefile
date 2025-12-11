@@ -73,13 +73,10 @@ run-docs: prepare-docs ## Run documentation site (production build)
 
 .PHONY: dev-studio
 dev-studio: ## Run API server with hot reload
-	@echo -e "$(YELLOW)▶ Starting API server with hot reload on port 3001...$(NC)"
-	@echo -e "$(YELLOW)Press Ctrl+C to stop$(NC)"
-	@go tool -modfile=tools.mod air
+	@cd ./apps/studio && go run ../../cmd/archesai dev -c arches.yaml
 
 .PHONY: dev-docs
 dev-docs: prepare-docs ## Run documentation with hot reload
-	@echo -e "$(YELLOW)▶ Starting documentation with hot reload...$(NC)"
 	@pnpm -F @archesai/docs dev
 
 # ------------------------------------------
@@ -98,10 +95,8 @@ deploy-docs: ## Manually trigger documentation deployment to GitHub Pages
 # Generate Commands
 # ------------------------------------------
 
-generate: ## Regenerate example configurations
-	@$(MAKE) generate-packages
-	@$(MAKE) generate-examples generate-studio
-	@$(MAKE) format-prettier
+generate: ## Regenerate code
+	@$(MAKE) generate-packages generate-examples generate-studio
 
 .PHONY: generate-packages
 generate-packages: ## Generate all packages
@@ -109,12 +104,12 @@ generate-packages: ## Generate all packages
 
 .PHONY:
 generate-studio: ## Generate codegen
-	@go run ./cmd/archesai generate --spec ./api/openapi.yaml --output ./apps/studio --pretty
+	@cd apps/studio && go run ../../cmd/archesai generate
 
 .PHONY: generate-examples ## Generate example configurations
 generate-examples:
-	@go run ./cmd/archesai generate --spec ./examples/basic/spec/openapi.yaml --output ./examples/basic --pretty
-	@go run ./cmd/archesai generate --spec ./examples/authentication/spec/openapi.yaml --output ./examples/authentication --pretty
+	@cd examples/basic && go run ../../cmd/archesai generate
+	@cd examples/authentication && go run ../../cmd/archesai generate
 
 # ------------------------------------------
 # Test Commands
@@ -270,7 +265,7 @@ clean-go: ## Clean Go build artifacts
 
 .PHONY: clean-generated
 clean-generated: ## Clean all generated code
-	@find . -type f -name "*.gen.*" -not -path "./internal/codegen/tmpl/*" -not -path "./pkg/auth/repositories/*" -not -path "./pkg/auth/models/*" -exec rm -f {} +
+	@find . -type f -name "*.gen.*" -not -path "./internal/codegen/tmpl/*" -not -path "./pkg/auth/models/*" -exec rm -f {} +
 	@find . -type d -empty -delete 2>/dev/null || true
 	@rm -rf ./pkg/client/src/generated
 	@rm -f ./deployments/helm-minimal/values.schema.json
@@ -586,6 +581,3 @@ t: test ## Shortcut for test
 
 .PHONY: f
 f: format ## Shortcut for format
-
-.PHONY: w
-w: dev-all ## Shortcut for dev-all

@@ -1,0 +1,6 @@
+import { OpenAPIPage } from "@archesai/ui";
+import { createFileRoute } from "@tanstack/react-router";
+
+export const Route = createFileRoute("/_app/openapi/")({
+  component: () => <OpenAPIPage url="/api/openapi.yaml" />,
+});

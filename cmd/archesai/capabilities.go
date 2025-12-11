@@ -8,11 +8,11 @@ import (
 	"os"
 	"time"
 
+	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
 
 	"github.com/archesai/archesai/cmd/archesai/flags"
 	"github.com/archesai/archesai/internal/capabilities"
-	"github.com/archesai/archesai/internal/tui"
 )
 
 const statusInstalled = "installed"
@@ -43,28 +43,28 @@ func outputJSON(result capabilities.CheckResult) error {
 	return enc.Encode(result)
 }
 
-func outputTUI(result capabilities.CheckResult) error {
-	runner := tui.NewRunner()
+// Styles for capabilities output
+var (
+	titleStyle   = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("212"))
+	successStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("42"))
+	errorStyle   = lipgloss.NewStyle().Foreground(lipgloss.Color("196"))
+	dimStyle     = lipgloss.NewStyle().Foreground(lipgloss.Color("245"))
+)
 
+func outputConsole(result capabilities.CheckResult) error {
 	// Title
-	runner.PrintTitle("System Capabilities")
-	runner.PrintNewline()
+	fmt.Println(titleStyle.Render("System Capabilities"))
+	fmt.Println()
 
-	// Required capabilities table
-	requiredTable := tui.NewTable(
-		"Required Dependencies",
-		"Status",
-		"Name",
-		"Version",
-		"Description",
-	)
+	// Required capabilities
+	fmt.Println(titleStyle.Render("Required Dependencies"))
 	for _, cap := range result.Capabilities {
 		if !cap.Required {
 			continue
 		}
-		status := "✓"
+		status := successStyle.Render("✓")
 		if !cap.Found {
-			status = "✗"
+			status = errorStyle.Render("✗")
 		}
 		version := cap.Version
 		if version == "" && cap.Found {
@@ -72,9 +72,14 @@ func outputTUI(result capabilities.CheckResult) error {
 		} else if version == "" {
 			version = "-"
 		}
-		requiredTable.AddRow(status, cap.Name, version, cap.Description)
+		fmt.Printf(
+			"  %s %-12s %-15s %s\n",
+			status,
+			cap.Name,
+			dimStyle.Render(version),
+			cap.Description,
+		)
 	}
-	runner.PrintTable(requiredTable)
 
 	// Optional capabilities
 	hasOptional := false
@@ -86,21 +91,15 @@ func outputTUI(result capabilities.CheckResult) error {
 	}
 
 	if hasOptional && flags.Capabilities.All {
-		runner.PrintNewline()
-		optionalTable := tui.NewTable(
-			"Optional Dependencies",
-			"Status",
-			"Name",
-			"Version",
-			"Description",
-		)
+		fmt.Println()
+		fmt.Println(titleStyle.Render("Optional Dependencies"))
 		for _, cap := range result.Capabilities {
 			if cap.Required {
 				continue
 			}
-			status := "✓"
+			status := successStyle.Render("✓")
 			if !cap.Found {
-				status = "○"
+				status = dimStyle.Render("○")
 			}
 			version := cap.Version
 			if version == "" && cap.Found {
@@ -108,12 +107,17 @@ func outputTUI(result capabilities.CheckResult) error {
 			} else if version == "" {
 				version = "-"
 			}
-			optionalTable.AddRow(status, cap.Name, version, cap.Description)
+			fmt.Printf(
+				"  %s %-12s %-15s %s\n",
+				status,
+				cap.Name,
+				dimStyle.Render(version),
+				cap.Description,
+			)
 		}
-		runner.PrintTable(optionalTable)
 	}
 
-	runner.PrintNewline()
+	fmt.Println()
 
 	// Summary
 	requiredCount := 0
@@ -131,25 +135,22 @@ func outputTUI(result capabilities.CheckResult) error {
 		}
 	}
 
-	summary := tui.NewSummary("Summary")
-	summary.AddCount("Required", requiredCount, "info")
-	summary.AddCount("Found", foundCount, "success")
-
+	fmt.Printf(
+		"Required: %d  Found: %s",
+		requiredCount,
+		successStyle.Render(fmt.Sprintf("%d", foundCount)),
+	)
 	if missingCount > 0 {
-		summary.AddCount("Missing", missingCount, "error")
+		fmt.Printf("  Missing: %s", errorStyle.Render(fmt.Sprintf("%d", missingCount)))
 	}
+	fmt.Println()
 
 	if result.AllRequired {
-		summary.AddMessage("All required dependencies are installed", "success")
+		fmt.Println(successStyle.Render("All required dependencies are installed"))
 	} else {
 		for _, cap := range result.RequiredMissing() {
-			summary.AddMessage(fmt.Sprintf("Missing: %s (%s)", cap.Name, cap.Command), "error")
+			fmt.Println(errorStyle.Render(fmt.Sprintf("Missing: %s (%s)", cap.Name, cap.Command)))
 		}
-	}
-
-	runner.PrintSummary(summary)
-
-	if !result.AllRequired {
 		return fmt.Errorf("missing required dependencies")
 	}
 
@@ -167,5 +168,5 @@ func runCapabilities(_ *cobra.Command, _ []string) error {
 		return outputJSON(result)
 	}
 
-	return outputTUI(result)
+	return outputConsole(result)
 }

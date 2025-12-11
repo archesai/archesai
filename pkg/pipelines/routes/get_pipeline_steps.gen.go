@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -13,6 +14,7 @@ import (
 	"github.com/archesai/archesai/pkg/pipelines/handlers"
 	"github.com/archesai/archesai/pkg/pipelines/models"
 	"github.com/archesai/archesai/pkg/server"
+	servermodels "github.com/archesai/archesai/pkg/server/models"
 )
 
 // ============================================================================
@@ -36,6 +38,13 @@ func RegisterGetPipelineStepsRoute(mux *http.ServeMux, handler *GetPipelineSteps
 
 // Request types
 
+// GetPipelineStepsParams defines query parameters for GetPipelineSteps
+type GetPipelineStepsParams struct {
+	PipelineStepsFilter *servermodels.FilterNode `json:"pipelineStepsFilter"`
+	PipelineStepsSort   *servermodels.FilterNode `json:"pipelineStepsSort"`
+	Page                servermodels.Page        `json:"page"`
+}
+
 // Response types
 
 type GetPipelineStepsResponse interface {
@@ -43,7 +52,8 @@ type GetPipelineStepsResponse interface {
 }
 
 type GetPipelineSteps200Response struct {
-	Data []models.PipelineStep `json:"data"`
+	Data []models.PipelineStep       `json:"data"`
+	Meta servermodels.PaginationMeta `json:"meta"`
 }
 
 func (response GetPipelineSteps200Response) VisitGetPipelineStepsResponse(w http.ResponseWriter) error {
@@ -132,9 +142,43 @@ func (h *GetPipelineStepsHandler) ServeHTTP(w http.ResponseWriter, r *http.Reque
 	}
 	input.ID = id
 
+	// Optional query parameter "pipelineStepsFilter"
+	if err := runtime.BindQueryParameter("deepObject", true, false, "pipelineStepsFilter", r.URL.Query(), &input.PipelineStepsFilter); err != nil {
+		errorResp := GetPipelineSteps400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter pipelineStepsFilter: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitGetPipelineStepsResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
+	}
+
+	// Optional query parameter "pipelineStepsSort"
+	if err := runtime.BindQueryParameter("deepObject", true, false, "pipelineStepsSort", r.URL.Query(), &input.PipelineStepsSort); err != nil {
+		errorResp := GetPipelineSteps400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter pipelineStepsSort: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitGetPipelineStepsResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
+	}
+
+	// Optional query parameter "page"
+	if err := runtime.BindQueryParameter("deepObject", true, false, "page", r.URL.Query(), &input.Page); err != nil {
+		errorResp := GetPipelineSteps400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter page: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitGetPipelineStepsResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
+	}
+
 	// Execute
 	result, err := h.getPipelineSteps.Execute(ctx, input)
 	if err != nil {
+		slog.Error("handler error", "operation", "GetPipelineSteps", "error", err)
 		errorResp := GetPipelineSteps500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}
@@ -147,6 +191,7 @@ func (h *GetPipelineStepsHandler) ServeHTTP(w http.ResponseWriter, r *http.Reque
 	// Map output to response
 	response := GetPipelineSteps200Response{}
 	response.Data = result.Data
+	response.Meta = result.Meta
 
 	if err := response.VisitGetPipelineStepsResponse(w); err != nil {
 		fmt.Fprintf(w, "error writing response: %v", err)

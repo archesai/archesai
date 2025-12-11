@@ -5,7 +5,11 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
+
+	"github.com/google/uuid"
+	"github.com/oapi-codegen/runtime"
 
 	"github.com/archesai/archesai/pkg/server"
 	"github.com/archesai/examples/basic/handlers"
@@ -13,7 +17,7 @@ import (
 )
 
 // ============================================================================
-// GetTodo - GET /todos
+// GetTodo - GET /todos/{id}
 // ============================================================================
 
 // GetTodoHandler is the HTTP handler for GetTodo.
@@ -28,7 +32,7 @@ func NewGetTodoHandler(getTodo handlers.GetTodo) *GetTodoHandler {
 
 // RegisterGetTodoRoute registers the HTTP route for GetTodo.
 func RegisterGetTodoRoute(mux *http.ServeMux, handler *GetTodoHandler) {
-	mux.HandleFunc("GET /todos", handler.ServeHTTP)
+	mux.HandleFunc("GET /todos/{id}", handler.ServeHTTP)
 }
 
 // Request types
@@ -40,7 +44,7 @@ type GetTodoResponse interface {
 }
 
 type GetTodo200Response struct {
-	Data []models.Todo `json:"data,omitempty"`
+	Data models.Todo `json:"data"`
 }
 
 func (response GetTodo200Response) VisitGetTodoResponse(w http.ResponseWriter) error {
@@ -49,16 +53,90 @@ func (response GetTodo200Response) VisitGetTodoResponse(w http.ResponseWriter) e
 	return json.NewEncoder(w).Encode(response)
 }
 
-// ServeHTTP handles the GET /todos endpoint.
+type GetTodo400Response struct {
+	server.ProblemDetails
+}
+
+func (response GetTodo400Response) VisitGetTodoResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type GetTodo401Response struct {
+	server.ProblemDetails
+}
+
+func (response GetTodo401Response) VisitGetTodoResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type GetTodo404Response struct {
+	server.ProblemDetails
+}
+
+func (response GetTodo404Response) VisitGetTodoResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type GetTodo422Response struct {
+	server.ProblemDetails
+}
+
+func (response GetTodo422Response) VisitGetTodoResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type GetTodo429Response struct {
+	server.ProblemDetails
+}
+
+func (response GetTodo429Response) VisitGetTodoResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type GetTodo500Response struct {
+	server.ProblemDetails
+}
+
+func (response GetTodo500Response) VisitGetTodoResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+// ServeHTTP handles the GET /todos/{id} endpoint.
 func (h *GetTodoHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	// Build input from request
 	input := &handlers.GetTodoInput{}
 
+	// Path parameter "id"
+	var id uuid.UUID
+	if err := runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
+		errorResp := GetTodo400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter id: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitGetTodoResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
+	}
+	input.ID = id
+
 	// Execute
 	result, err := h.getTodo.Execute(ctx, input)
 	if err != nil {
+		slog.Error("handler error", "operation", "GetTodo", "error", err)
 		errorResp := GetTodo500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

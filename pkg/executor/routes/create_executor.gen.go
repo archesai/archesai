@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/archesai/archesai/pkg/executor/handlers"
@@ -149,6 +150,7 @@ func (h *CreateExecutorHandler) ServeHTTP(w http.ResponseWriter, r *http.Request
 	// Execute
 	result, err := h.createExecutor.Execute(ctx, input)
 	if err != nil {
+		slog.Error("handler error", "operation", "CreateExecutor", "error", err)
 		errorResp := CreateExecutor500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -161,6 +162,7 @@ func (h *CreatePipelineStepHandler) ServeHTTP(w http.ResponseWriter, r *http.Req
 	// Execute
 	result, err := h.createPipelineStep.Execute(ctx, input)
 	if err != nil {
+		slog.Error("handler error", "operation", "CreatePipelineStep", "error", err)
 		errorResp := CreatePipelineStep500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

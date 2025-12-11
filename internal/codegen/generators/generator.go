@@ -9,45 +9,14 @@ import (
 
 	"github.com/archesai/archesai/internal/spec"
 	"github.com/archesai/archesai/internal/templates"
-	"github.com/archesai/archesai/pkg/storage"
 )
-
-// Priority levels for generators.
-//
-// Generator Priority Guidelines:
-//
-//   - PriorityFirst (0): Generators that create foundational files.
-//     GoModGenerator creates go.mod and must run first.
-//
-//   - PriorityNormal (100): Independent generators that can run in parallel.
-//     Includes: schemas, handlers, controllers, routes, postgres, sqlite,
-//     repositories, client, main, app, container, bootstrap handlers.
-//
-//   - PriorityLast (200): Generators that depend on PriorityNormal outputs.
-//     HCLGenerator needs all entity schemas to be defined.
-//
-//   - PriorityFinal (300): Generators that depend on PriorityLast outputs.
-//     SQLCGenerator needs HCL migrations to generate type-safe queries.
-const (
-	PriorityFirst  = 0
-	PriorityNormal = 100
-	PriorityLast   = 200
-	PriorityFinal  = 300
-)
-
-// Generator defines the interface for code generators.
-type Generator interface {
-	Name() string
-	Priority() int
-	Generate(ctx *GeneratorContext) error
-}
 
 // GeneratorContext provides shared context and dependencies for generators.
 type GeneratorContext struct {
 	Spec        *spec.Spec
 	SpecPath    string
 	Renderer    *templates.Renderer
-	Storage     storage.Storage
+	Storage     Storage
 	ProjectName string
 }
 
@@ -69,7 +38,7 @@ func (ctx *GeneratorContext) OwnOperations() []spec.Operation {
 	internalContext := ctx.InternalContext()
 	var operations []spec.Operation
 	for _, op := range ctx.Spec.Operations {
-		if op.XInternal == "" || op.XInternal == internalContext {
+		if op.Internal == "" || op.Internal == internalContext {
 			operations = append(operations, op)
 		}
 	}
@@ -82,8 +51,8 @@ func (ctx *GeneratorContext) ComposedPackages() []string {
 	internalContext := ctx.InternalContext()
 	pkgMap := make(map[string]bool)
 	for _, op := range ctx.Spec.Operations {
-		if op.XInternal != "" && op.XInternal != internalContext {
-			pkgMap[op.XInternal] = true
+		if op.Internal != "" && op.Internal != internalContext {
+			pkgMap[op.Internal] = true
 		}
 	}
 
@@ -128,12 +97,12 @@ func (ctx *GeneratorContext) RenderToFileIfNotExists(
 }
 
 // OwnEntitySchemas returns entity schemas that belong to this package.
-// Filters by XCodegenSchemaType == "entity" and excludes internal schemas.
+// Filters by SchemaType == "entity" and excludes internal schemas.
 func (ctx *GeneratorContext) OwnEntitySchemas() []*spec.Schema {
 	internalContext := ctx.InternalContext()
 	var entities []*spec.Schema
 	for _, schema := range ctx.Spec.Schemas {
-		if schema.XCodegenSchemaType != spec.XCodegenSchemaTypeEntity {
+		if schema.XCodegenSchemaType != spec.SchemaTypeEntity {
 			continue
 		}
 		if schema.IsInternal(internalContext) {
@@ -144,23 +113,36 @@ func (ctx *GeneratorContext) OwnEntitySchemas() []*spec.Schema {
 	return entities
 }
 
-// DefaultGenerators returns all standard generators.
-func DefaultGenerators() []Generator {
-	return []Generator{
-		&GoModGenerator{},
-		&SchemasGenerator{},
-		&RepositoriesGenerator{},
-		&PostgresGenerator{},
-		&SQLiteGenerator{},
-		&HandlersGenerator{},
-		&ControllersGenerator{},
-		&HCLGenerator{},
-		&SQLCGenerator{},
-		&ClientGenerator{},
-		&MainGenerator{},
-		&AppGenerator{},
-		&RoutesGenerator{},
-		&BootstrapHandlersGenerator{},
-		&ContainerGenerator{},
+// AllEntitySchemas returns all entity schemas regardless of x-internal.
+// Used by database generators that need to generate repositories
+// for all entities including those from included packages.
+func (ctx *GeneratorContext) AllEntitySchemas() []*spec.Schema {
+	var entities []*spec.Schema
+	for _, schema := range ctx.Spec.Schemas {
+		if schema.XCodegenSchemaType != spec.SchemaTypeEntity {
+			continue
+		}
+		entities = append(entities, schema)
 	}
+	return entities
+}
+
+// FileExists checks if a file already exists at the given path.
+func (ctx *GeneratorContext) FileExists(path string) bool {
+	exists, _ := ctx.Storage.Exists(path)
+	return exists
+}
+
+// RenderTSXToFile renders a TSX template to the specified path.
+// TSX templates use [[ ]] delimiters and are looked up with tsx/ prefix.
+func (ctx *GeneratorContext) RenderTSXToFile(templateName, outputPath string, data any) error {
+	var buf bytes.Buffer
+	// Prefix with tsx/ to select TSX template collection in renderer
+	if err := ctx.Renderer.Render(&buf, "tsx/"+templateName, data); err != nil {
+		return fmt.Errorf("failed to render %s: %w", templateName, err)
+	}
+	if err := ctx.Storage.WriteFile(outputPath, buf.Bytes(), 0644); err != nil {
+		return fmt.Errorf("failed to write %s: %w", outputPath, err)
+	}
+	return nil
 }

@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/oapi-codegen/runtime"
@@ -38,9 +39,9 @@ func RegisterListRunsRoute(mux *http.ServeMux, handler *ListRunsHandler) {
 
 // ListRunsParams defines query parameters for ListRuns
 type ListRunsParams struct {
-	Filter map[string]any   `json:"filter,omitempty"`
-	Page   map[string]any   `json:"page,omitempty"`
-	Sort   []map[string]any `json:"sort,omitempty"`
+	RunsFilter *servermodels.FilterNode `json:"runsFilter"`
+	RunsSort   *servermodels.FilterNode `json:"runsSort"`
+	Page       servermodels.Page        `json:"page"`
 }
 
 // Response types
@@ -117,12 +118,21 @@ func (h *ListRunsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Build input from request
 	input := &handlers.ListRunsInput{}
 
-	// Query parameters
-
-	// Optional query parameter "filter"
-	if err := runtime.BindQueryParameter("deepObject", true, false, "filter", r.URL.Query(), &input.Filter); err != nil {
+	// Optional query parameter "runsFilter"
+	if err := runtime.BindQueryParameter("deepObject", true, false, "runsFilter", r.URL.Query(), &input.RunsFilter); err != nil {
 		errorResp := ListRuns400Response{
-			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter filter: %s", err), r.URL.Path),
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter runsFilter: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitListRunsResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
+	}
+
+	// Optional query parameter "runsSort"
+	if err := runtime.BindQueryParameter("deepObject", true, false, "runsSort", r.URL.Query(), &input.RunsSort); err != nil {
+		errorResp := ListRuns400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter runsSort: %s", err), r.URL.Path),
 		}
 		if err := errorResp.VisitListRunsResponse(w); err != nil {
 			fmt.Fprintf(w, "error writing response: %v", err)
@@ -131,20 +141,9 @@ func (h *ListRunsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Optional query parameter "page"
-	if err := runtime.BindQueryParameter("form", true, false, "page", r.URL.Query(), &input.Page); err != nil {
+	if err := runtime.BindQueryParameter("deepObject", true, false, "page", r.URL.Query(), &input.Page); err != nil {
 		errorResp := ListRuns400Response{
 			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter page: %s", err), r.URL.Path),
-		}
-		if err := errorResp.VisitListRunsResponse(w); err != nil {
-			fmt.Fprintf(w, "error writing response: %v", err)
-		}
-		return
-	}
-
-	// Optional query parameter "sort"
-	if err := runtime.BindQueryParameter("form", true, false, "sort", r.URL.Query(), &input.Sort); err != nil {
-		errorResp := ListRuns400Response{
-			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter sort: %s", err), r.URL.Path),
 		}
 		if err := errorResp.VisitListRunsResponse(w); err != nil {
 			fmt.Fprintf(w, "error writing response: %v", err)
@@ -155,6 +154,7 @@ func (h *ListRunsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Execute
 	result, err := h.listRuns.Execute(ctx, input)
 	if err != nil {
+		slog.Error("handler error", "operation", "ListRuns", "error", err)
 		errorResp := ListRuns500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

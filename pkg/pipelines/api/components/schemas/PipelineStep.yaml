@@ -12,7 +12,7 @@ title: PipelineStep
 description: Schema for PipelineStep entity
 x-internal: pipelines
 allOf:
-  - $ref: Base.yaml
+  - $ref: ./Base.yaml
   - type: object
     properties:
       pipelineID:

@@ -1,7 +1,7 @@
 description: GitHub OAuth configuration
 x-internal: config
 type: object
-title: GitHubAuthConfig
+title: ConfigAuthGithub
 properties:
   enabled:
     description: Enable GitHub OAuth

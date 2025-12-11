@@ -9,7 +9,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/pkg/storage/models"
-	"github.com/archesai/archesai/pkg/storage/repositories"
 )
 
 // ============================================================================
@@ -33,12 +32,12 @@ type GetArtifact interface {
 
 // GetArtifactImpl is the default implementation of GetArtifact.
 type GetArtifactImpl struct {
-	repo repositories.ArtifactRepository
+	repo models.ArtifactRepository
 }
 
 // NewGetArtifact creates a new GetArtifact handler.
 func NewGetArtifact(
-	repo repositories.ArtifactRepository,
+	repo models.ArtifactRepository,
 ) GetArtifact {
 	return &GetArtifactImpl{
 		repo: repo,

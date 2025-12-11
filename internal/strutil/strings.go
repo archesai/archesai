@@ -10,10 +10,8 @@ import (
 
 // Common acronyms that should be preserved in uppercase
 var commonAcronyms = map[string]string{
-	"api":     "API",
-	"apikey":  "APIKey",
-	"apikeys": "APIKeys",
-	"url":     "URL",
+	"api": "API",
+	"url": "URL",
 	"uri":     "URI",
 	"uuid":    "UUID",
 	"id":      "ID",
@@ -193,6 +191,7 @@ func SnakeCase(s string) string {
 }
 
 // KebabCase converts a string to kebab-case.
+// Handles acronyms properly (e.g., "APIKey" -> "api-key", not "a-p-i-key").
 func KebabCase(s string) string {
 	s = strings.TrimSpace(s)
 	if s == "" {
@@ -200,13 +199,29 @@ func KebabCase(s string) string {
 	}
 
 	var result bytes.Buffer
-	for i, r := range s {
-		if i > 0 && unicode.IsUpper(r) {
-			// Add hyphen before uppercase letters (except at the start)
-			if i > 0 && s[i-1] != '-' && s[i-1] != '_' && s[i-1] != ' ' {
-				result.WriteRune('-')
+	runes := []rune(s)
+
+	for i, r := range runes {
+		if unicode.IsUpper(r) && i > 0 {
+			// Look at the previous character
+			prevIsLower := unicode.IsLower(runes[i-1])
+			prevIsDigit := unicode.IsDigit(runes[i-1])
+
+			// Look at the next character if it exists
+			nextIsLower := i+1 < len(runes) && unicode.IsLower(runes[i+1])
+
+			// Add hyphen before uppercase letter if:
+			// 1. Previous char is lowercase or digit
+			// 2. OR this is the start of a new word (current is upper, next is lower)
+			if prevIsLower || prevIsDigit || nextIsLower {
+				// But don't add if previous char is already a separator
+				if runes[i-1] != '-' && runes[i-1] != '_' && runes[i-1] != ' ' {
+					result.WriteRune('-')
+				}
 			}
 		}
+
+		// Convert separators to hyphens
 		if r == '_' || r == ' ' {
 			result.WriteRune('-')
 		} else {
@@ -235,8 +250,6 @@ func Pluralize(word string) string {
 		"woman":  "women",
 		"health": "health", // Health is uncountable, stays the same
 		"config": "config", // Config is uncountable, stays the same
-		"apikey": "APIKeys",
-		"APIKey": "APIKeys",
 	}
 
 	lower := strings.ToLower(word)

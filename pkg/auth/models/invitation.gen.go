@@ -3,6 +3,7 @@
 package models
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -315,4 +316,23 @@ func (e *InvitationDeletedEvent) EventType() string {
 // EventData returns the event data.
 func (e *InvitationDeletedEvent) EventData() any {
 	return e
+}
+
+// InvitationRepository handles invitation persistence
+type InvitationRepository interface {
+	// Basic CRUD operations (always included)
+	Create(ctx context.Context, entity *Invitation) (*Invitation, error)
+	Get(ctx context.Context, id uuid.UUID) (*Invitation, error)
+	Update(ctx context.Context, id uuid.UUID, entity *Invitation) (*Invitation, error)
+	Delete(ctx context.Context, id uuid.UUID) error
+	List(ctx context.Context, limit, offset int32) ([]*Invitation, int64, error)
+
+	// ListInvitationsByOrganization retrieves multiple invitations by organizationID
+	ListInvitationsByOrganization(ctx context.Context, organizationID string) ([]*Invitation, error)
+
+	// GetInvitationByEmail retrieves a single invitation by email and organizationID
+	GetInvitationByEmail(ctx context.Context, email string, organizationID string) (*Invitation, error)
+
+	// ListInvitationsByInviter retrieves multiple invitations by inviterID
+	ListInvitationsByInviter(ctx context.Context, inviterID string) ([]*Invitation, error)
 }

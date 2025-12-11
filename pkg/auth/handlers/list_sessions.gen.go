@@ -9,7 +9,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/pkg/auth/models"
-	"github.com/archesai/archesai/pkg/auth/repositories"
 	servermodels "github.com/archesai/archesai/pkg/server/models"
 )
 
@@ -19,9 +18,10 @@ import (
 
 // ListSessionsInput represents the input for the ListSessions operation.
 type ListSessionsInput struct {
-	SessionID uuid.UUID
-	Page      map[string]any
-	Sort      []map[string]any
+	SessionID      uuid.UUID
+	SessionsFilter *servermodels.FilterNode
+	SessionsSort   *servermodels.FilterNode
+	Page           servermodels.Page
 }
 
 // ListSessionsOutput represents the output for the ListSessions operation.
@@ -37,12 +37,12 @@ type ListSessions interface {
 
 // ListSessionsImpl is the default implementation of ListSessions.
 type ListSessionsImpl struct {
-	repo repositories.SessionRepository
+	repo models.SessionRepository
 }
 
 // NewListSessions creates a new ListSessions handler.
 func NewListSessions(
-	repo repositories.SessionRepository,
+	repo models.SessionRepository,
 ) ListSessions {
 	return &ListSessionsImpl{
 		repo: repo,
@@ -51,20 +51,34 @@ func NewListSessions(
 
 // Execute performs the ListSessions operation.
 func (h *ListSessionsImpl) Execute(ctx context.Context, input *ListSessionsInput) (*ListSessionsOutput, error) {
+	// Pagination parameters with defaults
+	limit := int32(100)
+	offset := int32(0)
+	if input.Page.Limit != nil {
+		limit = *input.Page.Limit
+	}
+	if input.Page.Offset != nil {
+		offset = *input.Page.Offset
+	}
+
 	// List from repository
-	results, total, err := h.repo.List(ctx, 100, 0) // TODO: Use pagination from input
+	results, total, err := h.repo.List(ctx, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list sessions: %w", err)
 	}
 
-	// Map to output
-	output := &ListSessionsOutput{
-		// TODO: Map results to output structure
-		// Data: results,
-		// Total: total,
+	// Convert pointer slice to value slice
+	data := make([]models.Session, len(results))
+	for i, r := range results {
+		data[i] = *r
 	}
-	_ = results
-	_ = total
+
+	output := &ListSessionsOutput{
+		Data: data,
+		Meta: servermodels.PaginationMeta{
+			Total: int32(total),
+		},
+	}
 
 	return output, nil
 }

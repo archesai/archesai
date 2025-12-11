@@ -12,46 +12,40 @@ import (
 	"golang.org/x/sync/errgroup"
 
 	"github.com/archesai/archesai/internal/codegen/generators"
-	"github.com/archesai/archesai/internal/openapi"
-	"github.com/archesai/archesai/internal/strutil"
+	"github.com/archesai/archesai/internal/spec"
 	"github.com/archesai/archesai/internal/templates"
-	"github.com/archesai/archesai/pkg/storage"
 )
 
 // Orchestrator handles code generation from OpenAPI specifications.
 type Orchestrator struct {
 	renderer         *templates.Renderer
-	storage          storage.Storage
+	storage          generators.Storage
 	generators       []generators.Generator
 	onlyFilter       map[string]bool
 	progressCallback ProgressCallback
 }
 
 // NewOrchestrator creates a new code generator instance.
-// By default, it uses NewDefaultIncludeMerger to register all standard includes.
 func NewOrchestrator(outputDir string) *Orchestrator {
 	return &Orchestrator{
-		renderer:   nil,
-		storage:    storage.NewDiskStorage(outputDir),
+		storage:    generators.NewLocalStorage(outputDir),
 		generators: generators.DefaultGenerators(),
 	}
 }
 
 // WithStorage sets a custom storage implementation (useful for testing).
-func (o *Orchestrator) WithStorage(s storage.Storage) *Orchestrator {
+func (o *Orchestrator) WithStorage(s generators.Storage) *Orchestrator {
 	o.storage = s
 	return o
 }
 
-// WithOnly sets which generators to run (comma-separated names).
-func (o *Orchestrator) WithOnly(only string) *Orchestrator {
+// WithOnly sets which generators to run.
+func (o *Orchestrator) WithOnly(only []string) *Orchestrator {
 	o.onlyFilter = make(map[string]bool)
-	split := strutil.SplitByComma(only)
-	for _, name := range split {
-		if name == "" {
-			continue
+	for _, name := range only {
+		if name != "" {
+			o.onlyFilter[name] = true
 		}
-		o.onlyFilter[name] = true
 	}
 	return o
 }
@@ -63,23 +57,23 @@ func (o *Orchestrator) WithProgress(callback ProgressCallback) *Orchestrator {
 }
 
 // GetStorage returns the current storage implementation.
-func (o *Orchestrator) GetStorage() storage.Storage {
+func (o *Orchestrator) GetStorage() generators.Storage {
 	return o.storage
 }
 
 // Initialize sets up the generator with templates and renderer.
 func (o *Orchestrator) Initialize() error {
-	template, err := templates.LoadTemplates()
+	tmpl, err := templates.LoadTemplates()
 	if err != nil {
 		return fmt.Errorf("failed to load templates: %w", err)
 	}
 
-	o.renderer = templates.NewRenderer(template)
+	o.renderer = templates.NewRenderer(tmpl)
 	return nil
 }
 
 // Generate is the main generation function that orchestrates all code generation.
-func (o *Orchestrator) Generate(specPath string) error {
+func (o *Orchestrator) Generate(s *spec.Spec, specPath string) error {
 	totalStart := time.Now()
 
 	absSpecPath, err := filepath.Abs(specPath)
@@ -87,34 +81,25 @@ func (o *Orchestrator) Generate(specPath string) error {
 		return fmt.Errorf("failed to get absolute path of spec: %w", err)
 	}
 
-	slog.Debug("Parsing OpenAPI", slog.String("path", absSpecPath))
-
-	parser := openapi.NewParser()
-	_, err = parser.Parse(absSpecPath)
-	if err != nil {
-		return fmt.Errorf("failed to parse OpenAPI spec: %w", err)
-	}
-
-	spec, err := parser.ExtractSpec()
-	if err != nil {
-		return fmt.Errorf("failed to extract definitions from openapi schema: %w", err)
-	}
-
-	slog.Debug("Initialized state",
-		slog.Int("schemas", len(spec.Schemas)),
-		slog.Int("operations", len(spec.Operations)),
-		slog.String("project", spec.ProjectName),
-		"duration", time.Since(totalStart))
+	slog.Debug("Starting code generation",
+		slog.Int("schemas", len(s.Schemas)),
+		slog.Int("operations", len(s.Operations)),
+		slog.String("project", s.ProjectName))
 
 	ctx := &generators.GeneratorContext{
-		Spec:        spec,
+		Spec:        s,
 		SpecPath:    absSpecPath,
 		Renderer:    o.renderer,
 		Storage:     o.storage,
-		ProjectName: spec.ProjectName,
+		ProjectName: s.ProjectName,
 	}
 
-	return o.runGenerators(ctx)
+	if err := o.runGenerators(ctx); err != nil {
+		return err
+	}
+
+	slog.Debug("Code generation complete", slog.Duration("duration", time.Since(totalStart)))
+	return nil
 }
 
 // emitProgress sends a progress event if a callback is registered.
@@ -133,13 +118,12 @@ func (o *Orchestrator) shouldRun(name string) bool {
 }
 
 // runGenerators executes all generators respecting their priorities.
-// Generators with the same priority run in parallel.
 func (o *Orchestrator) runGenerators(ctx *generators.GeneratorContext) error {
 	// Filter generators based on --only flag
 	var filtered []generators.Generator
-	for _, g := range o.generators {
-		if o.shouldRun(g.Name()) {
-			filtered = append(filtered, g)
+	for _, gen := range o.generators {
+		if o.shouldRun(gen.Name) {
+			filtered = append(filtered, gen)
 		}
 	}
 
@@ -153,7 +137,7 @@ func (o *Orchestrator) runGenerators(ctx *generators.GeneratorContext) error {
 	})
 
 	// Group generators by priority
-	groups := o.groupByPriority(filtered)
+	groups := groupByPriority(filtered)
 
 	// Execute each priority group
 	completedCount := 0
@@ -182,15 +166,12 @@ type priorityGroup struct {
 }
 
 // groupByPriority groups generators by their priority level.
-func (o *Orchestrator) groupByPriority(gens []generators.Generator) []priorityGroup {
-	// Map priority to generators
+func groupByPriority(gens []generators.Generator) []priorityGroup {
 	groupMap := make(map[int][]generators.Generator)
-	for _, g := range gens {
-		p := g.Priority()
-		groupMap[p] = append(groupMap[p], g)
+	for _, gen := range gens {
+		groupMap[gen.Priority] = append(groupMap[gen.Priority], gen)
 	}
 
-	// Convert to slice and sort by priority
 	var groups []priorityGroup
 	for priority, gens := range groupMap {
 		groups = append(groups, priorityGroup{
@@ -215,27 +196,27 @@ func (o *Orchestrator) runGroup(
 ) error {
 	eg, _ := errgroup.WithContext(context.Background())
 
-	for _, g := range group.generators {
-		g := g // capture for goroutine
+	for _, gen := range group.generators {
+		gen := gen // capture for goroutine
 		o.emitProgress(ProgressEvent{
 			Type:          ProgressEventGeneratorStart,
-			GeneratorName: g.Name(),
+			GeneratorName: gen.Name,
 			CurrentIndex:  *completedCount,
 			TotalCount:    totalCount,
 		})
 
 		eg.Go(func() error {
 			start := time.Now()
-			if err := g.Generate(ctx); err != nil {
-				return fmt.Errorf("%s: %w", g.Name(), err)
+			if err := gen.Generate(ctx); err != nil {
+				return fmt.Errorf("%s: %w", gen.Name, err)
 			}
 			slog.Debug("Generator completed",
-				slog.String("name", g.Name()),
+				slog.String("name", gen.Name),
 				slog.Duration("duration", time.Since(start)))
 
 			o.emitProgress(ProgressEvent{
 				Type:          ProgressEventGeneratorDone,
-				GeneratorName: g.Name(),
+				GeneratorName: gen.Name,
 				CurrentIndex:  *completedCount,
 				TotalCount:    totalCount,
 			})

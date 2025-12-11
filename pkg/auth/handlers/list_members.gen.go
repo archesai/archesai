@@ -9,7 +9,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/pkg/auth/models"
-	"github.com/archesai/archesai/pkg/auth/repositories"
 	servermodels "github.com/archesai/archesai/pkg/server/models"
 )
 
@@ -21,9 +20,9 @@ import (
 type ListMembersInput struct {
 	SessionID      uuid.UUID
 	OrganizationID uuid.UUID
-	Filter         map[string]any
-	Page           map[string]any
-	Sort           []map[string]any
+	MembersFilter  *servermodels.FilterNode
+	MembersSort    *servermodels.FilterNode
+	Page           servermodels.Page
 }
 
 // ListMembersOutput represents the output for the ListMembers operation.
@@ -39,12 +38,12 @@ type ListMembers interface {
 
 // ListMembersImpl is the default implementation of ListMembers.
 type ListMembersImpl struct {
-	repo repositories.MemberRepository
+	repo models.MemberRepository
 }
 
 // NewListMembers creates a new ListMembers handler.
 func NewListMembers(
-	repo repositories.MemberRepository,
+	repo models.MemberRepository,
 ) ListMembers {
 	return &ListMembersImpl{
 		repo: repo,
@@ -53,20 +52,34 @@ func NewListMembers(
 
 // Execute performs the ListMembers operation.
 func (h *ListMembersImpl) Execute(ctx context.Context, input *ListMembersInput) (*ListMembersOutput, error) {
+	// Pagination parameters with defaults
+	limit := int32(100)
+	offset := int32(0)
+	if input.Page.Limit != nil {
+		limit = *input.Page.Limit
+	}
+	if input.Page.Offset != nil {
+		offset = *input.Page.Offset
+	}
+
 	// List from repository
-	results, total, err := h.repo.List(ctx, 100, 0) // TODO: Use pagination from input
+	results, total, err := h.repo.List(ctx, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list members: %w", err)
 	}
 
-	// Map to output
-	output := &ListMembersOutput{
-		// TODO: Map results to output structure
-		// Data: results,
-		// Total: total,
+	// Convert pointer slice to value slice
+	data := make([]models.Member, len(results))
+	for i, r := range results {
+		data[i] = *r
 	}
-	_ = results
-	_ = total
+
+	output := &ListMembersOutput{
+		Data: data,
+		Meta: servermodels.PaginationMeta{
+			Total: int32(total),
+		},
+	}
 
 	return output, nil
 }

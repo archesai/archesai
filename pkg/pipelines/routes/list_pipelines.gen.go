@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/oapi-codegen/runtime"
@@ -38,9 +39,9 @@ func RegisterListPipelinesRoute(mux *http.ServeMux, handler *ListPipelinesHandle
 
 // ListPipelinesParams defines query parameters for ListPipelines
 type ListPipelinesParams struct {
-	Filter map[string]any   `json:"filter,omitempty"`
-	Page   map[string]any   `json:"page,omitempty"`
-	Sort   []map[string]any `json:"sort,omitempty"`
+	PipelinesFilter *servermodels.FilterNode `json:"pipelinesFilter"`
+	PipelinesSort   *servermodels.FilterNode `json:"pipelinesSort"`
+	Page            servermodels.Page        `json:"page"`
 }
 
 // Response types
@@ -117,12 +118,21 @@ func (h *ListPipelinesHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	// Build input from request
 	input := &handlers.ListPipelinesInput{}
 
-	// Query parameters
-
-	// Optional query parameter "filter"
-	if err := runtime.BindQueryParameter("deepObject", true, false, "filter", r.URL.Query(), &input.Filter); err != nil {
+	// Optional query parameter "pipelinesFilter"
+	if err := runtime.BindQueryParameter("deepObject", true, false, "pipelinesFilter", r.URL.Query(), &input.PipelinesFilter); err != nil {
 		errorResp := ListPipelines400Response{
-			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter filter: %s", err), r.URL.Path),
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter pipelinesFilter: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitListPipelinesResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
+	}
+
+	// Optional query parameter "pipelinesSort"
+	if err := runtime.BindQueryParameter("deepObject", true, false, "pipelinesSort", r.URL.Query(), &input.PipelinesSort); err != nil {
+		errorResp := ListPipelines400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter pipelinesSort: %s", err), r.URL.Path),
 		}
 		if err := errorResp.VisitListPipelinesResponse(w); err != nil {
 			fmt.Fprintf(w, "error writing response: %v", err)
@@ -131,20 +141,9 @@ func (h *ListPipelinesHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	}
 
 	// Optional query parameter "page"
-	if err := runtime.BindQueryParameter("form", true, false, "page", r.URL.Query(), &input.Page); err != nil {
+	if err := runtime.BindQueryParameter("deepObject", true, false, "page", r.URL.Query(), &input.Page); err != nil {
 		errorResp := ListPipelines400Response{
 			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter page: %s", err), r.URL.Path),
-		}
-		if err := errorResp.VisitListPipelinesResponse(w); err != nil {
-			fmt.Fprintf(w, "error writing response: %v", err)
-		}
-		return
-	}
-
-	// Optional query parameter "sort"
-	if err := runtime.BindQueryParameter("form", true, false, "sort", r.URL.Query(), &input.Sort); err != nil {
-		errorResp := ListPipelines400Response{
-			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter sort: %s", err), r.URL.Path),
 		}
 		if err := errorResp.VisitListPipelinesResponse(w); err != nil {
 			fmt.Fprintf(w, "error writing response: %v", err)
@@ -155,6 +154,7 @@ func (h *ListPipelinesHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	// Execute
 	result, err := h.listPipelines.Execute(ctx, input)
 	if err != nil {
+		slog.Error("handler error", "operation", "ListPipelines", "error", err)
 		errorResp := ListPipelines500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

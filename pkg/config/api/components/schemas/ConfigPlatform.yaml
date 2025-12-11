@@ -1,7 +1,7 @@
 description: Platform configuration (host, image, resources)
 x-internal: config
 type: object
-title: PlatformConfig
+title: ConfigPlatform
 properties:
   enabled:
     description: Enable platform service

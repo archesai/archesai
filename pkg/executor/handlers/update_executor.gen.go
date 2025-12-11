@@ -11,7 +11,6 @@ import (
 
 	"github.com/archesai/archesai/pkg/events"
 	"github.com/archesai/archesai/pkg/executor/models"
-	"github.com/archesai/archesai/pkg/executor/repositories"
 )
 
 // ============================================================================
@@ -48,13 +47,13 @@ type UpdateExecutor interface {
 
 // UpdateExecutorImpl is the default implementation of UpdateExecutor.
 type UpdateExecutorImpl struct {
-	repo      repositories.ExecutorRepository
+	repo      models.ExecutorRepository
 	publisher events.Publisher
 }
 
 // NewUpdateExecutor creates a new UpdateExecutor handler.
 func NewUpdateExecutor(
-	repo repositories.ExecutorRepository,
+	repo models.ExecutorRepository,
 	publisher events.Publisher,
 ) UpdateExecutor {
 	return &UpdateExecutorImpl{

@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -155,6 +156,7 @@ func (h *UpdatePipelineHandler) ServeHTTP(w http.ResponseWriter, r *http.Request
 	// Execute
 	result, err := h.updatePipeline.Execute(ctx, input)
 	if err != nil {
+		slog.Error("handler error", "operation", "UpdatePipeline", "error", err)
 		errorResp := UpdatePipeline500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

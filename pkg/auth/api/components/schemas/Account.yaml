@@ -37,7 +37,7 @@ x-codegen:
         returns: multiple
 x-internal: auth
 allOf:
-  - $ref: Base.yaml
+  - $ref: ./Base.yaml
   - type: object
     properties:
       accountIdentifier:
@@ -66,49 +66,61 @@ allOf:
         example: google
       accessToken:
         description: The OAuth access token
-        type: [string, 'null']
-        minLength: 1
-        example: ya29.a0AfH6SMBa...
         x-sensitive: true
-        maxLength: 512
-        pattern: ^[A-Za-z0-9_\-\.]+$
+        oneOf:
+          - type: string
+            minLength: 1
+            maxLength: 512
+            pattern: ^[A-Za-z0-9_\-\.]+$
+          - type: 'null'
+        example: ya29.a0AfH6SMBa...
       accessTokenExpiresAt:
         description: The access token expiration timestamp
-        type: [string, 'null']
-        format: date-time
-        minLength: 1
+        oneOf:
+          - type: string
+            format: date-time
+            minLength: 1
+            maxLength: 255
+          - type: 'null'
         example: '2024-12-31T23:59:59Z'
-        maxLength: 255
       refreshToken:
         description: The OAuth refresh token
-        type: [string, 'null']
-        minLength: 1
-        example: 1//0fM8N5...
         x-sensitive: true
-        maxLength: 512
-        pattern: ^[A-Za-z0-9_\-\./]+$
+        oneOf:
+          - type: string
+            minLength: 1
+            maxLength: 512
+            pattern: ^[A-Za-z0-9_\-\./]+$
+          - type: 'null'
+        example: 1//0fM8N5...
       refreshTokenExpiresAt:
         description: The refresh token expiration timestamp
-        type: [string, 'null']
-        format: date-time
-        minLength: 1
+        oneOf:
+          - type: string
+            format: date-time
+            minLength: 1
+            maxLength: 255
+          - type: 'null'
         example: '2025-12-31T23:59:59Z'
-        maxLength: 255
       idToken:
         description: The OpenID Connect ID token
-        type: [string, 'null']
-        minLength: 1
-        example: eyJhbGciOiJSUzI1NiIs...
         x-sensitive: true
-        maxLength: 2048
-        pattern: ^[A-Za-z0-9_\-\.]+$
+        oneOf:
+          - type: string
+            minLength: 1
+            maxLength: 2048
+            pattern: ^[A-Za-z0-9_\-\.]+$
+          - type: 'null'
+        example: eyJhbGciOiJSUzI1NiIs...
       scope:
         description: The OAuth scope granted
-        type: [string, 'null']
-        minLength: 1
+        oneOf:
+          - type: string
+            minLength: 1
+            maxLength: 255
+            pattern: ^[\w\s\-:]+$
+          - type: 'null'
         example: openid profile email
-        maxLength: 255
-        pattern: ^[\w\s\-:]+$
       # password:
       #   description: The hashed password for local authentication
       #   type: [string, 'null']

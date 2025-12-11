@@ -11,7 +11,6 @@ import (
 
 	"github.com/archesai/archesai/pkg/events"
 	"github.com/archesai/archesai/pkg/storage/models"
-	"github.com/archesai/archesai/pkg/storage/repositories"
 )
 
 // ============================================================================
@@ -36,13 +35,13 @@ type CreateArtifact interface {
 
 // CreateArtifactImpl is the default implementation of CreateArtifact.
 type CreateArtifactImpl struct {
-	repo      repositories.ArtifactRepository
+	repo      models.ArtifactRepository
 	publisher events.Publisher
 }
 
 // NewCreateArtifact creates a new CreateArtifact handler.
 func NewCreateArtifact(
-	repo repositories.ArtifactRepository,
+	repo models.ArtifactRepository,
 	publisher events.Publisher,
 ) CreateArtifact {
 	return &CreateArtifactImpl{

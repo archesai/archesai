@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/archesai/archesai/pkg/auth/handlers"
@@ -123,6 +124,7 @@ func (h *RequestPasswordResetHandler) ServeHTTP(w http.ResponseWriter, r *http.R
 
 	// Execute
 	if err := h.requestPasswordReset.Execute(ctx, input); err != nil {
+		slog.Error("handler error", "operation", "RequestPasswordReset", "error", err)
 		errorResp := RequestPasswordReset500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

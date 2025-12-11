@@ -31,7 +31,7 @@ title: APIKey
 description: Schema for API Key entity
 x-internal: auth
 allOf:
-  - $ref: Base.yaml
+  - $ref: ./Base.yaml
   - type: object
     properties:
       userID:
@@ -56,17 +56,21 @@ allOf:
         maxLength: 255
         pattern: ^[a-zA-Z0-9]+$
       name:
-        type: [string, 'null']
-        minLength: 1
+        oneOf:
+          - type: string
+            minLength: 1
+            maxLength: 255
+            pattern: ^[\w\s\-.,!?()@#+/']+$
+          - type: 'null'
         example: Production API Key
-        maxLength: 255
-        pattern: ^[\w\s\-.,!?()@#+/']+$
       prefix:
-        type: [string, 'null']
-        minLength: 1
+        oneOf:
+          - type: string
+            minLength: 1
+            maxLength: 255
+            pattern: ^[a-z]+$
+          - type: 'null'
         example: sklive
-        maxLength: 255
-        pattern: ^[a-z]+$
       scopes:
         type: array
         items:
@@ -87,19 +91,23 @@ allOf:
         default: 60
         description: Requests per minute allowed for this API key
       lastUsedAt:
-        type: [string, 'null']
-        format: date-time
-        minLength: 1
-        example: '2024-01-15T09:30:00Z'
         description: When this API key was last used
-        maxLength: 255
+        oneOf:
+          - type: string
+            format: date-time
+            minLength: 1
+            maxLength: 255
+          - type: 'null'
+        example: '2024-01-15T09:30:00Z'
       expiresAt:
-        type: [string, 'null']
-        format: date-time
-        minLength: 1
-        example: '2025-01-15T09:30:00Z'
         description: When this API key expires
-        maxLength: 255
+        oneOf:
+          - type: string
+            format: date-time
+            minLength: 1
+            maxLength: 255
+          - type: 'null'
+        example: '2025-01-15T09:30:00Z'
     required:
       - scopes
       - rateLimit

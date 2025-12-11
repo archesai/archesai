@@ -7,7 +7,6 @@ import (
 	"fmt"
 
 	"github.com/archesai/archesai/pkg/pipelines/models"
-	"github.com/archesai/archesai/pkg/pipelines/repositories"
 	servermodels "github.com/archesai/archesai/pkg/server/models"
 )
 
@@ -17,9 +16,9 @@ import (
 
 // ListRunsInput represents the input for the ListRuns operation.
 type ListRunsInput struct {
-	Filter map[string]any
-	Page   map[string]any
-	Sort   []map[string]any
+	RunsFilter *servermodels.FilterNode
+	RunsSort   *servermodels.FilterNode
+	Page       servermodels.Page
 }
 
 // ListRunsOutput represents the output for the ListRuns operation.
@@ -35,12 +34,12 @@ type ListRuns interface {
 
 // ListRunsImpl is the default implementation of ListRuns.
 type ListRunsImpl struct {
-	repo repositories.RunRepository
+	repo models.RunRepository
 }
 
 // NewListRuns creates a new ListRuns handler.
 func NewListRuns(
-	repo repositories.RunRepository,
+	repo models.RunRepository,
 ) ListRuns {
 	return &ListRunsImpl{
 		repo: repo,
@@ -49,20 +48,34 @@ func NewListRuns(
 
 // Execute performs the ListRuns operation.
 func (h *ListRunsImpl) Execute(ctx context.Context, input *ListRunsInput) (*ListRunsOutput, error) {
+	// Pagination parameters with defaults
+	limit := int32(100)
+	offset := int32(0)
+	if input.Page.Limit != nil {
+		limit = *input.Page.Limit
+	}
+	if input.Page.Offset != nil {
+		offset = *input.Page.Offset
+	}
+
 	// List from repository
-	results, total, err := h.repo.List(ctx, 100, 0) // TODO: Use pagination from input
+	results, total, err := h.repo.List(ctx, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list runs: %w", err)
 	}
 
-	// Map to output
-	output := &ListRunsOutput{
-		// TODO: Map results to output structure
-		// Data: results,
-		// Total: total,
+	// Convert pointer slice to value slice
+	data := make([]models.Run, len(results))
+	for i, r := range results {
+		data[i] = *r
 	}
-	_ = results
-	_ = total
+
+	output := &ListRunsOutput{
+		Data: data,
+		Meta: servermodels.PaginationMeta{
+			Total: int32(total),
+		},
+	}
 
 	return output, nil
 }

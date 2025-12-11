@@ -32,7 +32,7 @@ x-codegen:
         returns: single
 x-internal: storage
 allOf:
-  - $ref: Base.yaml
+  - $ref: ./Base.yaml
   - type: object
     properties:
       name:

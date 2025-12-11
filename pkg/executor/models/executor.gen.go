@@ -3,6 +3,7 @@
 package models
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -354,4 +355,17 @@ func (e *ExecutorDeletedEvent) EventType() string {
 // EventData returns the event data.
 func (e *ExecutorDeletedEvent) EventData() any {
 	return e
+}
+
+// ExecutorRepository handles executor persistence
+type ExecutorRepository interface {
+	// Basic CRUD operations (always included)
+	Create(ctx context.Context, entity *Executor) (*Executor, error)
+	Get(ctx context.Context, id uuid.UUID) (*Executor, error)
+	Update(ctx context.Context, id uuid.UUID, entity *Executor) (*Executor, error)
+	Delete(ctx context.Context, id uuid.UUID) error
+	List(ctx context.Context, limit, offset int32) ([]*Executor, int64, error)
+
+	// ListExecutorsByOrganization retrieves multiple executors by organizationID
+	ListExecutorsByOrganization(ctx context.Context, organizationID string) ([]*Executor, error)
 }

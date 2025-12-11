@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/archesai/archesai/pkg/server"
@@ -129,6 +130,7 @@ func (h *CreateArtifactHandler) ServeHTTP(w http.ResponseWriter, r *http.Request
 	// Execute
 	result, err := h.createArtifact.Execute(ctx, input)
 	if err != nil {
+		slog.Error("handler error", "operation", "CreateArtifact", "error", err)
 		errorResp := CreateArtifact500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

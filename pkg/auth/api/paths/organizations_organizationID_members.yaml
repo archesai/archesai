@@ -1,3 +1,4 @@
+x-path: /organizations/{organizationID}/members
 get:
   x-internal: auth
   operationId: ListMembers

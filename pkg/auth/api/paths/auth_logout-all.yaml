@@ -1,3 +1,4 @@
+x-path: /auth/logout-all
 post:
   x-internal: auth
   operationId: LogoutAll

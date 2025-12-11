@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -135,6 +136,7 @@ func (h *ValidatePipelineExecutionPlanHandler) ServeHTTP(w http.ResponseWriter, 
 	// Execute
 	result, err := h.validatePipelineExecutionPlan.Execute(ctx, input)
 	if err != nil {
+		slog.Error("handler error", "operation", "ValidatePipelineExecutionPlan", "error", err)
 		errorResp := ValidatePipelineExecutionPlan500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

@@ -24,7 +24,7 @@ x-codegen:
         returns: multiple
 x-internal: executor
 allOf:
-  - $ref: Base.yaml
+  - $ref: ./Base.yaml
   - type: object
     properties:
       organizationID:
@@ -63,9 +63,11 @@ allOf:
           }
       dependencies:
         description: Dependencies configuration (package.json for Node, requirements.txt for Python, go.mod for Go)
-        type: [string, 'null']
-        maxLength: 50000
-        pattern: ^[\s\S]*$
+        oneOf:
+          - type: string
+            maxLength: 50000
+            pattern: ^[\s\S]*$
+          - type: 'null'
         example: |
           {
             "dependencies": {
@@ -74,9 +76,11 @@ allOf:
           }
       schemaIn:
         description: JSON Schema for input validation
-        type: [string, 'null']
-        maxLength: 10000
-        pattern: ^[\s\S]*$
+        oneOf:
+          - type: string
+            maxLength: 10000
+            pattern: ^[\s\S]*$
+          - type: 'null'
         example: |
           {
             "type": "object",
@@ -89,9 +93,11 @@ allOf:
           }
       schemaOut:
         description: JSON Schema for output validation
-        type: [string, 'null']
-        maxLength: 10000
-        pattern: ^[\s\S]*$
+        oneOf:
+          - type: string
+            maxLength: 10000
+            pattern: ^[\s\S]*$
+          - type: 'null'
         example: |
           {
             "type": "object",
@@ -104,9 +110,11 @@ allOf:
           }
       extraFiles:
         description: Additional files to mount in the executor (stored as JSON array)
-        type: [string, 'null']
-        maxLength: 100000
-        pattern: ^[\s\S]*$
+        oneOf:
+          - type: string
+            maxLength: 100000
+            pattern: ^[\s\S]*$
+          - type: 'null'
         example: |
           [
             {
@@ -137,9 +145,11 @@ allOf:
         default: 512
       env:
         description: Environment variables (stored as JSON array)
-        type: [string, 'null']
-        maxLength: 10000
-        pattern: ^[\s\S]*$
+        oneOf:
+          - type: string
+            maxLength: 10000
+            pattern: ^[\s\S]*$
+          - type: 'null'
         example: |
           ["NODE_ENV=production", "DEBUG=false"]
       isActive:

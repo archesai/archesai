@@ -1,3 +1,4 @@
+x-path: /executors/{id}/execute
 post:
   x-internal: executor
   x-codegen-custom-handler: true

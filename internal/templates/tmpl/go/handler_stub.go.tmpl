@@ -1,0 +1,47 @@
+{{- /*
+Template: handler_stub.go.tmpl
+Generates: Custom handler implementation in the implement package
+Expected data: ApplicationStubTemplateData
+Only generated for operations with x-codegen-custom-handler: true
+*/ -}}
+{{template "header" .}}
+package implement
+
+import (
+	"context"
+	"fmt"
+
+	"{{ .ProjectName }}/handlers"
+)
+
+// Ensure {{ .Operation.ID }}Impl implements handlers.{{ .Operation.ID }}
+var _ handlers.{{ .Operation.ID }} = (*{{ .Operation.ID }}Impl)(nil)
+
+// {{ .Operation.ID }}Impl implements the handlers.{{ .Operation.ID }} interface.
+type {{ .Operation.ID }}Impl struct {
+	// TODO: Add your dependencies here
+}
+
+// New{{ .Operation.ID }} creates a new handlers.{{ .Operation.ID }} implementation.
+func New{{ .Operation.ID }}(
+	// TODO: Add your dependencies here
+) handlers.{{ .Operation.ID }} {
+	return &{{ .Operation.ID }}Impl{
+		// TODO: Initialize dependencies
+	}
+}
+
+// Execute performs the {{ .Operation.ID }} operation.
+{{- $successResponse := .Operation.GetSuccessResponse }}
+{{- if and $successResponse (eq $successResponse.StatusCode "204") }}
+func (h *{{ .Operation.ID }}Impl) Execute(_ context.Context, _ *handlers.{{ .Operation.ID }}Input) error {
+	// TODO: Implement {{ .Operation.ID }} logic
+	return fmt.Errorf("not implemented")
+}
+{{- else }}
+func (h *{{ .Operation.ID }}Impl) Execute(_ context.Context, _ *handlers.{{ .Operation.ID }}Input) (*handlers.{{ .Operation.ID }}Output, error) {
+	// TODO: Implement {{ .Operation.ID }} logic
+	return nil, fmt.Errorf("not implemented")
+}
+{{- end }}
+

@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -39,9 +40,9 @@ func RegisterListInvitationsRoute(mux *http.ServeMux, handler *ListInvitationsHa
 
 // ListInvitationsParams defines query parameters for ListInvitations
 type ListInvitationsParams struct {
-	Filter map[string]any   `json:"filter,omitempty"`
-	Page   map[string]any   `json:"page,omitempty"`
-	Sort   []map[string]any `json:"sort,omitempty"`
+	InvitationsFilter *servermodels.FilterNode `json:"invitationsFilter"`
+	InvitationsSort   *servermodels.FilterNode `json:"invitationsSort"`
+	Page              servermodels.Page        `json:"page"`
 }
 
 // Response types
@@ -78,6 +79,16 @@ type ListInvitations401Response struct {
 func (response ListInvitations401Response) VisitListInvitationsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(401)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type ListInvitations404Response struct {
+	server.ProblemDetails
+}
+
+func (response ListInvitations404Response) VisitListInvitationsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
 	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
@@ -144,12 +155,21 @@ func (h *ListInvitationsHandler) ServeHTTP(w http.ResponseWriter, r *http.Reques
 	}
 	input.OrganizationID = organizationID
 
-	// Query parameters
-
-	// Optional query parameter "filter"
-	if err := runtime.BindQueryParameter("deepObject", true, false, "filter", r.URL.Query(), &input.Filter); err != nil {
+	// Optional query parameter "invitationsFilter"
+	if err := runtime.BindQueryParameter("deepObject", true, false, "invitationsFilter", r.URL.Query(), &input.InvitationsFilter); err != nil {
 		errorResp := ListInvitations400Response{
-			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter filter: %s", err), r.URL.Path),
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter invitationsFilter: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitListInvitationsResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
+	}
+
+	// Optional query parameter "invitationsSort"
+	if err := runtime.BindQueryParameter("deepObject", true, false, "invitationsSort", r.URL.Query(), &input.InvitationsSort); err != nil {
+		errorResp := ListInvitations400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter invitationsSort: %s", err), r.URL.Path),
 		}
 		if err := errorResp.VisitListInvitationsResponse(w); err != nil {
 			fmt.Fprintf(w, "error writing response: %v", err)
@@ -158,20 +178,9 @@ func (h *ListInvitationsHandler) ServeHTTP(w http.ResponseWriter, r *http.Reques
 	}
 
 	// Optional query parameter "page"
-	if err := runtime.BindQueryParameter("form", true, false, "page", r.URL.Query(), &input.Page); err != nil {
+	if err := runtime.BindQueryParameter("deepObject", true, false, "page", r.URL.Query(), &input.Page); err != nil {
 		errorResp := ListInvitations400Response{
 			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter page: %s", err), r.URL.Path),
-		}
-		if err := errorResp.VisitListInvitationsResponse(w); err != nil {
-			fmt.Fprintf(w, "error writing response: %v", err)
-		}
-		return
-	}
-
-	// Optional query parameter "sort"
-	if err := runtime.BindQueryParameter("form", true, false, "sort", r.URL.Query(), &input.Sort); err != nil {
-		errorResp := ListInvitations400Response{
-			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter sort: %s", err), r.URL.Path),
 		}
 		if err := errorResp.VisitListInvitationsResponse(w); err != nil {
 			fmt.Fprintf(w, "error writing response: %v", err)
@@ -182,6 +191,7 @@ func (h *ListInvitationsHandler) ServeHTTP(w http.ResponseWriter, r *http.Reques
 	// Execute
 	result, err := h.listInvitations.Execute(ctx, input)
 	if err != nil {
+		slog.Error("handler error", "operation", "ListInvitations", "error", err)
 		errorResp := ListInvitations500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

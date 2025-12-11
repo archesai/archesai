@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -49,6 +50,16 @@ func (response GetCurrentUser200Response) VisitGetCurrentUserResponse(w http.Res
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 	return json.NewEncoder(w).Encode(response)
+}
+
+type GetCurrentUser400Response struct {
+	server.ProblemDetails
+}
+
+func (response GetCurrentUser400Response) VisitGetCurrentUserResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type GetCurrentUser401Response struct {
@@ -114,6 +125,7 @@ func (h *GetCurrentUserHandler) ServeHTTP(w http.ResponseWriter, r *http.Request
 	// Execute
 	result, err := h.getCurrentUser.Execute(ctx, input)
 	if err != nil {
+		slog.Error("handler error", "operation", "GetCurrentUser", "error", err)
 		errorResp := GetCurrentUser500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -181,6 +182,7 @@ func (h *UpdateInvitationHandler) ServeHTTP(w http.ResponseWriter, r *http.Reque
 	// Execute
 	result, err := h.updateInvitation.Execute(ctx, input)
 	if err != nil {
+		slog.Error("handler error", "operation", "UpdateInvitation", "error", err)
 		errorResp := UpdateInvitation500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

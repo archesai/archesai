@@ -11,7 +11,6 @@ import (
 
 	"github.com/archesai/archesai/pkg/events"
 	"github.com/archesai/archesai/pkg/pipelines/models"
-	"github.com/archesai/archesai/pkg/pipelines/repositories"
 )
 
 // ============================================================================
@@ -35,13 +34,13 @@ type CreateRun interface {
 
 // CreateRunImpl is the default implementation of CreateRun.
 type CreateRunImpl struct {
-	repo      repositories.RunRepository
+	repo      models.RunRepository
 	publisher events.Publisher
 }
 
 // NewCreateRun creates a new CreateRun handler.
 func NewCreateRun(
-	repo repositories.RunRepository,
+	repo models.RunRepository,
 	publisher events.Publisher,
 ) CreateRun {
 	return &CreateRunImpl{

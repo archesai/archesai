@@ -6,6 +6,8 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+
+	"github.com/archesai/archesai/pkg/pipelines/models"
 )
 
 // ============================================================================
@@ -17,21 +19,9 @@ type GetPipelineExecutionPlanInput struct {
 	ID uuid.UUID
 }
 
-// GetPipelineExecutionPlanOutputData defines the data structure in the output.
-type GetPipelineExecutionPlanOutputData struct {
-	EstimatedDuration int32 `json:"estimatedDuration,omitempty"`
-	IsValid           bool  `json:"isValid"`
-	Levels            []struct {
-		Level int32       `json:"level"`
-		Steps []uuid.UUID `json:"steps"`
-	} `json:"levels"`
-	PipelineID uuid.UUID `json:"pipelineID"`
-	TotalSteps int32     `json:"totalSteps"`
-}
-
 // GetPipelineExecutionPlanOutput represents the output for the GetPipelineExecutionPlan operation.
 type GetPipelineExecutionPlanOutput struct {
-	Data GetPipelineExecutionPlanOutputData `json:"data"`
+	Data models.PipelineExecutionPlan `json:"data"`
 }
 
 // GetPipelineExecutionPlan defines the interface for the GetPipelineExecutionPlan operation.

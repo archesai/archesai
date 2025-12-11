@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -144,6 +145,7 @@ func (h *DeleteAPIKeyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 
 	// Execute
 	if err := h.deleteAPIKey.Execute(ctx, input); err != nil {
+		slog.Error("handler error", "operation", "DeleteAPIKey", "error", err)
 		errorResp := DeleteAPIKey500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

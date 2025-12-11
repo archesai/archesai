@@ -7,7 +7,6 @@ import (
 	"fmt"
 
 	"github.com/archesai/archesai/pkg/executor/models"
-	"github.com/archesai/archesai/pkg/executor/repositories"
 	servermodels "github.com/archesai/archesai/pkg/server/models"
 )
 
@@ -17,9 +16,9 @@ import (
 
 // ListExecutorsInput represents the input for the ListExecutors operation.
 type ListExecutorsInput struct {
-	Filter map[string]any
-	Page   map[string]any
-	Sort   []map[string]any
+	ExecutorsFilter *servermodels.FilterNode
+	ExecutorsSort   *servermodels.FilterNode
+	Page            servermodels.Page
 }
 
 // ListExecutorsOutput represents the output for the ListExecutors operation.
@@ -35,12 +34,12 @@ type ListExecutors interface {
 
 // ListExecutorsImpl is the default implementation of ListExecutors.
 type ListExecutorsImpl struct {
-	repo repositories.ExecutorRepository
+	repo models.ExecutorRepository
 }
 
 // NewListExecutors creates a new ListExecutors handler.
 func NewListExecutors(
-	repo repositories.ExecutorRepository,
+	repo models.ExecutorRepository,
 ) ListExecutors {
 	return &ListExecutorsImpl{
 		repo: repo,
@@ -49,20 +48,34 @@ func NewListExecutors(
 
 // Execute performs the ListExecutors operation.
 func (h *ListExecutorsImpl) Execute(ctx context.Context, input *ListExecutorsInput) (*ListExecutorsOutput, error) {
+	// Pagination parameters with defaults
+	limit := int32(100)
+	offset := int32(0)
+	if input.Page.Limit != nil {
+		limit = *input.Page.Limit
+	}
+	if input.Page.Offset != nil {
+		offset = *input.Page.Offset
+	}
+
 	// List from repository
-	results, total, err := h.repo.List(ctx, 100, 0) // TODO: Use pagination from input
+	results, total, err := h.repo.List(ctx, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list executors: %w", err)
 	}
 
-	// Map to output
-	output := &ListExecutorsOutput{
-		// TODO: Map results to output structure
-		// Data: results,
-		// Total: total,
+	// Convert pointer slice to value slice
+	data := make([]models.Executor, len(results))
+	for i, r := range results {
+		data[i] = *r
 	}
-	_ = results
-	_ = total
+
+	output := &ListExecutorsOutput{
+		Data: data,
+		Meta: servermodels.PaginationMeta{
+			Total: int32(total),
+		},
+	}
 
 	return output, nil
 }

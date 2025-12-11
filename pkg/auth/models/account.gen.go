@@ -3,6 +3,7 @@
 package models
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -304,4 +305,20 @@ func (e *AccountDeletedEvent) EventType() string {
 // EventData returns the event data.
 func (e *AccountDeletedEvent) EventData() any {
 	return e
+}
+
+// AccountRepository handles account persistence
+type AccountRepository interface {
+	// Basic CRUD operations (always included)
+	Create(ctx context.Context, entity *Account) (*Account, error)
+	Get(ctx context.Context, id uuid.UUID) (*Account, error)
+	Update(ctx context.Context, id uuid.UUID, entity *Account) (*Account, error)
+	Delete(ctx context.Context, id uuid.UUID) error
+	List(ctx context.Context, limit, offset int32) ([]*Account, int64, error)
+
+	// GetAccountByProvider retrieves a single account by provider and accountIdentifier
+	GetAccountByProvider(ctx context.Context, provider string, accountIdentifier string) (*Account, error)
+
+	// ListAccountsByUserID retrieves multiple accounts by userID
+	ListAccountsByUserID(ctx context.Context, userID string) ([]*Account, error)
 }

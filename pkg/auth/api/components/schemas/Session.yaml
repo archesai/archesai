@@ -18,27 +18,31 @@ description: Schema for Session entity
 title: Session
 x-internal: auth
 allOf:
-  - $ref: Base.yaml
+  - $ref: ./Base.yaml
   - type: object
     properties:
       organizationID:
         description:
           The organization ID for this session (nullable for users without
           org)
-        type: [string, 'null']
-        format: uuid
+        oneOf:
+          - type: string
+            format: uuid
+            minLength: 36
+            maxLength: 36
+          - type: 'null'
         example: 550e8400-e29b-41d4-a716-446655440000
-        minLength: 36
-        maxLength: 36
       authMethod:
         description:
           The authentication method used (magic_link, oauth_google, oauth_github,
           etc.)
-        type: [string, 'null']
-        minLength: 1
-        maxLength: 100
+        oneOf:
+          - type: string
+            minLength: 1
+            maxLength: 100
+            pattern: ^[a-z_]+$
+          - type: 'null'
         example: magic_link
-        pattern: ^[a-z_]+$
       authProvider:
         description: The authentication provider (google, github, microsoft, local)
         type: [string, 'null']
@@ -58,11 +62,13 @@ allOf:
         maxLength: 255
       ipAddress:
         description: The IP address of the session
-        type: [string, 'null']
-        format: ipv4
+        oneOf:
+          - type: string
+            format: ipv4
+            minLength: 7
+            maxLength: 45
+          - type: 'null'
         example: 192.168.1.1
-        minLength: 7
-        maxLength: 45
       token:
         description: The session token
         type: string
@@ -72,11 +78,13 @@ allOf:
         pattern: ^[A-Za-z0-9_\-\.]+$
       userAgent:
         description: The user agent of the session
-        type: [string, 'null']
+        oneOf:
+          - type: string
+            minLength: 1
+            maxLength: 255
+            pattern: ^[\w\s\-.,!?()@#+/\(\):;]+$
+          - type: 'null'
         example: Mozilla/5.0 (Windows NT 10.0; Win64; x64)
-        minLength: 1
-        maxLength: 255
-        pattern: ^[\w\s\-.,!?()@#+/\(\):;]+$
       userID:
         description: The user who owns this session
         type: string

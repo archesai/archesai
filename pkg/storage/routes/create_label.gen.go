@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/archesai/archesai/pkg/server"
@@ -127,6 +128,7 @@ func (h *CreateLabelHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Execute
 	result, err := h.createLabel.Execute(ctx, input)
 	if err != nil {
+		slog.Error("handler error", "operation", "CreateLabel", "error", err)
 		errorResp := CreateLabel500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

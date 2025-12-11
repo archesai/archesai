@@ -1,7 +1,7 @@
 description: Intelligence configuration (LLMs, embeddings, scraper, speech, etc.)
 x-internal: config
 type: object
-title: IntelligenceConfig
+title: ConfigIntelligence
 properties:
   embedding:
     $ref: ./ConfigLLM.yaml

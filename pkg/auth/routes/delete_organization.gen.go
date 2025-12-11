@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -144,6 +145,7 @@ func (h *DeleteOrganizationHandler) ServeHTTP(w http.ResponseWriter, r *http.Req
 
 	// Execute
 	if err := h.deleteOrganization.Execute(ctx, input); err != nil {
+		slog.Error("handler error", "operation", "DeleteOrganization", "error", err)
 		errorResp := DeleteOrganization500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

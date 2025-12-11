@@ -10,7 +10,6 @@ import (
 
 	"github.com/archesai/archesai/pkg/events"
 	"github.com/archesai/archesai/pkg/pipelines/models"
-	"github.com/archesai/archesai/pkg/pipelines/repositories"
 )
 
 // ============================================================================
@@ -29,13 +28,13 @@ type DeletePipeline interface {
 
 // DeletePipelineImpl is the default implementation of DeletePipeline.
 type DeletePipelineImpl struct {
-	repo      repositories.PipelineRepository
+	repo      models.PipelineRepository
 	publisher events.Publisher
 }
 
 // NewDeletePipeline creates a new DeletePipeline handler.
 func NewDeletePipeline(
-	repo repositories.PipelineRepository,
+	repo models.PipelineRepository,
 	publisher events.Publisher,
 ) DeletePipeline {
 	return &DeletePipelineImpl{

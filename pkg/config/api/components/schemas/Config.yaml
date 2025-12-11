@@ -24,4 +24,6 @@ properties:
     $ref: ./ConfigStorage.yaml
   kubernetes:
     $ref: ./ConfigKubernetes.yaml
+  generation:
+    $ref: ./ConfigGeneration.yaml
 additionalProperties: false

@@ -1,0 +1,10 @@
+title: UpdateTodoBody
+type: object
+properties:
+  title:
+    type: string
+    minLength: 1
+    maxLength: 255
+    pattern: ^[\w\s\-.,!?()@#+/']+$
+  completed:
+    type: boolean

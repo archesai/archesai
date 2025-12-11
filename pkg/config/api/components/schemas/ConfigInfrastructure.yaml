@@ -1,7 +1,7 @@
 description: Infrastructure configuration for Kubernetes deployments
 x-internal: config
 type: object
-title: InfrastructureConfig
+title: ConfigInfrastructure
 properties:
   images:
     $ref: ./ConfigImages.yaml

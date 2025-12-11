@@ -1,7 +1,7 @@
 description: Kubernetes resource configuration
 x-internal: config
 type: object
-title: ResourceConfig
+title: ConfigResource
 properties:
   limits:
     description: Resource limits

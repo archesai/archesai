@@ -1,4 +1,0 @@
-# yaml-language-server: $schema=api/components/schemas/config/Config.yaml
-logging:
-  level: info
-  pretty: true

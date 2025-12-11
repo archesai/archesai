@@ -10,7 +10,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/pkg/auth/models"
-	"github.com/archesai/archesai/pkg/auth/repositories"
 	"github.com/archesai/archesai/pkg/events"
 )
 
@@ -40,13 +39,13 @@ type UpdateAPIKey interface {
 
 // UpdateAPIKeyImpl is the default implementation of UpdateAPIKey.
 type UpdateAPIKeyImpl struct {
-	repo      repositories.APIKeyRepository
+	repo      models.APIKeyRepository
 	publisher events.Publisher
 }
 
 // NewUpdateAPIKey creates a new UpdateAPIKey handler.
 func NewUpdateAPIKey(
-	repo repositories.APIKeyRepository,
+	repo models.APIKeyRepository,
 	publisher events.Publisher,
 ) UpdateAPIKey {
 	return &UpdateAPIKeyImpl{

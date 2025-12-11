@@ -22,7 +22,7 @@ x-codegen:
         returns: multiple
 x-internal: pipelines
 allOf:
-  - $ref: Base.yaml
+  - $ref: ./Base.yaml
   - type: object
     properties:
       organizationID:
@@ -34,16 +34,21 @@ allOf:
         maxLength: 36
       name:
         description: The pipeline's display name
-        type: [string, 'null']
-        minLength: 1
-        maxLength: 255
+        oneOf:
+          - type: string
+            minLength: 1
+            maxLength: 255
+            pattern: ^[\w\s\-.,!?()@#+/']+$
+          - type: 'null'
         example: Data Processing Pipeline
-        pattern: ^[\w\s\-.,!?()@#+/']+$
       description:
         description: Detailed description of the pipeline's purpose
-        type: [string, 'null']
-        maxLength: 1000
-        pattern: ^[\w\s\-.,!?()@#+/':;]+$
+        oneOf:
+          - type: string
+            minLength: 1
+            maxLength: 1000
+            pattern: ^[\w\s\-.,!?()@#+/':;]+$
+          - type: 'null'
         example:
           Processes incoming data through validation, transformation, and storage
           steps

@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/archesai/archesai/cmd/archesai/flags"
-	"github.com/archesai/archesai/internal/openapi"
+	"github.com/archesai/archesai/internal/spec"
 )
 
 // specShowCmd represents the spec show command
@@ -34,15 +34,15 @@ func init() {
 }
 
 func runSpecShow(_ *cobra.Command, _ []string) error {
-	parser := openapi.NewParser()
+	parser := spec.NewParser()
 	if _, err := parser.Parse(flags.SpecShow.SpecPath); err != nil {
 		return fmt.Errorf("failed to parse spec: %w", err)
 	}
 
 	// Determine output format
-	format := openapi.RenderFormatYAML
+	format := spec.RenderFormatYAML
 	if flags.SpecShow.JSON {
-		format = openapi.RenderFormatJSON
+		format = spec.RenderFormatJSON
 	}
 
 	// Render document

@@ -9,7 +9,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/pkg/auth/models"
-	"github.com/archesai/archesai/pkg/auth/repositories"
 	"github.com/archesai/archesai/pkg/events"
 )
 
@@ -31,13 +30,13 @@ type DeleteMember interface {
 
 // DeleteMemberImpl is the default implementation of DeleteMember.
 type DeleteMemberImpl struct {
-	repo      repositories.MemberRepository
+	repo      models.MemberRepository
 	publisher events.Publisher
 }
 
 // NewDeleteMember creates a new DeleteMember handler.
 func NewDeleteMember(
-	repo repositories.MemberRepository,
+	repo models.MemberRepository,
 	publisher events.Publisher,
 ) DeleteMember {
 	return &DeleteMemberImpl{

@@ -9,7 +9,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/archesai/examples/basic/models"
-	"github.com/archesai/examples/basic/repositories"
 )
 
 // ============================================================================
@@ -18,11 +17,12 @@ import (
 
 // GetTodoInput represents the input for the GetTodo operation.
 type GetTodoInput struct {
+	ID uuid.UUID
 }
 
 // GetTodoOutput represents the output for the GetTodo operation.
 type GetTodoOutput struct {
-	Data []models.Todo `json:"data,omitempty"`
+	Data models.Todo `json:"data"`
 }
 
 // GetTodo defines the interface for the GetTodo operation.
@@ -32,12 +32,12 @@ type GetTodo interface {
 
 // GetTodoImpl is the default implementation of GetTodo.
 type GetTodoImpl struct {
-	repo repositories.TodoRepository
+	repo models.TodoRepository
 }
 
 // NewGetTodo creates a new GetTodo handler.
 func NewGetTodo(
-	repo repositories.TodoRepository,
+	repo models.TodoRepository,
 ) GetTodo {
 	return &GetTodoImpl{
 		repo: repo,
@@ -47,7 +47,7 @@ func NewGetTodo(
 // Execute performs the GetTodo operation.
 func (h *GetTodoImpl) Execute(ctx context.Context, input *GetTodoInput) (*GetTodoOutput, error) {
 	// Get from repository
-	result, err := h.repo.Get(ctx, uuid.Nil) // TODO: Get correct ID
+	result, err := h.repo.Get(ctx, input.ID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get todo: %w", err)
 	}

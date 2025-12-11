@@ -1,0 +1,73 @@
+{{- /*
+Template: routes.go.tmpl
+Generates: Route registration and HTTP handlers for a package
+Expects:
+- Operations: []Operation (for internal packages)
+- InternalPackages: []InternalPackage (for composition apps)
+- ProjectName: string
+*/ -}}
+{{template "header" .}}
+package app
+
+{{- if .InternalPackages }}
+import (
+	"net/http"
+{{- range .InternalPackages }}
+	{{ .Alias }}app "{{ .ImportPath }}/app"
+{{- end }}
+)
+
+// Routes composes all routes from internal packages.
+type Routes struct {
+{{- range .InternalPackages }}
+	{{ pascalCase .Name }} *{{ .Alias }}app.Routes
+{{- end }}
+}
+
+// NewRoutes creates all routes from the given handlers.
+func NewRoutes(h *Handlers) *Routes {
+	return &Routes{
+{{- range .InternalPackages }}
+		{{ pascalCase .Name }}: {{ .Alias }}app.NewRoutes(h.{{ pascalCase .Name }}),
+{{- end }}
+	}
+}
+
+// RegisterRoutes registers all routes from all internal packages.
+func RegisterRoutes(mux *http.ServeMux, routes *Routes) {
+{{- range .InternalPackages }}
+	{{ .Alias }}app.RegisterRoutes(mux, routes.{{ pascalCase .Name }})
+{{- end }}
+}
+{{- else }}
+import (
+	"log/slog"
+	"net/http"
+
+	"{{ .ProjectName }}/routes"
+)
+
+// Routes holds all HTTP route handlers for this package.
+type Routes struct {
+{{- range .Operations }}
+	{{ .ID }} *routes.{{ .ID }}Handler
+{{- end }}
+}
+
+// NewRoutes creates all route handlers from the given handlers.
+func NewRoutes(h *Handlers) *Routes {
+	return &Routes{
+{{- range .Operations }}
+		{{ .ID }}: routes.New{{ .ID }}Handler(h.{{ .ID }}),
+{{- end }}
+	}
+}
+
+// RegisterRoutes registers all routes for this package with the http.ServeMux.
+func RegisterRoutes(mux *http.ServeMux, r *Routes) {
+{{- range .Operations }}
+	slog.Info("registering route", "method", "{{ .Method }}", "path", "{{ .Path }}")
+	routes.Register{{ .ID }}Route(mux, r.{{ .ID }})
+{{- end }}
+}
+{{- end }}

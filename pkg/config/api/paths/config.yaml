@@ -1,3 +1,4 @@
+x-path: /config
 get:
   x-internal: config
   x-codegen-custom-handler: true

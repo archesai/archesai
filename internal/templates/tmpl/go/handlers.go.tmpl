@@ -1,0 +1,69 @@
+{{- /*
+Template: handlers.go.tmpl
+Generates: Handlers struct with proper dependency injection.
+Expects:
+- Operations: []Operation (for internal packages)
+- Repositories: []string (unique repository names, for internal packages)
+- ProjectName: string
+- NeedsPublisher: bool (true if any non-GET, non-custom operations exist)
+- InternalPackages: []InternalPackage (for composition apps)
+*/ -}}
+{{template "header" .}}
+package app
+
+{{- if .InternalPackages }}
+import (
+{{- range .InternalPackages }}
+	{{ .Alias }}app "{{ .ImportPath }}/app"
+{{- end }}
+)
+
+// Handlers composes all handlers from internal packages.
+type Handlers struct {
+{{- range .InternalPackages }}
+	{{ pascalCase .Name }} *{{ .Alias }}app.Handlers
+{{- end }}
+}
+
+// NewHandlers creates all handlers from internal package infrastructure.
+func NewHandlers(infra *Infrastructure) *Handlers {
+	return &Handlers{
+{{- range .InternalPackages }}
+		{{ pascalCase .Name }}: {{ .Alias }}app.NewHandlers(infra.{{ pascalCase .Name }}),
+{{- end }}
+	}
+}
+{{- else }}
+import (
+	"{{ .ProjectName }}/handlers"
+{{- if .HasCustomHandlers }}
+	"{{ .ProjectName }}/implement"
+{{- end }}
+)
+
+// Handlers holds all handlers for this package.
+type Handlers struct {
+{{- range .Operations }}
+	{{ .ID }} handlers.{{ .ID }}
+{{- end }}
+}
+
+// NewHandlers creates all handlers with proper dependency injection.
+func NewHandlers(infra *Infrastructure) *Handlers {
+	return &Handlers{
+{{- range .Operations }}
+{{- if .CustomHandler }}
+		{{ .ID }}: implement.New{{ .ID }}(),
+{{- else if eq .Method "GET" }}
+{{- if $.Repositories }}
+		{{ .ID }}: handlers.New{{ .ID }}(infra.{{ or .Tag }}Repo),
+{{- else }}
+		{{ .ID }}: handlers.New{{ .ID }}(),
+{{- end }}
+{{- else }}
+		{{ .ID }}: handlers.New{{ .ID }}(infra.{{ or .Tag }}Repo, infra.Publisher),
+{{- end }}
+{{- end }}
+	}
+}
+{{- end }}

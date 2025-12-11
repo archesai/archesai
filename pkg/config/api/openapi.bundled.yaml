@@ -58,6 +58,37 @@ paths:
       x-internal: server
 components:
   schemas:
+    Base:
+      title: Base
+      description: Base schema for all entities with common fields
+      type: object
+      properties:
+        createdAt:
+          description: The date and time when the resource was created
+          type: string
+          format: date-time
+          minLength: 1
+          maxLength: 255
+          example: '2024-01-15T09:30:00Z'
+        id:
+          description: Unique identifier for the resource
+          type: string
+          format: uuid
+          minLength: 36
+          maxLength: 36
+          example: 550e8400-e29b-41d4-a716-446655440000
+        updatedAt:
+          description: The date and time when the resource was last updated
+          type: string
+          format: date-time
+          minLength: 1
+          maxLength: 255
+          example: '2024-01-15T10:45:00Z'
+      required:
+        - id
+        - createdAt
+        - updatedAt
+      x-internal: server
     Config:
       title: Config
       description: Arches AI configuration schema
@@ -71,6 +102,8 @@ components:
           $ref: '#/components/schemas/ConfigBilling'
         database:
           $ref: '#/components/schemas/ConfigDatabase'
+        generation:
+          $ref: '#/components/schemas/ConfigGeneration'
         intelligence:
           $ref: '#/components/schemas/ConfigIntelligence'
         kubernetes:
@@ -87,7 +120,7 @@ components:
       x-codegen-schema-type: valueobject
       x-internal: config
     ConfigAPI:
-      title: APIConfig
+      title: ConfigAPI
       description: Configuration schema for the API server
       type: object
       properties:
@@ -158,7 +191,7 @@ components:
       x-codegen-schema-type: valueobject
       x-internal: config
     ConfigAuth:
-      title: AuthConfig
+      title: ConfigAuth
       description: Authentication configuration for the API server
       type: object
       properties:
@@ -185,7 +218,7 @@ components:
       x-codegen-schema-type: valueobject
       x-internal: config
     ConfigAuthGithub:
-      title: GitHubAuthConfig
+      title: ConfigAuthGithub
       description: GitHub OAuth configuration
       type: object
       properties:
@@ -232,7 +265,7 @@ components:
       x-codegen-schema-type: valueobject
       x-internal: config
     ConfigAuthGoogle:
-      title: GoogleAuthConfig
+      title: ConfigAuthGoogle
       description: Google OAuth configuration
       type: object
       properties:
@@ -283,7 +316,7 @@ components:
       x-codegen-schema-type: valueobject
       x-internal: config
     ConfigAuthLocal:
-      title: LocalAuthConfig
+      title: ConfigAuthLocal
       description: Local username/password authentication
       type: object
       properties:
@@ -325,7 +358,7 @@ components:
       x-codegen-schema-type: valueobject
       x-internal: config
     ConfigAuthMagicLink:
-      title: MagicLinkAuthConfig
+      title: ConfigAuthMagicLink
       description: Magic link authentication configuration
       type: object
       properties:
@@ -425,7 +458,7 @@ components:
       x-codegen-schema-type: valueobject
       x-internal: config
     ConfigAuthMicrosoft:
-      title: MicrosoftAuthConfig
+      title: ConfigAuthMicrosoft
       description: Microsoft/Azure AD OAuth configuration
       type: object
       properties:
@@ -484,7 +517,7 @@ components:
       x-codegen-schema-type: valueobject
       x-internal: config
     ConfigAuthTwitter:
-      title: TwitterAuthConfig
+      title: ConfigAuthTwitter
       description: Twitter OAuth configuration
       type: object
       properties:
@@ -518,7 +551,7 @@ components:
       x-codegen-schema-type: valueobject
       x-internal: config
     ConfigBilling:
-      title: BillingConfig
+      title: ConfigBilling
       description: Billing configuration for Stripe
       type: object
       properties:
@@ -535,7 +568,7 @@ components:
       x-codegen-schema-type: valueobject
       x-internal: config
     ConfigDatabase:
-      title: DatabaseConfig
+      title: ConfigDatabase
       description: Database configuration for PostgreSQL
       type: object
       properties:
@@ -625,7 +658,7 @@ components:
       x-codegen-schema-type: valueobject
       x-internal: config
     ConfigEmail:
-      title: EmailConfig
+      title: ConfigEmail
       description: Email configuration for sending emails
       type: object
       properties:
@@ -658,8 +691,43 @@ components:
         - enabled
       x-codegen-schema-type: valueobject
       x-internal: config
+    ConfigGeneration:
+      title: ConfigGeneration
+      description: Code generation configuration
+      type: object
+      properties:
+        includes:
+          description: Built-in package includes (server, auth, config, pipelines, executor, storage)
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 255
+            pattern: ^[a-z_]+$
+          maxItems: 100
+        lint:
+          description: Enable strict linting
+          type: boolean
+        only:
+          description: Generators to run (empty = all)
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 255
+            pattern: ^[a-z_]+$
+          maxItems: 100
+        spec:
+          description: Path to the OpenAPI specification file
+          type: string
+          minLength: 1
+          maxLength: 4096
+          pattern: ^[a-zA-Z0-9_./-]+$
+      additionalProperties: false
+      x-codegen-schema-type: valueobject
+      x-internal: config
     ConfigGrafana:
-      title: GrafanaConfig
+      title: ConfigGrafana
       description: Grafana monitoring dashboard configuration
       type: object
       properties:
@@ -683,7 +751,7 @@ components:
       x-codegen-schema-type: valueobject
       x-internal: config
     ConfigImage:
-      title: ImageConfig
+      title: ConfigImage
       description: Container image configuration
       type: object
       properties:
@@ -718,7 +786,7 @@ components:
       x-codegen-schema-type: valueobject
       x-internal: config
     ConfigImages:
-      title: ImagesConfig
+      title: ConfigImages
       description: Container image configuration
       type: object
       properties:
@@ -747,7 +815,7 @@ components:
       x-codegen-schema-type: valueobject
       x-internal: config
     ConfigInfrastructure:
-      title: InfrastructureConfig
+      title: ConfigInfrastructure
       description: Infrastructure configuration for Kubernetes deployments
       type: object
       properties:
@@ -774,7 +842,7 @@ components:
       x-codegen-schema-type: valueobject
       x-internal: config
     ConfigIngress:
-      title: IngressConfig
+      title: ConfigIngress
       description: Ingress configuration
       type: object
       properties:
@@ -799,7 +867,7 @@ components:
       x-codegen-schema-type: valueobject
       x-internal: config
     ConfigIntelligence:
-      title: IntelligenceConfig
+      title: ConfigIntelligence
       description: Intelligence configuration (LLMs, embeddings, scraper, speech, etc.)
       type: object
       properties:
@@ -819,7 +887,7 @@ components:
       x-codegen-schema-type: valueobject
       x-internal: config
     ConfigKubernetes:
-      title: KubernetesConfig
+      title: ConfigKubernetes
       description: Kubernetes-specific deployment configuration
       type: object
       properties:
@@ -833,7 +901,7 @@ components:
       x-codegen-schema-type: valueobject
       x-internal: config
     ConfigLLM:
-      title: LLMConfig
+      title: ConfigLLM
       description: Large Language Model configuration
       type: object
       properties:
@@ -865,7 +933,7 @@ components:
       x-codegen-schema-type: valueobject
       x-internal: config
     ConfigLogging:
-      title: LoggingConfig
+      title: ConfigLogging
       description: Logging configuration
       type: object
       properties:
@@ -894,7 +962,7 @@ components:
       x-codegen-schema-type: valueobject
       x-internal: config
     ConfigLoki:
-      title: LokiConfig
+      title: ConfigLoki
       description: Loki log aggregation service configuration
       type: object
       properties:
@@ -926,7 +994,7 @@ components:
       x-codegen-schema-type: valueobject
       x-internal: config
     ConfigMigrations:
-      title: MigrationsConfig
+      title: ConfigMigrations
       description: Database migration configuration
       type: object
       properties:
@@ -941,7 +1009,7 @@ components:
       x-codegen-schema-type: valueobject
       x-internal: config
     ConfigMonitoring:
-      title: MonitoringConfig
+      title: ConfigMonitoring
       description: Monitoring configuration for Grafana and Loki
       type: object
       properties:
@@ -956,7 +1024,7 @@ components:
       x-codegen-schema-type: valueobject
       x-internal: config
     ConfigPersistence:
-      title: PersistenceConfig
+      title: ConfigPersistence
       description: Persistent storage configuration
       type: object
       properties:
@@ -980,7 +1048,7 @@ components:
       x-codegen-schema-type: valueobject
       x-internal: config
     ConfigPlatform:
-      title: PlatformConfig
+      title: ConfigPlatform
       description: Platform configuration (host, image, resources)
       type: object
       properties:
@@ -1011,7 +1079,7 @@ components:
       x-codegen-schema-type: valueobject
       x-internal: config
     ConfigRedis:
-      title: RedisConfig
+      title: ConfigRedis
       description: Redis configuration
       type: object
       properties:
@@ -1071,7 +1139,7 @@ components:
       x-codegen-schema-type: valueobject
       x-internal: config
     ConfigResource:
-      title: ResourceConfig
+      title: ConfigResource
       description: Kubernetes resource configuration
       type: object
       properties:
@@ -1130,7 +1198,7 @@ components:
       x-codegen-schema-type: valueobject
       x-internal: config
     ConfigRunPod:
-      title: RunPodConfig
+      title: ConfigRunPod
       description: RunPod serverless GPU configuration
       type: object
       properties:
@@ -1152,7 +1220,7 @@ components:
       x-codegen-schema-type: valueobject
       x-internal: config
     ConfigScraper:
-      title: ScraperConfig
+      title: ConfigScraper
       description: Web scraping service configuration
       type: object
       properties:
@@ -1183,7 +1251,7 @@ components:
       x-codegen-schema-type: valueobject
       x-internal: config
     ConfigServiceAccount:
-      title: ServiceAccountConfig
+      title: ConfigServiceAccount
       description: Kubernetes service account configuration
       type: object
       properties:
@@ -1206,7 +1274,7 @@ components:
       x-codegen-schema-type: valueobject
       x-internal: config
     ConfigSpeech:
-      title: SpeechConfig
+      title: ConfigSpeech
       description: Speech recognition and TTS services
       type: object
       properties:
@@ -1228,7 +1296,7 @@ components:
       x-codegen-schema-type: valueobject
       x-internal: config
     ConfigStorage:
-      title: StorageConfig
+      title: ConfigStorage
       description: Object storage configuration for MinIO or S3-compatible services
       type: object
       properties:
@@ -1290,7 +1358,7 @@ components:
       x-codegen-schema-type: valueobject
       x-internal: config
     ConfigStripe:
-      title: StripeConfig
+      title: ConfigStripe
       description: Stripe payment configuration
       type: object
       properties:
@@ -1315,7 +1383,7 @@ components:
       x-codegen-schema-type: valueobject
       x-internal: config
     ConfigTLS:
-      title: TLSConfig
+      title: ConfigTLS
       description: TLS configuration
       type: object
       properties:
@@ -1346,7 +1414,7 @@ components:
       x-codegen-schema-type: valueobject
       x-internal: config
     ConfigUnstructured:
-      title: UnstructuredConfig
+      title: ConfigUnstructured
       description: Unstructured.io service for document parsing
       type: object
       properties:
@@ -1369,6 +1437,50 @@ components:
         - enabled
       x-codegen-schema-type: valueobject
       x-internal: config
+    FilterNode:
+      title: FilterNode
+      description: A recursive filter node that can be a condition or group
+      type: object
+      properties:
+        type:
+          description: The type of filter operation
+          type: string
+          enum:
+            - and
+            - or
+            - eq
+            - ne
+            - gt
+            - gte
+            - lt
+            - lte
+            - contains
+            - startsWith
+            - endsWith
+          example: eq
+        field:
+          description: The field to filter on (for leaf conditions)
+          type: string
+          minLength: 1
+          maxLength: 255
+          pattern: ^[a-zA-Z_][a-zA-Z0-9_]*$
+          example: name
+        value:
+          description: The value to compare against (for leaf conditions)
+          oneOf:
+            - type: string
+              maxLength: 1000
+              pattern: ^[\w\s\-.,!?()@#+/':;]+$
+            - type: integer
+              format: int64
+              minimum: -9223372036854775808
+              maximum: 9223372036854775807
+            - type: boolean
+          example: example-value
+      required:
+        - type
+      x-codegen-schema-type: valueobject
+      x-internal: server
     Health:
       title: Health
       description: Health check response
@@ -1413,7 +1525,7 @@ components:
           type: integer
           format: int64
           minimum: 0
-          maximum: 9223372036854776000
+          maximum: 9223372036854775807
           example: 86400
       additionalProperties: false
       required:
@@ -1444,9 +1556,11 @@ components:
           maximum: 9007199254740991
           example: 0
       additionalProperties: false
+      x-codegen-schema-type: valueobject
       x-internal: server
     PaginationMeta:
       title: PaginationMeta
+      # yaml-language-server: $schema=https://spec.openapis.org/oas/3.2/schema/2025-09-17#/$defs/schema
       description: Pagination metadata
       type: object
       properties:
@@ -1506,14 +1620,17 @@ components:
       required:
         - status
         - title
+      x-codegen-schema-type: valueobject
       x-internal: server
     UUID:
+      title: UUID
       description: UUID identifier
       type: string
       format: uuid
       minLength: 36
       maxLength: 36
       example: 550e8400-e29b-41d4-a716-446655440000
+      x-codegen-schema-type: valueobject
       x-internal: server
   responses:
     BadRequest:
@@ -1677,7 +1794,6 @@ components:
         minimum: 1
         maximum: 1000000
         example: 1000
-      example: 1000
     RateLimitRemaining:
       description: The number of requests remaining in the current time window
       schema:
@@ -1686,16 +1802,14 @@ components:
         minimum: 0
         maximum: 1000000
         example: 999
-      example: 999
     RateLimitReset:
       description: The time at which the current rate limit window resets (Unix timestamp)
       schema:
         type: integer
         format: int64
         minimum: 0
-        maximum: 9223372036854776000
+        maximum: 9223372036854775807
         example: 1640995200
-      example: 1640995200
     RetryAfter:
       description: Number of seconds to wait before making a new request
       schema:
@@ -1704,4 +1818,3 @@ components:
         minimum: 1
         maximum: 3600
         example: 60
-      example: 60

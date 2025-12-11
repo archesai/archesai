@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -78,6 +79,16 @@ func (response GetHealth401Response) VisitGetHealthResponse(w http.ResponseWrite
 	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
+type GetHealth422Response struct {
+	server.ProblemDetails
+}
+
+func (response GetHealth422Response) VisitGetHealthResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
 type GetHealth429Response struct {
 	server.ProblemDetails
 }
@@ -108,6 +119,7 @@ func (h *GetHealthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Execute
 	result, err := h.getHealth.Execute(ctx, input)
 	if err != nil {
+		slog.Error("handler error", "operation", "GetHealth", "error", err)
 		errorResp := GetHealth500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

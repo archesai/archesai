@@ -5,12 +5,14 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/google/uuid"
 	"github.com/oapi-codegen/runtime"
 
 	"github.com/archesai/archesai/pkg/pipelines/handlers"
+	"github.com/archesai/archesai/pkg/pipelines/models"
 	"github.com/archesai/archesai/pkg/server"
 )
 
@@ -41,20 +43,8 @@ type GetPipelineExecutionPlanResponse interface {
 	VisitGetPipelineExecutionPlanResponse(w http.ResponseWriter) error
 }
 
-// GetPipelineExecutionPlan200ResponseData defines the data structure
-type GetPipelineExecutionPlan200ResponseData struct {
-	EstimatedDuration int32 `json:"estimatedDuration,omitempty"`
-	IsValid           bool  `json:"isValid"`
-	Levels            []struct {
-		Level int32       `json:"level"`
-		Steps []uuid.UUID `json:"steps"`
-	} `json:"levels"`
-	PipelineID uuid.UUID `json:"pipelineID"`
-	TotalSteps int32     `json:"totalSteps"`
-}
-
 type GetPipelineExecutionPlan200Response struct {
-	Data GetPipelineExecutionPlan200ResponseData `json:"data"`
+	Data models.PipelineExecutionPlan `json:"data"`
 }
 
 func (response GetPipelineExecutionPlan200Response) VisitGetPipelineExecutionPlanResponse(w http.ResponseWriter) error {
@@ -146,6 +136,7 @@ func (h *GetPipelineExecutionPlanHandler) ServeHTTP(w http.ResponseWriter, r *ht
 	// Execute
 	result, err := h.getPipelineExecutionPlan.Execute(ctx, input)
 	if err != nil {
+		slog.Error("handler error", "operation", "GetPipelineExecutionPlan", "error", err)
 		errorResp := GetPipelineExecutionPlan500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}
@@ -157,7 +148,7 @@ func (h *GetPipelineExecutionPlanHandler) ServeHTTP(w http.ResponseWriter, r *ht
 
 	// Map output to response
 	response := GetPipelineExecutionPlan200Response{}
-	response.Data = GetPipelineExecutionPlan200ResponseData(result.Data)
+	response.Data = result.Data
 
 	if err := response.VisitGetPipelineExecutionPlanResponse(w); err != nil {
 		fmt.Fprintf(w, "error writing response: %v", err)

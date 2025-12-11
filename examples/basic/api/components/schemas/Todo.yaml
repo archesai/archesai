@@ -1,0 +1,16 @@
+title: Todo
+x-codegen-schema-type: entity
+allOf:
+  - $ref: ./Base.yaml
+  - type: object
+    required:
+      - title
+      - completed
+    properties:
+      title:
+        type: string
+        minLength: 1
+        maxLength: 255
+        pattern: ^[\w\s\-.,!?()@#+/']+$
+      completed:
+        type: boolean

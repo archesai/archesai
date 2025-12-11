@@ -3,6 +3,7 @@
 package models
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -207,4 +208,20 @@ func (e *UserDeletedEvent) EventType() string {
 // EventData returns the event data.
 func (e *UserDeletedEvent) EventData() any {
 	return e
+}
+
+// UserRepository handles user persistence
+type UserRepository interface {
+	// Basic CRUD operations (always included)
+	Create(ctx context.Context, entity *User) (*User, error)
+	Get(ctx context.Context, id uuid.UUID) (*User, error)
+	Update(ctx context.Context, id uuid.UUID, entity *User) (*User, error)
+	Delete(ctx context.Context, id uuid.UUID) error
+	List(ctx context.Context, limit, offset int32) ([]*User, int64, error)
+
+	// GetUserByEmail retrieves a single user by email
+	GetUserByEmail(ctx context.Context, email string) (*User, error)
+
+	// GetUserBySessionID retrieves a single user by sessionID
+	GetUserBySessionID(ctx context.Context, sessionID string) (*User, error)
 }

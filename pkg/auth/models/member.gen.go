@@ -3,6 +3,7 @@
 package models
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -238,4 +239,23 @@ func (e *MemberDeletedEvent) EventType() string {
 // EventData returns the event data.
 func (e *MemberDeletedEvent) EventData() any {
 	return e
+}
+
+// MemberRepository handles member persistence
+type MemberRepository interface {
+	// Basic CRUD operations (always included)
+	Create(ctx context.Context, entity *Member) (*Member, error)
+	Get(ctx context.Context, id uuid.UUID) (*Member, error)
+	Update(ctx context.Context, id uuid.UUID, entity *Member) (*Member, error)
+	Delete(ctx context.Context, id uuid.UUID) error
+	List(ctx context.Context, limit, offset int32) ([]*Member, int64, error)
+
+	// ListMembersByOrganization retrieves multiple members by organizationID
+	ListMembersByOrganization(ctx context.Context, organizationID string) ([]*Member, error)
+
+	// ListMembersByUser retrieves multiple members by userID
+	ListMembersByUser(ctx context.Context, userID string) ([]*Member, error)
+
+	// GetMemberByUserAndOrganization retrieves a single member by userID and organizationID
+	GetMemberByUserAndOrganization(ctx context.Context, userID string, organizationID string) (*Member, error)
 }

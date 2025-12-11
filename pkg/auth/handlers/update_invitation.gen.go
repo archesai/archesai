@@ -10,7 +10,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/pkg/auth/models"
-	"github.com/archesai/archesai/pkg/auth/repositories"
 	"github.com/archesai/archesai/pkg/events"
 )
 
@@ -39,13 +38,13 @@ type UpdateInvitation interface {
 
 // UpdateInvitationImpl is the default implementation of UpdateInvitation.
 type UpdateInvitationImpl struct {
-	repo      repositories.InvitationRepository
+	repo      models.InvitationRepository
 	publisher events.Publisher
 }
 
 // NewUpdateInvitation creates a new UpdateInvitation handler.
 func NewUpdateInvitation(
-	repo repositories.InvitationRepository,
+	repo models.InvitationRepository,
 	publisher events.Publisher,
 ) UpdateInvitation {
 	return &UpdateInvitationImpl{

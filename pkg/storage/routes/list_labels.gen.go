@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/oapi-codegen/runtime"
@@ -38,9 +39,9 @@ func RegisterListLabelsRoute(mux *http.ServeMux, handler *ListLabelsHandler) {
 
 // ListLabelsParams defines query parameters for ListLabels
 type ListLabelsParams struct {
-	Filter map[string]any   `json:"filter,omitempty"`
-	Page   map[string]any   `json:"page,omitempty"`
-	Sort   []map[string]any `json:"sort,omitempty"`
+	LabelsFilter *servermodels.FilterNode `json:"labelsFilter"`
+	LabelsSort   *servermodels.FilterNode `json:"labelsSort"`
+	Page         servermodels.Page        `json:"page"`
 }
 
 // Response types
@@ -117,12 +118,21 @@ func (h *ListLabelsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Build input from request
 	input := &handlers.ListLabelsInput{}
 
-	// Query parameters
-
-	// Optional query parameter "filter"
-	if err := runtime.BindQueryParameter("deepObject", true, false, "filter", r.URL.Query(), &input.Filter); err != nil {
+	// Optional query parameter "labelsFilter"
+	if err := runtime.BindQueryParameter("deepObject", true, false, "labelsFilter", r.URL.Query(), &input.LabelsFilter); err != nil {
 		errorResp := ListLabels400Response{
-			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter filter: %s", err), r.URL.Path),
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter labelsFilter: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitListLabelsResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
+	}
+
+	// Optional query parameter "labelsSort"
+	if err := runtime.BindQueryParameter("deepObject", true, false, "labelsSort", r.URL.Query(), &input.LabelsSort); err != nil {
+		errorResp := ListLabels400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter labelsSort: %s", err), r.URL.Path),
 		}
 		if err := errorResp.VisitListLabelsResponse(w); err != nil {
 			fmt.Fprintf(w, "error writing response: %v", err)
@@ -131,20 +141,9 @@ func (h *ListLabelsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Optional query parameter "page"
-	if err := runtime.BindQueryParameter("form", true, false, "page", r.URL.Query(), &input.Page); err != nil {
+	if err := runtime.BindQueryParameter("deepObject", true, false, "page", r.URL.Query(), &input.Page); err != nil {
 		errorResp := ListLabels400Response{
 			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter page: %s", err), r.URL.Path),
-		}
-		if err := errorResp.VisitListLabelsResponse(w); err != nil {
-			fmt.Fprintf(w, "error writing response: %v", err)
-		}
-		return
-	}
-
-	// Optional query parameter "sort"
-	if err := runtime.BindQueryParameter("form", true, false, "sort", r.URL.Query(), &input.Sort); err != nil {
-		errorResp := ListLabels400Response{
-			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter sort: %s", err), r.URL.Path),
 		}
 		if err := errorResp.VisitListLabelsResponse(w); err != nil {
 			fmt.Fprintf(w, "error writing response: %v", err)
@@ -155,6 +154,7 @@ func (h *ListLabelsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Execute
 	result, err := h.listLabels.Execute(ctx, input)
 	if err != nil {
+		slog.Error("handler error", "operation", "ListLabels", "error", err)
 		errorResp := ListLabels500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

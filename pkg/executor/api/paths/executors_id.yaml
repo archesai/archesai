@@ -1,3 +1,4 @@
+x-path: /executors/{id}
 get:
   x-internal: executor
   operationId: GetExecutor

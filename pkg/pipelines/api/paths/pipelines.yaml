@@ -1,3 +1,4 @@
+x-path: /pipelines
 get:
   x-internal: pipelines
   operationId: ListPipelines

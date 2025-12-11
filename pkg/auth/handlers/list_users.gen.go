@@ -9,7 +9,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/pkg/auth/models"
-	"github.com/archesai/archesai/pkg/auth/repositories"
 	servermodels "github.com/archesai/archesai/pkg/server/models"
 )
 
@@ -19,10 +18,10 @@ import (
 
 // ListUsersInput represents the input for the ListUsers operation.
 type ListUsersInput struct {
-	SessionID uuid.UUID
-	Filter    map[string]any
-	Page      map[string]any
-	Sort      []map[string]any
+	SessionID   uuid.UUID
+	UsersFilter *servermodels.FilterNode
+	UsersSort   *servermodels.FilterNode
+	Page        servermodels.Page
 }
 
 // ListUsersOutput represents the output for the ListUsers operation.
@@ -38,12 +37,12 @@ type ListUsers interface {
 
 // ListUsersImpl is the default implementation of ListUsers.
 type ListUsersImpl struct {
-	repo repositories.UserRepository
+	repo models.UserRepository
 }
 
 // NewListUsers creates a new ListUsers handler.
 func NewListUsers(
-	repo repositories.UserRepository,
+	repo models.UserRepository,
 ) ListUsers {
 	return &ListUsersImpl{
 		repo: repo,
@@ -52,20 +51,34 @@ func NewListUsers(
 
 // Execute performs the ListUsers operation.
 func (h *ListUsersImpl) Execute(ctx context.Context, input *ListUsersInput) (*ListUsersOutput, error) {
+	// Pagination parameters with defaults
+	limit := int32(100)
+	offset := int32(0)
+	if input.Page.Limit != nil {
+		limit = *input.Page.Limit
+	}
+	if input.Page.Offset != nil {
+		offset = *input.Page.Offset
+	}
+
 	// List from repository
-	results, total, err := h.repo.List(ctx, 100, 0) // TODO: Use pagination from input
+	results, total, err := h.repo.List(ctx, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list users: %w", err)
 	}
 
-	// Map to output
-	output := &ListUsersOutput{
-		// TODO: Map results to output structure
-		// Data: results,
-		// Total: total,
+	// Convert pointer slice to value slice
+	data := make([]models.User, len(results))
+	for i, r := range results {
+		data[i] = *r
 	}
-	_ = results
-	_ = total
+
+	output := &ListUsersOutput{
+		Data: data,
+		Meta: servermodels.PaginationMeta{
+			Total: int32(total),
+		},
+	}
 
 	return output, nil
 }

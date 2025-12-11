@@ -6,9 +6,37 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/archesai/archesai/pkg/config/models"
 )
+
+type Config struct {
+	API      *APIConfig
+	Database *DatabaseConfig
+	Auth     *AuthConfig
+	Logging  *LoggingConfig
+}
+
+type DatabaseConfig struct {
+	URL      string
+	MaxConns int32
+}
+
+type AuthConfig struct {
+	Enabled bool
+}
+
+type LoggingConfig struct {
+	Level  string
+	Pretty bool
+}
+
+type APIConfig struct {
+	Host        string
+	Port        int32
+	Environment string
+}
+
+var APIConfigEnvironmentProduction = "production"
+var LoggingConfigLevelDebug = "debug"
 
 func TestParserLoad(t *testing.T) {
 	tests := []struct {
@@ -16,7 +44,7 @@ func TestParserLoad(t *testing.T) {
 		setup   func()
 		cleanup func()
 		wantErr bool
-		check   func(*testing.T, *Configuration[models.Config])
+		check   func(*testing.T, *Configuration[Config])
 	}{
 		{
 			name: "load with defaults",
@@ -27,7 +55,7 @@ func TestParserLoad(t *testing.T) {
 			},
 			cleanup: func() {},
 			wantErr: false,
-			check: func(t *testing.T, c *Configuration[models.Config]) {
+			check: func(t *testing.T, c *Configuration[Config]) {
 				require.NotNil(t, c)
 				require.NotNil(t, c.Config)
 				// With no config file and no env vars, we get zero values
@@ -48,7 +76,7 @@ func TestParserLoad(t *testing.T) {
 				_ = os.Unsetenv("ARCHES_AUTH_ENABLED")
 			},
 			wantErr: false,
-			check: func(t *testing.T, c *Configuration[models.Config]) {
+			check: func(t *testing.T, c *Configuration[Config]) {
 				require.NotNil(t, c)
 				require.NotNil(t, c.Config)
 				if c.Config.API != nil {
@@ -89,19 +117,19 @@ logging:
 				_ = os.Remove("config.yaml")
 			},
 			wantErr: false,
-			check: func(t *testing.T, c *Configuration[models.Config]) {
+			check: func(t *testing.T, c *Configuration[Config]) {
 				require.NotNil(t, c)
 				require.NotNil(t, c.Config)
 				if c.Config.API != nil {
 					assert.Equal(t, "192.168.1.1", c.Config.API.Host)
 					assert.Equal(t, int32(9090), c.Config.API.Port)
-					assert.Equal(t, models.APIConfigEnvironmentProduction, c.Config.API.Environment)
+					assert.Equal(t, APIConfigEnvironmentProduction, c.Config.API.Environment)
 				}
 				if c.Config.Database != nil {
 					assert.Equal(t, int32(50), c.Config.Database.MaxConns)
 				}
 				if c.Config.Logging != nil {
-					assert.Equal(t, models.LoggingConfigLevelDebug, c.Config.Logging.Level)
+					assert.Equal(t, LoggingConfigLevelDebug, c.Config.Logging.Level)
 					assert.True(t, c.Config.Logging.Pretty)
 				}
 			},
@@ -117,7 +145,7 @@ logging:
 				defer tt.cleanup()
 			}
 
-			parser := NewParser[models.Config]()
+			parser := NewParser[Config]()
 			config, err := parser.Load()
 
 			if tt.wantErr {
@@ -163,13 +191,4 @@ func TestConfigFileNames(t *testing.T) {
 	for i, name := range ConfigFileNames {
 		assert.Equal(t, expectedNames[i], name)
 	}
-}
-
-func TestGetViperInstance(t *testing.T) {
-	parser := NewParser[models.Config]()
-	config, err := parser.Load()
-	require.NoError(t, err)
-
-	v := config.GetViperInstance()
-	assert.NotNil(t, v)
 }

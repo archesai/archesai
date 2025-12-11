@@ -18,9 +18,3 @@ servers:
   - url: https://api.archesai.dev
     description: Remote development server
   - url: https://api.archesai.com
-x-include-server: true
-x-include-config: true
-x-include-pipelines: true
-x-include-auth: true
-x-include-executor: true
-x-include-storage: true

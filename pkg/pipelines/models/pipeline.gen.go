@@ -3,6 +3,7 @@
 package models
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -194,4 +195,17 @@ func (e *PipelineDeletedEvent) EventType() string {
 // EventData returns the event data.
 func (e *PipelineDeletedEvent) EventData() any {
 	return e
+}
+
+// PipelineRepository handles pipeline persistence
+type PipelineRepository interface {
+	// Basic CRUD operations (always included)
+	Create(ctx context.Context, entity *Pipeline) (*Pipeline, error)
+	Get(ctx context.Context, id uuid.UUID) (*Pipeline, error)
+	Update(ctx context.Context, id uuid.UUID, entity *Pipeline) (*Pipeline, error)
+	Delete(ctx context.Context, id uuid.UUID) error
+	List(ctx context.Context, limit, offset int32) ([]*Pipeline, int64, error)
+
+	// ListPipelinesByOrganization retrieves multiple pipelines by organizationID
+	ListPipelinesByOrganization(ctx context.Context, organizationID string) ([]*Pipeline, error)
 }

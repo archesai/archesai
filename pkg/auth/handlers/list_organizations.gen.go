@@ -9,7 +9,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/pkg/auth/models"
-	"github.com/archesai/archesai/pkg/auth/repositories"
 	servermodels "github.com/archesai/archesai/pkg/server/models"
 )
 
@@ -19,10 +18,10 @@ import (
 
 // ListOrganizationsInput represents the input for the ListOrganizations operation.
 type ListOrganizationsInput struct {
-	SessionID uuid.UUID
-	Filter    map[string]any
-	Page      map[string]any
-	Sort      []map[string]any
+	SessionID           uuid.UUID
+	OrganizationsFilter *servermodels.FilterNode
+	OrganizationsSort   *servermodels.FilterNode
+	Page                servermodels.Page
 }
 
 // ListOrganizationsOutput represents the output for the ListOrganizations operation.
@@ -38,12 +37,12 @@ type ListOrganizations interface {
 
 // ListOrganizationsImpl is the default implementation of ListOrganizations.
 type ListOrganizationsImpl struct {
-	repo repositories.OrganizationRepository
+	repo models.OrganizationRepository
 }
 
 // NewListOrganizations creates a new ListOrganizations handler.
 func NewListOrganizations(
-	repo repositories.OrganizationRepository,
+	repo models.OrganizationRepository,
 ) ListOrganizations {
 	return &ListOrganizationsImpl{
 		repo: repo,
@@ -52,20 +51,34 @@ func NewListOrganizations(
 
 // Execute performs the ListOrganizations operation.
 func (h *ListOrganizationsImpl) Execute(ctx context.Context, input *ListOrganizationsInput) (*ListOrganizationsOutput, error) {
+	// Pagination parameters with defaults
+	limit := int32(100)
+	offset := int32(0)
+	if input.Page.Limit != nil {
+		limit = *input.Page.Limit
+	}
+	if input.Page.Offset != nil {
+		offset = *input.Page.Offset
+	}
+
 	// List from repository
-	results, total, err := h.repo.List(ctx, 100, 0) // TODO: Use pagination from input
+	results, total, err := h.repo.List(ctx, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list organizations: %w", err)
 	}
 
-	// Map to output
-	output := &ListOrganizationsOutput{
-		// TODO: Map results to output structure
-		// Data: results,
-		// Total: total,
+	// Convert pointer slice to value slice
+	data := make([]models.Organization, len(results))
+	for i, r := range results {
+		data[i] = *r
 	}
-	_ = results
-	_ = total
+
+	output := &ListOrganizationsOutput{
+		Data: data,
+		Meta: servermodels.PaginationMeta{
+			Total: int32(total),
+		},
+	}
 
 	return output, nil
 }

@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/oapi-codegen/runtime"
@@ -38,9 +39,9 @@ func RegisterListToolsRoute(mux *http.ServeMux, handler *ListToolsHandler) {
 
 // ListToolsParams defines query parameters for ListTools
 type ListToolsParams struct {
-	Filter map[string]any   `json:"filter,omitempty"`
-	Page   map[string]any   `json:"page,omitempty"`
-	Sort   []map[string]any `json:"sort,omitempty"`
+	ToolsFilter *servermodels.FilterNode `json:"toolsFilter"`
+	ToolsSort   *servermodels.FilterNode `json:"toolsSort"`
+	Page        servermodels.Page        `json:"page"`
 }
 
 // Response types
@@ -117,12 +118,21 @@ func (h *ListToolsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Build input from request
 	input := &handlers.ListToolsInput{}
 
-	// Query parameters
-
-	// Optional query parameter "filter"
-	if err := runtime.BindQueryParameter("deepObject", true, false, "filter", r.URL.Query(), &input.Filter); err != nil {
+	// Optional query parameter "toolsFilter"
+	if err := runtime.BindQueryParameter("deepObject", true, false, "toolsFilter", r.URL.Query(), &input.ToolsFilter); err != nil {
 		errorResp := ListTools400Response{
-			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter filter: %s", err), r.URL.Path),
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter toolsFilter: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitListToolsResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
+	}
+
+	// Optional query parameter "toolsSort"
+	if err := runtime.BindQueryParameter("deepObject", true, false, "toolsSort", r.URL.Query(), &input.ToolsSort); err != nil {
+		errorResp := ListTools400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter toolsSort: %s", err), r.URL.Path),
 		}
 		if err := errorResp.VisitListToolsResponse(w); err != nil {
 			fmt.Fprintf(w, "error writing response: %v", err)
@@ -131,20 +141,9 @@ func (h *ListToolsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Optional query parameter "page"
-	if err := runtime.BindQueryParameter("form", true, false, "page", r.URL.Query(), &input.Page); err != nil {
+	if err := runtime.BindQueryParameter("deepObject", true, false, "page", r.URL.Query(), &input.Page); err != nil {
 		errorResp := ListTools400Response{
 			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter page: %s", err), r.URL.Path),
-		}
-		if err := errorResp.VisitListToolsResponse(w); err != nil {
-			fmt.Fprintf(w, "error writing response: %v", err)
-		}
-		return
-	}
-
-	// Optional query parameter "sort"
-	if err := runtime.BindQueryParameter("form", true, false, "sort", r.URL.Query(), &input.Sort); err != nil {
-		errorResp := ListTools400Response{
-			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter sort: %s", err), r.URL.Path),
 		}
 		if err := errorResp.VisitListToolsResponse(w); err != nil {
 			fmt.Fprintf(w, "error writing response: %v", err)
@@ -155,6 +154,7 @@ func (h *ListToolsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Execute
 	result, err := h.listTools.Execute(ctx, input)
 	if err != nil {
+		slog.Error("handler error", "operation", "ListTools", "error", err)
 		errorResp := ListTools500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

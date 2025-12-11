@@ -1,7 +1,7 @@
 description: Large Language Model configuration
 x-internal: config
 type: object
-title: LLMConfig
+title: ConfigLLM
 properties:
   type:
     description: LLM provider type

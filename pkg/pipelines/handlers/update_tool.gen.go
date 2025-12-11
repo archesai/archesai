@@ -11,7 +11,6 @@ import (
 
 	"github.com/archesai/archesai/pkg/events"
 	"github.com/archesai/archesai/pkg/pipelines/models"
-	"github.com/archesai/archesai/pkg/pipelines/repositories"
 )
 
 // ============================================================================
@@ -37,13 +36,13 @@ type UpdateTool interface {
 
 // UpdateToolImpl is the default implementation of UpdateTool.
 type UpdateToolImpl struct {
-	repo      repositories.ToolRepository
+	repo      models.ToolRepository
 	publisher events.Publisher
 }
 
 // NewUpdateTool creates a new UpdateTool handler.
 func NewUpdateTool(
-	repo repositories.ToolRepository,
+	repo models.ToolRepository,
 	publisher events.Publisher,
 ) UpdateTool {
 	return &UpdateToolImpl{

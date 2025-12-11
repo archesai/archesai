@@ -1,7 +1,7 @@
 description: Email configuration for sending emails
 x-internal: config
 type: object
-title: EmailConfig
+title: ConfigEmail
 properties:
   enabled:
     description: Enable email functionality

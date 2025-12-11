@@ -13,11 +13,13 @@ properties:
     maxLength: 36
   userID:
     description: User ID if token is for existing user
-    type: [string, 'null']
-    format: uuid
+    oneOf:
+      - type: string
+        format: uuid
+        minLength: 36
+        maxLength: 36
+      - type: 'null'
     example: 550e8400-e29b-41d4-a716-446655440000
-    minLength: 36
-    maxLength: 36
   token:
     description: The raw magic link token
     type: string
@@ -34,10 +36,12 @@ properties:
     pattern: ^[a-f0-9]{64}$
   code:
     description: Optional 6-digit OTP code
-    type: [string, 'null']
-    minLength: 6
-    maxLength: 6
-    pattern: ^[0-9]{6}$
+    oneOf:
+      - type: string
+        minLength: 6
+        maxLength: 6
+        pattern: ^[0-9]{6}$
+      - type: 'null'
     example: '123456'
   identifier:
     description: Email or username for authentication
@@ -65,32 +69,40 @@ properties:
     maxLength: 512
   usedAt:
     description: When the token was used (null if unused)
-    type: [string, 'null']
-    format: date-time
+    oneOf:
+      - type: string
+        format: date-time
+        minLength: 1
+        maxLength: 512
+      - type: 'null'
     example: '2023-10-05T14:48:00Z'
-    minLength: 1
-    maxLength: 512
   ipAddress:
     description: IP address of the request
-    type: [string, 'null']
-    format: ipv4
-    minLength: 7
-    maxLength: 45
+    oneOf:
+      - type: string
+        format: ipv4
+        minLength: 7
+        maxLength: 45
+      - type: 'null'
     example: 192.168.1.1
   userAgent:
     description: User agent of the request
-    type: [string, 'null']
-    minLength: 1
-    maxLength: 512
-    pattern: ^[\w\s\-.,!?()@#+/\(\):;]+$
+    oneOf:
+      - type: string
+        minLength: 1
+        maxLength: 512
+        pattern: ^[\w\s\-.,!?()@#+/\(\):;]+$
+      - type: 'null'
     example: Mozilla/5.0
   createdAt:
     description: When the token was created
-    type: [string, 'null']
-    format: date-time
-    minLength: 1
+    oneOf:
+      - type: string
+        format: date-time
+        minLength: 1
+        maxLength: 512
+      - type: 'null'
     example: '2023-10-05T14:48:00Z'
-    maxLength: 512
 required:
   - id
   - tokenHash

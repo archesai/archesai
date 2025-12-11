@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -153,6 +154,7 @@ func (h *VerifyMagicLinkHandler) ServeHTTP(w http.ResponseWriter, r *http.Reques
 	// Execute
 	result, err := h.verifyMagicLink.Execute(ctx, input)
 	if err != nil {
+		slog.Error("handler error", "operation", "VerifyMagicLink", "error", err)
 		errorResp := VerifyMagicLink500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

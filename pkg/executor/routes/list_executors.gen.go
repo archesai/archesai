@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/oapi-codegen/runtime"
@@ -38,9 +39,9 @@ func RegisterListExecutorsRoute(mux *http.ServeMux, handler *ListExecutorsHandle
 
 // ListExecutorsParams defines query parameters for ListExecutors
 type ListExecutorsParams struct {
-	Filter map[string]any   `json:"filter,omitempty"`
-	Page   map[string]any   `json:"page,omitempty"`
-	Sort   []map[string]any `json:"sort,omitempty"`
+	ExecutorsFilter *servermodels.FilterNode `json:"executorsFilter"`
+	ExecutorsSort   *servermodels.FilterNode `json:"executorsSort"`
+	Page            servermodels.Page        `json:"page"`
 }
 
 // Response types
@@ -117,12 +118,21 @@ func (h *ListExecutorsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	// Build input from request
 	input := &handlers.ListExecutorsInput{}
 
-	// Query parameters
-
-	// Optional query parameter "filter"
-	if err := runtime.BindQueryParameter("deepObject", true, false, "filter", r.URL.Query(), &input.Filter); err != nil {
+	// Optional query parameter "executorsFilter"
+	if err := runtime.BindQueryParameter("deepObject", true, false, "executorsFilter", r.URL.Query(), &input.ExecutorsFilter); err != nil {
 		errorResp := ListExecutors400Response{
-			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter filter: %s", err), r.URL.Path),
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter executorsFilter: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitListExecutorsResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
+	}
+
+	// Optional query parameter "executorsSort"
+	if err := runtime.BindQueryParameter("deepObject", true, false, "executorsSort", r.URL.Query(), &input.ExecutorsSort); err != nil {
+		errorResp := ListExecutors400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter executorsSort: %s", err), r.URL.Path),
 		}
 		if err := errorResp.VisitListExecutorsResponse(w); err != nil {
 			fmt.Fprintf(w, "error writing response: %v", err)
@@ -131,20 +141,9 @@ func (h *ListExecutorsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	}
 
 	// Optional query parameter "page"
-	if err := runtime.BindQueryParameter("form", true, false, "page", r.URL.Query(), &input.Page); err != nil {
+	if err := runtime.BindQueryParameter("deepObject", true, false, "page", r.URL.Query(), &input.Page); err != nil {
 		errorResp := ListExecutors400Response{
 			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter page: %s", err), r.URL.Path),
-		}
-		if err := errorResp.VisitListExecutorsResponse(w); err != nil {
-			fmt.Fprintf(w, "error writing response: %v", err)
-		}
-		return
-	}
-
-	// Optional query parameter "sort"
-	if err := runtime.BindQueryParameter("form", true, false, "sort", r.URL.Query(), &input.Sort); err != nil {
-		errorResp := ListExecutors400Response{
-			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter sort: %s", err), r.URL.Path),
 		}
 		if err := errorResp.VisitListExecutorsResponse(w); err != nil {
 			fmt.Fprintf(w, "error writing response: %v", err)
@@ -155,6 +154,7 @@ func (h *ListExecutorsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	// Execute
 	result, err := h.listExecutors.Execute(ctx, input)
 	if err != nil {
+		slog.Error("handler error", "operation", "ListExecutors", "error", err)
 		errorResp := ListExecutors500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

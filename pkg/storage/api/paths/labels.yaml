@@ -1,3 +1,4 @@
+x-path: /labels
 get:
   x-internal: storage
   operationId: ListLabels

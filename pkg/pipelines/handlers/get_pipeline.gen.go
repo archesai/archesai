@@ -9,7 +9,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/pkg/pipelines/models"
-	"github.com/archesai/archesai/pkg/pipelines/repositories"
 )
 
 // ============================================================================
@@ -33,12 +32,12 @@ type GetPipeline interface {
 
 // GetPipelineImpl is the default implementation of GetPipeline.
 type GetPipelineImpl struct {
-	repo repositories.PipelineRepository
+	repo models.PipelineRepository
 }
 
 // NewGetPipeline creates a new GetPipeline handler.
 func NewGetPipeline(
-	repo repositories.PipelineRepository,
+	repo models.PipelineRepository,
 ) GetPipeline {
 	return &GetPipelineImpl{
 		repo: repo,

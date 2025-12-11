@@ -15,7 +15,6 @@
   "outputStyle": "default",
   "permissions": {
     "allow": [
-      "Bash(go run:*)",
       "Bash(go doc:*)",
       "Bash(fd:*)",
       "Bash(make:*)",

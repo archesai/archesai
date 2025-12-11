@@ -5,9 +5,11 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/google/uuid"
+	"github.com/oapi-codegen/runtime"
 
 	"github.com/archesai/archesai/pkg/auth/handlers"
 	"github.com/archesai/archesai/pkg/auth/models"
@@ -35,6 +37,13 @@ func RegisterListAccountsRoute(mux *http.ServeMux, handler *ListAccountsHandler)
 }
 
 // Request types
+
+// ListAccountsParams defines query parameters for ListAccounts
+type ListAccountsParams struct {
+	AccountsFilter *servermodels.FilterNode `json:"accountsFilter"`
+	AccountsSort   *servermodels.FilterNode `json:"accountsSort"`
+	Page           servermodels.Page        `json:"page"`
+}
 
 // Response types
 
@@ -123,9 +132,43 @@ func (h *ListAccountsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 	input := &handlers.ListAccountsInput{}
 	input.SessionID = sessionID
 
+	// Optional query parameter "accountsFilter"
+	if err := runtime.BindQueryParameter("deepObject", true, false, "accountsFilter", r.URL.Query(), &input.AccountsFilter); err != nil {
+		errorResp := ListAccounts400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter accountsFilter: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitListAccountsResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
+	}
+
+	// Optional query parameter "accountsSort"
+	if err := runtime.BindQueryParameter("deepObject", true, false, "accountsSort", r.URL.Query(), &input.AccountsSort); err != nil {
+		errorResp := ListAccounts400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter accountsSort: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitListAccountsResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
+	}
+
+	// Optional query parameter "page"
+	if err := runtime.BindQueryParameter("deepObject", true, false, "page", r.URL.Query(), &input.Page); err != nil {
+		errorResp := ListAccounts400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter page: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitListAccountsResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
+	}
+
 	// Execute
 	result, err := h.listAccounts.Execute(ctx, input)
 	if err != nil {
+		slog.Error("handler error", "operation", "ListAccounts", "error", err)
 		errorResp := ListAccounts500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

@@ -3,6 +3,7 @@
 package models
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -180,4 +181,14 @@ func (e *TodoDeletedEvent) EventType() string {
 // EventData returns the event data.
 func (e *TodoDeletedEvent) EventData() any {
 	return e
+}
+
+// TodoRepository handles todo persistence
+type TodoRepository interface {
+	// Basic CRUD operations (always included)
+	Create(ctx context.Context, entity *Todo) (*Todo, error)
+	Get(ctx context.Context, id uuid.UUID) (*Todo, error)
+	Update(ctx context.Context, id uuid.UUID, entity *Todo) (*Todo, error)
+	Delete(ctx context.Context, id uuid.UUID) error
+	List(ctx context.Context, limit, offset int32) ([]*Todo, int64, error)
 }

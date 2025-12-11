@@ -40,11 +40,11 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/User'
+                      $ref: components/schemas/User.yaml
                   total:
                     type: integer
         '400':
-          $ref: '#/components/responses/BadRequest'
+          $ref: components/responses/BadRequest.yaml
     post:
       operationId: CreateUser
       summary: Create a new user
@@ -55,16 +55,16 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateUserRequest'
+              $ref: components/schemas/CreateUserRequest.yaml
       responses:
         '201':
           description: User created successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: components/schemas/User.yaml
         '400':
-          $ref: '#/components/responses/BadRequest'
+          $ref: components/responses/BadRequest.yaml
   /users/{id}:
     get:
       operationId: GetUser
@@ -86,9 +86,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: components/schemas/User.yaml
         '404':
-          $ref: '#/components/responses/NotFound'
+          $ref: components/responses/NotFound.yaml
     put:
       operationId: UpdateUser
       summary: Update a user
@@ -109,16 +109,16 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateUserRequest'
+              $ref: components/schemas/UpdateUserRequest.yaml
       responses:
         '200':
           description: User updated successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: components/schemas/User.yaml
         '404':
-          $ref: '#/components/responses/NotFound'
+          $ref: components/responses/NotFound.yaml
     delete:
       operationId: DeleteUser
       summary: Delete a user
@@ -137,7 +137,7 @@ paths:
         '204':
           description: User deleted successfully
         '404':
-          $ref: '#/components/responses/NotFound'
+          $ref: components/responses/NotFound.yaml
 components:
   schemas:
     User:

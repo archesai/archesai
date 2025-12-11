@@ -10,7 +10,6 @@ import (
 
 	"github.com/archesai/archesai/pkg/events"
 	"github.com/archesai/archesai/pkg/pipelines/models"
-	"github.com/archesai/archesai/pkg/pipelines/repositories"
 )
 
 // ============================================================================
@@ -29,13 +28,13 @@ type DeleteRun interface {
 
 // DeleteRunImpl is the default implementation of DeleteRun.
 type DeleteRunImpl struct {
-	repo      repositories.RunRepository
+	repo      models.RunRepository
 	publisher events.Publisher
 }
 
 // NewDeleteRun creates a new DeleteRun handler.
 func NewDeleteRun(
-	repo repositories.RunRepository,
+	repo models.RunRepository,
 	publisher events.Publisher,
 ) DeleteRun {
 	return &DeleteRunImpl{

@@ -2,6 +2,8 @@ package spec
 
 // XCodegenExtension represents Configuration for code generation from OpenAPI schemas
 type XCodegenExtension struct {
+	// SkipController when true, skips controller generation for this schema
+	SkipController bool `json:"skip-controller,omitempty" yaml:"skip-controller,omitempty"`
 
 	// Repository Repository generation configuration
 	Repository *XCodegenExtensionRepository `json:"repository,omitempty" yaml:"repository,omitempty"`
@@ -44,6 +46,9 @@ type XCodegenExtensionRepositoryAdditionalMethodsItemParamsItem struct {
 
 	// Format Parameter format (e.g., uuid, email) - optional
 	Format *string `json:"format,omitempty" yaml:"format,omitempty"`
+
+	// MaxLength Maximum length for string parameters
+	MaxLength *int `json:"maxLength,omitempty" yaml:"maxLength,omitempty"`
 
 	// Name Parameter name
 	Name string `json:"name" yaml:"name"`
