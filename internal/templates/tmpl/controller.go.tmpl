@@ -4,7 +4,7 @@ Generates: Individual HTTP handler file for a single operation
 Expected data: HandlerControllerTemplateData
 */ -}}
 {{template "header" .}}
-package controllers
+package routes
 
 import (
 	"context"
@@ -16,9 +16,9 @@ import (
 	"github.com/oapi-codegen/runtime"
 
 	"github.com/archesai/archesai/pkg/server"
-	"{{ .ProjectName }}/gen/application"
-	"{{ .ProjectName }}/gen/models"
-	servermodels "github.com/archesai/archesai/pkg/server/gen/models"
+	"{{ .ProjectName }}/handlers"
+	"{{ .ProjectName }}/models"
+	servermodels "github.com/archesai/archesai/pkg/server/models"
 )
 
 // ============================================================================
@@ -27,11 +27,11 @@ import (
 
 // {{ .Operation.ID }}Handler is the HTTP handler for {{ .Operation.ID }}.
 type {{ .Operation.ID }}Handler struct {
-	{{ camelCase .Operation.ID }} application.{{ .Operation.ID }}
+	{{ camelCase .Operation.ID }} handlers.{{ .Operation.ID }}
 }
 
 // New{{ .Operation.ID }}Handler creates a new HTTP handler.
-func New{{ .Operation.ID }}Handler({{ camelCase .Operation.ID }} application.{{ .Operation.ID }}) *{{ .Operation.ID }}Handler {
+func New{{ .Operation.ID }}Handler({{ camelCase .Operation.ID }} handlers.{{ .Operation.ID }}) *{{ .Operation.ID }}Handler {
 	return &{{ .Operation.ID }}Handler{ {{- camelCase .Operation.ID -}}: {{ camelCase .Operation.ID -}} }
 }
 
@@ -155,7 +155,7 @@ func (h *{{ .Operation.ID }}Handler) ServeHTTP(w http.ResponseWriter, r *http.Re
 	{{- end }}
 
 	// Build input from request
-	input := &application.{{ .Operation.ID }}Input{}
+	input := &handlers.{{ .Operation.ID }}Input{}
 	{{- if or .Operation.HasBearerAuth .Operation.HasCookieAuth }}
 	input.SessionID = sessionID
 	{{- end }}

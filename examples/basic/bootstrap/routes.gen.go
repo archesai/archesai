@@ -6,23 +6,23 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/archesai/examples/basic/gen/controllers"
+	"github.com/archesai/examples/basic/routes"
 )
 
 // HTTPHandlers holds all HTTP handlers for this package.
 type HTTPHandlers struct {
-	GetTodo *controllers.GetTodoHandler
+	GetTodo *routes.GetTodoHandler
 }
 
 // NewHTTPHandlers creates all HTTP handlers from the given application handlers.
 func NewHTTPHandlers(appHandlers *ApplicationHandlers) *HTTPHandlers {
 	return &HTTPHandlers{
-		GetTodo: controllers.NewGetTodoHandler(appHandlers.GetTodo),
+		GetTodo: routes.NewGetTodoHandler(appHandlers.GetTodo),
 	}
 }
 
 // RegisterRoutes registers all routes for this package with the http.ServeMux.
 func RegisterRoutes(mux *http.ServeMux, handlers *HTTPHandlers) {
 	slog.Info("registering route", "method", "GET", "path", "/todos")
-	controllers.RegisterGetTodoRoute(mux, handlers.GetTodo)
+	routes.RegisterGetTodoRoute(mux, handlers.GetTodo)
 }

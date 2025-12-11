@@ -3,10 +3,10 @@
 package bootstrap
 
 import (
-	authbootstrap "github.com/archesai/archesai/pkg/auth/gen/bootstrap"
+	authbootstrap "github.com/archesai/archesai/pkg/auth/bootstrap"
 	"github.com/archesai/archesai/pkg/database"
 	"github.com/archesai/archesai/pkg/events"
-	serverbootstrap "github.com/archesai/archesai/pkg/server/gen/bootstrap"
+	serverbootstrap "github.com/archesai/archesai/pkg/server/bootstrap"
 	postgresrepos "github.com/archesai/examples/authentication/infrastructure/postgres/repositories"
 	sqliterepos "github.com/archesai/examples/authentication/infrastructure/sqlite/repositories"
 )

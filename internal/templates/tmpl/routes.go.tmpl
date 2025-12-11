@@ -13,7 +13,7 @@ package bootstrap
 import (
 	"net/http"
 {{- range .InternalPackages }}
-	{{ .Alias }}bootstrap "{{ .ImportPath }}/gen/bootstrap"
+	{{ .Alias }}bootstrap "{{ .ImportPath }}/bootstrap"
 {{- end }}
 )
 
@@ -35,13 +35,13 @@ import (
 	"log/slog"
 	"net/http"
 
-	"{{ .ProjectName }}/gen/controllers"
+	"{{ .ProjectName }}/routes"
 )
 
 // HTTPHandlers holds all HTTP handlers for this package.
 type HTTPHandlers struct {
 {{- range .Operations }}
-	{{ .ID }} *controllers.{{ .ID }}Handler
+	{{ .ID }} *routes.{{ .ID }}Handler
 {{- end }}
 }
 
@@ -49,7 +49,7 @@ type HTTPHandlers struct {
 func NewHTTPHandlers(appHandlers *ApplicationHandlers) *HTTPHandlers {
 	return &HTTPHandlers{
 {{- range .Operations }}
-		{{ .ID }}: controllers.New{{ .ID }}Handler(appHandlers.{{ .ID }}),
+		{{ .ID }}: routes.New{{ .ID }}Handler(appHandlers.{{ .ID }}),
 {{- end }}
 	}
 }
@@ -58,7 +58,7 @@ func NewHTTPHandlers(appHandlers *ApplicationHandlers) *HTTPHandlers {
 func RegisterRoutes(mux *http.ServeMux, handlers *HTTPHandlers) {
 {{- range .Operations }}
 	slog.Info("registering route", "method", "{{ .Method }}", "path", "{{ .Path }}")
-	controllers.Register{{ .ID }}Route(mux, handlers.{{ .ID }})
+	routes.Register{{ .ID }}Route(mux, handlers.{{ .ID }})
 {{- end }}
 }
 {{- end }}

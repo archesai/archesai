@@ -4,7 +4,7 @@ Generates: Handler DTOs, interface, and (for non-custom) default implementation
 Expected data: ApplicationTemplateData
 */ -}}
 {{template "header" .}}
-package application
+package handlers
 
 import (
 	"context"
@@ -13,10 +13,10 @@ import (
 
 	"github.com/google/uuid"
 
-	"{{ .ProjectName }}/gen/models"
-	"{{ .ProjectName }}/gen/repositories"
+	"{{ .ProjectName }}/models"
+	"{{ .ProjectName }}/repositories"
 	"github.com/archesai/archesai/pkg/events"
-	servermodels "github.com/archesai/archesai/pkg/server/gen/models"
+	servermodels "github.com/archesai/archesai/pkg/server/models"
 )
 
 // ============================================================================

@@ -10,20 +10,20 @@ func InternalPackageImportPath(pkgName string) string {
 
 // InternalPackageModelsPath returns the models import path for an internal package.
 func InternalPackageModelsPath(pkgName string) string {
-	return InternalPackageBase + "/" + pkgName + "/gen/models"
+	return InternalPackageBase + "/" + pkgName + "/models"
 }
 
 // InternalPackageRepositoriesPath returns the repositories import path for an internal package.
 func InternalPackageRepositoriesPath(pkgName string) string {
-	return InternalPackageBase + "/" + pkgName + "/gen/repositories"
+	return InternalPackageBase + "/" + pkgName + "/repositories"
 }
 
-// InternalPackageApplicationPath returns the application import path for an internal package.
-func InternalPackageApplicationPath(pkgName string) string {
-	return InternalPackageBase + "/" + pkgName + "/gen/application"
+// InternalPackageHandlersPath returns the handlers import path for an internal package.
+func InternalPackageHandlersPath(pkgName string) string {
+	return InternalPackageBase + "/" + pkgName + "/handlers"
 }
 
 // InternalPackageBootstrapPath returns the bootstrap import path for an internal package.
 func InternalPackageBootstrapPath(pkgName string) string {
-	return InternalPackageBase + "/" + pkgName + "/gen/bootstrap"
+	return InternalPackageBase + "/" + pkgName + "/bootstrap"
 }

@@ -3,13 +3,13 @@
 package bootstrap
 
 import (
-	"github.com/archesai/examples/basic/gen/application"
-	"github.com/archesai/examples/basic/gen/repositories"
+	"github.com/archesai/examples/basic/handlers"
+	"github.com/archesai/examples/basic/repositories"
 )
 
 // ApplicationHandlers holds all application-layer handlers for this package.
 type ApplicationHandlers struct {
-	GetTodo application.GetTodo
+	GetTodo handlers.GetTodo
 }
 
 // NewApplicationHandlers creates all application handlers with proper dependency injection.
@@ -17,6 +17,6 @@ func NewApplicationHandlers(
 	todoRepo repositories.TodoRepository,
 ) *ApplicationHandlers {
 	return &ApplicationHandlers{
-		GetTodo: application.NewGetTodo(todoRepo),
+		GetTodo: handlers.NewGetTodo(todoRepo),
 	}
 }

@@ -270,7 +270,7 @@ clean-go: ## Clean Go build artifacts
 
 .PHONY: clean-generated
 clean-generated: ## Clean all generated code
-	@find . -type f -name "*.gen.*" -not -path "./internal/codegen/tmpl/*" -not -path "./pkg/auth/gen/repositories/*" -not -path "./pkg/auth/gen/models/*" -exec rm -f {} +
+	@find . -type f -name "*.gen.*" -not -path "./internal/codegen/tmpl/*" -not -path "./pkg/auth/repositories/*" -not -path "./pkg/auth/models/*" -exec rm -f {} +
 	@find . -type d -empty -delete 2>/dev/null || true
 	@rm -rf ./pkg/client/src/generated
 	@rm -f ./deployments/helm-minimal/values.schema.json

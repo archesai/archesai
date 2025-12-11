@@ -19,7 +19,7 @@ type RoutesTemplateData struct {
 type RoutesGenerator struct{}
 
 // Name returns the generator name.
-func (g *RoutesGenerator) Name() string { return "routes" }
+func (g *RoutesGenerator) Name() string { return "bootstrap_routes" }
 
 // Priority returns the generator priority.
 func (g *RoutesGenerator) Priority() int { return PriorityNormal }

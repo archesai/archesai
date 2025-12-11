@@ -8,7 +8,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/archesai/archesai/pkg/executor/gen/models"
+	"github.com/archesai/archesai/pkg/executor/models"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"

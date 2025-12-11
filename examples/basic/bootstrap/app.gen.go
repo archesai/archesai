@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/archesai/archesai/pkg/config"
-	configmodels "github.com/archesai/archesai/pkg/config/gen/models"
+	configmodels "github.com/archesai/archesai/pkg/config/models"
 	"github.com/archesai/archesai/pkg/database"
 	"github.com/archesai/archesai/pkg/events"
 	"github.com/archesai/archesai/pkg/logger"

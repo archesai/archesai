@@ -5,12 +5,12 @@ package bootstrap
 import (
 	"net/http"
 
-	authbootstrap "github.com/archesai/archesai/pkg/auth/gen/bootstrap"
-	configbootstrap "github.com/archesai/archesai/pkg/config/gen/bootstrap"
-	executorbootstrap "github.com/archesai/archesai/pkg/executor/gen/bootstrap"
-	pipelinesbootstrap "github.com/archesai/archesai/pkg/pipelines/gen/bootstrap"
-	serverbootstrap "github.com/archesai/archesai/pkg/server/gen/bootstrap"
-	storagebootstrap "github.com/archesai/archesai/pkg/storage/gen/bootstrap"
+	authbootstrap "github.com/archesai/archesai/pkg/auth/bootstrap"
+	configbootstrap "github.com/archesai/archesai/pkg/config/bootstrap"
+	executorbootstrap "github.com/archesai/archesai/pkg/executor/bootstrap"
+	pipelinesbootstrap "github.com/archesai/archesai/pkg/pipelines/bootstrap"
+	serverbootstrap "github.com/archesai/archesai/pkg/server/bootstrap"
+	storagebootstrap "github.com/archesai/archesai/pkg/storage/bootstrap"
 )
 
 // Handlers composes all handlers from internal packages.

@@ -5,14 +5,14 @@ package bootstrap
 import (
 	postgresrepos "github.com/archesai/archesai/apps/studio/infrastructure/postgres/repositories"
 	sqliterepos "github.com/archesai/archesai/apps/studio/infrastructure/sqlite/repositories"
-	authbootstrap "github.com/archesai/archesai/pkg/auth/gen/bootstrap"
-	configbootstrap "github.com/archesai/archesai/pkg/config/gen/bootstrap"
+	authbootstrap "github.com/archesai/archesai/pkg/auth/bootstrap"
+	configbootstrap "github.com/archesai/archesai/pkg/config/bootstrap"
 	"github.com/archesai/archesai/pkg/database"
 	"github.com/archesai/archesai/pkg/events"
-	executorbootstrap "github.com/archesai/archesai/pkg/executor/gen/bootstrap"
-	pipelinesbootstrap "github.com/archesai/archesai/pkg/pipelines/gen/bootstrap"
-	serverbootstrap "github.com/archesai/archesai/pkg/server/gen/bootstrap"
-	storagebootstrap "github.com/archesai/archesai/pkg/storage/gen/bootstrap"
+	executorbootstrap "github.com/archesai/archesai/pkg/executor/bootstrap"
+	pipelinesbootstrap "github.com/archesai/archesai/pkg/pipelines/bootstrap"
+	serverbootstrap "github.com/archesai/archesai/pkg/server/bootstrap"
+	storagebootstrap "github.com/archesai/archesai/pkg/storage/bootstrap"
 )
 
 // Services holds shared dependencies for all handlers.

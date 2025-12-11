@@ -11,9 +11,9 @@ Expects:
 package bootstrap
 
 import (
-	"{{ .ProjectName }}/gen/application"
+	"{{ .ProjectName }}/handlers"
 {{- if .Repositories }}
-	"{{ .ProjectName }}/gen/repositories"
+	"{{ .ProjectName }}/repositories"
 {{- end }}
 {{- if .NeedsPublisher }}
 	"github.com/archesai/archesai/pkg/events"
@@ -23,7 +23,7 @@ import (
 // ApplicationHandlers holds all application-layer handlers for this package.
 type ApplicationHandlers struct {
 {{- range .Operations }}
-	{{ .ID }} application.{{ .ID }}
+	{{ .ID }} handlers.{{ .ID }}
 {{- end }}
 }
 
@@ -39,11 +39,11 @@ func NewApplicationHandlers(
 	return &ApplicationHandlers{
 {{- range .Operations }}
 {{- if .XCodegenCustomHandler }}
-		{{ .ID }}: application.New{{ .ID }}(),
+		{{ .ID }}: handlers.New{{ .ID }}(),
 {{- else if eq .Method "GET" }}
-		{{ .ID }}: application.New{{ .ID }}({{ camelCase (or .Tag) }}Repo),
+		{{ .ID }}: handlers.New{{ .ID }}({{ camelCase (or .Tag) }}Repo),
 {{- else }}
-		{{ .ID }}: application.New{{ .ID }}({{ camelCase (or .Tag) }}Repo, publisher),
+		{{ .ID }}: handlers.New{{ .ID }}({{ camelCase (or .Tag) }}Repo, publisher),
 {{- end }}
 {{- end }}
 	}

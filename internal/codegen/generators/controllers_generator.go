@@ -18,7 +18,7 @@ type ControllerTemplateData struct {
 type ControllersGenerator struct{}
 
 // Name returns the generator name.
-func (g *ControllersGenerator) Name() string { return "controllers" }
+func (g *ControllersGenerator) Name() string { return "routes" }
 
 // Priority returns the generator priority.
 func (g *ControllersGenerator) Priority() int { return PriorityNormal }
@@ -32,7 +32,7 @@ func (g *ControllersGenerator) Generate(ctx *GeneratorContext) error {
 		}
 
 		outputPath := filepath.Join(
-			"controllers",
+			"routes",
 			fmt.Sprintf("%s.gen.go", strutil.SnakeCase(op.ID)),
 		)
 		data := &ControllerTemplateData{

@@ -7,7 +7,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/archesai/archesai/pkg/pipelines/gen/models"
+	"github.com/archesai/archesai/pkg/pipelines/models"
 	"github.com/google/uuid"
 )
 

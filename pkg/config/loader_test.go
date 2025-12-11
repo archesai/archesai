@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/archesai/archesai/pkg/config/gen/models"
+	"github.com/archesai/archesai/pkg/config/models"
 )
 
 func TestParserLoad(t *testing.T) {

@@ -24,7 +24,7 @@ type ApplicationStubTemplateData struct {
 type HandlersGenerator struct{}
 
 // Name returns the generator name.
-func (g *HandlersGenerator) Name() string { return "application" }
+func (g *HandlersGenerator) Name() string { return "handlers" }
 
 // Priority returns the generator priority.
 func (g *HandlersGenerator) Priority() int { return PriorityNormal }
@@ -52,7 +52,7 @@ func (g *HandlersGenerator) Generate(ctx *GeneratorContext) error {
 
 func generateHandlerGenFile(ctx *GeneratorContext, op spec.Operation) error {
 	fileName := strutil.SnakeCase(op.ID) + ".gen.go"
-	outputPath := filepath.Join("application", fileName)
+	outputPath := filepath.Join("handlers", fileName)
 
 	data := &ApplicationTemplateData{
 		Operation:   &op,
@@ -67,7 +67,7 @@ func generateHandlerGenFile(ctx *GeneratorContext, op spec.Operation) error {
 
 func generateCustomHandlerStub(ctx *GeneratorContext, op spec.Operation) error {
 	fileName := strutil.SnakeCase(op.ID) + ".impl.go"
-	outputPath := filepath.Join("application", fileName)
+	outputPath := filepath.Join("handlers", fileName)
 
 	data := &ApplicationStubTemplateData{
 		Operation:   &op,
