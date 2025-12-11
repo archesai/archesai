@@ -60,7 +60,7 @@ func NewDefaultIncludeMerger() *IncludeMerger {
 }
 
 // RegisterInclude registers an includable spec with its embedded filesystem.
-// The filesystem should contain a spec/openapi.yaml file at its root.
+// The filesystem should contain an api/openapi.yaml file at its root.
 func (m *IncludeMerger) RegisterInclude(name string, fsys IncludeFS) *IncludeMerger {
 	m.includeSpecs[name] = IncludeSpec{
 		Name: name,
@@ -146,7 +146,7 @@ func (m *IncludeMerger) MergeSpec(specPath string) ([]byte, []string, error) {
 
 	// For each include, read its spec and merge paths/tags/components/security
 	for _, include := range enabledIncludes {
-		includeBytes, err := include.FS.ReadFile("spec/openapi.yaml")
+		includeBytes, err := include.FS.ReadFile("api/openapi.yaml")
 		if err != nil {
 			return nil, nil, fmt.Errorf("failed to read include spec %s: %w", include.Name, err)
 		}
@@ -490,7 +490,7 @@ func NewCompositeFS(base fs.FS) *CompositeFS {
 }
 
 // AddInclude adds an embedded filesystem as an overlay.
-// Files from the include's spec/ directory are accessible at the root.
+// Files from the include's api/ directory are accessible at the root.
 func (c *CompositeFS) AddInclude(name string, fsys IncludeFS) {
 	c.includes = append(c.includes, includeFSInfo{
 		name: name,
@@ -510,9 +510,9 @@ func (c *CompositeFS) Open(name string) (fs.File, error) {
 	}
 
 	// Try each include's embedded filesystem
-	// Include files are under spec/ in the embed, but we want them at root
+	// Include files are under api/ in the embed, but we want them at root
 	for _, inc := range c.includes {
-		embedPath := filepath.Join("spec", name)
+		embedPath := filepath.Join("api", name)
 		if f, err := inc.fsys.Open(embedPath); err == nil {
 			return f, nil
 		}
@@ -539,7 +539,7 @@ func (c *CompositeFS) ReadDir(name string) ([]fs.DirEntry, error) {
 
 	// Read from each include (only add if not already present)
 	for _, inc := range c.includes {
-		embedPath := filepath.Join("spec", name)
+		embedPath := filepath.Join("api", name)
 		if dirEntries, err := inc.fsys.ReadDir(embedPath); err == nil {
 			for _, e := range dirEntries {
 				if _, exists := entries[e.Name()]; !exists {
