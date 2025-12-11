@@ -17,7 +17,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.7.6
 	github.com/oapi-codegen/runtime v1.1.2
-	github.com/ollama/ollama v0.13.1
+	github.com/ollama/ollama v0.13.2
 	github.com/openai/openai-go v1.12.0
 	github.com/pb33f/libopenapi v0.28.2
 	github.com/redis/go-redis/v9 v9.17.2
