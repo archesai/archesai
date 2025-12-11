@@ -2,10 +2,10 @@ package executor_test
 
 import (
 	"context"
-	"os"
 	"path/filepath"
 	"testing"
 
+	"github.com/archesai/archesai/internal/testutil"
 	"github.com/archesai/archesai/pkg/executor"
 )
 
@@ -33,10 +33,7 @@ func TestBuildImage(t *testing.T) {
 	defer func() { _ = builder.Close() }()
 
 	// Get project root
-	projectRoot, err := findProjectRoot()
-	if err != nil {
-		t.Fatalf("Failed to find project root: %v", err)
-	}
+	projectRoot := testutil.FindProjectRoot(t)
 
 	// Build node runner
 	config := executor.ImageConfig{
@@ -73,10 +70,7 @@ func TestBuildImages(t *testing.T) {
 	defer func() { _ = builder.Close() }()
 
 	// Get project root
-	projectRoot, err := findProjectRoot()
-	if err != nil {
-		t.Fatalf("Failed to find project root: %v", err)
-	}
+	projectRoot := testutil.FindProjectRoot(t)
 
 	// Build all runners in parallel
 	configs := executor.RunnerConfigs(projectRoot)
@@ -218,28 +212,5 @@ func TestImageExists(t *testing.T) {
 	}
 	if exists {
 		t.Fatalf("Expected image %s to not exist", nonExistent)
-	}
-}
-
-// findProjectRoot walks up the directory tree to find the project root
-func findProjectRoot() (string, error) {
-	dir, err := os.Getwd()
-	if err != nil {
-		return "", err
-	}
-
-	for {
-		// Check if go.mod exists in current directory
-		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
-			return dir, nil
-		}
-
-		// Move up one directory
-		parent := filepath.Dir(dir)
-		if parent == dir {
-			// Reached root without finding go.mod
-			return "", os.ErrNotExist
-		}
-		dir = parent
 	}
 }

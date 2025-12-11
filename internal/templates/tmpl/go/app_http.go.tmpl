@@ -1,0 +1,73 @@
+{{- /*
+Template: app_http.go.tmpl
+Generates: HTTP route registration and handlers for a package
+Expects:
+- Operations: []Operation (for internal packages)
+- InternalPackages: []InternalPackage (for composition apps)
+- ProjectName: string
+*/ -}}
+{{template "header" .}}
+package app
+
+{{- if and .InternalPackages (not .OwnOperations) }}
+import (
+	"net/http"
+{{- range .InternalPackages }}
+	{{ .Alias }}app "{{ .ImportPath }}/app"
+{{- end }}
+)
+
+// HTTP composes all HTTP handlers from internal packages.
+type HTTP struct {
+{{- range .InternalPackages }}
+	{{ pascalCase .Name }} *{{ .Alias }}app.HTTP
+{{- end }}
+}
+
+// NewHTTP creates all HTTP handlers from the given operations.
+func NewHTTP(ops *Operations) *HTTP {
+	return &HTTP{
+{{- range .InternalPackages }}
+		{{ pascalCase .Name }}: {{ .Alias }}app.NewHTTP(ops.{{ pascalCase .Name }}),
+{{- end }}
+	}
+}
+
+// RegisterHTTP registers all HTTP routes from all internal packages.
+func RegisterHTTP(mux *http.ServeMux, h *HTTP) {
+{{- range .InternalPackages }}
+	{{ .Alias }}app.RegisterHTTP(mux, h.{{ pascalCase .Name }})
+{{- end }}
+}
+{{- else }}
+import (
+	"log/slog"
+	"net/http"
+
+	apphttp "{{ .ProjectName }}/http"
+)
+
+// HTTP holds all HTTP handlers for this package.
+type HTTP struct {
+{{- range .OwnOperations }}
+	{{ .ID }} *apphttp.{{ .ID }}Handler
+{{- end }}
+}
+
+// NewHTTP creates all HTTP handlers from the given operations.
+func NewHTTP(ops *Operations) *HTTP {
+	return &HTTP{
+{{- range .OwnOperations }}
+		{{ .ID }}: apphttp.New{{ .ID }}Handler(ops.{{ .ID }}),
+{{- end }}
+	}
+}
+
+// RegisterHTTP registers all HTTP routes for this package with the http.ServeMux.
+func RegisterHTTP(mux *http.ServeMux, h *HTTP) {
+{{- range .OwnOperations }}
+	slog.Info("registering route", "method", "{{ .Method }}", "path", "{{ .Path }}")
+	apphttp.Register{{ .ID }}Route(mux, h.{{ .ID }})
+{{- end }}
+}
+{{- end }}

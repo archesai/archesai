@@ -1,0 +1,141 @@
+description: Schema for Account entity (authentication provider account)
+title: Account
+x-codegen-schema-type: entity
+x-codegen:
+  repository:
+    operations:
+      - create
+      - read
+      - update
+      - delete
+      - list
+    indices:
+      - userID
+    excludeFromUpdate:
+      - AccountIdentifier
+      - Provider
+      - UserID
+    relations:
+      - field: userID
+        references: user
+        onDelete: CASCADE
+        onUpdate: NO_ACTION
+    additionalMethods:
+      - name: GetAccountByProvider
+        params:
+          - name: provider
+            type: string
+          - name: accountIdentifier
+            type: string
+        returns: single
+      - name: ListAccountsByUserID
+        params:
+          - name: userID
+            type: string
+            format: uuid
+            maxLength: 36
+        returns: multiple
+x-internal: auth
+allOf:
+  - $ref: ./Base.yaml
+  - type: object
+    properties:
+      accountIdentifier:
+        description: The unique identifier for the account from the provider
+        type: string
+        example: google123456789
+        minLength: 1
+        maxLength: 255
+        pattern: ^[a-zA-Z0-9_\-\.@]+$
+      userID:
+        description: The user ID this account belongs to
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
+        maxLength: 36
+      provider:
+        description: The authentication provider identifier
+        type: string
+        enum:
+          - local
+          - google
+          - github
+          - microsoft
+          - apple
+        example: google
+      accessToken:
+        description: The OAuth access token
+        x-sensitive: true
+        oneOf:
+          - type: string
+            minLength: 1
+            maxLength: 512
+            pattern: ^[A-Za-z0-9_\-\.]+$
+          - type: 'null'
+        example: ya29.a0AfH6SMBa...
+      accessTokenExpiresAt:
+        description: The access token expiration timestamp
+        oneOf:
+          - type: string
+            format: date-time
+            minLength: 1
+            maxLength: 255
+          - type: 'null'
+        example: '2024-12-31T23:59:59Z'
+      refreshToken:
+        description: The OAuth refresh token
+        x-sensitive: true
+        oneOf:
+          - type: string
+            minLength: 1
+            maxLength: 512
+            pattern: ^[A-Za-z0-9_\-\./]+$
+          - type: 'null'
+        example: 1//0fM8N5...
+      refreshTokenExpiresAt:
+        description: The refresh token expiration timestamp
+        oneOf:
+          - type: string
+            format: date-time
+            minLength: 1
+            maxLength: 255
+          - type: 'null'
+        example: '2025-12-31T23:59:59Z'
+      idToken:
+        description: The OpenID Connect ID token
+        x-sensitive: true
+        oneOf:
+          - type: string
+            minLength: 1
+            maxLength: 2048
+            pattern: ^[A-Za-z0-9_\-\.]+$
+          - type: 'null'
+        example: eyJhbGciOiJSUzI1NiIs...
+      scope:
+        description: The OAuth scope granted
+        oneOf:
+          - type: string
+            minLength: 1
+            maxLength: 255
+            pattern: ^[\w\s\-:]+$
+          - type: 'null'
+        example: openid profile email
+      # password:
+      #   description: The hashed password for local authentication
+      #   type: [string, 'null']
+      #   minLength: 1
+      #   x-sensitive: true
+      #   maxLength: 255
+    required:
+      - accessToken
+      - accessTokenExpiresAt
+      - accountIdentifier
+      - userID
+      - provider
+      - idToken
+      # - password
+      - refreshToken
+      - refreshTokenExpiresAt
+      - scope
+unevaluatedProperties: false

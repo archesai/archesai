@@ -1,0 +1,22 @@
+type: object
+properties:
+  level:
+    description: Execution level (0-based)
+    type: integer
+    format: int32
+    minimum: 0
+    maximum: 2147483647
+    example: 0
+  steps:
+    type: array
+    items:
+      description: Step IDs that can run in parallel at this level
+      type: string
+      format: uuid
+      minLength: 36
+      maxLength: 36
+      example: 550e8400-e29b-41d4-a716-446655440000
+    maxItems: 10000
+required:
+  - level
+  - steps

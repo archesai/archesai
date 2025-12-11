@@ -1,9 +1,0 @@
-template: 'testify'
-dir: '{{.InterfaceDir}}'
-include-auto-generated: true
-recursive: true
-filename: mocks_test.gen.go
-packages:
-  github.com/archesai/archesai/internal/core/repositories:
-    interfaces:
-log-level: warn

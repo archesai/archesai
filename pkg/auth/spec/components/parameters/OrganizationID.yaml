@@ -1,0 +1,8 @@
+name: organizationID
+description: Organization ID
+required: true
+schema:
+  type: string
+  format: uuid
+  maxLength: 36
+in: path

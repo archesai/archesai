@@ -1,0 +1,45 @@
+title: Problem
+description: RFC 7807 (Problem Details) compliant error response
+x-internal: server
+x-codegen-schema-type: valueobject
+type: object
+additionalProperties: false
+required:
+  - status
+  - title
+properties:
+  status:
+    type: integer
+    format: int32
+    description: HTTP status code
+    minimum: 100
+    maximum: 599
+    example: 400
+  type:
+    type: string
+    format: uri
+    description: URI identifying the problem type
+    default: about:blank
+    example: https://api.example.com/errors/validation-failed
+    minLength: 1
+    maxLength: 2048
+  title:
+    type: string
+    description: Short, human-readable summary
+    example: Validation Failed
+    minLength: 1
+    maxLength: 255
+    pattern: ^[\w\s\-.,!?()]+$
+  detail:
+    type: string
+    description: Human-readable explanation specific to this occurrence
+    example: The request body contains invalid fields
+    minLength: 1
+    maxLength: 255
+    pattern: ^[\w\s\-.,!?()]+$
+  instance:
+    type: string
+    format: uri
+    description: URI identifying the specific occurrence
+    example: https://api.example.com/auth/users/123
+    maxLength: 2048

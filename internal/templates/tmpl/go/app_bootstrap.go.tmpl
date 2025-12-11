@@ -1,0 +1,155 @@
+{{- /*
+Template: app_bootstrap.go.tmpl
+Generates: App struct that orchestrates initialization and startup.
+Expects:
+- ProjectName: string
+- InternalPackages: []InternalPackage (for composition apps)
+- OpenAPISpec: string (bundled OpenAPI spec)
+- APITitle: string
+*/ -}}
+{{template "header" .}}
+package app
+
+import (
+	"context"
+	"log/slog"
+	"net/http"
+	"os"
+	"os/signal"
+	"time"
+
+	"github.com/archesai/archesai/pkg/config"
+	configschemas "github.com/archesai/archesai/pkg/config/schemas"
+	"github.com/archesai/archesai/pkg/database"
+	"github.com/archesai/archesai/pkg/logger"
+	"github.com/archesai/archesai/pkg/server"
+
+	postgresdb "{{ .ProjectName }}/database/postgres"
+	sqlitedb "{{ .ProjectName }}/database/sqlite"
+)
+
+// openAPISpec contains the bundled OpenAPI specification.
+{{- $tick := "`" }}
+var openAPISpec = []byte({{ $tick }}{{ rawString .OpenAPISpec }}{{ $tick }})
+
+// App provides unified initialization and startup.
+type App struct {
+	config    *config.Configuration[configschemas.Config]
+	db        *database.Database
+	apiServer *server.APIServer
+	http *HTTP
+}
+
+// NewApp creates a new App.
+func NewApp() *App {
+	return &App{}
+}
+
+// Initialize loads configuration, sets up logging, database, and prepares the server.
+func (a *App) Initialize() error {
+	// Load configuration
+	cfg, err := config.NewParser[configschemas.Config]().Load()
+	if err != nil {
+		return err
+	}
+	a.config = cfg
+
+	// Configure logging
+	slog.SetDefault(logger.New(logger.Config{
+		Level:  cfg.Config.Logging.Level.String(),
+		Pretty: cfg.Config.Logging.Pretty,
+	}))
+
+	// Initialize database based on configured type
+	db, err := database.Open(cfg.Config.Database.Type.String(), cfg.Config.Database.URL)
+	if err != nil {
+		return err
+	}
+	a.db = db
+
+	// Run migrations if configured
+	if cfg.Config.Database.RunMigrations {
+		slog.Info("running database migrations")
+		var runner *database.MigrationRunner
+		switch cfg.Config.Database.Type {
+		case configschemas.ConfigDatabaseTypePostgresql:
+			runner = database.NewMigrationRunner(db, postgresdb.Migrations)
+		case configschemas.ConfigDatabaseTypeSqlite:
+			runner = database.NewMigrationRunner(db, sqlitedb.Migrations)
+		}
+		if runner != nil {
+			if err := runner.Up(); err != nil {
+				return err
+			}
+			slog.Info("database migrations completed")
+		}
+	}
+
+	// Create ports, operations, and HTTP handlers
+	ports := NewPorts(db)
+	ops := NewOperations(ports)
+	a.http = NewHTTP(ops)
+
+	// Create API server
+	a.apiServer = server.NewAPIServer(&server.APIConfig{
+		Port: int(cfg.Config.API.Port),
+		Cors: cfg.Config.API.Cors,
+	})
+
+	// Register HTTP routes
+	RegisterHTTP(a.apiServer.Mux(), a.http)
+
+	// Register API documentation routes
+	server.RegisterScalarRoutes(a.apiServer.Mux(), openAPISpec, "{{ .APITitle }}")
+
+	// Apply middleware
+	a.apiServer.ApplyMiddleware()
+
+	return nil
+}
+
+// Start starts the application and blocks until shutdown signal is received.
+func (a *App) Start() error {
+	// Start server in goroutine
+	go func() {
+		slog.Info("starting server", "port", a.config.Config.API.Port)
+		if err := a.apiServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			slog.Error("server error", "error", err)
+			os.Exit(1)
+		}
+	}()
+
+	// Wait for interrupt signal
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt)
+	<-quit
+
+	slog.Info("shutting down server...")
+
+	// Graceful shutdown with timeout
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	if err := a.apiServer.Shutdown(ctx); err != nil {
+		slog.Error("server forced to shutdown", "error", err)
+		return err
+	}
+
+	// Close database connections
+	if a.db != nil {
+		if a.db.PgxPool() != nil {
+			a.db.PgxPool().Close()
+		}
+		if a.db.SQLDB() != nil {
+			a.db.SQLDB().Close()
+		}
+	}
+
+	slog.Info("server shutdown complete")
+	return nil
+}
+
+// HTTP returns the HTTP handlers.
+func (a *App) HTTP() *HTTP {
+	return a.http
+}

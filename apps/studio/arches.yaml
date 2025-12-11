@@ -1,4 +1,14 @@
-# yaml-language-server: $schema=api/components/schemas/config/Config.yaml
+# yaml-language-server: $schema=../../pkg/config/spec/components/schemas/Config.yaml
+generation:
+  spec: ../../api/openapi.yaml
+  includes:
+    - server
+    - auth
+    - config
+    - pipelines
+    - executor
+    - storage
+
 api:
   cors: https://platform.archesai.dev
   docs: true
@@ -6,7 +16,7 @@ api:
   host: 'moose'
   port: 3001
   validation: true
-  url: https://api.archesai.dev
+  url: http://moose:3001
 
 logging:
   level: info
@@ -22,7 +32,7 @@ platform:
 database:
   maxConns: 25
   minConns: 5
-  runMigrations: false
+  runMigrations: true
   managed: false
   type: postgresql
   enabled: true

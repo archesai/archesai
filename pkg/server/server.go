@@ -16,6 +16,8 @@ import (
 	"os"
 	"os/signal"
 	"time"
+
+	"github.com/archesai/archesai/pkg/middleware"
 )
 
 // Server configuration constants.
@@ -158,13 +160,13 @@ func (s *APIServer) Shutdown(ctx context.Context) error {
 
 // ApplyMiddleware applies middleware to the server's handler.
 func (s *APIServer) ApplyMiddleware() {
-	s.server.Handler = MiddlewareChain(
-		RequestIDMiddleware,
-		LoggerMiddleware,
-		RecoverMiddleware,
-		CreateCorsMiddleware(s.config.Cors),
-		SecurityMiddleware,
-		RateLimitMiddleware,
-		TimeoutMiddleware,
+	s.server.Handler = middleware.Chain(
+		middleware.RequestID,
+		middleware.Logger,
+		middleware.Recover,
+		middleware.CORS(s.config.Cors),
+		middleware.Security,
+		middleware.RateLimit,
+		middleware.Timeout,
 	)(s.server.Handler)
 }

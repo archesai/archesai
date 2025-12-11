@@ -56,7 +56,7 @@ export function SidebarLinks({
                           key={rootRoute.href}
                         >
                           {rootRoute.href === currentPath && (
-                            <div className="-ml-2 absolute top-0 left-0 h-full w-0.5 bg-primary group-data-[collapsible=icon]:hidden" />
+                            <div className="absolute top-0 left-0 -ml-2 h-full w-0.5 bg-primary group-data-[collapsible=icon]:hidden" />
                           )}
                           <SidebarMenuButton
                             asChild

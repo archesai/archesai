@@ -5,15 +5,15 @@ package main
 import (
 	"log"
 
-	"github.com/archesai/archesai/apps/studio/bootstrap"
+	"github.com/archesai/archesai/apps/studio/app"
 )
 
 func main() {
-	app := bootstrap.NewApp()
-	if err := app.Initialize(); err != nil {
+	a := app.NewApp()
+	if err := a.Initialize(); err != nil {
 		log.Fatalf("failed to initialize app: %v", err)
 	}
-	if err := app.Start(); err != nil {
+	if err := a.Start(); err != nil {
 		log.Fatalf("app error: %v", err)
 	}
 }

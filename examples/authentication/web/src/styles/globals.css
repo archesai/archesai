@@ -1,0 +1,4 @@
+@import "tailwindcss";
+
+@import "@archesai/ui/globals.css";
+@source "../../node_modules/@archesai/ui";

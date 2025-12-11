@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/archesai/archesai/internal/schema"
 	"github.com/archesai/archesai/internal/spec"
 	"github.com/archesai/archesai/internal/strutil"
 )
@@ -218,8 +219,8 @@ func (p *HandlerParser) extractParameters(fn *ast.FuncDecl, file *ast.File) []sp
 		// For each name in the field (handles "a, b int" syntax)
 		for _, name := range field.Names {
 			param := spec.Param{
-				Schema: &spec.Schema{
-					Name:   name.Name,
+				Schema: &schema.Schema{
+					Title:  name.Name,
 					GoType: typeStr,
 				},
 				In: "constructor", // Mark as constructor param
@@ -245,7 +246,7 @@ func (p *HandlerParser) typeToString(expr ast.Expr) string {
 	case *ast.MapType:
 		return "map[" + p.typeToString(t.Key) + "]" + p.typeToString(t.Value)
 	case *ast.InterfaceType:
-		return "interface{}"
+		return "any"
 	case *ast.IndexExpr:
 		// Generic type: Type[Param]
 		return p.typeToString(t.X) + "[" + p.typeToString(t.Index) + "]"
@@ -272,7 +273,7 @@ func (p *HandlerParser) GetDependencies(handler HandlerDef) []DependencyDef {
 		resolution, found := p.depRegistry.Resolve(param.GoType)
 
 		dep := DependencyDef{
-			Name:      param.Name,
+			Name:      param.Title,
 			Type:      param.GoType,
 			IsPointer: strings.HasPrefix(param.GoType, "*"),
 		}

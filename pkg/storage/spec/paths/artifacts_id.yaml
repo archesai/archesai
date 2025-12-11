@@ -1,0 +1,105 @@
+x-path: /artifacts/{id}
+get:
+  x-internal: storage
+  operationId: GetArtifact
+  summary: Find an artifact
+  tags:
+    - Artifact
+  description: Find an artifact
+  parameters:
+    - $ref: ../components/parameters/ResourceID.yaml
+  security:
+    - bearerAuth: []
+  responses:
+    '200':
+      $ref: ../components/responses/ArtifactResponse.yaml
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '404':
+      $ref: ../components/responses/NotFound.yaml
+    '422':
+      $ref: ../components/responses/UnprocessableEntity.yaml
+    '429':
+      $ref: ../components/responses/TooManyRequests.yaml
+    '500':
+      $ref: ../components/responses/InternalServerError.yaml
+patch:
+  x-internal: storage
+  operationId: UpdateArtifact
+  summary: Update an artifact
+  tags:
+    - Artifact
+  description: Update an artifact
+  requestBody:
+    description: Artifact update data
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            name:
+              description: The name of the artifact
+              type: string
+              minLength: 1
+              maxLength: 255
+              example: Example Name
+              pattern: ^[\w\s\-.,!?()@#+/]*$
+            text:
+              description: The artifact text
+              type: string
+              maxLength: 1000
+              example: example-string
+              pattern: ^[\w\s\-.,!?()@#+/]*$
+            url:
+              description: The artifact URL
+              type: string
+              format: uri
+              maxLength: 2048
+              example: example-string
+  parameters:
+    - $ref: ../components/parameters/ResourceID.yaml
+  security:
+    - bearerAuth: []
+  responses:
+    '200':
+      $ref: ../components/responses/ArtifactResponse.yaml
+    '404':
+      $ref: ../components/responses/NotFound.yaml
+    '429':
+      $ref: ../components/responses/TooManyRequests.yaml
+    '500':
+      $ref: ../components/responses/InternalServerError.yaml
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '422':
+      $ref: ../components/responses/UnprocessableEntity.yaml
+delete:
+  x-internal: storage
+  operationId: DeleteArtifact
+  summary: Delete an artifact
+  tags:
+    - Artifact
+  description: Delete an artifact
+  parameters:
+    - $ref: ../components/parameters/ResourceID.yaml
+  security:
+    - bearerAuth: []
+  responses:
+    '204':
+      $ref: ../components/responses/NoContent.yaml
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '404':
+      $ref: ../components/responses/NotFound.yaml
+    '422':
+      $ref: ../components/responses/UnprocessableEntity.yaml
+    '429':
+      $ref: ../components/responses/TooManyRequests.yaml
+    '500':
+      $ref: ../components/responses/InternalServerError.yaml

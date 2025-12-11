@@ -133,8 +133,8 @@ func validateSchema(data json.RawMessage, schemaBytes json.RawMessage, dataType 
 		return fmt.Errorf("failed to compile %s schema: %v", dataType, err)
 	}
 
-	// Parse data to interface{} for validation
-	var dataAny interface{}
+	// Parse data to any for validation
+	var dataAny any
 	if err := json.Unmarshal(data, &dataAny); err != nil {
 		return fmt.Errorf("failed to unmarshal %s for validation: %v", dataType, err)
 	}

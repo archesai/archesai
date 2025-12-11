@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.3.8/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.3.10/schema.json",
   "assist": {
     "actions": {
       "source": {
@@ -17,7 +17,7 @@
   "files": {
     "ignoreUnknown": true,
     "includes": [
-      "**/*.{ts,tsx,js,json,html}",
+      "**/*.{ts,tsx,js,json,html,css}",
       "!**/generated",
       "!**/client",
       "!**/routeTree.gen.ts"

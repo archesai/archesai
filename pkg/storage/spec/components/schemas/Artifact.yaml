@@ -1,0 +1,139 @@
+description: Schema for Artifact entity
+title: Artifact
+x-codegen-schema-type: entity
+x-codegen:
+  repository:
+    indices:
+      - organizationID
+      - producerID
+    excludeFromUpdate:
+      - OrganizationID
+      - ProducerID
+    relations:
+      - field: organizationID
+        references: organization
+        onDelete: CASCADE
+        onUpdate: CASCADE
+      - field: producerID
+        references: run
+        onDelete: SET_NULL
+        onUpdate: CASCADE
+    additionalMethods:
+      - name: ListArtifactsByOrganization
+        params:
+          - name: organizationID
+            type: string
+            format: uuid
+            maxLength: 36
+        returns: multiple
+      - name: ListArtifactsByProducer
+        params:
+          - name: producerID
+            type: string
+            format: uuid
+            maxLength: 36
+        returns: multiple
+x-internal: storage
+allOf:
+  - $ref: ./Base.yaml
+  - type: object
+    properties:
+      credits:
+        description:
+          The number of credits required to access this artifact. This is
+          used for metering and billing purposes.
+        type: integer
+        format: int32
+        minimum: 0
+        default: 0
+        maximum: 2147483647
+        example: 42
+      description:
+        description: The artifact's description
+        oneOf:
+          - type: string
+            minLength: 1
+            maxLength: 1000
+            pattern: ^[\w\s\-.,!?()@#+/':;]+$
+          - type: 'null'
+        example: Example description text
+      mimeType:
+        description: The MIME type of the artifact, e.g. image/png
+        type: string
+        minLength: 1
+        example: image/png
+        default: application/octet-stream
+        maxLength: 255
+        pattern: ^[a-z]+/[a-z0-9\+\-\.]+$
+      name:
+        description: The name of the artifact, used for display purposes
+        oneOf:
+          - type: string
+            minLength: 1
+            maxLength: 255
+            pattern: ^[\w\s\-.,!?()@#+/']+$
+          - type: 'null'
+        example: Data Export Results
+      organizationID:
+        description: The organization that owns this artifact
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
+        maxLength: 36
+      previewImage:
+        description:
+          The URL of the preview image for this artifact. This is used for
+          displaying a thumbnail in the UI.
+        oneOf:
+          - type: string
+            format: uri
+            minLength: 1
+            maxLength: 2048
+          - type: 'null'
+        example: https://example.com/preview.jpg
+      producerID:
+        description: The ID of the entity that produced this artifact
+        oneOf:
+          - type: string
+            format: uuid
+            minLength: 36
+            maxLength: 36
+          - type: 'null'
+        example: 550e8400-e29b-41d4-a716-446655440000
+      text:
+        description: The artifact text
+        oneOf:
+          - type: string
+            minLength: 1
+            maxLength: 255
+            pattern: ^[\w\s\-.,!?()@#+/':;]+$
+          - type: 'null'
+        example: Processed data ready for analysis
+      url:
+        description: The URL of the artifact if it's stored externally
+        oneOf:
+          - type: string
+            format: uri
+            minLength: 1
+            maxLength: 2048
+          - type: 'null'
+        example: https://example.com/artifact.pdf
+      # embedding:
+      #   description: Vector embedding for similarity search
+      #   type: [array, 'null']
+      #   items:
+      #     type: number
+      #   maxItems: 1536
+    required:
+      - credits
+      - mimeType
+      - organizationID
+      - description
+      - name
+      - previewImage
+      - producerID
+      - text
+      - url
+      # - embedding
+unevaluatedProperties: false

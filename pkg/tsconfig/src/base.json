@@ -4,7 +4,6 @@
     "allowImportingTsExtensions": true,
     "allowJs": false,
     "allowSyntheticDefaultImports": true,
-    "baseUrl": "${configDir}",
     "checkJs": false,
     "composite": true,
     "customConditions": ["development"],

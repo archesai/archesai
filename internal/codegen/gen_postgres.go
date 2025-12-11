@@ -1,0 +1,257 @@
+package codegen
+
+import (
+	"bytes"
+	"context"
+	"fmt"
+	"log/slog"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"sort"
+	"strings"
+
+	"golang.org/x/sync/errgroup"
+
+	"github.com/archesai/archesai/internal/schema"
+	"github.com/archesai/archesai/internal/spec"
+	"github.com/archesai/archesai/internal/strutil"
+	"github.com/archesai/archesai/pkg/database"
+)
+
+// GroupPostgres is the generator group for PostgreSQL repositories and migrations.
+const GroupPostgres = "postgres"
+
+const (
+	genPostgres        = "postgres_repository"
+	genPostgresQueries = "db_queries"
+	genHCL             = "db_hcl"
+	genSQLC            = "postgres_sqlc"
+)
+
+// DatabaseHCLTemplateData holds the data for rendering HCL schema templates.
+type DatabaseHCLTemplateData struct {
+	Schemas      []*schema.Schema
+	DatabaseType database.Type
+}
+
+// generatePostgres generates PostgreSQL repository implementations.
+func (c *Codegen) generatePostgres(s *spec.Spec) error {
+	for _, sch := range s.AllEntitySchemas() {
+		path := filepath.Join(
+			"database",
+			"postgres",
+			"repositories",
+			strings.ToLower(sch.Title)+"_repository.gen.go",
+		)
+		data := &DatabaseTemplateData{
+			Entity:          sch,
+			ProjectName:     s.ProjectName,
+			ModelImportPath: getDatabaseImportPath(s, sch),
+		}
+
+		if err := c.RenderToFile(genPostgres+".go.tmpl", path, data); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// generatePostgresQueries generates SQL query files for PostgreSQL.
+func (c *Codegen) generatePostgresQueries(s *spec.Spec) error {
+	for _, sch := range s.AllEntitySchemas() {
+		path := filepath.Join(
+			"database",
+			"postgres",
+			"queries",
+			strings.ToLower(sch.Title)+"s.gen.sql",
+		)
+		data := &DatabaseTemplateData{
+			Entity:          sch,
+			ProjectName:     s.ProjectName,
+			ModelImportPath: getDatabaseImportPath(s, sch),
+		}
+
+		if err := c.RenderToFile(genPostgresQueries+".sql.tmpl", path, data); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// generateHCL creates HCL schema files for database migrations.
+func (c *Codegen) generateHCL(s *spec.Spec) error {
+	var entities []*schema.Schema
+	for _, sch := range s.Schemas {
+		if sch.XCodegenSchemaType == schema.TypeEntity {
+			entities = append(entities, sch)
+		}
+	}
+
+	sort.Slice(entities, func(i, j int) bool {
+		return strutil.SnakeCase(entities[i].Title) < strutil.SnakeCase(entities[j].Title)
+	})
+
+	slog.Debug("DatabaseHCL generator starting", slog.Int("entities", len(entities)))
+
+	// Generate HCL files in parallel
+	eg := &errgroup.Group{}
+
+	// PostgreSQL
+	eg.Go(func() error {
+		data := DatabaseHCLTemplateData{
+			Schemas:      entities,
+			DatabaseType: database.TypePostgreSQL,
+		}
+		path := filepath.Join("database", "postgres", "schema.gen.hcl")
+		return c.RenderToFile(genHCL+".tmpl", path, data)
+	})
+
+	// SQLite
+	eg.Go(func() error {
+		data := DatabaseHCLTemplateData{Schemas: entities, DatabaseType: database.TypeSQLite}
+		path := filepath.Join("database", "sqlite", "schema.gen.hcl")
+		return c.RenderToFile(genHCL+".tmpl", path, data)
+	})
+
+	if err := eg.Wait(); err != nil {
+		return err
+	}
+
+	// Check Docker availability
+	if err := exec.Command("docker", "version").Run(); err != nil {
+		slog.Debug("DatabaseHCL generator skipping migrations (docker not available)")
+		return fmt.Errorf("docker not available, skipping migrations: %w", err)
+	}
+
+	slog.Debug("DatabaseHCL generator running migrations")
+
+	// Generate migrations in parallel
+	bgCtx := context.Background()
+	eg2 := &errgroup.Group{}
+
+	eg2.Go(func() error {
+		return runMigrationGenerator(bgCtx, c.storage.BaseDir(), database.TypePostgreSQL)
+	})
+
+	eg2.Go(func() error {
+		return runMigrationGenerator(bgCtx, c.storage.BaseDir(), database.TypeSQLite)
+	})
+
+	if err := eg2.Wait(); err != nil {
+		return err
+	}
+
+	slog.Debug("DatabaseHCL generator completed", slog.Int("entities", len(entities)))
+
+	return nil
+}
+
+func runMigrationGenerator(ctx context.Context, outputDir string, dbType database.Type) error {
+	m := database.NewMigrationsGenerator(outputDir)
+	if err := m.Start(ctx, dbType); err != nil {
+		return err
+	}
+	defer func() {
+		if err := m.Stop(ctx); err != nil {
+			slog.Error(
+				"Failed to stop database",
+				slog.String("error", err.Error()),
+				slog.String("type", dbType.String()),
+			)
+		}
+	}()
+	return m.GenerateMigration(ctx)
+}
+
+// generateSQLC runs sqlc to generate Go code from SQL queries.
+func (c *Codegen) generateSQLC(_ *spec.Spec) error {
+	// Generate sqlc.gen.yaml for postgres
+	data := map[string]string{"OutputDir": c.storage.BaseDir()}
+	var buf bytes.Buffer
+	if err := c.renderer.Render(&buf, genSQLC+".yaml.tmpl", data); err != nil {
+		return fmt.Errorf("failed to render sqlc.yaml: %w", err)
+	}
+	sqlcPath := filepath.Join("database", "postgres", "sqlc.gen.yaml")
+	if err := c.storage.WriteFile(sqlcPath, buf.Bytes(), 0644); err != nil {
+		return fmt.Errorf("failed to write sqlc.yaml: %w", err)
+	}
+
+	// Generate migrations.gen.go for embedding
+	for _, dbName := range []string{"postgres", "sqlite"} {
+		content := fmt.Sprintf(`// Code generated by archesai; DO NOT EDIT.
+
+package %s
+
+import "embed"
+
+//go:embed migrations/*.sql
+var Migrations embed.FS
+`, dbName)
+		path := filepath.Join("database", dbName, "migrations.gen.go")
+		if err := c.storage.WriteFile(path, []byte(content), 0644); err != nil {
+			return fmt.Errorf("failed to write migrations.gen.go: %w", err)
+		}
+	}
+
+	// Run sqlc if queries exist
+	queriesPath := filepath.Join(c.storage.BaseDir(), "database", "postgres", "queries")
+	entries, err := os.ReadDir(queriesPath)
+	if err != nil {
+		slog.Debug("SQLC generator skipped (no queries directory)")
+		return nil
+	}
+
+	hasQueries := false
+	for _, entry := range entries {
+		if !entry.IsDir() && strings.HasSuffix(entry.Name(), ".gen.sql") {
+			hasQueries = true
+			break
+		}
+	}
+
+	if !hasQueries {
+		slog.Debug("SQLC generator skipped (no query files)")
+		return nil
+	}
+
+	slog.Debug("SQLC generator running sqlc")
+
+	fullConfigPath := filepath.Join(c.storage.BaseDir(), sqlcPath)
+	cmd := exec.Command("sqlc", "generate", "--file", fullConfigPath)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf(
+			"sqlc generation failed: %w (ensure sqlc is installed: go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest)",
+			err,
+		)
+	}
+
+	// Rename .gen.sql.go files to .sql.gen.go
+	repoPath := filepath.Join(
+		c.storage.BaseDir(), "database", "postgres", "repositories",
+	)
+	repoEntries, err := os.ReadDir(repoPath)
+	if err != nil {
+		return fmt.Errorf("failed to read repositories directory: %w", err)
+	}
+	renamed := 0
+	for _, entry := range repoEntries {
+		if strings.HasSuffix(entry.Name(), ".gen.sql.go") {
+			oldPath := filepath.Join(repoPath, entry.Name())
+			newName := strings.TrimSuffix(entry.Name(), ".gen.sql.go") + ".sql.gen.go"
+			newPath := filepath.Join(repoPath, newName)
+			if err := os.Rename(oldPath, newPath); err != nil {
+				return fmt.Errorf("failed to rename %s: %w", entry.Name(), err)
+			}
+			renamed++
+		}
+	}
+
+	slog.Debug("SQLC generator completed", slog.Int("files_renamed", renamed))
+
+	return nil
+}

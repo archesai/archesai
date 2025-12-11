@@ -1,0 +1,21 @@
+description: Speech recognition and TTS services
+x-internal: config
+type: object
+properties:
+  enabled:
+    description: Enable speech services
+    type: boolean
+    default: false
+    example: true
+  token:
+    description: Speech-to-text service API token
+    type: string
+    minLength: 1
+    example: sk-...
+    maxLength: 512
+    pattern: ^[a-zA-Z0-9_\-\.]+$
+required:
+  - enabled
+additionalProperties: false
+x-codegen-schema-type: valueobject
+title: ConfigSpeech

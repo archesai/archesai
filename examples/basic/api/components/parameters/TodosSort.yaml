@@ -1,0 +1,32 @@
+name: sort
+in: query
+description: Sort criteria for todos
+required: false
+style: deepObject
+explode: true
+schema:
+  type: array
+  maxItems: 10
+  items:
+    type: object
+    required:
+      - field
+      - order
+    properties:
+      field:
+        type: string
+        enum:
+          - id
+          - createdAt
+          - updatedAt
+          - title
+          - completed
+        minLength: 1
+        maxLength: 255
+      order:
+        type: string
+        enum:
+          - asc
+          - desc
+        minLength: 1
+        maxLength: 4

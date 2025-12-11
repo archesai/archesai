@@ -1,0 +1,30 @@
+description: Web scraping service configuration
+x-internal: config
+type: object
+title: ConfigScraper
+properties:
+  enabled:
+    description: Enable scraper service
+    type: boolean
+    default: false
+    example: true
+  managed:
+    description: Use managed scraper deployment
+    type: boolean
+    default: false
+    example: true
+  endpoint:
+    description: Web scraper service endpoint URL
+    type: string
+    format: uri
+    minLength: 1
+    example: http://scraper:8080
+    maxLength: 2048
+  image:
+    $ref: ./ConfigImage.yaml
+  resources:
+    $ref: ./ConfigResource.yaml
+required:
+  - enabled
+additionalProperties: false
+x-codegen-schema-type: valueobject

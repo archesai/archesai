@@ -1,0 +1,15 @@
+description: Successful execution
+headers:
+  X-RateLimit-Limit:
+    $ref: ../headers/RateLimitLimit.yaml
+  X-RateLimit-Remaining:
+    $ref: ../headers/RateLimitRemaining.yaml
+  X-RateLimit-Reset:
+    $ref: ../headers/RateLimitReset.yaml
+content:
+  application/json:
+    schema:
+      type: object
+      properties:
+        data:
+          $ref: ../schemas/SuccessfulExecution.yaml

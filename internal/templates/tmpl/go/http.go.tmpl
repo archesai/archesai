@@ -1,0 +1,299 @@
+{{- /*
+Template: http.go.tmpl
+Generates: HTTP handlers
+Expected data: OperationsView
+*/ -}}
+{{template "header" .}}
+package {{ .Package }}
+
+import (
+	"errors"
+	"log/slog"
+	"net/http"
+
+	"github.com/google/uuid"
+
+	"github.com/archesai/archesai/pkg/httputil"
+	"github.com/archesai/archesai/pkg/server"
+	"github.com/archesai/archesai/pkg/validation"
+{{- if not .IsSingleMode }}
+	"{{ .ProjectName }}/operations"
+	"{{ .ProjectName }}/schemas"
+{{- end }}
+	serverschemas "github.com/archesai/archesai/pkg/server/schemas"
+)
+{{- range .OwnOperations }}
+{{- $op := . }}
+
+// ============================================================================
+// {{ $op.ID }} - {{ $op.Method }} {{ $op.Path }}
+// ============================================================================
+
+// {{ $op.ID }}Handler is the HTTP handler for {{ $op.ID }}.
+type {{ $op.ID }}Handler struct {
+	{{ camelCase $op.ID }} {{ $.OperationsPrefix }}{{ $op.ID }}
+}
+
+// New{{ $op.ID }}Handler creates a new HTTP handler.
+func New{{ $op.ID }}Handler({{ camelCase $op.ID }} {{ $.OperationsPrefix }}{{ $op.ID }}) *{{ $op.ID }}Handler {
+	return &{{ $op.ID }}Handler{ {{- camelCase $op.ID -}}: {{ camelCase $op.ID -}} }
+}
+
+// Register{{ $op.ID }}Route registers the HTTP route for {{ $op.ID }}.
+func Register{{ $op.ID }}Route(mux *http.ServeMux, handler *{{ $op.ID }}Handler) {
+	mux.HandleFunc("{{ $op.Method }} {{ $op.Path }}", handler.ServeHTTP)
+}
+{{- if $op.RequestBody }}
+
+// {{ $op.ID }}RequestBody defines the request body for {{ $op.ID }}
+type {{ $op.ID }}RequestBody struct {
+{{- range $op.RequestBody.GetSortedProperties }}
+{{- $field := . }}
+	{{ $field.Title }} {{ if .NeedsPointer }}*{{ end }}{{ $field.GoType }} `json:"{{ $field.JSONTag }}"`
+{{- end }}
+}
+
+// Validate implements the validation.Validator interface.
+func (b *{{ $op.ID }}RequestBody) Validate() validation.Errors {
+	var errs validation.Errors
+{{- range $op.RequestBody.GetSortedProperties }}
+{{- $field := . }}
+{{- $fieldName := camelCase $field.Title }}
+{{- if $field.IsRequired }}
+{{- if eq $field.GoType "uuid.UUID" }}
+	validation.RequiredUUID(b.{{ $field.Title }}, "{{ $fieldName }}", &errs)
+{{- else if and (eq $field.GoType "string") $field.NeedsPointer }}
+	validation.Required(b.{{ $field.Title }}, "{{ $fieldName }}", &errs)
+{{- else if eq $field.GoType "string" }}
+	validation.RequiredString(b.{{ $field.Title }}, "{{ $fieldName }}", &errs)
+{{- end }}
+{{- end }}
+{{- if and $field.MinLength (eq $field.GoType "string") }}
+{{- if $field.NeedsPointer }}
+	validation.MinLength(b.{{ $field.Title }}, {{ intDeref $field.MinLength }}, "{{ $fieldName }}", &errs)
+{{- else }}
+	validation.MinLengthString(b.{{ $field.Title }}, {{ intDeref $field.MinLength }}, "{{ $fieldName }}", &errs)
+{{- end }}
+{{- end }}
+{{- if and $field.MaxLength (eq $field.GoType "string") }}
+{{- if $field.NeedsPointer }}
+	validation.MaxLength(b.{{ $field.Title }}, {{ intDeref $field.MaxLength }}, "{{ $fieldName }}", &errs)
+{{- else }}
+	validation.MaxLengthString(b.{{ $field.Title }}, {{ intDeref $field.MaxLength }}, "{{ $fieldName }}", &errs)
+{{- end }}
+{{- end }}
+{{- if and (eq $field.Format "email") (eq $field.GoType "string") }}
+{{- if $field.NeedsPointer }}
+	validation.Email(b.{{ $field.Title }}, "{{ $fieldName }}", &errs)
+{{- else }}
+	validation.EmailString(b.{{ $field.Title }}, "{{ $fieldName }}", &errs)
+{{- end }}
+{{- end }}
+{{- if and (eq $field.Format "uuid") (eq $field.GoType "string") }}
+{{- if $field.NeedsPointer }}
+	validation.UUID(b.{{ $field.Title }}, "{{ $fieldName }}", &errs)
+{{- else }}
+	validation.UUIDString(b.{{ $field.Title }}, "{{ $fieldName }}", &errs)
+{{- end }}
+{{- end }}
+{{- end }}
+	return errs
+}
+{{- end }}
+
+// Response Types
+{{- $successResponse := $op.GetSuccessResponse }}
+{{- range $op.Responses }}
+{{- $response := . }}
+{{- if $response.IsSuccess }}
+{{- if ne $response.StatusCode "204" }}
+{{- if $response.Properties }}
+{{- range $response.GetSortedProperties }}
+{{- $field := . }}
+{{- if and (eq $field.Type.PrimaryType "object") (gt (len $field.Properties) 0) }}
+
+// {{ $op.ID }}{{ $response.StatusCode }}Response{{ $field.Title }} defines the {{ lower $field.Title }} structure.
+type {{ $op.ID }}{{ $response.StatusCode }}Response{{ $field.Title }} struct {
+{{- range $field.GetSortedProperties }}
+{{- $nestedField := . }}
+{{- if and (eq $nestedField.Type.PrimaryType "array") $nestedField.Items (eq $nestedField.Items.Type.PrimaryType "object") (gt (len $nestedField.Items.Properties) 0) }}
+	{{ $nestedField.Title }} []struct {
+		{{- range $nestedField.Items.GetSortedProperties }}
+		{{ .Title }} {{ .GoType }} `json:"{{ camelCase .JSONTag }}"`
+		{{- end }}
+	} `json:"{{ camelCase $nestedField.JSONTag }}"`
+{{- else }}
+	{{ $nestedField.Title }} {{ $nestedField.GoType }} `json:"{{ camelCase $nestedField.JSONTag }}"`
+{{- end }}
+{{- end }}
+}
+{{- end }}
+{{- end }}
+
+// {{ $op.ID }}{{ $response.StatusCode }}Response is the {{ $response.StatusCode }} success response.
+type {{ $op.ID }}{{ $response.StatusCode }}Response struct {
+{{- range $response.GetSortedProperties }}
+{{- $field := . }}
+{{- if and (eq $field.Type.PrimaryType "object") (gt (len $field.Properties) 0) }}
+	{{ $field.Title }} {{ $op.ID }}{{ $response.StatusCode }}Response{{ $field.Title }} `json:"{{ camelCase $field.JSONTag }}"`
+{{- else }}
+	{{ $field.Title }} {{ if $field.NeedsPointer }}*{{ end }}{{ $.ModelType $field.GoType }} `json:"{{ camelCase $field.JSONTag }}"`
+{{- end }}
+{{- end }}
+}
+
+// StatusCode returns the HTTP status code.
+func ({{ $op.ID }}{{ $response.StatusCode }}Response) StatusCode() int { return {{ $response.StatusCode }} }
+{{- end }}
+{{- end }}
+{{- else }}
+
+// {{ $op.ID }}{{ $response.StatusCode }}Response is the {{ $response.StatusCode }} error response.
+type {{ $op.ID }}{{ $response.StatusCode }}Response struct {
+	httputil.ProblemDetails
+}
+
+// StatusCode returns the HTTP status code.
+func ({{ $op.ID }}{{ $response.StatusCode }}Response) StatusCode() int { return {{ $response.StatusCode }} }
+{{- end }}
+{{- end }}
+
+// ServeHTTP handles the {{ $op.Method }} {{ $op.Path }} endpoint.
+func (h *{{ $op.ID }}Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+{{- if eq $op.Internal "auth" }}
+{{- if and $op.ExplicitSecurity (or $op.HasBearerAuth $op.HasCookieAuth) }}
+
+	// Extract session ID from context for authenticated operations
+	sessionID, ok := ctx.Value(server.SessionIDContextKey).(uuid.UUID)
+	if !ok {
+		_ = httputil.WriteResponse(w, {{ $op.ID }}401Response{
+			ProblemDetails: httputil.NewUnauthorizedResponse("session required", r.URL.Path),
+		})
+		return
+	}
+{{- end }}
+{{- end }}
+
+	// Build input from request
+	input := &{{ $.OperationsPrefix }}{{ $op.ID }}Input{}
+{{- if eq $op.Internal "auth" }}
+{{- if and $op.ExplicitSecurity (or $op.HasBearerAuth $op.HasCookieAuth) }}
+	input.SessionID = sessionID
+{{- end }}
+{{- end }}
+{{- range $op.GetPathParams }}
+{{- $param := . }}
+
+	// Path parameter "{{ camelCase $param.Title }}"
+	if err := httputil.BindPathParam(r, "{{ camelCase $param.Title }}", &input.{{ $param.Title }}); err != nil {
+		_ = httputil.WriteResponse(w, {{ $op.ID }}400Response{
+			ProblemDetails: httputil.NewBadRequestResponse(err.Error(), r.URL.Path),
+		})
+		return
+	}
+{{- end }}
+{{- range $op.GetHeaderParams }}
+{{- $param := . }}
+
+	// Header parameter "{{ $param.Title }}"
+{{- if $param.Required }}
+	{{ camelCase $param.Title }}, err := httputil.RequiredHeader(r, "{{ $param.Title }}")
+	if err != nil {
+		_ = httputil.WriteResponse(w, {{ $op.ID }}400Response{
+			ProblemDetails: httputil.NewBadRequestResponse(err.Error(), r.URL.Path),
+		})
+		return
+	}
+	input.{{ $param.Title }} = {{ camelCase $param.Title }}
+{{- else }}
+	input.{{ $param.Title }} = httputil.OptionalHeader(r, "{{ $param.Title }}")
+{{- end }}
+{{- end }}
+{{- range $op.GetQueryParams }}
+
+	// Query parameter "{{ .YAMLTag }}"
+	if err := httputil.BindQueryParam(r, "{{ .YAMLTag }}", &input.{{ .Title }}); err != nil {
+		_ = httputil.WriteResponse(w, {{ $op.ID }}400Response{
+			ProblemDetails: httputil.NewBadRequestResponse(err.Error(), r.URL.Path),
+		})
+		return
+	}
+{{- end }}
+{{- if $op.RequestBody }}
+
+	// Request body
+	var body {{ $op.ID }}RequestBody
+	if err := httputil.DecodeAndValidate(r, &body); err != nil {
+		var validErrs validation.Errors
+		if errors.As(err, &validErrs) {
+			_ = httputil.WriteValidationErrors(w, validErrs, r.URL.Path)
+			return
+		}
+		_ = httputil.WriteResponse(w, {{ $op.ID }}400Response{
+			ProblemDetails: httputil.NewBadRequestResponse(err.Error(), r.URL.Path),
+		})
+		return
+	}
+{{- range $op.RequestBody.GetSortedProperties }}
+	input.{{ .Title }} = body.{{ .Title }}
+{{- end }}
+{{- end }}
+
+	// Execute handler
+{{- if and $successResponse (eq $successResponse.StatusCode "204") }}
+	if err := h.{{ camelCase $op.ID }}.Execute(ctx, input); err != nil {
+		var httpErr httputil.HTTPError
+		if errors.As(err, &httpErr) {
+			_ = httputil.WriteHTTPError(w, httpErr, r.URL.Path)
+			return
+		}
+		slog.Error("handler error", "operation", "{{ $op.ID }}", "error", err)
+		_ = httputil.WriteResponse(w, {{ $op.ID }}500Response{
+			ProblemDetails: httputil.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
+		})
+		return
+	}
+	httputil.WriteNoContent(w)
+{{- else }}
+	result, err := h.{{ camelCase $op.ID }}.Execute(ctx, input)
+	if err != nil {
+		var httpErr httputil.HTTPError
+		if errors.As(err, &httpErr) {
+			_ = httputil.WriteHTTPError(w, httpErr, r.URL.Path)
+			return
+		}
+		slog.Error("handler error", "operation", "{{ $op.ID }}", "error", err)
+		_ = httputil.WriteResponse(w, {{ $op.ID }}500Response{
+			ProblemDetails: httputil.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
+		})
+		return
+	}
+{{- $successCode := "200" }}
+{{- range $op.Responses }}
+{{- if and .IsSuccess (ne .StatusCode "204") }}
+{{- $successCode = .StatusCode }}
+{{- end }}
+{{- end }}
+
+	// Build and send response
+{{- if $successResponse }}
+{{- if $successResponse.Properties }}
+	_ = httputil.WriteResponse(w, {{ $op.ID }}{{ $successCode }}Response{
+{{- range $successResponse.GetSortedProperties }}
+{{- $field := . }}
+{{- if and (eq $field.Type.PrimaryType "object") (gt (len $field.Properties) 0) }}
+		{{ $field.Title }}: {{ $op.ID }}{{ $successCode }}Response{{ $field.Title }}(result.{{ $field.Title }}),
+{{- else }}
+		{{ $field.Title }}: result.{{ $field.Title }},
+{{- end }}
+{{- end }}
+	})
+{{- else }}
+	_ = result // Custom handler with empty output schema
+	httputil.WriteNoContent(w)
+{{- end }}
+{{- end }}
+{{- end }}
+}
+{{- end }}

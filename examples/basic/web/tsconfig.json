@@ -1,0 +1,15 @@
+{
+  "extends": "../../../pkg/tsconfig/src/base.json",
+  "files": [],
+  "references": [
+    {
+      "path": "../../../pkg/ui"
+    },
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.spec.json"
+    }
+  ]
+}

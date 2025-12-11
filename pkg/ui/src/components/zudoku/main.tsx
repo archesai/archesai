@@ -31,7 +31,7 @@ export const Main = ({ children }: PropsWithChildren) => {
         />
       )}
       {hasNavigation && (
-        <div className="-mx-4 sticky start-0 end-0 top-0 z-10 border-b bg-background/80 px-4 py-2 backdrop-blur-xs lg:hidden">
+        <div className="sticky start-0 end-0 top-0 z-10 -mx-4 border-b bg-background/80 px-4 py-2 backdrop-blur-xs lg:hidden">
           <DrawerTrigger className="flex items-center gap-2 px-4">
             <PanelLeftIcon
               size={16}

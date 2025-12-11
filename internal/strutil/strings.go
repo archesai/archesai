@@ -8,51 +8,6 @@ import (
 	"unicode"
 )
 
-// Common acronyms that should be preserved in uppercase
-var commonAcronyms = map[string]string{
-	"api":     "API",
-	"apikey":  "APIKey",
-	"apikeys": "APIKeys",
-	"url":     "URL",
-	"uri":     "URI",
-	"uuid":    "UUID",
-	"id":      "ID",
-	"http":    "HTTP",
-	"https":   "HTTPS",
-	"sql":     "SQL",
-	"json":    "JSON",
-	"xml":     "XML",
-	"csv":     "CSV",
-	"jwt":     "JWT",
-	"oauth":   "OAuth",
-	"saml":    "SAML",
-	"ldap":    "LDAP",
-	"dns":     "DNS",
-	"tcp":     "TCP",
-	"udp":     "UDP",
-	"ip":      "IP",
-	"vm":      "VM",
-	"os":      "OS",
-	"cpu":     "CPU",
-	"gpu":     "GPU",
-	"ram":     "RAM",
-	"ssd":     "SSD",
-	"hdd":     "HDD",
-	"cdn":     "CDN",
-	"vpn":     "VPN",
-	"ssh":     "SSH",
-	"ftp":     "FTP",
-	"sftp":    "SFTP",
-	"smtp":    "SMTP",
-	"imap":    "IMAP",
-	"pop":     "POP",
-	"aws":     "AWS",
-	"gcp":     "GCP",
-	"sdk":     "SDK",
-	"ci":      "CI",
-	"cd":      "CD",
-}
-
 // CamelCase converts a string to camelCase, preserving common acronyms.
 func CamelCase(s string) string {
 	s = strings.TrimSpace(s)
@@ -193,6 +148,7 @@ func SnakeCase(s string) string {
 }
 
 // KebabCase converts a string to kebab-case.
+// Handles acronyms properly (e.g., "APIKey" -> "api-key", not "a-p-i-key").
 func KebabCase(s string) string {
 	s = strings.TrimSpace(s)
 	if s == "" {
@@ -200,13 +156,29 @@ func KebabCase(s string) string {
 	}
 
 	var result bytes.Buffer
-	for i, r := range s {
-		if i > 0 && unicode.IsUpper(r) {
-			// Add hyphen before uppercase letters (except at the start)
-			if i > 0 && s[i-1] != '-' && s[i-1] != '_' && s[i-1] != ' ' {
-				result.WriteRune('-')
+	runes := []rune(s)
+
+	for i, r := range runes {
+		if unicode.IsUpper(r) && i > 0 {
+			// Look at the previous character
+			prevIsLower := unicode.IsLower(runes[i-1])
+			prevIsDigit := unicode.IsDigit(runes[i-1])
+
+			// Look at the next character if it exists
+			nextIsLower := i+1 < len(runes) && unicode.IsLower(runes[i+1])
+
+			// Add hyphen before uppercase letter if:
+			// 1. Previous char is lowercase or digit
+			// 2. OR this is the start of a new word (current is upper, next is lower)
+			if prevIsLower || prevIsDigit || nextIsLower {
+				// But don't add if previous char is already a separator
+				if runes[i-1] != '-' && runes[i-1] != '_' && runes[i-1] != ' ' {
+					result.WriteRune('-')
+				}
 			}
 		}
+
+		// Convert separators to hyphens
 		if r == '_' || r == ' ' {
 			result.WriteRune('-')
 		} else {
@@ -235,8 +207,6 @@ func Pluralize(word string) string {
 		"woman":  "women",
 		"health": "health", // Health is uncountable, stays the same
 		"config": "config", // Config is uncountable, stays the same
-		"apikey": "APIKeys",
-		"APIKey": "APIKeys",
 	}
 
 	lower := strings.ToLower(word)
@@ -396,4 +366,38 @@ func TrimSpace(s string) string {
 		end--
 	}
 	return s[start:end]
+}
+
+// HumanReadable converts camelCase/PascalCase to human-readable format.
+// For example: "firstName" -> "First Name", "HTTPResponse" -> "HTTP Response".
+func HumanReadable(s string) string {
+	if s == "" {
+		return s
+	}
+
+	var result bytes.Buffer
+	runes := []rune(s)
+
+	for i, r := range runes {
+		if i > 0 && unicode.IsUpper(r) {
+			prevIsLower := unicode.IsLower(runes[i-1])
+			nextIsLower := i+1 < len(runes) && unicode.IsLower(runes[i+1])
+
+			// Add space before uppercase letter if:
+			// 1. Previous char is lowercase (e.g., "firstName" -> "first Name")
+			// 2. OR this is start of new word in acronym sequence (e.g., "HTTPResponse" -> "HTTP Response")
+			if prevIsLower || (nextIsLower && unicode.IsUpper(runes[i-1])) {
+				result.WriteRune(' ')
+			}
+		}
+		result.WriteRune(r)
+	}
+
+	// Capitalize first letter
+	output := result.String()
+	if len(output) > 0 {
+		output = strings.ToUpper(output[:1]) + output[1:]
+	}
+
+	return output
 }

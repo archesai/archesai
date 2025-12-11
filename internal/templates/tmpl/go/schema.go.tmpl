@@ -1,0 +1,506 @@
+{{- /*
+Template: schema.go.tmpl
+Generates: Schema definitions (entity or value object)
+Expected data: SchemasTemplateData
+Supports both single-file and multi-file modes via GetSchemas()
+*/ -}}
+{{template "header" .}}
+package {{ .Package }}
+
+import (
+	"context"
+	"fmt"
+	"strings"
+	"time"
+	"github.com/google/uuid"
+	"github.com/archesai/archesai/pkg/events"
+)
+{{- range .GetSchemas }}
+{{- $schema := . }}
+{{- $isEntity := eq $schema.SchemaType "entity" }}
+{{- $isValueObject := eq $schema.SchemaType "valueobject" }}
+
+{{ if $isEntity -}}
+{{- /* Base Error */ -}}
+
+var (
+	// Err{{ $schema.Title }}NotFound is returned when a {{ $schema.Title }} entity is not found.
+	Err{{ $schema.Title }}NotFound = fmt.Errorf("{{ lower $schema.Title }} not found")
+)
+{{- end }}
+
+
+{{- if $schema.IsEnum }}
+
+// {{ $schema.Title }} represents the {{ $schema.Description }} enumeration
+type {{ $schema.Title }} string
+
+// {{ $schema.Title }} values
+const (
+{{- range $schema.Values }}
+	{{ .Title }}{{ .Value }} {{ $schema.Title }} = "{{ .RawValue }}"
+{{- end }}
+)
+
+// String returns the string representation of {{ $schema.Title }}
+func (e {{ $schema.Title }}) String() string {
+	return string(e)
+}
+
+// IsValid checks if the {{ $schema.Title }} value is valid
+func (e {{ $schema.Title }}) IsValid() bool {
+	switch e {
+{{- range $schema.Values }}
+	case {{ .Title }}{{ .Value }}:
+{{- end }}
+		return true
+	default:
+		return false
+	}
+}
+
+// Parse{{ $schema.Title }} parses a string into a {{ $schema.Title }}
+func Parse{{ $schema.Title }}(s string) ({{ $schema.Title }}, error) {
+	v := {{ $schema.Title }}(s)
+	if !v.IsValid() {
+		return "", fmt.Errorf("invalid {{ $schema.Title }}: %s", s)
+	}
+	return v, nil
+}
+
+{{- else }}
+
+{{- /* Generate nested types first */ -}}
+{{- range $schema.CollectNestedTypes }}{{- $nested := . }}
+// {{ .GoType }} represents {{ if .Description }}{{ .Description }}{{ else }}a nested type for {{ $schema.Title }}{{ end }}
+type {{ .GoType }} struct {
+{{- range .GetSortedProperties }}{{- $prop := . }}
+{{- if .Description }}
+
+	// {{ .Title }} {{ .Description }}
+{{- else }}
+
+{{- end }}
+	{{ .Title }} {{ .GetFieldType $nested }}{{ if or .JSONTag .YAMLTag }} `{{ if .JSONTag }}json:"{{ .JSONTag }}"{{ end }}{{ if and .JSONTag .YAMLTag }} {{ end }}{{ if .YAMLTag }}yaml:"{{ .YAMLTag }}"{{ end }}`{{ end }}
+{{- end }}
+}
+
+{{- /* Generate enums for nested type properties */ -}}
+{{- range .GetSortedProperties }}{{- $field := . }}
+{{- if $field.Enum }}
+{{- $fieldType := print $nested.GoType $field.Title }}
+
+// {{ $fieldType }} represents the enumeration of valid values for {{ $field.Title }}
+type {{ $fieldType }} string
+
+// Valid {{ $field.Title }} values
+const (
+{{- range .Enum }}{{- $enum := . }}
+	{{ $nested.GoType }}{{ $field.Title }}{{ pascalCase $enum }} {{ $fieldType }} = "{{ $enum }}"
+{{- end }}
+)
+
+// String returns the string representation
+func (e {{ $fieldType }}) String() string {
+	return string(e)
+}
+
+// IsValid checks if the value is valid
+func (e {{ $fieldType }}) IsValid() bool {
+	switch e {
+{{- range $field.Enum }}{{- $enum := . }}
+	case {{ $nested.GoType }}{{ $field.Title }}{{ pascalCase $enum }}:
+		return true
+{{- end }}
+	default:
+		return false
+	}
+}
+
+// Parse{{ $nested.GoType }}{{ $field.Title }} parses a string into the enum type
+func Parse{{ $nested.GoType }}{{ $field.Title }}(s string) ({{ $fieldType }}, error) {
+	v := {{ $fieldType }}(s)
+	if !v.IsValid() {
+		return "", fmt.Errorf("invalid {{ $field.Title }}: %s", s)
+	}
+	return v, nil
+}
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{- range $schema.GetSortedProperties }}{{- $field := . }}
+{{- if $field.Enum }}
+{{- $fieldType := print $schema.Title $field.Title }}
+
+// {{ $fieldType }} represents the enumeration of valid values for {{ $field.Title }}
+type {{ $fieldType }} string
+
+// Valid {{ $field.Title }} values
+const (
+{{- range .Enum }}{{- $enum := . }}
+	{{ $schema.Title }}{{ $field.Title }}{{ pascalCase $enum }} {{ $fieldType }} = "{{ $enum }}"
+{{- end }}
+)
+
+// String returns the string representation
+func (e {{ $fieldType }}) String() string {
+	return string(e)
+}
+
+// IsValid checks if the value is valid
+func (e {{ $fieldType }}) IsValid() bool {
+	switch e {
+{{- range $field.Enum }}{{- $enum := . }}
+	case {{ $schema.Title }}{{ $field.Title }}{{ pascalCase $enum }}:
+		return true
+{{- end }}
+	default:
+		return false
+	}
+}
+
+// Parse{{ $schema.Title }}{{ $field.Title }} parses a string into the enum type
+func Parse{{ $schema.Title }}{{ $field.Title }}(s string) ({{ $fieldType }}, error) {
+	v := {{ $fieldType }}(s)
+	if !v.IsValid() {
+		return "", fmt.Errorf("invalid {{ $field.Title }}: %s", s)
+	}
+	return v, nil
+}
+{{- end }}
+{{- end }}
+
+// {{ $schema.Title }} represents {{ if $schema.Description }}{{ $schema.Description }}{{ else }}a {{ $schema.Title }}{{ end }}
+type {{ $schema.Title }} struct {
+{{- range $schema.GetSortedProperties }}{{- $prop := . }}
+{{- if .Description }}
+
+	// {{ .Title }} {{ .Description }}
+{{- else }}
+
+{{- end }}
+	{{ .Title }} {{ .GetFieldType $schema }}{{ if or .JSONTag .YAMLTag }} `{{ if .JSONTag }}json:"{{ .JSONTag }}"{{ end }}{{ if and .JSONTag .YAMLTag }} {{ end }}{{ if .YAMLTag }}yaml:"{{ .YAMLTag }}"{{ end }}`{{ end }}
+{{- end }}
+{{- if and $isEntity $schema.HasDomainEvents }}
+
+	events []events.Event `json:"-" yaml:"-"`
+{{- end }}
+}
+
+// New{{ $schema.Title }} creates a new {{ if $isEntity }}{{ $schema.Title }} entity{{ else }}immutable {{ $schema.Title }} value object{{ end }}.
+{{- if $isEntity }}
+// All required fields must be provided and valid.
+{{- else }}
+// Value objects are immutable and validated upon creation.
+{{- end }}
+func New{{ $schema.Title }}(
+{{- if $isEntity }}
+{{- range $schema.GetSortedProperties }}
+{{- if .ShouldIncludeInConstructor $schema }}
+	{{ camelCase .Title }} {{ if .Nullable }}*{{ end }}{{ .GetBaseType $schema }},
+{{- end }}
+{{- end }}
+) (*{{ $schema.Title }}, error) {
+{{- else }}
+{{- range $schema.GetSortedProperties }}
+	{{ camelCase .Title }} {{ .GetFieldType $schema }},
+{{- end }}
+) ({{ $schema.Title }}, error) {
+{{- end }}
+	// Validate required fields
+{{- range $schema.GetSortedProperties }}{{- $field := . }}
+{{- if .NeedsValidation $isEntity $schema }}
+{{- if .Enum }}
+{{- if .Nullable }}
+	// Nullable enum - validate only if present
+	if {{ camelCase .Title }} != nil && !(*{{ camelCase .Title }}).IsValid() {
+		return {{ if $isEntity }}nil{{ else }}{{ $schema.Title }}{}{{ end }}, fmt.Errorf("invalid {{ .Title }}: %s", *{{ camelCase .Title }})
+	}
+{{- else }}
+	if !{{ camelCase .Title }}.IsValid() {
+		return {{ if $isEntity }}nil{{ else }}{{ $schema.Title }}{}{{ end }}, fmt.Errorf("invalid {{ .Title }}: %s", {{ camelCase .Title }})
+	}
+{{- end }}
+{{- else if and (eq .GoType "string") (not .Nullable) }}
+	if {{ camelCase .Title }} == "" {
+		return {{ if $isEntity }}nil{{ else }}{{ $schema.Title }}{}{{ end }}, fmt.Errorf("{{ .Title }} cannot be empty")
+	}
+{{- else if and (eq .GoType "int") (not .Nullable) }}
+	if {{ camelCase .Title }} < 0 {
+		return {{ if $isEntity }}nil{{ else }}{{ $schema.Title }}{}{{ end }}, fmt.Errorf("{{ .Title }} cannot be negative")
+	}
+{{- else if and (eq .GoType "float64") (not .Nullable) }}
+	if {{ camelCase .Title }} < 0 {
+		return {{ if $isEntity }}nil{{ else }}{{ $schema.Title }}{}{{ end }}, fmt.Errorf("{{ .Title }} cannot be negative")
+	}
+{{- else if and (eq .GoType "uuid.UUID") (not .Nullable) }}
+	if {{ camelCase .Title }} == uuid.Nil {
+		return {{ if $isEntity }}nil{{ else }}{{ $schema.Title }}{}{{ end }}, fmt.Errorf("{{ .Title }} cannot be nil UUID")
+	}
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{- if $isEntity }}
+	now := time.Now().UTC()
+	id := uuid.New()
+	{{ lower $schema.Title }} := &{{ $schema.Title }}{
+{{- range $schema.GetSortedProperties }}
+{{- if .IsSpecialField }}
+{{- if eq .Title "ID" }}
+		{{ .Title }}: id,
+{{- else }}
+		{{ .Title }}: now,
+{{- end }}
+{{- else if .ShouldIncludeInConstructor $schema }}
+		{{ .Title }}: {{ camelCase .Title }},
+{{- end }}
+{{- end }}
+{{- if $schema.HasDomainEvents }}
+		events: []events.Event{},
+{{- end }}
+	}
+
+{{- if $schema.HasDomainEvents }}
+	{{ lower $schema.Title }}.addEvent(New{{ $schema.Title }}CreatedEvent(id))
+{{- end }}
+
+	return {{ lower $schema.Title }}, nil
+{{- else }}
+	return {{ $schema.Title }}{
+{{- range $schema.GetSortedProperties }}
+		{{ .Title }}: {{ camelCase .Title }},
+{{- end }}
+	}, nil
+{{- end }}
+}
+
+// Zero{{ $schema.Title }} returns the zero value for {{ $schema.Title }}.
+// This is useful for comparisons and as a default value.
+func Zero{{ $schema.Title }}() {{ $schema.Title }} {
+	return {{ $schema.Title }}{}
+}
+
+{{- /* Getters */ -}}
+{{- range $schema.GetSortedProperties }}
+
+{{- if $isEntity }}
+// Get{{ .Title }} returns the {{ .Title }}
+func (e *{{ $schema.Title }}) Get{{ .Title }}() {{ .GetFieldType $schema }} {
+	return e.{{ .Title }}
+}
+{{- else if $isValueObject }}
+// Get{{ .Title }} returns the {{ .Title }} value.
+// Value objects are immutable, so this returns a copy of the value.
+func (v {{ $schema.Title }}) Get{{ .Title }}() {{ .GetFieldType $schema }} {
+{{- if .IsOptional }}
+	return v.{{ .Title }}
+{{- else if or (hasPrefix .GoType "[]") (hasPrefix .GoType "map") }}
+{{- if not .Nullable }}
+	// Return a copy for slices and maps to maintain immutability
+	{{- if hasPrefix .GoType "[]" }}
+	result := make({{ .GoType }}, len(v.{{ .Title }}))
+	copy(result, v.{{ .Title }})
+	return result
+	{{- else }}
+	result := make({{ .GoType }})
+	for k, val := range v.{{ .Title }} {
+		result[k] = val
+	}
+	return result
+	{{- end }}
+{{- else }}
+	return v.{{ .Title }}
+{{- end }}
+{{- else }}
+	return v.{{ .Title }}
+{{- end }}
+}
+{{- end }}
+{{- end }}
+
+{{- /* Value object specific methods */ -}}
+{{- if $isValueObject }}
+
+// Validate validates the {{ $schema.Title }} value object.
+// Returns an error if any field fails validation.
+func (v {{ $schema.Title }}) Validate() error {
+{{- range $schema.GetSortedProperties }}{{- $field := . }}
+{{- if .IsOptional }}
+{{- if .Enum }}
+	// Optional enum - validate only if present
+	if v.{{ .Title }} != nil && !v.{{ .Title }}.IsValid() {
+		return fmt.Errorf("invalid {{ .Title }}: %s", v.{{ .Title }})
+	}
+{{- end }}
+{{- else if .Enum }}
+{{- if .Nullable }}
+	// Nullable enum - validate only if present
+	if v.{{ .Title }} != nil && !(*v.{{ .Title }}).IsValid() {
+		return fmt.Errorf("invalid {{ .Title }}: %s", *v.{{ .Title }})
+	}
+{{- else }}
+	if !v.{{ .Title }}.IsValid() {
+		return fmt.Errorf("invalid {{ .Title }}: %s", v.{{ .Title }})
+	}
+{{- end }}
+{{- else if and .Required (eq .GoType "string") (not .Nullable) }}
+	if v.{{ .Title }} == "" {
+		return fmt.Errorf("{{ .Title }} cannot be empty")
+	}
+{{- else if and .Required (eq .GoType "int") (not .Nullable) }}
+	if v.{{ .Title }} < 0 {
+		return fmt.Errorf("{{ .Title }} cannot be negative")
+	}
+{{- else if and .Required (eq .GoType "float64") (not .Nullable) }}
+	if v.{{ .Title }} < 0 {
+		return fmt.Errorf("{{ .Title }} cannot be negative")
+	}
+{{- else if and (eq .GoType "uuid.UUID") (not .Nullable) }}
+	if v.{{ .Title }} == uuid.Nil {
+		return fmt.Errorf("{{ .Title }} cannot be nil UUID")
+	}
+{{- end }}
+{{- end }}
+	return nil
+}
+
+// IsZero returns true if this is the zero value.
+func (v {{ $schema.Title }}) IsZero() bool {
+	zero := Zero{{ $schema.Title }}()
+	// Compare using string representation as a simple equality check
+	return v.String() == zero.String()
+}
+
+// String returns a string representation of {{ $schema.Title }}
+func (v {{ $schema.Title }}) String() string {
+	var fields []string
+{{- range $schema.GetSortedProperties }}
+	fields = append(fields, fmt.Sprintf("{{ .Title }}: %v", v.{{ .Title }}))
+{{- end }}
+	return fmt.Sprintf("{{ $schema.Title }}{%s}", strings.Join(fields, ", "))
+}
+{{- end }}
+
+{{- /* Domain Events methods for entities */ -}}
+{{- if and $isEntity $schema.HasDomainEvents }}
+
+// Events returns the domain events
+func (e *{{ $schema.Title }}) Events() []events.Event {
+	return e.events
+}
+
+// ClearEvents clears the domain events
+func (e *{{ $schema.Title }}) ClearEvents() {
+	e.events = []events.Event{}
+}
+
+// addEvent adds a domain event
+func (e *{{ $schema.Title }}) addEvent(event events.Event) {
+	e.events = append(e.events, event)
+}
+
+// Event type constants for {{ $schema.Title }}.
+const (
+	Event{{ $schema.Title }}Created = "{{lower $schema.Title}}.created"
+	Event{{ $schema.Title }}Updated = "{{lower $schema.Title}}.updated"
+	Event{{ $schema.Title }}Deleted = "{{lower $schema.Title}}.deleted"
+)
+
+// {{ $schema.Title }}CreatedEvent represents a created event for {{ $schema.Title }}.
+type {{ $schema.Title }}CreatedEvent struct {
+	events.BaseEvent
+	{{ $schema.Title }}ID uuid.UUID `json:"{{lower $schema.Title}}_id"`
+}
+
+// New{{ $schema.Title }}CreatedEvent creates a new {{ $schema.Title }} created event.
+func New{{ $schema.Title }}CreatedEvent(id uuid.UUID) *{{ $schema.Title }}CreatedEvent {
+	return &{{ $schema.Title }}CreatedEvent{
+		BaseEvent: events.NewBaseEvent("{{lower $schema.Title}}", Event{{ $schema.Title }}Created),
+		{{ $schema.Title }}ID: id,
+	}
+}
+
+// EventType returns the type of this event.
+func (e *{{ $schema.Title }}CreatedEvent) EventType() string {
+	return Event{{ $schema.Title }}Created
+}
+
+// EventData returns the event data.
+func (e *{{ $schema.Title }}CreatedEvent) EventData() any {
+	return e
+}
+
+// {{ $schema.Title }}UpdatedEvent represents an updated event for {{ $schema.Title }}.
+type {{ $schema.Title }}UpdatedEvent struct {
+	events.BaseEvent
+	{{ $schema.Title }}ID uuid.UUID `json:"{{lower $schema.Title}}_id"`
+}
+
+// New{{ $schema.Title }}UpdatedEvent creates a new {{ $schema.Title }} updated event.
+func New{{ $schema.Title }}UpdatedEvent(id uuid.UUID) *{{ $schema.Title }}UpdatedEvent {
+	return &{{ $schema.Title }}UpdatedEvent{
+		BaseEvent: events.NewBaseEvent("{{lower $schema.Title}}", Event{{ $schema.Title }}Updated),
+		{{ $schema.Title }}ID: id,
+	}
+}
+
+// EventType returns the type of this event.
+func (e *{{ $schema.Title }}UpdatedEvent) EventType() string {
+	return Event{{ $schema.Title }}Updated
+}
+
+// EventData returns the event data.
+func (e *{{ $schema.Title }}UpdatedEvent) EventData() any {
+	return e
+}
+
+// {{ $schema.Title }}DeletedEvent represents a deleted event for {{ $schema.Title }}.
+type {{ $schema.Title }}DeletedEvent struct {
+	events.BaseEvent
+	{{ $schema.Title }}ID uuid.UUID `json:"{{lower $schema.Title}}_id"`
+}
+
+// New{{ $schema.Title }}DeletedEvent creates a new {{ $schema.Title }} deleted event.
+func New{{ $schema.Title }}DeletedEvent(id uuid.UUID) *{{ $schema.Title }}DeletedEvent {
+	return &{{ $schema.Title }}DeletedEvent{
+		BaseEvent: events.NewBaseEvent("{{lower $schema.Title}}", Event{{ $schema.Title }}Deleted),
+		{{ $schema.Title }}ID: id,
+	}
+}
+
+// EventType returns the type of this event.
+func (e *{{ $schema.Title }}DeletedEvent) EventType() string {
+	return Event{{ $schema.Title }}Deleted
+}
+
+// EventData returns the event data.
+func (e *{{ $schema.Title }}DeletedEvent) EventData() any {
+	return e
+}
+{{- end }}
+
+{{- /* Repository interface for entities */ -}}
+{{- if $isEntity }}
+
+// {{ $schema.Title }}Repository handles {{ lower $schema.Title }} persistence
+type {{ $schema.Title }}Repository interface {
+	// Basic CRUD operations (always included)
+	Create(ctx context.Context, entity *{{ $schema.Title }}) (*{{ $schema.Title }}, error)
+	Get(ctx context.Context, id uuid.UUID) (*{{ $schema.Title }}, error)
+	Update(ctx context.Context, id uuid.UUID, entity *{{ $schema.Title }}) (*{{ $schema.Title }}, error)
+	Delete(ctx context.Context, id uuid.UUID) error
+	List(ctx context.Context, limit, offset int32) ([]*{{ $schema.Title }}, int64, error)
+{{- if and $schema.XCodegen $schema.XCodegen.Repository $schema.XCodegen.Repository.AdditionalMethods }}
+{{- range $schema.XCodegen.Repository.AdditionalMethods }}
+{{ $additionalMethod := . }}
+	// {{ $additionalMethod.Name }} retrieves {{ if eq $additionalMethod.Returns "multiple" }}multiple {{ lower $schema.Title }}s{{ else }}a single {{ lower $schema.Title }}{{ end }}{{ if $additionalMethod.Params }} by {{ range $i, $p := $additionalMethod.Params }}{{ if $i }} and {{ end }}{{ $p.Name }}{{ end }}{{ end }}
+	{{ $additionalMethod.Name }}(ctx context.Context{{ range $i, $param := $additionalMethod.Params }}, {{ $param.Name }} {{ $param.Type }}{{ end }}) ({{ if eq $additionalMethod.Returns "single" }}*{{ $schema.Title }}{{ else if eq $additionalMethod.Returns "multiple" }}[]*{{ $schema.Title }}{{ end }}, error)
+{{- end }}
+{{- end }}
+}
+{{- end }}
+
+{{- end }}
+{{- end }}

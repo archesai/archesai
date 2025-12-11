@@ -1,0 +1,14 @@
+# yaml-language-server: $schema=../../pkg/config/spec/components/schemas/Config.yaml
+generation:
+  spec: ./spec/openapi.yaml
+  includes:
+    - server
+  groups:
+    module: false
+    postgres: false
+    sqlite: false
+    web: false
+    schemas: true
+    operations: true
+    http: true
+    wire: false

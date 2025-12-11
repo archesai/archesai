@@ -1,0 +1,29 @@
+description: Arches AI configuration schema
+title: Config
+x-codegen-schema-type: valueobject
+x-internal: config
+type: object
+properties:
+  api:
+    $ref: ./ConfigAPI.yaml
+  auth:
+    $ref: ./ConfigAuth.yaml
+  billing:
+    $ref: ./ConfigBilling.yaml
+  database:
+    $ref: ./ConfigDatabase.yaml
+  intelligence:
+    $ref: ./ConfigIntelligence.yaml
+  logging:
+    $ref: ./ConfigLogging.yaml
+  platform:
+    $ref: ./ConfigPlatform.yaml
+  redis:
+    $ref: ./ConfigRedis.yaml
+  storage:
+    $ref: ./ConfigStorage.yaml
+  kubernetes:
+    $ref: ./ConfigKubernetes.yaml
+  generation:
+    $ref: ./ConfigGeneration.yaml
+additionalProperties: false

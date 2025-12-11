@@ -1,6 +1,10 @@
 version: '2'
 issues:
   max-same-issues: 50
+run:
+  go: '1.25.5'
+  tests: true
+  allow-parallel-runners: true
 linters:
   default: standard
   enable:
@@ -29,6 +33,10 @@ linters:
       - third_party$
       - builtin$
       - examples$
+    rules:
+      - linters:
+          - goconst
+        path: _test\.go$
   # settings:
   #   depguard:
   #     rules:
@@ -66,14 +74,9 @@ formatters:
     goimports:
       local-prefixes:
         - github.com/archesai/archesai
-
   exclusions:
     generated: lax
     paths:
       - third_party$
       - builtin$
       - examples$
-run:
-  go: '1.25.4'
-  tests: true
-  allow-parallel-runners: true

@@ -1,21 +1,8 @@
 {
-  "hooks": {
-    // "PostToolUse": [
-    //   {
-    //     "hooks": [
-    //       {
-    //         "command": "make format",
-    //         "type": "command"
-    //       }
-    //     ],
-    //     "matcher": "Write|Edit|MultiEdit"
-    //   }
-    // ]
-  },
+  "hooks": {},
   "outputStyle": "default",
   "permissions": {
     "allow": [
-      "Bash(go run:*)",
       "Bash(go doc:*)",
       "Bash(fd:*)",
       "Bash(make:*)",

@@ -1,0 +1,84 @@
+x-path: /organizations/{organizationID}/members
+get:
+  x-internal: auth
+  operationId: ListMembers
+  summary: List members
+  tags:
+    - Member
+  description: List members
+  parameters:
+    - in: path
+      name: organizationID
+      required: true
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      description: Organization ID
+    - $ref: ../components/parameters/MembersFilter.yaml
+    - $ref: ../components/parameters/PageQuery.yaml
+    - $ref: ../components/parameters/MembersSort.yaml
+  security:
+    - bearerAuth: []
+  responses:
+    '200':
+      $ref: ../components/responses/MemberListResponse.yaml
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '422':
+      $ref: ../components/responses/UnprocessableEntity.yaml
+    '429':
+      $ref: ../components/responses/TooManyRequests.yaml
+    '500':
+      $ref: ../components/responses/InternalServerError.yaml
+post:
+  x-internal: auth
+  operationId: CreateMember
+  summary: Create a member
+  tags:
+    - Member
+  description: Create a member
+  parameters:
+    - in: path
+      name: organizationID
+      required: true
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      description: Organization ID
+  requestBody:
+    description: Member creation request
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            role:
+              description: The role of the member
+              type: string
+              enum:
+                - admin
+                - owner
+                - member
+              example: admin
+          required:
+            - role
+    required: true
+  security:
+    - bearerAuth: []
+  responses:
+    '201':
+      $ref: ../components/responses/MemberResponse.yaml
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '422':
+      $ref: ../components/responses/UnprocessableEntity.yaml
+    '429':
+      $ref: ../components/responses/TooManyRequests.yaml
+    '500':
+      $ref: ../components/responses/InternalServerError.yaml

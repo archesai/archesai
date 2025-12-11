@@ -1,0 +1,228 @@
+{{- /*
+Template: postgres.tmpl
+Generates: A repository for PostgreSQL with basic CRUD implementations and stubs for additional methods
+Expected data: InfrastructureTemplateData
+*/ -}}
+{{template "header" .}}
+package repositories
+
+import (
+	"context"
+	"database/sql"
+	"errors"
+	"fmt"
+	"time"
+
+	"{{ .ModelImportPath }}"
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
+)
+
+{{ $entity := .Entity }}
+// Postgres{{ $entity.Title }}Repository implements {{ $entity.Title }}Repository using PostgreSQL.
+type Postgres{{ $entity.Title }}Repository struct {
+	queries *Queries
+}
+
+// NewPostgres{{ $entity.Title }}Repository creates a new PostgreSQL repository.
+func NewPostgres{{ $entity.Title }}Repository(db *pgxpool.Pool) *Postgres{{ $entity.Title }}Repository {
+	return &Postgres{{ $entity.Title }}Repository{
+		queries: New(db),
+	}
+}
+
+// {{ $entity.Title }} operations
+
+// Create creates a new {{ lower $entity.Title }}
+func (r *Postgres{{ $entity.Title }}Repository) Create(ctx context.Context, entity *schemas.{{ $entity.Title }}) (*schemas.{{ $entity.Title }}, error) {
+	params := Create{{ $entity.Title }}Params{
+		ID: entity.ID,{{ range $entity.GetSortedProperties }}{{ $field := . }}{{ if not $field.IsSpecialField }}{{- $excluded := false }}{{- if and $entity.XCodegen $entity.XCodegen.Repository }}{{- $repo := $entity.XCodegen.Repository }}{{- if $repo.ExcludeFromCreate }}{{- range $repo.ExcludeFromCreate }}{{- if or (eq . $field.Title) (eq . (pascalCase $field.Title)) }}{{- $excluded = true }}{{- end }}{{- end }}{{- end }}{{- end }}{{- if not $excluded }}
+		{{ $field.Title }}: {{ $field.GetCreateParamValue "entity" $entity }},{{ end }}{{ end }}{{ end }}
+	}
+
+	result, err := r.queries.Create{{ $entity.Title }}(ctx, params)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create {{	lower $entity.Title}}: %w", err)
+	}
+
+	return map{{ $entity.Title }}FromDB(&result), nil
+}
+
+// Get retrieves a {{ lower $entity.Title }} by ID
+func (r *Postgres{{ $entity.Title }}Repository) Get(ctx context.Context, id uuid.UUID) (*schemas.{{ $entity.Title }}, error) {
+	params := Get{{ $entity.Title }}Params{
+		ID: id,
+	}
+
+	result, err := r.queries.Get{{ $entity.Title }}(ctx, params)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return nil, schemas.Err{{ $entity.Title }}NotFound
+		}
+		return nil, fmt.Errorf("failed to get {{ lower $entity.Title }}: %w", err)
+	}
+
+	return map{{ $entity.Title }}FromDB(&result), nil
+}
+
+// Update updates an existing {{ lower $entity.Title }}
+func (r *Postgres{{ $entity.Title }}Repository) Update(ctx context.Context, id uuid.UUID, entity *schemas.{{ $entity.Title }}) (*schemas.{{ $entity.Title }}, error) {
+{{ range $entity.GetSortedProperties }}{{- $field := . }}
+{{- if not $field.IsSpecialField }}
+{{- $excluded := false }}
+{{- if and $entity.XCodegen $entity.XCodegen.Repository }}
+{{- $repo := $entity.XCodegen.Repository }}
+{{- if $repo.ExcludeFromUpdate }}
+{{- range $repo.ExcludeFromUpdate }}
+{{- if or (eq . $field.Title) (eq . (pascalCase $field.Title)) }}
+{{- $excluded = true }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- if and (not $excluded) $field.NeedsUpdateVarDeclaration }}
+	{{ $field.GetUpdateVarDeclaration "entity" }}
+{{- end }}
+{{- end }}
+{{- end }}
+	params := Update{{ $entity.Title }}Params{
+		ID: id,{{ range $entity.GetSortedProperties }}{{- $field := . }}{{ if not $field.IsSpecialField }}{{- $excluded := false }}{{- if and $entity.XCodegen $entity.XCodegen.Repository }}{{- $repo := $entity.XCodegen.Repository }}{{- if $repo.ExcludeFromUpdate }}{{- range $repo.ExcludeFromUpdate }}{{- if or (eq . $field.Title) (eq . (pascalCase $field.Title)) }}{{- $excluded = true }}{{- end }}{{- end }}{{- end }}{{- end }}{{- if not $excluded }}
+		{{ pascalCase $field.Title }}: {{ $field.GetUpdateParamValue "entity" $entity }},{{ end }}{{ end }}{{ end }}
+	}
+
+	result, err := r.queries.Update{{ $entity.Title }}(ctx, params)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return nil, schemas.Err{{ $entity.Title }}NotFound
+		}
+		return nil, fmt.Errorf("failed to update {{ lower $entity.Title }}: %w", err)
+	}
+
+	return map{{ $entity.Title }}FromDB(&result), nil
+}
+
+// Delete removes a {{ lower $entity.Title }}
+func (r *Postgres{{ $entity.Title }}Repository) Delete(ctx context.Context, id uuid.UUID) error {
+	params := Delete{{ $entity.Title }}Params{
+		ID: id,
+	}
+
+	err := r.queries.Delete{{ $entity.Title }}(ctx, params)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return schemas.Err{{ $entity.Title }}NotFound
+		}
+		return fmt.Errorf("failed to delete {{ lower $entity.Title }}: %w", err)
+	}
+	return nil
+}
+
+// List returns a paginated list of {{ lower $entity.Title }}s
+func (r *Postgres{{ $entity.Title }}Repository) List(ctx context.Context, limit, offset int32) ([]*schemas.{{ $entity.Title }}, int64, error) {
+	listParams := List{{ $entity.Title }}sParams{
+		Limit:  limit,
+		Offset: offset,
+	}
+
+	results, err := r.queries.List{{ $entity.Title }}s(ctx, listParams)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to list {{ lower $entity.Title }}s: %w", err)
+	}
+
+	items := make([]*schemas.{{ $entity.Title }}, len(results))
+	for i, result := range results {
+		items[i] = map{{ $entity.Title }}FromDB(&result)
+	}
+
+	// For now, return the count as the length of results
+	// In production, you'd want a separate count query
+	count := int64(len(results))
+
+	return items, count, nil
+}
+
+{{if and $entity.XCodegen $entity.XCodegen.Repository }}{{- $repo := $entity.XCodegen.Repository }}{{if $repo.AdditionalMethods}}
+{{range $repo.AdditionalMethods}}
+{{- $additionalMethod := . }}
+// {{ $additionalMethod.Name }} retrieves {{if eq $additionalMethod.Returns "multiple" }}multiple {{ $entity.Title }}s{{ else }}a single {{ $entity.Title }}{{ end }}{{ if $additionalMethod.Params }} by {{ range $i, $param := $additionalMethod.Params }}{{ if $i }} and {{ end }}{{ $param.Name }}{{ end }}{{ end }}
+func (r *Postgres{{ $entity.Title }}Repository) {{ $additionalMethod.Name }}(ctx context.Context{{ if $additionalMethod.Params }}{{ range $i, $param := $additionalMethod.Params }}, {{ $param.Name }} {{ $param.Type }}{{ end }}{{ end }}) ({{ if eq $additionalMethod.Returns "single" }}*schemas.{{ $entity.Title }}{{ else if eq $additionalMethod.Returns "multiple" }}[]*schemas.{{ $entity.Title }}{{ end }}, error) {
+	{{- /* For nullable fields, we need to handle them carefully.
+	       The sqlc generates pointer types for nullable fields.
+	       We need to check if this field is nullable in the entity. */ -}}
+	params := {{ $additionalMethod.Name }}Params{
+		{{- if $additionalMethod.Params }}
+		{{- range $additionalMethod.Params }}
+		{{- $paramName := pascalCase .Name }}
+		{{- $isNullable := false }}
+		{{- /* Check if the corresponding field in the entity is nullable */ -}}
+		{{- range $entity.GetSortedProperties }}
+			{{- if eq (pascalCase .Title) $paramName }}
+				{{- if .Nullable }}
+					{{- $isNullable = true }}
+				{{- else if isPointer .GoType }}
+					{{- $isNullable = true }}
+				{{- end }}
+			{{- end }}
+		{{- end }}
+		{{- if .Format }}
+			{{- $fmt := deref .Format }}
+			{{- if eq $fmt "uuid" }}
+				{{- if $isNullable }}
+		{{ $paramName }}: func() *uuid.UUID {
+			if {{ .Name }} == "" {
+				return nil
+			}
+			id := uuid.MustParse({{ .Name }})
+			return &id
+		}(),
+				{{- else }}
+		{{ $paramName }}: uuid.MustParse({{ .Name }}),
+				{{- end }}
+			{{- end }}
+		{{- else if $isNullable }}
+		{{ $paramName }}: func() *{{ .Type }} {
+			v := {{ .Type }}({{ .Name }})
+			return &v
+		}(),
+		{{- else }}
+		{{ $paramName }}: {{ .Name }},
+		{{- end }}
+		{{- end }}
+		{{- end }}
+	}
+
+	result, err := r.queries.{{ $additionalMethod.Name }}(ctx, params)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return nil, schemas.Err{{$entity.Title}}NotFound
+		}
+		return nil, fmt.Errorf("failed to {{ $additionalMethod.Name }}: %w", err)
+	}
+	{{ if eq $additionalMethod.Returns "multiple" }}items := make([]*schemas.{{ $entity.Title }}, len(result))
+	for i, res := range result {
+		items[i] = map{{ $entity.Title }}FromDB(&res)
+	}
+	return items, nil
+	{{ else if eq $additionalMethod.Returns "single" }}
+	return map{{ $entity.Title }}FromDB(&result), nil
+	{{ end }}
+}
+{{ end }}
+{{ end }}
+{{ end }}
+
+func map{{ $entity.Title }}FromDB(db *{{ $entity.Title }}) *schemas.{{ $entity.Title }} {
+	if db == nil {
+		return nil
+	}
+
+	result := &schemas.{{ $entity.Title }}{
+		ID:        db.ID,
+		CreatedAt: db.CreatedAt,
+		UpdatedAt: db.UpdatedAt,{{ range $entity.GetSortedProperties }}{{- $field := . }}{{if not $field.IsSpecialField }}
+		{{ $field.Title }}: {{ $field.GetDBMapValue "db" $entity }},{{ end }}{{ end }}
+	}
+
+	return result
+}

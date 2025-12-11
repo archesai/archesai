@@ -140,7 +140,7 @@ const NavigationCategoryInner = ({
           "my-1 ms-6",
         )}
       >
-        <ul className="after:-start-(--padding-nav-item) relative after:absolute after:top-0 after:bottom-0 after:w-px after:translate-x-[1.5px] after:bg-border">
+        <ul className="relative after:absolute after:-start-(--padding-nav-item) after:top-0 after:bottom-0 after:w-px after:translate-x-[1.5px] after:bg-border">
           {(category.children || []).map((item) => (
             <NavigationItem
               item={item}

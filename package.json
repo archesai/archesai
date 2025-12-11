@@ -12,6 +12,7 @@
     "@types/node": "catalog:",
     "@types/react": "catalog:react19",
     "@types/react-dom": "catalog:react19",
+    "@typescript/native-preview": "catalog:",
     "@vitejs/plugin-react": "catalog:vite",
     "@vitest/ui": "catalog:test",
     "babel-plugin-react-compiler": "catalog:vite",
@@ -33,7 +34,7 @@
     "node": ">=25.2.0"
   },
   "name": "@archesai/archesai",
-  "packageManager": "pnpm@10.23.0",
+  "packageManager": "pnpm@10.25.0",
   "private": true,
   "type": "module",
   "version": "0.0.0"

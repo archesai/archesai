@@ -1,0 +1,99 @@
+description: Magic link authentication configuration
+x-internal: config
+type: object
+title: ConfigAuthMagicLink
+properties:
+  enabled:
+    description: Enable magic link authentication
+    type: boolean
+    default: false
+    example: true
+  tokenExpiry:
+    description: Token expiry duration in minutes
+    type: integer
+    format: int32
+    minimum: 1
+    maximum: 60
+    default: 15
+    example: 15
+  otpLength:
+    description: Length of OTP code
+    type: integer
+    format: int32
+    minimum: 4
+    maximum: 8
+    default: 6
+    example: 6
+  deliveryMethods:
+    description: Available delivery methods
+    type: object
+    properties:
+      email:
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
+            example: true
+          from:
+            type: string
+            format: email
+            example: noreply@archesai.com
+            maxLength: 255
+        additionalProperties: false
+      console:
+        type: object
+        properties:
+          enabled:
+            description: Enable console output (development only)
+            type: boolean
+            default: false
+            example: false
+        additionalProperties: false
+      otp:
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
+            example: true
+        additionalProperties: false
+      webhook:
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: false
+            example: false
+          url:
+            type: string
+            format: uri
+            example: https://hooks.example.com/magic-link
+            maxLength: 2048
+        additionalProperties: false
+    additionalProperties: false
+  rateLimit:
+    description: Rate limiting configuration
+    type: object
+    properties:
+      maxAttempts:
+        description: Maximum number of attempts within window
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 2147483647
+        default: 5
+        example: 5
+      windowMinutes:
+        description: Time window in minutes
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 2147483647
+        default: 15
+        example: 15
+    additionalProperties: false
+required:
+  - enabled
+additionalProperties: false
+x-codegen-schema-type: valueobject

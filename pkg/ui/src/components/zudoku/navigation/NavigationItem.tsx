@@ -189,7 +189,7 @@ export const NavigationItem = ({
           {/* This prevents that the icon would be positioned in its own line if the text fills a line entirely */}
           <span className="whitespace-nowrap">
             <ExternalLinkIcon
-              className="-translate-y-0.5 inline"
+              className="inline -translate-y-0.5"
               size={12}
             />
           </span>

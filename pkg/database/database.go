@@ -177,11 +177,18 @@ func Open(dbType, url string) (*Database, error) {
 		return NewDatabase(sqlDB, nil, TypeSQLite), nil
 
 	case TypePostgreSQL:
+		// Create pgxpool for PostgreSQL
+		pool, err := pgxpool.New(context.Background(), url)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create PostgreSQL pool: %w", err)
+		}
+		// Also create standard sql.DB for compatibility
 		sqlDB, err := sql.Open("pgx", url)
 		if err != nil {
+			pool.Close()
 			return nil, fmt.Errorf("failed to open PostgreSQL database: %w", err)
 		}
-		return NewDatabase(sqlDB, nil, TypePostgreSQL), nil
+		return NewDatabase(sqlDB, pool, TypePostgreSQL), nil
 
 	default:
 		return nil, fmt.Errorf("unsupported database type: %s", dbType)

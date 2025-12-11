@@ -1,6 +1,8 @@
 import type { AccessorKeyColumnDef, Table } from "@tanstack/react-table";
 import { VisuallyHidden } from "radix-ui";
-import React, { type JSX } from "react";
+import type { JSX } from "react";
+import React, { Suspense } from "react";
+import { PlusIcon } from "#components/custom/icons";
 import { DataTablePagination } from "#components/datatable/components/data-table-pagination";
 import { DataTableViewOptions } from "#components/datatable/components/data-table-view-options";
 import { TasksTableActionBar } from "#components/datatable/components/tasks-table-action-bar";
@@ -9,6 +11,7 @@ import { DataTableSortList } from "#components/datatable/components/toolbar/data
 import { ViewToggle } from "#components/datatable/components/view-toggle";
 import { GridView } from "#components/datatable/components/views/grid-view";
 import { TableView } from "#components/datatable/components/views/table-view";
+import { Button } from "#components/shadcn/button";
 import {
   Dialog,
   DialogContent,
@@ -66,6 +69,7 @@ export interface PureDataTableProps<TEntity extends BaseEntity> {
   dialogVariant?: "create" | "update";
   selectedRow?: TEntity;
   onDialogChange?: (open: boolean) => void;
+  onOpenCreateDialog?: () => void;
 
   // Table instance (passed from container)
   table: Table<TEntity>;
@@ -100,6 +104,7 @@ export function PureDataTable<TEntity extends BaseEntity>({
   dialogVariant,
   selectedRow,
   onDialogChange,
+  onOpenCreateDialog,
   table,
   actionBar,
 }: PureDataTableProps<TEntity>): JSX.Element {
@@ -108,7 +113,7 @@ export function PureDataTable<TEntity extends BaseEntity>({
   };
 
   return (
-    <div className="flex flex-1 flex-col gap-4">
+    <div className="flex h-full flex-1 flex-col gap-4">
       {/* FILTER TOOLBAR */}
       {(showFilters || showViewOptions) && (
         <div
@@ -145,6 +150,17 @@ export function PureDataTable<TEntity extends BaseEntity>({
               />
             </>
           )}
+          {createForm && onOpenCreateDialog && (
+            <Button
+              className="ml-auto"
+              onClick={onOpenCreateDialog}
+              size="sm"
+              type="button"
+            >
+              <PlusIcon className="mr-2 h-4 w-4" />
+              New
+            </Button>
+          )}
         </div>
       )}
 
@@ -163,7 +179,11 @@ export function PureDataTable<TEntity extends BaseEntity>({
       </div>
 
       {/* PAGINATION */}
-      {!minimal && showPagination && <DataTablePagination table={table} />}
+      {!minimal && showPagination && (
+        <div className="mt-auto">
+          <DataTablePagination table={table} />
+        </div>
+      )}
 
       {/* DIALOG FOR CREATE/UPDATE */}
       <Dialog
@@ -186,16 +206,20 @@ export function PureDataTable<TEntity extends BaseEntity>({
           className="p-0"
           title="Create/Edit"
         >
-          {dialogVariant === "update" &&
-            updateForm &&
-            selectedRow &&
-            React.createElement(updateForm, {
-              id: selectedRow.id,
-            })}
+          {dialogOpen && (
+            <Suspense fallback={<div className="p-4">Loading...</div>}>
+              {dialogVariant === "update" &&
+                updateForm &&
+                selectedRow &&
+                React.createElement(updateForm, {
+                  id: selectedRow.id,
+                })}
 
-          {dialogVariant === "create" &&
-            createForm &&
-            React.createElement(createForm)}
+              {dialogVariant === "create" &&
+                createForm &&
+                React.createElement(createForm)}
+            </Suspense>
+          )}
         </DialogContent>
       </Dialog>
 

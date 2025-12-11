@@ -1,0 +1,50 @@
+{{- /*
+Template: app_ports.go.tmpl
+Generates: Ports struct that bundles all external dependencies (interfaces).
+Expects:
+- Repositories: []string (unique repository names, for internal packages)
+- ProjectName: string
+- NeedsPublisher: bool (true if any non-GET, non-custom operations exist)
+- InternalPackages: []InternalPackage (for composition apps)
+*/ -}}
+{{- if and .InternalPackages (not .Repositories) }}
+{{template "header" .}}
+package app
+
+import (
+{{- range .InternalPackages }}
+	{{ .Alias }}app "{{ .ImportPath }}/app"
+{{- end }}
+)
+
+// Ports composes all ports from internal packages.
+type Ports struct {
+{{- range .InternalPackages }}
+	{{ pascalCase .Name }} *{{ .Alias }}app.Ports
+{{- end }}
+}
+{{- else }}
+{{template "header" .}}
+package app
+
+{{- if or .Repositories .NeedsPublisher }}
+import (
+{{- if .Repositories }}
+	"{{ .ProjectName }}/schemas"
+{{- end }}
+{{- if .NeedsPublisher }}
+	"github.com/archesai/archesai/pkg/events"
+{{- end }}
+)
+{{- end }}
+
+// Ports holds all external dependencies (interfaces) for operations.
+type Ports struct {
+{{- range .Repositories }}
+	{{ . }}Repo schemas.{{ . }}Repository
+{{- end }}
+{{- if .NeedsPublisher }}
+	Publisher events.Publisher
+{{- end }}
+}
+{{- end }}

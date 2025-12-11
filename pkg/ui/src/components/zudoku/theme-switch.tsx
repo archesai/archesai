@@ -31,7 +31,7 @@ export const ThemeSwitch = () => {
             "rounded-full border border-transparent p-0.5 transition-all [&>svg>circle]:fill-transparent [&>svg>circle]:transition-colors [&>svg>circle]:duration-500 [&>svg>path]:transition-transform [&>svg>path]:duration-200",
             resolvedTheme === "light" && "border-border bg-muted",
             resolvedTheme === "dark" &&
-              "group-hover:[&>svg>path]:-translate-x-[1px] group-hover:[&>svg>path]:-translate-y-[1px] group-hover:rotate-[15deg] group-hover:[&>svg>path]:scale-110",
+              "group-hover:rotate-[15deg] group-hover:[&>svg>path]:-translate-x-[1px] group-hover:[&>svg>path]:-translate-y-[1px] group-hover:[&>svg>path]:scale-110",
           )}
         >
           <SunIcon size={16} />

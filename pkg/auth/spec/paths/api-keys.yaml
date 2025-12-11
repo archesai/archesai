@@ -1,0 +1,101 @@
+x-path: /api-keys
+get:
+  x-internal: auth
+  operationId: ListAPIKeys
+  summary: List API keys
+  tags:
+    - APIKey
+  description: List API keys for the authenticated user
+  parameters:
+    - $ref: ../components/parameters/APIKeysFilter.yaml
+    - $ref: ../components/parameters/PageQuery.yaml
+    - $ref: ../components/parameters/APIKeysSort.yaml
+  security:
+    - bearerAuth: []
+    - sessionCookie: []
+  responses:
+    '200':
+      $ref: ../components/responses/APIKeyListResponse.yaml
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '422':
+      $ref: ../components/responses/UnprocessableEntity.yaml
+    '429':
+      $ref: ../components/responses/TooManyRequests.yaml
+    '500':
+      $ref: ../components/responses/InternalServerError.yaml
+post:
+  x-internal: auth
+  operationId: CreateAPIKey
+  summary: Create an API key
+  tags:
+    - APIKey
+  description: Create a new API key for the authenticated user
+  security:
+    - bearerAuth: []
+    - sessionCookie: []
+  requestBody:
+    description: API key creation data
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            name:
+              description: A friendly name for the API key
+              type: string
+              minLength: 1
+              maxLength: 255
+              example: Production API Key
+              pattern: ^[\w\s\-.,!?()@#+/']+$
+            organizationID:
+              description: The organization this API key belongs to
+              type: string
+              format: uuid
+              minLength: 36
+              maxLength: 36
+              example: 550e8400-e29b-41d4-a716-446655440000
+            scopes:
+              description: List of scopes for the API key
+              type: array
+              items:
+                type: string
+                maxLength: 255
+                pattern: ^[a-z]+:[a-z]+$
+              example:
+                - read:users
+                - write:workflows
+              maxItems: 1000
+              default: []
+            rateLimit:
+              description: Requests per minute allowed for this API key
+              type: integer
+              format: int32
+              minimum: 1
+              maximum: 2147483647
+              example: 1000
+              default: 60
+            expiresAt:
+              description: When this API key expires
+              type: string
+              format: date-time
+              maxLength: 255
+              example: '2025-01-15T09:30:00Z'
+          required:
+            - organizationID
+  responses:
+    '201':
+      $ref: ../components/responses/APIKeyResponse.yaml
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '422':
+      $ref: ../components/responses/UnprocessableEntity.yaml
+    '429':
+      $ref: ../components/responses/TooManyRequests.yaml
+    '500':
+      $ref: ../components/responses/InternalServerError.yaml

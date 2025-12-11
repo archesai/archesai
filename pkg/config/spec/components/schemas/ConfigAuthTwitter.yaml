@@ -1,0 +1,33 @@
+description: Twitter OAuth configuration
+x-internal: config
+type: object
+title: ConfigAuthTwitter
+properties:
+  enabled:
+    description: Enable Twitter OAuth
+    type: boolean
+    default: false
+    example: true
+  callbackURL:
+    description: OAuth callback URL
+    type: string
+    format: uri
+    minLength: 1
+    example: http://localhost:8080/auth/oauth/twitter/callback
+    maxLength: 2048
+  consumerKey:
+    description: Twitter API consumer key
+    type: string
+    minLength: 1
+    maxLength: 255
+    pattern: ^[\w\-]+$
+  consumerSecret:
+    description: Twitter API consumer secret
+    type: string
+    minLength: 1
+    maxLength: 255
+    pattern: ^[\w\-]+$
+required:
+  - enabled
+additionalProperties: false
+x-codegen-schema-type: valueobject

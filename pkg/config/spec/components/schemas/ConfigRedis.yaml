@@ -1,0 +1,59 @@
+description: Redis configuration
+x-internal: config
+type: object
+title: ConfigRedis
+properties:
+  enabled:
+    description: Enable Redis
+    type: boolean
+    default: false
+    example: true
+  managed:
+    description: Use managed Redis deployment
+    type: boolean
+    default: false
+    example: true
+  auth:
+    description: Redis authentication password
+    type: string
+    default: password
+    minLength: 1
+    example: secure-redis-password
+    maxLength: 72
+    pattern: ^[\w\-@./#&+!*()]+$
+  ca:
+    description: Certificate Authority for TLS (optional)
+    type: string
+    minLength: 1
+    example: /etc/ssl/certs/ca.pem
+    maxLength: 255
+    pattern: ^[\w\s\-./]+$
+  host:
+    description: Redis hostname or IP
+    type: string
+    default: localhost
+    minLength: 1
+    example: redis.example.com
+    maxLength: 255
+    pattern: ^[a-zA-Z0-9.\-]+$
+  port:
+    description: Redis port number
+    type: integer
+    format: int32
+    minimum: 1
+    maximum: 65535
+    default: 6379
+    example: 6379
+  image:
+    $ref: ./ConfigImage.yaml
+  persistence:
+    $ref: ./ConfigPersistence.yaml
+  resources:
+    $ref: ./ConfigResource.yaml
+required:
+  - enabled
+  - auth
+  - host
+  - port
+additionalProperties: false
+x-codegen-schema-type: valueobject

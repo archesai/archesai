@@ -1,0 +1,34 @@
+import { defineConfig } from "orval";
+
+export default defineConfig({
+  client: {
+    input: {
+      target: "[[.SpecPath]]",
+    },
+    output: {
+      allParamsOptional: true,
+      biome: false,
+      client: "react-query",
+      httpClient: "fetch",
+      mode: "tags-split",
+      override: {
+        fetch: {
+          includeHttpResponseReturnType: false,
+        },
+        mutator: {
+          name: "customFetch",
+          path: "./src/lib/fetcher.ts",
+        },
+        query: {
+          useInfinite: false,
+          useQuery: true,
+          useSuspenseInfiniteQuery: false,
+          useSuspenseQuery: true,
+          version: 5,
+        },
+      },
+      target: "./src/lib/client/orval.ts",
+      urlEncodeParameters: true,
+    },
+  },
+});
