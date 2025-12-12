@@ -9,7 +9,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/pkg/auth/models"
-	"github.com/archesai/archesai/pkg/auth/repositories"
 )
 
 // ============================================================================
@@ -34,12 +33,12 @@ type GetSession interface {
 
 // GetSessionImpl is the default implementation of GetSession.
 type GetSessionImpl struct {
-	repo repositories.SessionRepository
+	repo models.SessionRepository
 }
 
 // NewGetSession creates a new GetSession handler.
 func NewGetSession(
-	repo repositories.SessionRepository,
+	repo models.SessionRepository,
 ) GetSession {
 	return &GetSessionImpl{
 		repo: repo,

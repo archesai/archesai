@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -131,6 +132,7 @@ func (h *DeletePipelineHandler) ServeHTTP(w http.ResponseWriter, r *http.Request
 
 	// Execute
 	if err := h.deletePipeline.Execute(ctx, input); err != nil {
+		slog.Error("handler error", "operation", "DeletePipeline", "error", err)
 		errorResp := DeletePipeline500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

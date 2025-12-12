@@ -5,6 +5,8 @@
     "@dnd-kit/sortable": "catalog:ui",
     "@dnd-kit/utilities": "catalog:ui",
     "@radix-ui/react-slot": "catalog:ui",
+    "@tanstack/react-query": "catalog:tanstack",
+    "@tanstack/react-router": "catalog:tanstack",
     "@tanstack/react-table": "catalog:tanstack",
     "class-variance-authority": "catalog:ui",
     "clsx": "catalog:ui",
@@ -12,6 +14,7 @@
     "date-fns": "catalog:ui",
     "embla-carousel-react": "catalog:ui",
     "input-otp": "catalog:ui",
+    "js-yaml": "catalog:",
     "lucide-react": "catalog:ui",
     "motion": "catalog:ui",
     "next-themes": "catalog:ui",
@@ -21,9 +24,13 @@
     "react-dom": "catalog:react19",
     "react-hook-form": "catalog:ui",
     "react-resizable-panels": "catalog:ui",
+    "socket.io-client": "catalog:",
     "sonner": "catalog:ui",
     "tailwind-merge": "catalog:ui",
     "vaul": "catalog:ui"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "catalog:"
   },
   "exports": {
     ".": "./src/index.ts",

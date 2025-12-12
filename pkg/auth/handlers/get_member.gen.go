@@ -9,7 +9,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/pkg/auth/models"
-	"github.com/archesai/archesai/pkg/auth/repositories"
 )
 
 // ============================================================================
@@ -35,12 +34,12 @@ type GetMember interface {
 
 // GetMemberImpl is the default implementation of GetMember.
 type GetMemberImpl struct {
-	repo repositories.MemberRepository
+	repo models.MemberRepository
 }
 
 // NewGetMember creates a new GetMember handler.
 func NewGetMember(
-	repo repositories.MemberRepository,
+	repo models.MemberRepository,
 ) GetMember {
 	return &GetMemberImpl{
 		repo: repo,

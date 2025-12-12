@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -157,6 +158,7 @@ func (h *DeleteInvitationHandler) ServeHTTP(w http.ResponseWriter, r *http.Reque
 
 	// Execute
 	if err := h.deleteInvitation.Execute(ctx, input); err != nil {
+		slog.Error("handler error", "operation", "DeleteInvitation", "error", err)
 		errorResp := DeleteInvitation500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

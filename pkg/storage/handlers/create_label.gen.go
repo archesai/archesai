@@ -11,7 +11,6 @@ import (
 
 	"github.com/archesai/archesai/pkg/events"
 	"github.com/archesai/archesai/pkg/storage/models"
-	"github.com/archesai/archesai/pkg/storage/repositories"
 )
 
 // ============================================================================
@@ -35,13 +34,13 @@ type CreateLabel interface {
 
 // CreateLabelImpl is the default implementation of CreateLabel.
 type CreateLabelImpl struct {
-	repo      repositories.LabelRepository
+	repo      models.LabelRepository
 	publisher events.Publisher
 }
 
 // NewCreateLabel creates a new CreateLabel handler.
 func NewCreateLabel(
-	repo repositories.LabelRepository,
+	repo models.LabelRepository,
 	publisher events.Publisher,
 ) CreateLabel {
 	return &CreateLabelImpl{

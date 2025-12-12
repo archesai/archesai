@@ -1,6 +1,6 @@
 x-internal: config
 type: object
-title: KubernetesConfig
+title: ConfigKubernetes
 description: Kubernetes-specific deployment configuration
 properties:
   infrastructure:

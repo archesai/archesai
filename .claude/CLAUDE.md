@@ -6,6 +6,7 @@
 
 ## Rules
 
+- **ALWAYS WRITE UNIT TETS FOR NEW CODE**
 - **Generate first, code second** - Define in OpenAPI/SQL before implementing
 - **Type errors**: Check generated files are up to date
 - **Directory moving**: Do not CD into other directories. You should ideally do everything through the Makefile

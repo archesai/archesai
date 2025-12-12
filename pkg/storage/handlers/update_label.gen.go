@@ -11,7 +11,6 @@ import (
 
 	"github.com/archesai/archesai/pkg/events"
 	"github.com/archesai/archesai/pkg/storage/models"
-	"github.com/archesai/archesai/pkg/storage/repositories"
 )
 
 // ============================================================================
@@ -36,13 +35,13 @@ type UpdateLabel interface {
 
 // UpdateLabelImpl is the default implementation of UpdateLabel.
 type UpdateLabelImpl struct {
-	repo      repositories.LabelRepository
+	repo      models.LabelRepository
 	publisher events.Publisher
 }
 
 // NewUpdateLabel creates a new UpdateLabel handler.
 func NewUpdateLabel(
-	repo repositories.LabelRepository,
+	repo models.LabelRepository,
 	publisher events.Publisher,
 ) UpdateLabel {
 	return &UpdateLabelImpl{

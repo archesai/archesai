@@ -11,7 +11,6 @@ import (
 
 	"github.com/archesai/archesai/pkg/events"
 	"github.com/archesai/archesai/pkg/pipelines/models"
-	"github.com/archesai/archesai/pkg/pipelines/repositories"
 )
 
 // ============================================================================
@@ -36,13 +35,13 @@ type CreateTool interface {
 
 // CreateToolImpl is the default implementation of CreateTool.
 type CreateToolImpl struct {
-	repo      repositories.ToolRepository
+	repo      models.ToolRepository
 	publisher events.Publisher
 }
 
 // NewCreateTool creates a new CreateTool handler.
 func NewCreateTool(
-	repo repositories.ToolRepository,
+	repo models.ToolRepository,
 	publisher events.Publisher,
 ) CreateTool {
 	return &CreateToolImpl{

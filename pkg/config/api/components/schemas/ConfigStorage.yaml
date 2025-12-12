@@ -58,4 +58,4 @@ required:
   - secretkey
 additionalProperties: false
 x-codegen-schema-type: valueobject
-title: StorageConfig
+title: ConfigStorage

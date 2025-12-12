@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -157,6 +158,7 @@ func (h *DeleteMemberHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 
 	// Execute
 	if err := h.deleteMember.Execute(ctx, input); err != nil {
+		slog.Error("handler error", "operation", "DeleteMember", "error", err)
 		errorResp := DeleteMember500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

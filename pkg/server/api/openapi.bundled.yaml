@@ -32,6 +32,81 @@ paths:
       x-internal: server
 components:
   schemas:
+    Base:
+      title: Base
+      description: Base schema for all entities with common fields
+      type: object
+      properties:
+        createdAt:
+          description: The date and time when the resource was created
+          type: string
+          format: date-time
+          minLength: 1
+          maxLength: 255
+          example: '2024-01-15T09:30:00Z'
+        id:
+          description: Unique identifier for the resource
+          type: string
+          format: uuid
+          minLength: 36
+          maxLength: 36
+          example: 550e8400-e29b-41d4-a716-446655440000
+        updatedAt:
+          description: The date and time when the resource was last updated
+          type: string
+          format: date-time
+          minLength: 1
+          maxLength: 255
+          example: '2024-01-15T10:45:00Z'
+      required:
+        - id
+        - createdAt
+        - updatedAt
+      x-internal: server
+    FilterNode:
+      title: FilterNode
+      description: A recursive filter node that can be a condition or group
+      type: object
+      properties:
+        type:
+          description: The type of filter operation
+          type: string
+          enum:
+            - and
+            - or
+            - eq
+            - ne
+            - gt
+            - gte
+            - lt
+            - lte
+            - contains
+            - startsWith
+            - endsWith
+          example: eq
+        field:
+          description: The field to filter on (for leaf conditions)
+          type: string
+          minLength: 1
+          maxLength: 255
+          pattern: ^[a-zA-Z_][a-zA-Z0-9_]*$
+          example: name
+        value:
+          description: The value to compare against (for leaf conditions)
+          oneOf:
+            - type: string
+              maxLength: 1000
+              pattern: ^[\w\s\-.,!?()@#+/':;]+$
+            - type: integer
+              format: int64
+              minimum: -9223372036854775808
+              maximum: 9223372036854775807
+            - type: boolean
+          example: example-value
+      required:
+        - type
+      x-codegen-schema-type: valueobject
+      x-internal: server
     Health:
       title: Health
       description: Health check response
@@ -76,7 +151,7 @@ components:
           type: integer
           format: int64
           minimum: 0
-          maximum: 9223372036854776000
+          maximum: 9223372036854775807
           example: 86400
       additionalProperties: false
       required:
@@ -107,9 +182,11 @@ components:
           maximum: 9007199254740991
           example: 0
       additionalProperties: false
+      x-codegen-schema-type: valueobject
       x-internal: server
     PaginationMeta:
       title: PaginationMeta
+      # yaml-language-server: $schema=https://spec.openapis.org/oas/3.2/schema/2025-09-17#/$defs/schema
       description: Pagination metadata
       type: object
       properties:
@@ -169,14 +246,17 @@ components:
       required:
         - status
         - title
+      x-codegen-schema-type: valueobject
       x-internal: server
     UUID:
+      title: UUID
       description: UUID identifier
       type: string
       format: uuid
       minLength: 36
       maxLength: 36
       example: 550e8400-e29b-41d4-a716-446655440000
+      x-codegen-schema-type: valueobject
       x-internal: server
   responses:
     BadRequest:
@@ -323,7 +403,6 @@ components:
         minimum: 1
         maximum: 1000000
         example: 1000
-      example: 1000
     RateLimitRemaining:
       description: The number of requests remaining in the current time window
       schema:
@@ -332,16 +411,14 @@ components:
         minimum: 0
         maximum: 1000000
         example: 999
-      example: 999
     RateLimitReset:
       description: The time at which the current rate limit window resets (Unix timestamp)
       schema:
         type: integer
         format: int64
         minimum: 0
-        maximum: 9223372036854776000
+        maximum: 9223372036854775807
         example: 1640995200
-      example: 1640995200
     RetryAfter:
       description: Number of seconds to wait before making a new request
       schema:
@@ -350,4 +427,3 @@ components:
         minimum: 1
         maximum: 3600
         example: 60
-      example: 60

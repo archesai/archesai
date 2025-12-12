@@ -1,7 +1,7 @@
 description: Web scraping service configuration
 x-internal: config
 type: object
-title: ScraperConfig
+title: ConfigScraper
 properties:
   enabled:
     description: Enable scraper service

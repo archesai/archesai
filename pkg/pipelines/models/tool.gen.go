@@ -3,6 +3,7 @@
 package models
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -226,4 +227,17 @@ func (e *ToolDeletedEvent) EventType() string {
 // EventData returns the event data.
 func (e *ToolDeletedEvent) EventData() any {
 	return e
+}
+
+// ToolRepository handles tool persistence
+type ToolRepository interface {
+	// Basic CRUD operations (always included)
+	Create(ctx context.Context, entity *Tool) (*Tool, error)
+	Get(ctx context.Context, id uuid.UUID) (*Tool, error)
+	Update(ctx context.Context, id uuid.UUID, entity *Tool) (*Tool, error)
+	Delete(ctx context.Context, id uuid.UUID) error
+	List(ctx context.Context, limit, offset int32) ([]*Tool, int64, error)
+
+	// ListToolsByOrganization retrieves multiple tools by organizationID
+	ListToolsByOrganization(ctx context.Context, organizationID string) ([]*Tool, error)
 }

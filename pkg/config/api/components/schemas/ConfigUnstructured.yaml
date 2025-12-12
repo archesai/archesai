@@ -1,7 +1,7 @@
 description: Unstructured.io service for document parsing
 x-internal: config
 type: object
-title: UnstructuredConfig
+title: ConfigUnstructured
 properties:
   enabled:
     description: Enable unstructured document parsing

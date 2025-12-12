@@ -3,6 +3,7 @@
 package models
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -292,4 +293,23 @@ func (e *RunDeletedEvent) EventType() string {
 // EventData returns the event data.
 func (e *RunDeletedEvent) EventData() any {
 	return e
+}
+
+// RunRepository handles run persistence
+type RunRepository interface {
+	// Basic CRUD operations (always included)
+	Create(ctx context.Context, entity *Run) (*Run, error)
+	Get(ctx context.Context, id uuid.UUID) (*Run, error)
+	Update(ctx context.Context, id uuid.UUID, entity *Run) (*Run, error)
+	Delete(ctx context.Context, id uuid.UUID) error
+	List(ctx context.Context, limit, offset int32) ([]*Run, int64, error)
+
+	// ListRunsByPipeline retrieves multiple runs by pipelineID
+	ListRunsByPipeline(ctx context.Context, pipelineID string) ([]*Run, error)
+
+	// ListRunsByOrganization retrieves multiple runs by organizationID
+	ListRunsByOrganization(ctx context.Context, organizationID string) ([]*Run, error)
+
+	// ListRunsByTool retrieves multiple runs by toolID
+	ListRunsByTool(ctx context.Context, toolID string) ([]*Run, error)
 }

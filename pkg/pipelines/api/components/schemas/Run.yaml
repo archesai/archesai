@@ -50,23 +50,27 @@ x-codegen:
         returns: multiple
 x-internal: pipelines
 allOf:
-  - $ref: Base.yaml
+  - $ref: ./Base.yaml
   - type: object
     properties:
       completedAt:
         description: The timestamp when the run completed
-        type: [string, 'null']
-        format: date-time
+        oneOf:
+          - type: string
+            format: date-time
+            minLength: 1
+            maxLength: 255
+          - type: 'null'
         example: '2024-01-15T09:30:00Z'
-        minLength: 1
-        maxLength: 255
       error:
         description: The error message
-        type: [string, 'null']
+        oneOf:
+          - type: string
+            minLength: 1
+            maxLength: 255
+            pattern: ^[\w\s\-.,!?()@#+/':;]+$
+          - type: 'null'
         example: Pipeline execution failed at step 3
-        minLength: 1
-        maxLength: 255
-        pattern: ^[\w\s\-.,!?()@#+/':;]+$
       organizationID:
         description: The organization this run belongs to
         type: string
@@ -91,11 +95,13 @@ allOf:
         example: 75
       startedAt:
         description: The timestamp when the run started
-        type: [string, 'null']
-        format: date-time
+        oneOf:
+          - type: string
+            format: date-time
+            minLength: 1
+            maxLength: 255
+          - type: 'null'
         example: '2024-01-15T09:30:00Z'
-        minLength: 1
-        maxLength: 255
       status:
         type: string
         enum:

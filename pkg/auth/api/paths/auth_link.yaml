@@ -1,3 +1,4 @@
+x-path: /auth/link
 post:
   x-internal: auth
   x-codegen-custom-handler: true

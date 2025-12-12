@@ -1,3 +1,4 @@
+x-path: /organizations
 get:
   x-internal: auth
   operationId: ListOrganizations

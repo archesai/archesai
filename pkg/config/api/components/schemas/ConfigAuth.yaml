@@ -1,7 +1,7 @@
 description: Authentication configuration for the API server
 x-internal: config
 type: object
-title: AuthConfig
+title: ConfigAuth
 properties:
   enabled:
     description: Enable authentication

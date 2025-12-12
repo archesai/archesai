@@ -11,7 +11,6 @@ import (
 
 	"github.com/archesai/archesai/pkg/events"
 	"github.com/archesai/archesai/pkg/pipelines/models"
-	"github.com/archesai/archesai/pkg/pipelines/repositories"
 )
 
 // ============================================================================
@@ -36,13 +35,13 @@ type CreatePipeline interface {
 
 // CreatePipelineImpl is the default implementation of CreatePipeline.
 type CreatePipelineImpl struct {
-	repo      repositories.PipelineRepository
+	repo      models.PipelineRepository
 	publisher events.Publisher
 }
 
 // NewCreatePipeline creates a new CreatePipeline handler.
 func NewCreatePipeline(
-	repo repositories.PipelineRepository,
+	repo models.PipelineRepository,
 	publisher events.Publisher,
 ) CreatePipeline {
 	return &CreatePipelineImpl{

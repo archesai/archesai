@@ -41,6 +41,7 @@ export {
   MoreHorizontalIcon,
   PackageCheckIcon,
   PanelLeftIcon,
+  PlusIcon,
   PlusSquareIcon,
   RocketIcon,
   RotateCcwIcon,

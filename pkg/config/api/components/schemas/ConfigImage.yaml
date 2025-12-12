@@ -1,7 +1,7 @@
 description: Container image configuration
 x-internal: config
 type: object
-title: ImageConfig
+title: ConfigImage
 properties:
   pullPolicy:
     description: Kubernetes image pull policy

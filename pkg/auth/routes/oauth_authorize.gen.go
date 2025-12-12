@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -37,7 +38,7 @@ func RegisterOauthAuthorizeRoute(mux *http.ServeMux, handler *OauthAuthorizeHand
 
 // OauthAuthorizeParams defines query parameters for OauthAuthorize
 type OauthAuthorizeParams struct {
-	RedirectURI *string `json:"redirectURI,omitempty"`
+	RedirectURI *string `json:"redirect_uri,omitempty"`
 	Scope       *string `json:"scope,omitempty"`
 	State       *string `json:"state,omitempty"`
 }
@@ -56,15 +57,6 @@ func (response OauthAuthorize200Response) VisitOauthAuthorizeResponse(w http.Res
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 	return json.NewEncoder(w).Encode(response)
-}
-
-type OauthAuthorize302Response struct {
-	server.ProblemDetails
-}
-
-func (response OauthAuthorize302Response) VisitOauthAuthorizeResponse(w http.ResponseWriter) error {
-	w.WriteHeader(302)
-	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type OauthAuthorize400Response struct {
@@ -160,12 +152,10 @@ func (h *OauthAuthorizeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request
 	}
 	input.Provider = provider
 
-	// Query parameters
-
-	// Optional query parameter "redirecturi"
-	if err := runtime.BindQueryParameter("form", true, false, "redirecturi", r.URL.Query(), &input.RedirectURI); err != nil {
+	// Optional query parameter "redirect_uri"
+	if err := runtime.BindQueryParameter("deepObject", true, false, "redirect_uri", r.URL.Query(), &input.RedirectURI); err != nil {
 		errorResp := OauthAuthorize400Response{
-			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter redirecturi: %s", err), r.URL.Path),
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter redirect_uri: %s", err), r.URL.Path),
 		}
 		if err := errorResp.VisitOauthAuthorizeResponse(w); err != nil {
 			fmt.Fprintf(w, "error writing response: %v", err)
@@ -174,7 +164,7 @@ func (h *OauthAuthorizeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request
 	}
 
 	// Optional query parameter "scope"
-	if err := runtime.BindQueryParameter("form", true, false, "scope", r.URL.Query(), &input.Scope); err != nil {
+	if err := runtime.BindQueryParameter("deepObject", true, false, "scope", r.URL.Query(), &input.Scope); err != nil {
 		errorResp := OauthAuthorize400Response{
 			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter scope: %s", err), r.URL.Path),
 		}
@@ -185,7 +175,7 @@ func (h *OauthAuthorizeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request
 	}
 
 	// Optional query parameter "state"
-	if err := runtime.BindQueryParameter("form", true, false, "state", r.URL.Query(), &input.State); err != nil {
+	if err := runtime.BindQueryParameter("deepObject", true, false, "state", r.URL.Query(), &input.State); err != nil {
 		errorResp := OauthAuthorize400Response{
 			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter state: %s", err), r.URL.Path),
 		}
@@ -198,6 +188,7 @@ func (h *OauthAuthorizeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request
 	// Execute
 	result, err := h.oauthAuthorize.Execute(ctx, input)
 	if err != nil {
+		slog.Error("handler error", "operation", "OauthAuthorize", "error", err)
 		errorResp := OauthAuthorize500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

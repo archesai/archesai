@@ -9,7 +9,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/pkg/auth/models"
-	"github.com/archesai/archesai/pkg/auth/repositories"
 )
 
 // ============================================================================
@@ -34,12 +33,12 @@ type GetAPIKey interface {
 
 // GetAPIKeyImpl is the default implementation of GetAPIKey.
 type GetAPIKeyImpl struct {
-	repo repositories.APIKeyRepository
+	repo models.APIKeyRepository
 }
 
 // NewGetAPIKey creates a new GetAPIKey handler.
 func NewGetAPIKey(
-	repo repositories.APIKeyRepository,
+	repo models.APIKeyRepository,
 ) GetAPIKey {
 	return &GetAPIKeyImpl{
 		repo: repo,

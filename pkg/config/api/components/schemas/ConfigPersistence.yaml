@@ -1,7 +1,7 @@
 description: Persistent storage configuration
 x-internal: config
 type: object
-title: PersistenceConfig
+title: ConfigPersistence
 properties:
   enabled:
     description: Enable persistent storage

@@ -1,0 +1,4 @@
+description: Session cookie for authenticated requests
+type: apiKey
+name: __Secure-better-auth.session_token
+in: cookie

@@ -11,7 +11,6 @@ import (
 
 	"github.com/archesai/archesai/pkg/events"
 	"github.com/archesai/archesai/pkg/pipelines/models"
-	"github.com/archesai/archesai/pkg/pipelines/repositories"
 )
 
 // ============================================================================
@@ -37,13 +36,13 @@ type UpdatePipeline interface {
 
 // UpdatePipelineImpl is the default implementation of UpdatePipeline.
 type UpdatePipelineImpl struct {
-	repo      repositories.PipelineRepository
+	repo      models.PipelineRepository
 	publisher events.Publisher
 }
 
 // NewUpdatePipeline creates a new UpdatePipeline handler.
 func NewUpdatePipeline(
-	repo repositories.PipelineRepository,
+	repo models.PipelineRepository,
 	publisher events.Publisher,
 ) UpdatePipeline {
 	return &UpdatePipelineImpl{

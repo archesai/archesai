@@ -7,7 +7,6 @@ import (
 	"fmt"
 
 	"github.com/archesai/archesai/pkg/pipelines/models"
-	"github.com/archesai/archesai/pkg/pipelines/repositories"
 	servermodels "github.com/archesai/archesai/pkg/server/models"
 )
 
@@ -17,9 +16,9 @@ import (
 
 // ListPipelinesInput represents the input for the ListPipelines operation.
 type ListPipelinesInput struct {
-	Filter map[string]any
-	Page   map[string]any
-	Sort   []map[string]any
+	PipelinesFilter *servermodels.FilterNode
+	PipelinesSort   *servermodels.FilterNode
+	Page            servermodels.Page
 }
 
 // ListPipelinesOutput represents the output for the ListPipelines operation.
@@ -35,12 +34,12 @@ type ListPipelines interface {
 
 // ListPipelinesImpl is the default implementation of ListPipelines.
 type ListPipelinesImpl struct {
-	repo repositories.PipelineRepository
+	repo models.PipelineRepository
 }
 
 // NewListPipelines creates a new ListPipelines handler.
 func NewListPipelines(
-	repo repositories.PipelineRepository,
+	repo models.PipelineRepository,
 ) ListPipelines {
 	return &ListPipelinesImpl{
 		repo: repo,
@@ -49,20 +48,34 @@ func NewListPipelines(
 
 // Execute performs the ListPipelines operation.
 func (h *ListPipelinesImpl) Execute(ctx context.Context, input *ListPipelinesInput) (*ListPipelinesOutput, error) {
+	// Pagination parameters with defaults
+	limit := int32(100)
+	offset := int32(0)
+	if input.Page.Limit != nil {
+		limit = *input.Page.Limit
+	}
+	if input.Page.Offset != nil {
+		offset = *input.Page.Offset
+	}
+
 	// List from repository
-	results, total, err := h.repo.List(ctx, 100, 0) // TODO: Use pagination from input
+	results, total, err := h.repo.List(ctx, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list pipelines: %w", err)
 	}
 
-	// Map to output
-	output := &ListPipelinesOutput{
-		// TODO: Map results to output structure
-		// Data: results,
-		// Total: total,
+	// Convert pointer slice to value slice
+	data := make([]models.Pipeline, len(results))
+	for i, r := range results {
+		data[i] = *r
 	}
-	_ = results
-	_ = total
+
+	output := &ListPipelinesOutput{
+		Data: data,
+		Meta: servermodels.PaginationMeta{
+			Total: int32(total),
+		},
+	}
 
 	return output, nil
 }

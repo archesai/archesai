@@ -10,7 +10,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/pkg/auth/models"
-	"github.com/archesai/archesai/pkg/auth/repositories"
 	"github.com/archesai/archesai/pkg/events"
 )
 
@@ -38,13 +37,13 @@ type CreateInvitation interface {
 
 // CreateInvitationImpl is the default implementation of CreateInvitation.
 type CreateInvitationImpl struct {
-	repo      repositories.InvitationRepository
+	repo      models.InvitationRepository
 	publisher events.Publisher
 }
 
 // NewCreateInvitation creates a new CreateInvitation handler.
 func NewCreateInvitation(
-	repo repositories.InvitationRepository,
+	repo models.InvitationRepository,
 	publisher events.Publisher,
 ) CreateInvitation {
 	return &CreateInvitationImpl{

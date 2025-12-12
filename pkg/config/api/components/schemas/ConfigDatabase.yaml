@@ -1,4 +1,4 @@
-title: DatabaseConfig
+title: ConfigDatabase
 description: Database configuration for PostgreSQL
 x-internal: config
 type: object

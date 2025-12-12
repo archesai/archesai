@@ -3,6 +3,7 @@
 package models
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -187,4 +188,20 @@ func (e *LabelDeletedEvent) EventType() string {
 // EventData returns the event data.
 func (e *LabelDeletedEvent) EventData() any {
 	return e
+}
+
+// LabelRepository handles label persistence
+type LabelRepository interface {
+	// Basic CRUD operations (always included)
+	Create(ctx context.Context, entity *Label) (*Label, error)
+	Get(ctx context.Context, id uuid.UUID) (*Label, error)
+	Update(ctx context.Context, id uuid.UUID, entity *Label) (*Label, error)
+	Delete(ctx context.Context, id uuid.UUID) error
+	List(ctx context.Context, limit, offset int32) ([]*Label, int64, error)
+
+	// ListLabelsByOrganization retrieves multiple labels by organizationID
+	ListLabelsByOrganization(ctx context.Context, organizationID string) ([]*Label, error)
+
+	// GetLabelByName retrieves a single label by name and organizationID
+	GetLabelByName(ctx context.Context, name string, organizationID string) (*Label, error)
 }

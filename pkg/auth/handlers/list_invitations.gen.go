@@ -9,7 +9,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/pkg/auth/models"
-	"github.com/archesai/archesai/pkg/auth/repositories"
 	servermodels "github.com/archesai/archesai/pkg/server/models"
 )
 
@@ -19,11 +18,11 @@ import (
 
 // ListInvitationsInput represents the input for the ListInvitations operation.
 type ListInvitationsInput struct {
-	SessionID      uuid.UUID
-	OrganizationID uuid.UUID
-	Filter         map[string]any
-	Page           map[string]any
-	Sort           []map[string]any
+	SessionID         uuid.UUID
+	OrganizationID    uuid.UUID
+	InvitationsFilter *servermodels.FilterNode
+	InvitationsSort   *servermodels.FilterNode
+	Page              servermodels.Page
 }
 
 // ListInvitationsOutput represents the output for the ListInvitations operation.
@@ -39,12 +38,12 @@ type ListInvitations interface {
 
 // ListInvitationsImpl is the default implementation of ListInvitations.
 type ListInvitationsImpl struct {
-	repo repositories.InvitationRepository
+	repo models.InvitationRepository
 }
 
 // NewListInvitations creates a new ListInvitations handler.
 func NewListInvitations(
-	repo repositories.InvitationRepository,
+	repo models.InvitationRepository,
 ) ListInvitations {
 	return &ListInvitationsImpl{
 		repo: repo,
@@ -53,20 +52,34 @@ func NewListInvitations(
 
 // Execute performs the ListInvitations operation.
 func (h *ListInvitationsImpl) Execute(ctx context.Context, input *ListInvitationsInput) (*ListInvitationsOutput, error) {
+	// Pagination parameters with defaults
+	limit := int32(100)
+	offset := int32(0)
+	if input.Page.Limit != nil {
+		limit = *input.Page.Limit
+	}
+	if input.Page.Offset != nil {
+		offset = *input.Page.Offset
+	}
+
 	// List from repository
-	results, total, err := h.repo.List(ctx, 100, 0) // TODO: Use pagination from input
+	results, total, err := h.repo.List(ctx, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list invitations: %w", err)
 	}
 
-	// Map to output
-	output := &ListInvitationsOutput{
-		// TODO: Map results to output structure
-		// Data: results,
-		// Total: total,
+	// Convert pointer slice to value slice
+	data := make([]models.Invitation, len(results))
+	for i, r := range results {
+		data[i] = *r
 	}
-	_ = results
-	_ = total
+
+	output := &ListInvitationsOutput{
+		Data: data,
+		Meta: servermodels.PaginationMeta{
+			Total: int32(total),
+		},
+	}
 
 	return output, nil
 }

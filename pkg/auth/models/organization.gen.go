@@ -3,6 +3,7 @@
 package models
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -287,4 +288,20 @@ func (e *OrganizationDeletedEvent) EventType() string {
 // EventData returns the event data.
 func (e *OrganizationDeletedEvent) EventData() any {
 	return e
+}
+
+// OrganizationRepository handles organization persistence
+type OrganizationRepository interface {
+	// Basic CRUD operations (always included)
+	Create(ctx context.Context, entity *Organization) (*Organization, error)
+	Get(ctx context.Context, id uuid.UUID) (*Organization, error)
+	Update(ctx context.Context, id uuid.UUID, entity *Organization) (*Organization, error)
+	Delete(ctx context.Context, id uuid.UUID) error
+	List(ctx context.Context, limit, offset int32) ([]*Organization, int64, error)
+
+	// GetOrganizationBySlug retrieves a single organization by slug
+	GetOrganizationBySlug(ctx context.Context, slug string) (*Organization, error)
+
+	// GetOrganizationByStripeCustomerID retrieves a single organization by stripeCustomerIdentifier
+	GetOrganizationByStripeCustomerID(ctx context.Context, stripeCustomerIdentifier string) (*Organization, error)
 }

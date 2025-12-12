@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -41,7 +42,7 @@ type OauthCallbackParams struct {
 	Code             *string `json:"code,omitempty"`
 	State            *string `json:"state,omitempty"`
 	Error            *string `json:"error,omitempty"`
-	ErrorDescription *string `json:"errorDescription,omitempty"`
+	ErrorDescription *string `json:"error_description,omitempty"`
 }
 
 // Response types
@@ -68,15 +69,6 @@ func (response OauthCallback200Response) VisitOauthCallbackResponse(w http.Respo
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 	return json.NewEncoder(w).Encode(response)
-}
-
-type OauthCallback302Response struct {
-	server.ProblemDetails
-}
-
-func (response OauthCallback302Response) VisitOauthCallbackResponse(w http.ResponseWriter) error {
-	w.WriteHeader(302)
-	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type OauthCallback400Response struct {
@@ -143,21 +135,8 @@ func (response OauthCallback500Response) VisitOauthCallbackResponse(w http.Respo
 func (h *OauthCallbackHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	// Extract session ID from context for authenticated operations
-	sessionID, ok := ctx.Value(server.SessionIDContextKey).(uuid.UUID)
-	if !ok {
-		errorResp := OauthCallback401Response{
-			ProblemDetails: server.NewUnauthorizedResponse("session required", r.URL.Path),
-		}
-		if err := errorResp.VisitOauthCallbackResponse(w); err != nil {
-			fmt.Fprintf(w, "error writing response: %v", err)
-		}
-		return
-	}
-
 	// Build input from request
 	input := &handlers.OauthCallbackInput{}
-	input.SessionID = sessionID
 
 	// Path parameter "provider"
 	var provider string
@@ -172,10 +151,8 @@ func (h *OauthCallbackHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	}
 	input.Provider = provider
 
-	// Query parameters
-
 	// Optional query parameter "code"
-	if err := runtime.BindQueryParameter("form", true, false, "code", r.URL.Query(), &input.Code); err != nil {
+	if err := runtime.BindQueryParameter("deepObject", true, false, "code", r.URL.Query(), &input.Code); err != nil {
 		errorResp := OauthCallback400Response{
 			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter code: %s", err), r.URL.Path),
 		}
@@ -186,7 +163,7 @@ func (h *OauthCallbackHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	}
 
 	// Optional query parameter "state"
-	if err := runtime.BindQueryParameter("form", true, false, "state", r.URL.Query(), &input.State); err != nil {
+	if err := runtime.BindQueryParameter("deepObject", true, false, "state", r.URL.Query(), &input.State); err != nil {
 		errorResp := OauthCallback400Response{
 			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter state: %s", err), r.URL.Path),
 		}
@@ -197,7 +174,7 @@ func (h *OauthCallbackHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	}
 
 	// Optional query parameter "error"
-	if err := runtime.BindQueryParameter("form", true, false, "error", r.URL.Query(), &input.Error); err != nil {
+	if err := runtime.BindQueryParameter("deepObject", true, false, "error", r.URL.Query(), &input.Error); err != nil {
 		errorResp := OauthCallback400Response{
 			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter error: %s", err), r.URL.Path),
 		}
@@ -207,10 +184,10 @@ func (h *OauthCallbackHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	// Optional query parameter "errordescription"
-	if err := runtime.BindQueryParameter("form", true, false, "errordescription", r.URL.Query(), &input.ErrorDescription); err != nil {
+	// Optional query parameter "error_description"
+	if err := runtime.BindQueryParameter("deepObject", true, false, "error_description", r.URL.Query(), &input.ErrorDescription); err != nil {
 		errorResp := OauthCallback400Response{
-			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter errordescription: %s", err), r.URL.Path),
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter error_description: %s", err), r.URL.Path),
 		}
 		if err := errorResp.VisitOauthCallbackResponse(w); err != nil {
 			fmt.Fprintf(w, "error writing response: %v", err)
@@ -221,6 +198,7 @@ func (h *OauthCallbackHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	// Execute
 	result, err := h.oauthCallback.Execute(ctx, input)
 	if err != nil {
+		slog.Error("handler error", "operation", "OauthCallback", "error", err)
 		errorResp := OauthCallback500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

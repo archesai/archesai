@@ -1,7 +1,7 @@
 description: Local username/password authentication
 x-internal: config
 type: object
-title: LocalAuthConfig
+title: ConfigAuthLocal
 properties:
   enabled:
     description: Enable local authentication

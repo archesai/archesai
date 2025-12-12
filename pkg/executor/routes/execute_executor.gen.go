@@ -5,12 +5,14 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/google/uuid"
 	"github.com/oapi-codegen/runtime"
 
 	"github.com/archesai/archesai/pkg/executor/handlers"
+	"github.com/archesai/archesai/pkg/executor/models"
 	"github.com/archesai/archesai/pkg/server"
 )
 
@@ -46,15 +48,8 @@ type ExecuteExecutorResponse interface {
 	VisitExecuteExecutorResponse(w http.ResponseWriter) error
 }
 
-// ExecuteExecutor200ResponseData defines the data structure
-type ExecuteExecutor200ResponseData struct {
-	ExecutionTimeMs int64          `json:"executionTimeMs,omitempty"`
-	Logs            string         `json:"logs,omitempty"`
-	Output          map[string]any `json:"output"`
-}
-
 type ExecuteExecutor200Response struct {
-	Data ExecuteExecutor200ResponseData `json:"data,omitempty"`
+	Data models.SuccessfulExecution `json:"data"`
 }
 
 func (response ExecuteExecutor200Response) VisitExecuteExecutorResponse(w http.ResponseWriter) error {
@@ -159,6 +154,7 @@ func (h *ExecuteExecutorHandler) ServeHTTP(w http.ResponseWriter, r *http.Reques
 	// Execute
 	result, err := h.executeExecutor.Execute(ctx, input)
 	if err != nil {
+		slog.Error("handler error", "operation", "ExecuteExecutor", "error", err)
 		errorResp := ExecuteExecutor500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}
@@ -170,7 +166,7 @@ func (h *ExecuteExecutorHandler) ServeHTTP(w http.ResponseWriter, r *http.Reques
 
 	// Map output to response
 	response := ExecuteExecutor200Response{}
-	response.Data = ExecuteExecutor200ResponseData(result.Data)
+	response.Data = result.Data
 
 	if err := response.VisitExecuteExecutorResponse(w); err != nil {
 		fmt.Fprintf(w, "error writing response: %v", err)

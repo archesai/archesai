@@ -18,7 +18,7 @@ type GetConfigInput struct {
 
 // GetConfigOutput represents the output for the GetConfig operation.
 type GetConfigOutput struct {
-	Data *models.Config `json:"data,omitempty"`
+	Data models.Config `json:"data"`
 }
 
 // GetConfig defines the interface for the GetConfig operation.

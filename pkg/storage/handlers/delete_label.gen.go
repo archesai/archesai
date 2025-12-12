@@ -10,7 +10,6 @@ import (
 
 	"github.com/archesai/archesai/pkg/events"
 	"github.com/archesai/archesai/pkg/storage/models"
-	"github.com/archesai/archesai/pkg/storage/repositories"
 )
 
 // ============================================================================
@@ -29,13 +28,13 @@ type DeleteLabel interface {
 
 // DeleteLabelImpl is the default implementation of DeleteLabel.
 type DeleteLabelImpl struct {
-	repo      repositories.LabelRepository
+	repo      models.LabelRepository
 	publisher events.Publisher
 }
 
 // NewDeleteLabel creates a new DeleteLabel handler.
 func NewDeleteLabel(
-	repo repositories.LabelRepository,
+	repo models.LabelRepository,
 	publisher events.Publisher,
 ) DeleteLabel {
 	return &DeleteLabelImpl{

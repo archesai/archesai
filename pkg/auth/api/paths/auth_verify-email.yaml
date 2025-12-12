@@ -1,3 +1,4 @@
+x-path: /auth/verify-email
 post:
   x-internal: auth
   operationId: ConfirmEmailVerification
@@ -5,6 +6,8 @@ post:
   tags:
     - Auth
   description: This endpoint will confirm your e-mail with a token
+  security:
+    - bearerAuth: []
   requestBody:
     description: Email verification request with token
     content:

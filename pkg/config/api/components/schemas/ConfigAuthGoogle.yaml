@@ -1,7 +1,7 @@
 description: Google OAuth configuration
 x-internal: config
 type: object
-title: GoogleAuthConfig
+title: ConfigAuthGoogle
 properties:
   enabled:
     description: Enable Google OAuth

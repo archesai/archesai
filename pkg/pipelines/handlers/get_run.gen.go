@@ -9,7 +9,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/pkg/pipelines/models"
-	"github.com/archesai/archesai/pkg/pipelines/repositories"
 )
 
 // ============================================================================
@@ -33,12 +32,12 @@ type GetRun interface {
 
 // GetRunImpl is the default implementation of GetRun.
 type GetRunImpl struct {
-	repo repositories.RunRepository
+	repo models.RunRepository
 }
 
 // NewGetRun creates a new GetRun handler.
 func NewGetRun(
-	repo repositories.RunRepository,
+	repo models.RunRepository,
 ) GetRun {
 	return &GetRunImpl{
 		repo: repo,

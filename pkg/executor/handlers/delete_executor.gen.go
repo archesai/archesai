@@ -10,7 +10,6 @@ import (
 
 	"github.com/archesai/archesai/pkg/events"
 	"github.com/archesai/archesai/pkg/executor/models"
-	"github.com/archesai/archesai/pkg/executor/repositories"
 )
 
 // ============================================================================
@@ -29,13 +28,13 @@ type DeleteExecutor interface {
 
 // DeleteExecutorImpl is the default implementation of DeleteExecutor.
 type DeleteExecutorImpl struct {
-	repo      repositories.ExecutorRepository
+	repo      models.ExecutorRepository
 	publisher events.Publisher
 }
 
 // NewDeleteExecutor creates a new DeleteExecutor handler.
 func NewDeleteExecutor(
-	repo repositories.ExecutorRepository,
+	repo models.ExecutorRepository,
 	publisher events.Publisher,
 ) DeleteExecutor {
 	return &DeleteExecutorImpl{

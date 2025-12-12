@@ -3,6 +3,7 @@
 package models
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -254,4 +255,14 @@ func (e *APIKeyDeletedEvent) EventType() string {
 // EventData returns the event data.
 func (e *APIKeyDeletedEvent) EventData() any {
 	return e
+}
+
+// APIKeyRepository handles apikey persistence
+type APIKeyRepository interface {
+	// Basic CRUD operations (always included)
+	Create(ctx context.Context, entity *APIKey) (*APIKey, error)
+	Get(ctx context.Context, id uuid.UUID) (*APIKey, error)
+	Update(ctx context.Context, id uuid.UUID, entity *APIKey) (*APIKey, error)
+	Delete(ctx context.Context, id uuid.UUID) error
+	List(ctx context.Context, limit, offset int32) ([]*APIKey, int64, error)
 }

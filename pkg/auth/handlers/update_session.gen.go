@@ -18,7 +18,7 @@ import (
 type UpdateSessionInput struct {
 	SessionID      uuid.UUID
 	ID             uuid.UUID
-	OrganizationID uuid.UUID
+	OrganizationID *uuid.UUID
 }
 
 // UpdateSessionOutput represents the output for the UpdateSession operation.

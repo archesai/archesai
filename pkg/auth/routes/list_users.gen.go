@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -39,9 +40,9 @@ func RegisterListUsersRoute(mux *http.ServeMux, handler *ListUsersHandler) {
 
 // ListUsersParams defines query parameters for ListUsers
 type ListUsersParams struct {
-	Filter map[string]any   `json:"filter,omitempty"`
-	Page   map[string]any   `json:"page,omitempty"`
-	Sort   []map[string]any `json:"sort,omitempty"`
+	UsersFilter *servermodels.FilterNode `json:"usersFilter"`
+	UsersSort   *servermodels.FilterNode `json:"usersSort"`
+	Page        servermodels.Page        `json:"page"`
 }
 
 // Response types
@@ -131,12 +132,21 @@ func (h *ListUsersHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	input := &handlers.ListUsersInput{}
 	input.SessionID = sessionID
 
-	// Query parameters
-
-	// Optional query parameter "filter"
-	if err := runtime.BindQueryParameter("deepObject", true, false, "filter", r.URL.Query(), &input.Filter); err != nil {
+	// Optional query parameter "usersFilter"
+	if err := runtime.BindQueryParameter("deepObject", true, false, "usersFilter", r.URL.Query(), &input.UsersFilter); err != nil {
 		errorResp := ListUsers400Response{
-			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter filter: %s", err), r.URL.Path),
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter usersFilter: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitListUsersResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
+	}
+
+	// Optional query parameter "usersSort"
+	if err := runtime.BindQueryParameter("deepObject", true, false, "usersSort", r.URL.Query(), &input.UsersSort); err != nil {
+		errorResp := ListUsers400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter usersSort: %s", err), r.URL.Path),
 		}
 		if err := errorResp.VisitListUsersResponse(w); err != nil {
 			fmt.Fprintf(w, "error writing response: %v", err)
@@ -145,20 +155,9 @@ func (h *ListUsersHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Optional query parameter "page"
-	if err := runtime.BindQueryParameter("form", true, false, "page", r.URL.Query(), &input.Page); err != nil {
+	if err := runtime.BindQueryParameter("deepObject", true, false, "page", r.URL.Query(), &input.Page); err != nil {
 		errorResp := ListUsers400Response{
 			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter page: %s", err), r.URL.Path),
-		}
-		if err := errorResp.VisitListUsersResponse(w); err != nil {
-			fmt.Fprintf(w, "error writing response: %v", err)
-		}
-		return
-	}
-
-	// Optional query parameter "sort"
-	if err := runtime.BindQueryParameter("form", true, false, "sort", r.URL.Query(), &input.Sort); err != nil {
-		errorResp := ListUsers400Response{
-			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter sort: %s", err), r.URL.Path),
 		}
 		if err := errorResp.VisitListUsersResponse(w); err != nil {
 			fmt.Fprintf(w, "error writing response: %v", err)
@@ -169,6 +168,7 @@ func (h *ListUsersHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Execute
 	result, err := h.listUsers.Execute(ctx, input)
 	if err != nil {
+		slog.Error("handler error", "operation", "ListUsers", "error", err)
 		errorResp := ListUsers500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

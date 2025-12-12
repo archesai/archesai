@@ -1,0 +1,120 @@
+openapi: 3.1.0
+x-project-name: github.com/archesai/examples/basic
+info:
+  title: My API
+  version: 1.0.0
+  description: A basic example API for managing todo items
+tags:
+  - name: Todo
+    description: Todo item management
+paths:
+  /todos:
+    get:
+      operationId: ListTodos
+      tags:
+        - Todo
+      summary: List todo items
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: components/parameters/TodosFilter.yaml
+        - $ref: components/parameters/PageQuery.yaml
+        - $ref: components/parameters/TodosSort.yaml
+      responses:
+        '200':
+          $ref: components/responses/TodoListResponse.yaml
+        '400':
+          $ref: components/responses/BadRequest.yaml
+        '401':
+          $ref: components/responses/Unauthorized.yaml
+        '500':
+          $ref: components/responses/InternalServerError.yaml
+    post:
+      operationId: CreateTodo
+      tags:
+        - Todo
+      summary: Create a todo item
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: components/schemas/CreateTodoBody.yaml
+      responses:
+        '201':
+          $ref: components/responses/TodoResponse.yaml
+        '400':
+          $ref: components/responses/BadRequest.yaml
+        '401':
+          $ref: components/responses/Unauthorized.yaml
+        '500':
+          $ref: components/responses/InternalServerError.yaml
+  /todos/{id}:
+    get:
+      operationId: GetTodo
+      tags:
+        - Todo
+      summary: Get a todo item
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: components/parameters/ID.yaml
+      responses:
+        '200':
+          $ref: components/responses/TodoResponse.yaml
+        '400':
+          $ref: components/responses/BadRequest.yaml
+        '401':
+          $ref: components/responses/Unauthorized.yaml
+        '404':
+          $ref: components/responses/NotFound.yaml
+        '500':
+          $ref: components/responses/InternalServerError.yaml
+    put:
+      operationId: UpdateTodo
+      tags:
+        - Todo
+      summary: Update a todo item
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: components/parameters/ID.yaml
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: components/schemas/UpdateTodoBody.yaml
+      responses:
+        '200':
+          $ref: components/responses/TodoResponse.yaml
+        '400':
+          $ref: components/responses/BadRequest.yaml
+        '401':
+          $ref: components/responses/Unauthorized.yaml
+        '404':
+          $ref: components/responses/NotFound.yaml
+        '500':
+          $ref: components/responses/InternalServerError.yaml
+    delete:
+      operationId: DeleteTodo
+      tags:
+        - Todo
+      summary: Delete a todo item
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: components/parameters/ID.yaml
+      responses:
+        '204':
+          $ref: components/responses/NoContent.yaml
+        '400':
+          $ref: components/responses/BadRequest.yaml
+        '401':
+          $ref: components/responses/Unauthorized.yaml
+        '404':
+          $ref: components/responses/NotFound.yaml
+        '500':
+          $ref: components/responses/InternalServerError.yaml

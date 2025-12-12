@@ -1,7 +1,7 @@
 description: Twitter OAuth configuration
 x-internal: config
 type: object
-title: TwitterAuthConfig
+title: ConfigAuthTwitter
 properties:
   enabled:
     description: Enable Twitter OAuth

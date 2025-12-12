@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/pkg/pipelines/models"
+	servermodels "github.com/archesai/archesai/pkg/server/models"
 )
 
 // ============================================================================
@@ -16,12 +17,16 @@ import (
 
 // GetPipelineStepsInput represents the input for the GetPipelineSteps operation.
 type GetPipelineStepsInput struct {
-	ID uuid.UUID
+	ID                  uuid.UUID
+	PipelineStepsFilter *servermodels.FilterNode
+	PipelineStepsSort   *servermodels.FilterNode
+	Page                servermodels.Page
 }
 
 // GetPipelineStepsOutput represents the output for the GetPipelineSteps operation.
 type GetPipelineStepsOutput struct {
-	Data []models.PipelineStep `json:"data"`
+	Data []models.PipelineStep       `json:"data"`
+	Meta servermodels.PaginationMeta `json:"meta"`
 }
 
 // GetPipelineSteps defines the interface for the GetPipelineSteps operation.

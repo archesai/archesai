@@ -1,6 +1,8 @@
-schema:
-  $ref: ../schemas/UUID.yaml
-in: path
 name: organizationID
+description: Organization ID
 required: true
-description: The unique identifier of the organization.
+schema:
+  type: string
+  format: uuid
+  maxLength: 36
+in: path

@@ -1,9 +1,9 @@
-//go:generate go run ../../cmd/archesai generate --spec ./api/openapi.yaml --output . --only models,routes,handlers,repositories,bootstrap_handlers,bootstrap_routes --pretty
+//go:generate go run ../../cmd/archesai generate
 package auth
 
 import "embed"
 
-// APISpec embeds the OpenAPI specification files for the auth package.
+// API embeds the OpenAPI specification files for the auth package.
 //
 //go:embed api
-var APISpec embed.FS
+var API embed.FS

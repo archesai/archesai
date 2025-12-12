@@ -9,7 +9,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/pkg/executor/models"
-	"github.com/archesai/archesai/pkg/executor/repositories"
 )
 
 // ============================================================================
@@ -33,12 +32,12 @@ type GetExecutor interface {
 
 // GetExecutorImpl is the default implementation of GetExecutor.
 type GetExecutorImpl struct {
-	repo repositories.ExecutorRepository
+	repo models.ExecutorRepository
 }
 
 // NewGetExecutor creates a new GetExecutor handler.
 func NewGetExecutor(
-	repo repositories.ExecutorRepository,
+	repo models.ExecutorRepository,
 ) GetExecutor {
 	return &GetExecutorImpl{
 		repo: repo,

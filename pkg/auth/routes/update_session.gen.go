@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -38,7 +39,7 @@ func RegisterUpdateSessionRoute(mux *http.ServeMux, handler *UpdateSessionHandle
 
 // UpdateSessionRequestBody defines the request body for UpdateSession
 type UpdateSessionRequestBody struct {
-	OrganizationID uuid.UUID `json:"organizationID"`
+	OrganizationID *uuid.UUID `json:"organizationID,omitempty"`
 }
 
 // Response types
@@ -166,6 +167,7 @@ func (h *UpdateSessionHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	// Execute
 	result, err := h.updateSession.Execute(ctx, input)
 	if err != nil {
+		slog.Error("handler error", "operation", "UpdateSession", "error", err)
 		errorResp := UpdateSession500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

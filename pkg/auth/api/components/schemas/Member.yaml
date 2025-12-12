@@ -46,7 +46,7 @@ x-codegen:
         returns: single
 x-internal: auth
 allOf:
-  - $ref: Base.yaml
+  - $ref: ./Base.yaml
   - type: object
     properties:
       organizationID:

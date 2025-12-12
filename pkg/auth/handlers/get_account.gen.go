@@ -9,7 +9,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/pkg/auth/models"
-	"github.com/archesai/archesai/pkg/auth/repositories"
 )
 
 // ============================================================================
@@ -34,12 +33,12 @@ type GetAccount interface {
 
 // GetAccountImpl is the default implementation of GetAccount.
 type GetAccountImpl struct {
-	repo repositories.AccountRepository
+	repo models.AccountRepository
 }
 
 // NewGetAccount creates a new GetAccount handler.
 func NewGetAccount(
-	repo repositories.AccountRepository,
+	repo models.AccountRepository,
 ) GetAccount {
 	return &GetAccountImpl{
 		repo: repo,

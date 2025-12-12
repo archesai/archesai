@@ -1,0 +1,10 @@
+# yaml-language-server: $schema=../../pkg/config/api/components/schemas/Config.yaml
+logging:
+  level: info
+  pretty: true
+
+generation:
+  spec: ./api/openapi.yaml
+  includes:
+    - server
+    - auth

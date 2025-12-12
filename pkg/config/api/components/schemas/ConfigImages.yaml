@@ -1,7 +1,7 @@
 description: Container image configuration
 x-internal: config
 type: object
-title: ImagesConfig
+title: ConfigImages
 properties:
   imagePullSecrets:
     description: List of Kubernetes secrets for pulling private images

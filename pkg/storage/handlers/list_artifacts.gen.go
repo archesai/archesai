@@ -8,7 +8,6 @@ import (
 
 	servermodels "github.com/archesai/archesai/pkg/server/models"
 	"github.com/archesai/archesai/pkg/storage/models"
-	"github.com/archesai/archesai/pkg/storage/repositories"
 )
 
 // ============================================================================
@@ -17,9 +16,9 @@ import (
 
 // ListArtifactsInput represents the input for the ListArtifacts operation.
 type ListArtifactsInput struct {
-	Filter map[string]any
-	Page   map[string]any
-	Sort   []map[string]any
+	ArtifactsFilter *servermodels.FilterNode
+	ArtifactsSort   *servermodels.FilterNode
+	Page            servermodels.Page
 }
 
 // ListArtifactsOutput represents the output for the ListArtifacts operation.
@@ -35,12 +34,12 @@ type ListArtifacts interface {
 
 // ListArtifactsImpl is the default implementation of ListArtifacts.
 type ListArtifactsImpl struct {
-	repo repositories.ArtifactRepository
+	repo models.ArtifactRepository
 }
 
 // NewListArtifacts creates a new ListArtifacts handler.
 func NewListArtifacts(
-	repo repositories.ArtifactRepository,
+	repo models.ArtifactRepository,
 ) ListArtifacts {
 	return &ListArtifactsImpl{
 		repo: repo,
@@ -49,20 +48,34 @@ func NewListArtifacts(
 
 // Execute performs the ListArtifacts operation.
 func (h *ListArtifactsImpl) Execute(ctx context.Context, input *ListArtifactsInput) (*ListArtifactsOutput, error) {
+	// Pagination parameters with defaults
+	limit := int32(100)
+	offset := int32(0)
+	if input.Page.Limit != nil {
+		limit = *input.Page.Limit
+	}
+	if input.Page.Offset != nil {
+		offset = *input.Page.Offset
+	}
+
 	// List from repository
-	results, total, err := h.repo.List(ctx, 100, 0) // TODO: Use pagination from input
+	results, total, err := h.repo.List(ctx, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list artifacts: %w", err)
 	}
 
-	// Map to output
-	output := &ListArtifactsOutput{
-		// TODO: Map results to output structure
-		// Data: results,
-		// Total: total,
+	// Convert pointer slice to value slice
+	data := make([]models.Artifact, len(results))
+	for i, r := range results {
+		data[i] = *r
 	}
-	_ = results
-	_ = total
+
+	output := &ListArtifactsOutput{
+		Data: data,
+		Meta: servermodels.PaginationMeta{
+			Total: int32(total),
+		},
+	}
 
 	return output, nil
 }

@@ -10,7 +10,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/pkg/auth/models"
-	"github.com/archesai/archesai/pkg/auth/repositories"
 	"github.com/archesai/archesai/pkg/events"
 )
 
@@ -38,13 +37,13 @@ type UpdateMember interface {
 
 // UpdateMemberImpl is the default implementation of UpdateMember.
 type UpdateMemberImpl struct {
-	repo      repositories.MemberRepository
+	repo      models.MemberRepository
 	publisher events.Publisher
 }
 
 // NewUpdateMember creates a new UpdateMember handler.
 func NewUpdateMember(
-	repo repositories.MemberRepository,
+	repo models.MemberRepository,
 	publisher events.Publisher,
 ) UpdateMember {
 	return &UpdateMemberImpl{

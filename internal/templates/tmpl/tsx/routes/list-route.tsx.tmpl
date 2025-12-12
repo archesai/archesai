@@ -1,0 +1,15 @@
+import { createFileRoute } from "@tanstack/react-router";
+import type { JSX } from "react";
+
+import [[ .Entity.EntityName ]]DataTable from "#components/datatables/[[ .Entity.EntityNameKebab ]]-datatable";
+import { getRouteMeta } from "#lib/site-utils";
+
+export const metadata = getRouteMeta("/[[ .Entity.EntityNameKebab ]]s");
+
+export const Route = createFileRoute("/_app/[[ .Entity.EntityNameKebab ]]s/")({
+  component: [[ .Entity.EntityName ]]sPage,
+});
+
+function [[ .Entity.EntityName ]]sPage(): JSX.Element {
+  return <[[ .Entity.EntityName ]]DataTable />;
+}

@@ -1,7 +1,7 @@
 description: Microsoft/Azure AD OAuth configuration
 x-internal: config
 type: object
-title: MicrosoftAuthConfig
+title: ConfigAuthMicrosoft
 properties:
   enabled:
     description: Enable Microsoft OAuth

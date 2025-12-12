@@ -1,5 +1,8 @@
 packages:
   - apps/*
+  - apps/studio/web
+  - examples/authentication/web
+  - examples/basic/web
   - pkg/ui
   - pkg/client
   - pkg/tsconfig

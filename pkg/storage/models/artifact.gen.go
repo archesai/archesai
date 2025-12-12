@@ -3,6 +3,7 @@
 package models
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -257,4 +258,20 @@ func (e *ArtifactDeletedEvent) EventType() string {
 // EventData returns the event data.
 func (e *ArtifactDeletedEvent) EventData() any {
 	return e
+}
+
+// ArtifactRepository handles artifact persistence
+type ArtifactRepository interface {
+	// Basic CRUD operations (always included)
+	Create(ctx context.Context, entity *Artifact) (*Artifact, error)
+	Get(ctx context.Context, id uuid.UUID) (*Artifact, error)
+	Update(ctx context.Context, id uuid.UUID, entity *Artifact) (*Artifact, error)
+	Delete(ctx context.Context, id uuid.UUID) error
+	List(ctx context.Context, limit, offset int32) ([]*Artifact, int64, error)
+
+	// ListArtifactsByOrganization retrieves multiple artifacts by organizationID
+	ListArtifactsByOrganization(ctx context.Context, organizationID string) ([]*Artifact, error)
+
+	// ListArtifactsByProducer retrieves multiple artifacts by producerID
+	ListArtifactsByProducer(ctx context.Context, producerID string) ([]*Artifact, error)
 }

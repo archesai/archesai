@@ -1,0 +1,13 @@
+# yaml-language-server: $schema=../../pkg/config/api/components/schemas/Config.yaml
+generation:
+  spec: ./api/openapi.yaml
+  includes:
+    - server
+  only:
+    - models
+    - handlers
+    - handler_stubs
+    - routes
+    - app_handlers
+    - app_infrastructure
+    - app_routes

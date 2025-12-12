@@ -9,7 +9,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/pkg/auth/models"
-	"github.com/archesai/archesai/pkg/auth/repositories"
 )
 
 // ============================================================================
@@ -34,12 +33,12 @@ type GetUser interface {
 
 // GetUserImpl is the default implementation of GetUser.
 type GetUserImpl struct {
-	repo repositories.UserRepository
+	repo models.UserRepository
 }
 
 // NewGetUser creates a new GetUser handler.
 func NewGetUser(
-	repo repositories.UserRepository,
+	repo models.UserRepository,
 ) GetUser {
 	return &GetUserImpl{
 		repo: repo,

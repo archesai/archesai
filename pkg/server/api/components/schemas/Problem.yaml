@@ -1,6 +1,7 @@
 title: Problem
 description: RFC 7807 (Problem Details) compliant error response
 x-internal: server
+x-codegen-schema-type: valueobject
 type: object
 additionalProperties: false
 required:

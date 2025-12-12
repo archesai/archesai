@@ -9,7 +9,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/pkg/auth/models"
-	"github.com/archesai/archesai/pkg/auth/repositories"
 )
 
 // ============================================================================
@@ -34,12 +33,12 @@ type GetOrganization interface {
 
 // GetOrganizationImpl is the default implementation of GetOrganization.
 type GetOrganizationImpl struct {
-	repo repositories.OrganizationRepository
+	repo models.OrganizationRepository
 }
 
 // NewGetOrganization creates a new GetOrganization handler.
 func NewGetOrganization(
-	repo repositories.OrganizationRepository,
+	repo models.OrganizationRepository,
 ) GetOrganization {
 	return &GetOrganizationImpl{
 		repo: repo,

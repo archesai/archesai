@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -39,9 +40,9 @@ func RegisterListMembersRoute(mux *http.ServeMux, handler *ListMembersHandler) {
 
 // ListMembersParams defines query parameters for ListMembers
 type ListMembersParams struct {
-	Filter map[string]any   `json:"filter,omitempty"`
-	Page   map[string]any   `json:"page,omitempty"`
-	Sort   []map[string]any `json:"sort,omitempty"`
+	MembersFilter *servermodels.FilterNode `json:"membersFilter"`
+	MembersSort   *servermodels.FilterNode `json:"membersSort"`
+	Page          servermodels.Page        `json:"page"`
 }
 
 // Response types
@@ -78,6 +79,16 @@ type ListMembers401Response struct {
 func (response ListMembers401Response) VisitListMembersResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(401)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type ListMembers404Response struct {
+	server.ProblemDetails
+}
+
+func (response ListMembers404Response) VisitListMembersResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
 	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
@@ -144,12 +155,21 @@ func (h *ListMembersHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	input.OrganizationID = organizationID
 
-	// Query parameters
-
-	// Optional query parameter "filter"
-	if err := runtime.BindQueryParameter("deepObject", true, false, "filter", r.URL.Query(), &input.Filter); err != nil {
+	// Optional query parameter "membersFilter"
+	if err := runtime.BindQueryParameter("deepObject", true, false, "membersFilter", r.URL.Query(), &input.MembersFilter); err != nil {
 		errorResp := ListMembers400Response{
-			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter filter: %s", err), r.URL.Path),
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter membersFilter: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitListMembersResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
+	}
+
+	// Optional query parameter "membersSort"
+	if err := runtime.BindQueryParameter("deepObject", true, false, "membersSort", r.URL.Query(), &input.MembersSort); err != nil {
+		errorResp := ListMembers400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter membersSort: %s", err), r.URL.Path),
 		}
 		if err := errorResp.VisitListMembersResponse(w); err != nil {
 			fmt.Fprintf(w, "error writing response: %v", err)
@@ -158,20 +178,9 @@ func (h *ListMembersHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Optional query parameter "page"
-	if err := runtime.BindQueryParameter("form", true, false, "page", r.URL.Query(), &input.Page); err != nil {
+	if err := runtime.BindQueryParameter("deepObject", true, false, "page", r.URL.Query(), &input.Page); err != nil {
 		errorResp := ListMembers400Response{
 			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter page: %s", err), r.URL.Path),
-		}
-		if err := errorResp.VisitListMembersResponse(w); err != nil {
-			fmt.Fprintf(w, "error writing response: %v", err)
-		}
-		return
-	}
-
-	// Optional query parameter "sort"
-	if err := runtime.BindQueryParameter("form", true, false, "sort", r.URL.Query(), &input.Sort); err != nil {
-		errorResp := ListMembers400Response{
-			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter sort: %s", err), r.URL.Path),
 		}
 		if err := errorResp.VisitListMembersResponse(w); err != nil {
 			fmt.Fprintf(w, "error writing response: %v", err)
@@ -182,6 +191,7 @@ func (h *ListMembersHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Execute
 	result, err := h.listMembers.Execute(ctx, input)
 	if err != nil {
+		slog.Error("handler error", "operation", "ListMembers", "error", err)
 		errorResp := ListMembers500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

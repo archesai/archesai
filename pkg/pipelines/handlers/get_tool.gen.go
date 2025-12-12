@@ -9,7 +9,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/pkg/pipelines/models"
-	"github.com/archesai/archesai/pkg/pipelines/repositories"
 )
 
 // ============================================================================
@@ -33,12 +32,12 @@ type GetTool interface {
 
 // GetToolImpl is the default implementation of GetTool.
 type GetToolImpl struct {
-	repo repositories.ToolRepository
+	repo models.ToolRepository
 }
 
 // NewGetTool creates a new GetTool handler.
 func NewGetTool(
-	repo repositories.ToolRepository,
+	repo models.ToolRepository,
 ) GetTool {
 	return &GetToolImpl{
 		repo: repo,

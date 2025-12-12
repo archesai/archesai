@@ -10,7 +10,6 @@ import (
 
 	"github.com/archesai/archesai/pkg/events"
 	"github.com/archesai/archesai/pkg/pipelines/models"
-	"github.com/archesai/archesai/pkg/pipelines/repositories"
 )
 
 // ============================================================================
@@ -29,13 +28,13 @@ type DeleteTool interface {
 
 // DeleteToolImpl is the default implementation of DeleteTool.
 type DeleteToolImpl struct {
-	repo      repositories.ToolRepository
+	repo      models.ToolRepository
 	publisher events.Publisher
 }
 
 // NewDeleteTool creates a new DeleteTool handler.
 func NewDeleteTool(
-	repo repositories.ToolRepository,
+	repo models.ToolRepository,
 	publisher events.Publisher,
 ) DeleteTool {
 	return &DeleteToolImpl{

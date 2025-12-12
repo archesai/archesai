@@ -9,7 +9,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/pkg/auth/models"
-	"github.com/archesai/archesai/pkg/auth/repositories"
 	"github.com/archesai/archesai/pkg/events"
 )
 
@@ -31,13 +30,13 @@ type DeleteInvitation interface {
 
 // DeleteInvitationImpl is the default implementation of DeleteInvitation.
 type DeleteInvitationImpl struct {
-	repo      repositories.InvitationRepository
+	repo      models.InvitationRepository
 	publisher events.Publisher
 }
 
 // NewDeleteInvitation creates a new DeleteInvitation handler.
 func NewDeleteInvitation(
-	repo repositories.InvitationRepository,
+	repo models.InvitationRepository,
 	publisher events.Publisher,
 ) DeleteInvitation {
 	return &DeleteInvitationImpl{

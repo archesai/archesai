@@ -33,17 +33,10 @@ var ConfigFileNames = []string{
 	".archesai", // .archesai.yaml
 }
 
-// Config is a constraint interface for configuration types.
-// Any struct with a Validate method can be used as a configuration.
-type Config interface {
-	// Validate checks if the configuration is valid.
-	// Validate() error
-}
-
 // Parser handles loading and parsing of configuration.
-type Parser[C Config] struct{}
+type Parser[C any] struct{}
 
 // NewParser creates a new configuration parser for type C.
-func NewParser[C Config]() *Parser[C] {
+func NewParser[C any]() *Parser[C] {
 	return &Parser[C]{}
 }

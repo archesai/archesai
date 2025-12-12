@@ -44,7 +44,7 @@ x-codegen:
         returns: multiple
 x-internal: auth
 allOf:
-  - $ref: Base.yaml
+  - $ref: ./Base.yaml
   - type: object
     properties:
       email:

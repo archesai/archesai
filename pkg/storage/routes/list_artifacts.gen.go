@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/oapi-codegen/runtime"
@@ -38,9 +39,9 @@ func RegisterListArtifactsRoute(mux *http.ServeMux, handler *ListArtifactsHandle
 
 // ListArtifactsParams defines query parameters for ListArtifacts
 type ListArtifactsParams struct {
-	Filter map[string]any   `json:"filter,omitempty"`
-	Page   map[string]any   `json:"page,omitempty"`
-	Sort   []map[string]any `json:"sort,omitempty"`
+	ArtifactsFilter *servermodels.FilterNode `json:"artifactsFilter"`
+	ArtifactsSort   *servermodels.FilterNode `json:"artifactsSort"`
+	Page            servermodels.Page        `json:"page"`
 }
 
 // Response types
@@ -117,12 +118,21 @@ func (h *ListArtifactsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	// Build input from request
 	input := &handlers.ListArtifactsInput{}
 
-	// Query parameters
-
-	// Optional query parameter "filter"
-	if err := runtime.BindQueryParameter("deepObject", true, false, "filter", r.URL.Query(), &input.Filter); err != nil {
+	// Optional query parameter "artifactsFilter"
+	if err := runtime.BindQueryParameter("deepObject", true, false, "artifactsFilter", r.URL.Query(), &input.ArtifactsFilter); err != nil {
 		errorResp := ListArtifacts400Response{
-			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter filter: %s", err), r.URL.Path),
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter artifactsFilter: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitListArtifactsResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
+	}
+
+	// Optional query parameter "artifactsSort"
+	if err := runtime.BindQueryParameter("deepObject", true, false, "artifactsSort", r.URL.Query(), &input.ArtifactsSort); err != nil {
+		errorResp := ListArtifacts400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter artifactsSort: %s", err), r.URL.Path),
 		}
 		if err := errorResp.VisitListArtifactsResponse(w); err != nil {
 			fmt.Fprintf(w, "error writing response: %v", err)
@@ -131,20 +141,9 @@ func (h *ListArtifactsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	}
 
 	// Optional query parameter "page"
-	if err := runtime.BindQueryParameter("form", true, false, "page", r.URL.Query(), &input.Page); err != nil {
+	if err := runtime.BindQueryParameter("deepObject", true, false, "page", r.URL.Query(), &input.Page); err != nil {
 		errorResp := ListArtifacts400Response{
 			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter page: %s", err), r.URL.Path),
-		}
-		if err := errorResp.VisitListArtifactsResponse(w); err != nil {
-			fmt.Fprintf(w, "error writing response: %v", err)
-		}
-		return
-	}
-
-	// Optional query parameter "sort"
-	if err := runtime.BindQueryParameter("form", true, false, "sort", r.URL.Query(), &input.Sort); err != nil {
-		errorResp := ListArtifacts400Response{
-			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter sort: %s", err), r.URL.Path),
 		}
 		if err := errorResp.VisitListArtifactsResponse(w); err != nil {
 			fmt.Fprintf(w, "error writing response: %v", err)
@@ -155,6 +154,7 @@ func (h *ListArtifactsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	// Execute
 	result, err := h.listArtifacts.Execute(ctx, input)
 	if err != nil {
+		slog.Error("handler error", "operation", "ListArtifacts", "error", err)
 		errorResp := ListArtifacts500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -144,6 +145,7 @@ func (h *DeleteSessionHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 
 	// Execute
 	if err := h.deleteSession.Execute(ctx, input); err != nil {
+		slog.Error("handler error", "operation", "DeleteSession", "error", err)
 		errorResp := DeleteSession500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

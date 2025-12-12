@@ -8,7 +8,6 @@ import (
 
 	servermodels "github.com/archesai/archesai/pkg/server/models"
 	"github.com/archesai/archesai/pkg/storage/models"
-	"github.com/archesai/archesai/pkg/storage/repositories"
 )
 
 // ============================================================================
@@ -17,9 +16,9 @@ import (
 
 // ListLabelsInput represents the input for the ListLabels operation.
 type ListLabelsInput struct {
-	Filter map[string]any
-	Page   map[string]any
-	Sort   []map[string]any
+	LabelsFilter *servermodels.FilterNode
+	LabelsSort   *servermodels.FilterNode
+	Page         servermodels.Page
 }
 
 // ListLabelsOutput represents the output for the ListLabels operation.
@@ -35,12 +34,12 @@ type ListLabels interface {
 
 // ListLabelsImpl is the default implementation of ListLabels.
 type ListLabelsImpl struct {
-	repo repositories.LabelRepository
+	repo models.LabelRepository
 }
 
 // NewListLabels creates a new ListLabels handler.
 func NewListLabels(
-	repo repositories.LabelRepository,
+	repo models.LabelRepository,
 ) ListLabels {
 	return &ListLabelsImpl{
 		repo: repo,
@@ -49,20 +48,34 @@ func NewListLabels(
 
 // Execute performs the ListLabels operation.
 func (h *ListLabelsImpl) Execute(ctx context.Context, input *ListLabelsInput) (*ListLabelsOutput, error) {
+	// Pagination parameters with defaults
+	limit := int32(100)
+	offset := int32(0)
+	if input.Page.Limit != nil {
+		limit = *input.Page.Limit
+	}
+	if input.Page.Offset != nil {
+		offset = *input.Page.Offset
+	}
+
 	// List from repository
-	results, total, err := h.repo.List(ctx, 100, 0) // TODO: Use pagination from input
+	results, total, err := h.repo.List(ctx, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list labels: %w", err)
 	}
 
-	// Map to output
-	output := &ListLabelsOutput{
-		// TODO: Map results to output structure
-		// Data: results,
-		// Total: total,
+	// Convert pointer slice to value slice
+	data := make([]models.Label, len(results))
+	for i, r := range results {
+		data[i] = *r
 	}
-	_ = results
-	_ = total
+
+	output := &ListLabelsOutput{
+		Data: data,
+		Meta: servermodels.PaginationMeta{
+			Total: int32(total),
+		},
+	}
 
 	return output, nil
 }

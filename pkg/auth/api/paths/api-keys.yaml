@@ -1,3 +1,4 @@
+x-path: /api-keys
 get:
   x-internal: auth
   operationId: ListAPIKeys

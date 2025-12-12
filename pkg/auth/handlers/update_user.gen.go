@@ -10,7 +10,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/pkg/auth/models"
-	"github.com/archesai/archesai/pkg/auth/repositories"
 	"github.com/archesai/archesai/pkg/events"
 )
 
@@ -38,13 +37,13 @@ type UpdateUser interface {
 
 // UpdateUserImpl is the default implementation of UpdateUser.
 type UpdateUserImpl struct {
-	repo      repositories.UserRepository
+	repo      models.UserRepository
 	publisher events.Publisher
 }
 
 // NewUpdateUser creates a new UpdateUser handler.
 func NewUpdateUser(
-	repo repositories.UserRepository,
+	repo models.UserRepository,
 	publisher events.Publisher,
 ) UpdateUser {
 	return &UpdateUserImpl{

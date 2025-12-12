@@ -9,7 +9,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/pkg/auth/models"
-	"github.com/archesai/archesai/pkg/auth/repositories"
 	"github.com/archesai/archesai/pkg/events"
 )
 
@@ -30,13 +29,13 @@ type DeleteAPIKey interface {
 
 // DeleteAPIKeyImpl is the default implementation of DeleteAPIKey.
 type DeleteAPIKeyImpl struct {
-	repo      repositories.APIKeyRepository
+	repo      models.APIKeyRepository
 	publisher events.Publisher
 }
 
 // NewDeleteAPIKey creates a new DeleteAPIKey handler.
 func NewDeleteAPIKey(
-	repo repositories.APIKeyRepository,
+	repo models.APIKeyRepository,
 	publisher events.Publisher,
 ) DeleteAPIKey {
 	return &DeleteAPIKeyImpl{

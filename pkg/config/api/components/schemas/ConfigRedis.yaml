@@ -1,7 +1,7 @@
 description: Redis configuration
 x-internal: config
 type: object
-title: RedisConfig
+title: ConfigRedis
 properties:
   enabled:
     description: Enable Redis

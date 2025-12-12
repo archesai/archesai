@@ -22,7 +22,7 @@ x-codegen:
         returns: single
 x-internal: auth
 allOf:
-  - $ref: Base.yaml
+  - $ref: ./Base.yaml
   - type: object
     properties:
       name:
@@ -41,18 +41,22 @@ allOf:
         example: acme-corp
       logo:
         description: The organization's logo URL
-        type: [string, 'null']
-        format: uri
-        minLength: 1
+        oneOf:
+          - type: string
+            format: uri
+            minLength: 1
+            maxLength: 2048
+          - type: 'null'
         example: https://example.com/org-logo.png
-        maxLength: 2048
       billingEmail:
         description: Email address for billing communications
-        type: [string, 'null']
-        format: email
-        minLength: 5
+        oneOf:
+          - type: string
+            format: email
+            minLength: 5
+            maxLength: 255
+          - type: 'null'
         example: billing@acme.com
-        maxLength: 255
       plan:
         description: The current subscription plan
         type: string

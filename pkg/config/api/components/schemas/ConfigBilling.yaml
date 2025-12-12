@@ -1,7 +1,7 @@
 description: Billing configuration for Stripe
 x-internal: config
 type: object
-title: BillingConfig
+title: ConfigBilling
 properties:
   enabled:
     description: Enable billing functionality

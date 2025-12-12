@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/archesai/archesai/pkg/events"
 	"github.com/google/uuid"
 )
 
@@ -110,7 +109,6 @@ type Executor struct {
 	// Version Version number for cache busting
 	Version int32 `json:"version" yaml:"version"`
 
-	events []events.Event `json:"-" yaml:"-"`
 }
 
 // NewExecutor creates a new Executor entity.
@@ -159,9 +157,7 @@ func NewExecutor(
 		OrganizationID: organizationID,
 		Timeout:        timeout,
 		Version:        version,
-		events:         []events.Event{},
 	}
-	executor.addEvent(NewExecutorCreatedEvent(id))
 
 	return executor, nil
 }
@@ -262,20 +258,7 @@ func (e *Executor) GetVersion() int32 {
 	return e.Version
 }
 
-// Events returns the domain events
-func (e *Executor) Events() []events.Event {
-	return e.events
-}
 
-// ClearEvents clears the domain events
-func (e *Executor) ClearEvents() {
-	e.events = []events.Event{}
-}
-
-// addEvent adds a domain event
-func (e *Executor) addEvent(event events.Event) {
-	e.events = append(e.events, event)
-}
 
 // Event type constants for Executor.
 const (
@@ -284,74 +267,3 @@ const (
 	EventExecutorDeleted = "executor.deleted"
 )
 
-// ExecutorCreatedEvent represents a created event for Executor.
-type ExecutorCreatedEvent struct {
-	events.BaseEvent
-	ExecutorID uuid.UUID `json:"executor_id"`
-}
-
-// NewExecutorCreatedEvent creates a new Executor created event.
-func NewExecutorCreatedEvent(id uuid.UUID) *ExecutorCreatedEvent {
-	return &ExecutorCreatedEvent{
-		BaseEvent:  events.NewBaseEvent("executor", EventExecutorCreated),
-		ExecutorID: id,
-	}
-}
-
-// EventType returns the type of this event.
-func (e *ExecutorCreatedEvent) EventType() string {
-	return EventExecutorCreated
-}
-
-// EventData returns the event data.
-func (e *ExecutorCreatedEvent) EventData() any {
-	return e
-}
-
-// ExecutorUpdatedEvent represents an updated event for Executor.
-type ExecutorUpdatedEvent struct {
-	events.BaseEvent
-	ExecutorID uuid.UUID `json:"executor_id"`
-}
-
-// NewExecutorUpdatedEvent creates a new Executor updated event.
-func NewExecutorUpdatedEvent(id uuid.UUID) *ExecutorUpdatedEvent {
-	return &ExecutorUpdatedEvent{
-		BaseEvent:  events.NewBaseEvent("executor", EventExecutorUpdated),
-		ExecutorID: id,
-	}
-}
-
-// EventType returns the type of this event.
-func (e *ExecutorUpdatedEvent) EventType() string {
-	return EventExecutorUpdated
-}
-
-// EventData returns the event data.
-func (e *ExecutorUpdatedEvent) EventData() any {
-	return e
-}
-
-// ExecutorDeletedEvent represents a deleted event for Executor.
-type ExecutorDeletedEvent struct {
-	events.BaseEvent
-	ExecutorID uuid.UUID `json:"executor_id"`
-}
-
-// NewExecutorDeletedEvent creates a new Executor deleted event.
-func NewExecutorDeletedEvent(id uuid.UUID) *ExecutorDeletedEvent {
-	return &ExecutorDeletedEvent{
-		BaseEvent:  events.NewBaseEvent("executor", EventExecutorDeleted),
-		ExecutorID: id,
-	}
-}
-
-// EventType returns the type of this event.
-func (e *ExecutorDeletedEvent) EventType() string {
-	return EventExecutorDeleted
-}
-
-// EventData returns the event data.
-func (e *ExecutorDeletedEvent) EventData() any {
-	return e
-}

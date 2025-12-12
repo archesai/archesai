@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -75,6 +76,16 @@ type CreateInvitation401Response struct {
 func (response CreateInvitation401Response) VisitCreateInvitationResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(401)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type CreateInvitation404Response struct {
+	server.ProblemDetails
+}
+
+func (response CreateInvitation404Response) VisitCreateInvitationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
 	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
@@ -158,6 +169,7 @@ func (h *CreateInvitationHandler) ServeHTTP(w http.ResponseWriter, r *http.Reque
 	// Execute
 	result, err := h.createInvitation.Execute(ctx, input)
 	if err != nil {
+		slog.Error("handler error", "operation", "CreateInvitation", "error", err)
 		errorResp := CreateInvitation500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

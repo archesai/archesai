@@ -10,7 +10,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/pkg/auth/models"
-	"github.com/archesai/archesai/pkg/auth/repositories"
 	"github.com/archesai/archesai/pkg/events"
 )
 
@@ -38,13 +37,13 @@ type UpdateOrganization interface {
 
 // UpdateOrganizationImpl is the default implementation of UpdateOrganization.
 type UpdateOrganizationImpl struct {
-	repo      repositories.OrganizationRepository
+	repo      models.OrganizationRepository
 	publisher events.Publisher
 }
 
 // NewUpdateOrganization creates a new UpdateOrganization handler.
 func NewUpdateOrganization(
-	repo repositories.OrganizationRepository,
+	repo models.OrganizationRepository,
 	publisher events.Publisher,
 ) UpdateOrganization {
 	return &UpdateOrganizationImpl{

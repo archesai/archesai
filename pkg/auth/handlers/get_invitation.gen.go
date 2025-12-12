@@ -9,7 +9,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/pkg/auth/models"
-	"github.com/archesai/archesai/pkg/auth/repositories"
 )
 
 // ============================================================================
@@ -35,12 +34,12 @@ type GetInvitation interface {
 
 // GetInvitationImpl is the default implementation of GetInvitation.
 type GetInvitationImpl struct {
-	repo repositories.InvitationRepository
+	repo models.InvitationRepository
 }
 
 // NewGetInvitation creates a new GetInvitation handler.
 func NewGetInvitation(
-	repo repositories.InvitationRepository,
+	repo models.InvitationRepository,
 ) GetInvitation {
 	return &GetInvitationImpl{
 		repo: repo,

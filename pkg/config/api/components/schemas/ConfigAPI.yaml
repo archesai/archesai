@@ -1,4 +1,4 @@
-title: APIConfig
+title: ConfigAPI
 description: Configuration schema for the API server
 x-internal: config
 type: object

@@ -11,7 +11,6 @@ import (
 
 	"github.com/archesai/archesai/pkg/events"
 	"github.com/archesai/archesai/pkg/executor/models"
-	"github.com/archesai/archesai/pkg/executor/repositories"
 )
 
 // ============================================================================
@@ -46,13 +45,13 @@ type CreateExecutor interface {
 
 // CreateExecutorImpl is the default implementation of CreateExecutor.
 type CreateExecutorImpl struct {
-	repo      repositories.ExecutorRepository
+	repo      models.ExecutorRepository
 	publisher events.Publisher
 }
 
 // NewCreateExecutor creates a new CreateExecutor handler.
 func NewCreateExecutor(
-	repo repositories.ExecutorRepository,
+	repo models.ExecutorRepository,
 	publisher events.Publisher,
 ) CreateExecutor {
 	return &CreateExecutorImpl{

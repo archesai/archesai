@@ -1,3 +1,4 @@
+x-path: /auth/oauth/{provider}/authorize
 get:
   x-internal: auth
   operationId: OauthAuthorize
@@ -6,6 +7,9 @@ get:
     - Auth
   description: Redirect user to OAuth provider authorization page
   x-codegen-custom-handler: true
+  security:
+    - bearerAuth: []
+    - sessionCookie: []
   parameters:
     - schema:
         type: string

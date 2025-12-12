@@ -6,6 +6,8 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+
+	"github.com/archesai/archesai/pkg/executor/models"
 )
 
 // ============================================================================
@@ -18,16 +20,9 @@ type ExecuteExecutorInput struct {
 	Input map[string]any
 }
 
-// ExecuteExecutorOutputData defines the data structure in the output.
-type ExecuteExecutorOutputData struct {
-	ExecutionTimeMs int64          `json:"executionTimeMs,omitempty"`
-	Logs            string         `json:"logs,omitempty"`
-	Output          map[string]any `json:"output"`
-}
-
 // ExecuteExecutorOutput represents the output for the ExecuteExecutor operation.
 type ExecuteExecutorOutput struct {
-	Data ExecuteExecutorOutputData `json:"data,omitempty"`
+	Data models.SuccessfulExecution `json:"data"`
 }
 
 // ExecuteExecutor defines the interface for the ExecuteExecutor operation.

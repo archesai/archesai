@@ -1,7 +1,8 @@
+title: Page
 description: Pagination parameters (limit & offset)
 x-internal: server
+x-codegen-schema-type: valueobject
 type: object
-title: Page
 additionalProperties: false
 properties:
   limit:

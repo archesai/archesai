@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/archesai/archesai/pkg/pipelines/handlers"
@@ -129,6 +130,7 @@ func (h *CreateToolHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Execute
 	result, err := h.createTool.Execute(ctx, input)
 	if err != nil {
+		slog.Error("handler error", "operation", "CreateTool", "error", err)
 		errorResp := CreateTool500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -140,6 +141,7 @@ func (h *RequestEmailChangeHandler) ServeHTTP(w http.ResponseWriter, r *http.Req
 
 	// Execute
 	if err := h.requestEmailChange.Execute(ctx, input); err != nil {
+		slog.Error("handler error", "operation", "RequestEmailChange", "error", err)
 		errorResp := RequestEmailChange500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

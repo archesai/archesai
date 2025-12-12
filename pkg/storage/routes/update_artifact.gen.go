@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -157,6 +158,7 @@ func (h *UpdateArtifactHandler) ServeHTTP(w http.ResponseWriter, r *http.Request
 	// Execute
 	result, err := h.updateArtifact.Execute(ctx, input)
 	if err != nil {
+		slog.Error("handler error", "operation", "UpdateArtifact", "error", err)
 		errorResp := UpdateArtifact500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

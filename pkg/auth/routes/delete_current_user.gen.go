@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -120,19 +121,11 @@ func (h *DeleteCurrentUserHandler) ServeHTTP(w http.ResponseWriter, r *http.Requ
 
 	// Header parameter "XConfirm"
 	xconfirm := r.Header.Get("XConfirm")
-	if xconfirm == "" {
-		errorResp := DeleteCurrentUser400Response{
-			ProblemDetails: server.NewBadRequestResponse("Missing required header: XConfirm", r.URL.Path),
-		}
-		if err := errorResp.VisitDeleteCurrentUserResponse(w); err != nil {
-			fmt.Fprintf(w, "error writing response: %v", err)
-		}
-		return
-	}
 	input.XConfirm = xconfirm
 
 	// Execute
 	if err := h.deleteCurrentUser.Execute(ctx, input); err != nil {
+		slog.Error("handler error", "operation", "DeleteCurrentUser", "error", err)
 		errorResp := DeleteCurrentUser500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

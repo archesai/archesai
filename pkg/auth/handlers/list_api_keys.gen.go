@@ -9,7 +9,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/pkg/auth/models"
-	"github.com/archesai/archesai/pkg/auth/repositories"
 	servermodels "github.com/archesai/archesai/pkg/server/models"
 )
 
@@ -19,10 +18,10 @@ import (
 
 // ListAPIKeysInput represents the input for the ListAPIKeys operation.
 type ListAPIKeysInput struct {
-	SessionID uuid.UUID
-	Filter    map[string]any
-	Page      map[string]any
-	Sort      []map[string]any
+	SessionID     uuid.UUID
+	APIKeysFilter *servermodels.FilterNode
+	APIKeysSort   *servermodels.FilterNode
+	Page          servermodels.Page
 }
 
 // ListAPIKeysOutput represents the output for the ListAPIKeys operation.
@@ -38,12 +37,12 @@ type ListAPIKeys interface {
 
 // ListAPIKeysImpl is the default implementation of ListAPIKeys.
 type ListAPIKeysImpl struct {
-	repo repositories.APIKeyRepository
+	repo models.APIKeyRepository
 }
 
 // NewListAPIKeys creates a new ListAPIKeys handler.
 func NewListAPIKeys(
-	repo repositories.APIKeyRepository,
+	repo models.APIKeyRepository,
 ) ListAPIKeys {
 	return &ListAPIKeysImpl{
 		repo: repo,
@@ -52,20 +51,34 @@ func NewListAPIKeys(
 
 // Execute performs the ListAPIKeys operation.
 func (h *ListAPIKeysImpl) Execute(ctx context.Context, input *ListAPIKeysInput) (*ListAPIKeysOutput, error) {
+	// Pagination parameters with defaults
+	limit := int32(100)
+	offset := int32(0)
+	if input.Page.Limit != nil {
+		limit = *input.Page.Limit
+	}
+	if input.Page.Offset != nil {
+		offset = *input.Page.Offset
+	}
+
 	// List from repository
-	results, total, err := h.repo.List(ctx, 100, 0) // TODO: Use pagination from input
+	results, total, err := h.repo.List(ctx, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list apikeys: %w", err)
 	}
 
-	// Map to output
-	output := &ListAPIKeysOutput{
-		// TODO: Map results to output structure
-		// Data: results,
-		// Total: total,
+	// Convert pointer slice to value slice
+	data := make([]models.APIKey, len(results))
+	for i, r := range results {
+		data[i] = *r
 	}
-	_ = results
-	_ = total
+
+	output := &ListAPIKeysOutput{
+		Data: data,
+		Meta: servermodels.PaginationMeta{
+			Total: int32(total),
+		},
+	}
 
 	return output, nil
 }

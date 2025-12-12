@@ -9,7 +9,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/pkg/auth/models"
-	"github.com/archesai/archesai/pkg/auth/repositories"
 	"github.com/archesai/archesai/pkg/events"
 )
 
@@ -30,13 +29,13 @@ type DeleteOrganization interface {
 
 // DeleteOrganizationImpl is the default implementation of DeleteOrganization.
 type DeleteOrganizationImpl struct {
-	repo      repositories.OrganizationRepository
+	repo      models.OrganizationRepository
 	publisher events.Publisher
 }
 
 // NewDeleteOrganization creates a new DeleteOrganization handler.
 func NewDeleteOrganization(
-	repo repositories.OrganizationRepository,
+	repo models.OrganizationRepository,
 	publisher events.Publisher,
 ) DeleteOrganization {
 	return &DeleteOrganizationImpl{

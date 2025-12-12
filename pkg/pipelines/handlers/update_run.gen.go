@@ -11,7 +11,6 @@ import (
 
 	"github.com/archesai/archesai/pkg/events"
 	"github.com/archesai/archesai/pkg/pipelines/models"
-	"github.com/archesai/archesai/pkg/pipelines/repositories"
 )
 
 // ============================================================================
@@ -36,13 +35,13 @@ type UpdateRun interface {
 
 // UpdateRunImpl is the default implementation of UpdateRun.
 type UpdateRunImpl struct {
-	repo      repositories.RunRepository
+	repo      models.RunRepository
 	publisher events.Publisher
 }
 
 // NewUpdateRun creates a new UpdateRun handler.
 func NewUpdateRun(
-	repo repositories.RunRepository,
+	repo models.RunRepository,
 	publisher events.Publisher,
 ) UpdateRun {
 	return &UpdateRunImpl{

@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -148,6 +149,7 @@ func (h *GetAPIKeyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Execute
 	result, err := h.getAPIKey.Execute(ctx, input)
 	if err != nil {
+		slog.Error("handler error", "operation", "GetAPIKey", "error", err)
 		errorResp := GetAPIKey500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

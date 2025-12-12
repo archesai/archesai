@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/archesai/archesai/pkg/config/handlers"
@@ -40,7 +41,7 @@ type GetConfigResponse interface {
 }
 
 type GetConfig200Response struct {
-	Data *models.Config `json:"data,omitempty"`
+	Data models.Config `json:"data"`
 }
 
 func (response GetConfig200Response) VisitGetConfigResponse(w http.ResponseWriter) error {
@@ -109,6 +110,7 @@ func (h *GetConfigHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Execute
 	result, err := h.getConfig.Execute(ctx, input)
 	if err != nil {
+		slog.Error("handler error", "operation", "GetConfig", "error", err)
 		errorResp := GetConfig500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

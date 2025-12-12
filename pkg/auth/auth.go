@@ -2,7 +2,6 @@ package auth
 
 import (
 	"github.com/archesai/archesai/pkg/auth/models"
-	"github.com/archesai/archesai/pkg/auth/repositories"
 )
 
 const (
@@ -25,13 +24,13 @@ type Account = models.Account
 type SessionAuthProvider = models.SessionAuthProvider
 
 // SessionRepository is an alias for the session repository interface.
-type SessionRepository = repositories.SessionRepository
+type SessionRepository = models.SessionRepository
 
 // UserRepository is an alias for the user repository interface.
-type UserRepository = repositories.UserRepository
+type UserRepository = models.UserRepository
 
 // AccountRepository is an alias for the account repository interface.
-type AccountRepository = repositories.AccountRepository
+type AccountRepository = models.AccountRepository
 
 // NewUser creates a new user with the given parameters.
 func NewUser(email string, emailVerified bool, image *string, name string) (*models.User, error) {

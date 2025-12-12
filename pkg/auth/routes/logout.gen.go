@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -70,6 +71,16 @@ func (response Logout401Response) VisitLogoutResponse(w http.ResponseWriter) err
 	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
+type Logout422Response struct {
+	server.ProblemDetails
+}
+
+func (response Logout422Response) VisitLogoutResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
 type Logout429Response struct {
 	server.ProblemDetails
 }
@@ -113,6 +124,7 @@ func (h *LogoutHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Execute
 	result, err := h.logout.Execute(ctx, input)
 	if err != nil {
+		slog.Error("handler error", "operation", "Logout", "error", err)
 		errorResp := Logout500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

@@ -9,7 +9,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/pkg/auth/models"
-	"github.com/archesai/archesai/pkg/auth/repositories"
 	servermodels "github.com/archesai/archesai/pkg/server/models"
 )
 
@@ -19,7 +18,10 @@ import (
 
 // ListAccountsInput represents the input for the ListAccounts operation.
 type ListAccountsInput struct {
-	SessionID uuid.UUID
+	SessionID      uuid.UUID
+	AccountsFilter *servermodels.FilterNode
+	AccountsSort   *servermodels.FilterNode
+	Page           servermodels.Page
 }
 
 // ListAccountsOutput represents the output for the ListAccounts operation.
@@ -35,12 +37,12 @@ type ListAccounts interface {
 
 // ListAccountsImpl is the default implementation of ListAccounts.
 type ListAccountsImpl struct {
-	repo repositories.AccountRepository
+	repo models.AccountRepository
 }
 
 // NewListAccounts creates a new ListAccounts handler.
 func NewListAccounts(
-	repo repositories.AccountRepository,
+	repo models.AccountRepository,
 ) ListAccounts {
 	return &ListAccountsImpl{
 		repo: repo,
@@ -49,20 +51,34 @@ func NewListAccounts(
 
 // Execute performs the ListAccounts operation.
 func (h *ListAccountsImpl) Execute(ctx context.Context, input *ListAccountsInput) (*ListAccountsOutput, error) {
+	// Pagination parameters with defaults
+	limit := int32(100)
+	offset := int32(0)
+	if input.Page.Limit != nil {
+		limit = *input.Page.Limit
+	}
+	if input.Page.Offset != nil {
+		offset = *input.Page.Offset
+	}
+
 	// List from repository
-	results, total, err := h.repo.List(ctx, 100, 0) // TODO: Use pagination from input
+	results, total, err := h.repo.List(ctx, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list accounts: %w", err)
 	}
 
-	// Map to output
-	output := &ListAccountsOutput{
-		// TODO: Map results to output structure
-		// Data: results,
-		// Total: total,
+	// Convert pointer slice to value slice
+	data := make([]models.Account, len(results))
+	for i, r := range results {
+		data[i] = *r
 	}
-	_ = results
-	_ = total
+
+	output := &ListAccountsOutput{
+		Data: data,
+		Meta: servermodels.PaginationMeta{
+			Total: int32(total),
+		},
+	}
 
 	return output, nil
 }

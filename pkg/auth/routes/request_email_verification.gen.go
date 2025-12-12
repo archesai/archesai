@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -68,6 +69,16 @@ func (response RequestEmailVerification401Response) VisitRequestEmailVerificatio
 	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
+type RequestEmailVerification422Response struct {
+	server.ProblemDetails
+}
+
+func (response RequestEmailVerification422Response) VisitRequestEmailVerificationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
 type RequestEmailVerification429Response struct {
 	server.ProblemDetails
 }
@@ -110,6 +121,7 @@ func (h *RequestEmailVerificationHandler) ServeHTTP(w http.ResponseWriter, r *ht
 
 	// Execute
 	if err := h.requestEmailVerification.Execute(ctx, input); err != nil {
+		slog.Error("handler error", "operation", "RequestEmailVerification", "error", err)
 		errorResp := RequestEmailVerification500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

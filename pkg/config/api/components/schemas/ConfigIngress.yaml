@@ -1,7 +1,7 @@
 description: Ingress configuration
 x-internal: config
 type: object
-title: IngressConfig
+title: ConfigIngress
 properties:
   enabled:
     description: Enable ingress

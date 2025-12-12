@@ -11,7 +11,6 @@ import (
 
 	"github.com/archesai/archesai/pkg/events"
 	"github.com/archesai/archesai/pkg/storage/models"
-	"github.com/archesai/archesai/pkg/storage/repositories"
 )
 
 // ============================================================================
@@ -38,13 +37,13 @@ type UpdateArtifact interface {
 
 // UpdateArtifactImpl is the default implementation of UpdateArtifact.
 type UpdateArtifactImpl struct {
-	repo      repositories.ArtifactRepository
+	repo      models.ArtifactRepository
 	publisher events.Publisher
 }
 
 // NewUpdateArtifact creates a new UpdateArtifact handler.
 func NewUpdateArtifact(
-	repo repositories.ArtifactRepository,
+	repo models.ArtifactRepository,
 	publisher events.Publisher,
 ) UpdateArtifact {
 	return &UpdateArtifactImpl{

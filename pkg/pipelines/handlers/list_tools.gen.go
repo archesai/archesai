@@ -7,7 +7,6 @@ import (
 	"fmt"
 
 	"github.com/archesai/archesai/pkg/pipelines/models"
-	"github.com/archesai/archesai/pkg/pipelines/repositories"
 	servermodels "github.com/archesai/archesai/pkg/server/models"
 )
 
@@ -17,9 +16,9 @@ import (
 
 // ListToolsInput represents the input for the ListTools operation.
 type ListToolsInput struct {
-	Filter map[string]any
-	Page   map[string]any
-	Sort   []map[string]any
+	ToolsFilter *servermodels.FilterNode
+	ToolsSort   *servermodels.FilterNode
+	Page        servermodels.Page
 }
 
 // ListToolsOutput represents the output for the ListTools operation.
@@ -35,12 +34,12 @@ type ListTools interface {
 
 // ListToolsImpl is the default implementation of ListTools.
 type ListToolsImpl struct {
-	repo repositories.ToolRepository
+	repo models.ToolRepository
 }
 
 // NewListTools creates a new ListTools handler.
 func NewListTools(
-	repo repositories.ToolRepository,
+	repo models.ToolRepository,
 ) ListTools {
 	return &ListToolsImpl{
 		repo: repo,
@@ -49,20 +48,34 @@ func NewListTools(
 
 // Execute performs the ListTools operation.
 func (h *ListToolsImpl) Execute(ctx context.Context, input *ListToolsInput) (*ListToolsOutput, error) {
+	// Pagination parameters with defaults
+	limit := int32(100)
+	offset := int32(0)
+	if input.Page.Limit != nil {
+		limit = *input.Page.Limit
+	}
+	if input.Page.Offset != nil {
+		offset = *input.Page.Offset
+	}
+
 	// List from repository
-	results, total, err := h.repo.List(ctx, 100, 0) // TODO: Use pagination from input
+	results, total, err := h.repo.List(ctx, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list tools: %w", err)
 	}
 
-	// Map to output
-	output := &ListToolsOutput{
-		// TODO: Map results to output structure
-		// Data: results,
-		// Total: total,
+	// Convert pointer slice to value slice
+	data := make([]models.Tool, len(results))
+	for i, r := range results {
+		data[i] = *r
 	}
-	_ = results
-	_ = total
+
+	output := &ListToolsOutput{
+		Data: data,
+		Meta: servermodels.PaginationMeta{
+			Total: int32(total),
+		},
+	}
 
 	return output, nil
 }

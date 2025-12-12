@@ -2,17 +2,23 @@
 
 export * from "./custom/arches-logo";
 export * from "./custom/artifact-viewer";
+export * from "./custom/default-catch-boundary";
 export * from "./custom/delete-items";
 export * from "./custom/discord-icon";
+export { default as FileUpload } from "./custom/file-upload";
 export * from "./custom/generic-form";
 export * from "./custom/github-icon";
 // Custom Components
 export * from "./custom/Introduction";
 export * from "./custom/icons";
+export { default as NotFound } from "./custom/not-found";
+// OpenAPI Components
+export * from "./custom/openapi";
 export * from "./custom/pure-data-selector";
 export * from "./custom/pure-user-button";
 export * from "./custom/run-status-button";
 export * from "./custom/ThemeEditor";
+export * from "./custom/terms-indicator";
 export * from "./custom/timestamp";
 export * from "./custom/user-button-container";
 export * from "./datatable/components/data-table-column-header";
@@ -21,6 +27,7 @@ export * from "./datatable/components/data-table-view-options";
 export * from "./datatable/components/toolbar/data-table-filter-menu";
 export * from "./datatable/components/toolbar/data-table-toolbar";
 // DataTable Components
+export * from "./datatable/data-table-container";
 export * from "./datatable/pure-data-table";
 // Primitive Components
 export * from "./primitives/link";

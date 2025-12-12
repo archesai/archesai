@@ -9,21 +9,25 @@ func InternalPackageImportPath(pkgName string) string {
 }
 
 // InternalPackageModelsPath returns the models import path for an internal package.
+// Models includes domain types (entities, value objects) and repository interfaces.
 func InternalPackageModelsPath(pkgName string) string {
 	return InternalPackageBase + "/" + pkgName + "/models"
 }
 
-// InternalPackageRepositoriesPath returns the repositories import path for an internal package.
-func InternalPackageRepositoriesPath(pkgName string) string {
-	return InternalPackageBase + "/" + pkgName + "/repositories"
-}
-
 // InternalPackageHandlersPath returns the handlers import path for an internal package.
+// Handlers contain business logic (input/output DTOs and handler interfaces).
 func InternalPackageHandlersPath(pkgName string) string {
 	return InternalPackageBase + "/" + pkgName + "/handlers"
 }
 
-// InternalPackageBootstrapPath returns the bootstrap import path for an internal package.
-func InternalPackageBootstrapPath(pkgName string) string {
-	return InternalPackageBase + "/" + pkgName + "/bootstrap"
+// InternalPackageRoutesPath returns the routes import path for an internal package.
+// Routes contain HTTP layer code (request parsing, response writing).
+func InternalPackageRoutesPath(pkgName string) string {
+	return InternalPackageBase + "/" + pkgName + "/routes"
+}
+
+// InternalPackageAppPath returns the app import path for an internal package.
+// App contains dependency injection and handler initialization code.
+func InternalPackageAppPath(pkgName string) string {
+	return InternalPackageBase + "/" + pkgName + "/app"
 }

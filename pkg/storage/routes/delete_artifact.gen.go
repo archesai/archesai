@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -131,6 +132,7 @@ func (h *DeleteArtifactHandler) ServeHTTP(w http.ResponseWriter, r *http.Request
 
 	// Execute
 	if err := h.deleteArtifact.Execute(ctx, input); err != nil {
+		slog.Error("handler error", "operation", "DeleteArtifact", "error", err)
 		errorResp := DeleteArtifact500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

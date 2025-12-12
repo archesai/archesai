@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -98,6 +99,16 @@ func (response Register409Response) VisitRegisterResponse(w http.ResponseWriter)
 	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
+type Register422Response struct {
+	server.ProblemDetails
+}
+
+func (response Register422Response) VisitRegisterResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
 type Register429Response struct {
 	server.ProblemDetails
 }
@@ -143,6 +154,7 @@ func (h *RegisterHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Execute
 	result, err := h.register.Execute(ctx, input)
 	if err != nil {
+		slog.Error("handler error", "operation", "Register", "error", err)
 		errorResp := Register500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}

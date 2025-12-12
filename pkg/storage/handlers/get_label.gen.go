@@ -9,7 +9,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/pkg/storage/models"
-	"github.com/archesai/archesai/pkg/storage/repositories"
 )
 
 // ============================================================================
@@ -33,12 +32,12 @@ type GetLabel interface {
 
 // GetLabelImpl is the default implementation of GetLabel.
 type GetLabelImpl struct {
-	repo repositories.LabelRepository
+	repo models.LabelRepository
 }
 
 // NewGetLabel creates a new GetLabel handler.
 func NewGetLabel(
-	repo repositories.LabelRepository,
+	repo models.LabelRepository,
 ) GetLabel {
 	return &GetLabelImpl{
 		repo: repo,

@@ -10,7 +10,6 @@ import (
 
 	"github.com/archesai/archesai/pkg/events"
 	"github.com/archesai/archesai/pkg/storage/models"
-	"github.com/archesai/archesai/pkg/storage/repositories"
 )
 
 // ============================================================================
@@ -29,13 +28,13 @@ type DeleteArtifact interface {
 
 // DeleteArtifactImpl is the default implementation of DeleteArtifact.
 type DeleteArtifactImpl struct {
-	repo      repositories.ArtifactRepository
+	repo      models.ArtifactRepository
 	publisher events.Publisher
 }
 
 // NewDeleteArtifact creates a new DeleteArtifact handler.
 func NewDeleteArtifact(
-	repo repositories.ArtifactRepository,
+	repo models.ArtifactRepository,
 	publisher events.Publisher,
 ) DeleteArtifact {
 	return &DeleteArtifactImpl{

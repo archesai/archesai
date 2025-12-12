@@ -9,31 +9,33 @@ import (
 
 // Config represents Arches AI configuration schema
 type Config struct {
-	API          *APIConfig          `json:"api,omitempty" yaml:"api,omitempty"`
-	Auth         *AuthConfig         `json:"auth,omitempty" yaml:"auth,omitempty"`
-	Billing      *BillingConfig      `json:"billing,omitempty" yaml:"billing,omitempty"`
-	Database     *DatabaseConfig     `json:"database,omitempty" yaml:"database,omitempty"`
-	Intelligence *IntelligenceConfig `json:"intelligence,omitempty" yaml:"intelligence,omitempty"`
-	Kubernetes   *KubernetesConfig   `json:"kubernetes,omitempty" yaml:"kubernetes,omitempty"`
-	Logging      *LoggingConfig      `json:"logging,omitempty" yaml:"logging,omitempty"`
-	Platform     *PlatformConfig     `json:"platform,omitempty" yaml:"platform,omitempty"`
-	Redis        *RedisConfig        `json:"redis,omitempty" yaml:"redis,omitempty"`
-	Storage      *StorageConfig      `json:"storage,omitempty" yaml:"storage,omitempty"`
+	API          *ConfigAPI          `json:"api,omitempty" yaml:"api,omitempty"`
+	Auth         *ConfigAuth         `json:"auth,omitempty" yaml:"auth,omitempty"`
+	Billing      *ConfigBilling      `json:"billing,omitempty" yaml:"billing,omitempty"`
+	Database     *ConfigDatabase     `json:"database,omitempty" yaml:"database,omitempty"`
+	Generation   *ConfigGeneration   `json:"generation,omitempty" yaml:"generation,omitempty"`
+	Intelligence *ConfigIntelligence `json:"intelligence,omitempty" yaml:"intelligence,omitempty"`
+	Kubernetes   *ConfigKubernetes   `json:"kubernetes,omitempty" yaml:"kubernetes,omitempty"`
+	Logging      *ConfigLogging      `json:"logging,omitempty" yaml:"logging,omitempty"`
+	Platform     *ConfigPlatform     `json:"platform,omitempty" yaml:"platform,omitempty"`
+	Redis        *ConfigRedis        `json:"redis,omitempty" yaml:"redis,omitempty"`
+	Storage      *ConfigStorage      `json:"storage,omitempty" yaml:"storage,omitempty"`
 }
 
 // NewConfig creates a new immutable Config value object.
 // Value objects are immutable and validated upon creation.
 func NewConfig(
-	api *APIConfig,
-	auth *AuthConfig,
-	billing *BillingConfig,
-	database *DatabaseConfig,
-	intelligence *IntelligenceConfig,
-	kubernetes *KubernetesConfig,
-	logging *LoggingConfig,
-	platform *PlatformConfig,
-	redis *RedisConfig,
-	storage *StorageConfig,
+	api *ConfigAPI,
+	auth *ConfigAuth,
+	billing *ConfigBilling,
+	database *ConfigDatabase,
+	generation *ConfigGeneration,
+	intelligence *ConfigIntelligence,
+	kubernetes *ConfigKubernetes,
+	logging *ConfigLogging,
+	platform *ConfigPlatform,
+	redis *ConfigRedis,
+	storage *ConfigStorage,
 ) (Config, error) {
 	// Validate required fields
 	return Config{
@@ -41,6 +43,7 @@ func NewConfig(
 		Auth:         auth,
 		Billing:      billing,
 		Database:     database,
+		Generation:   generation,
 		Intelligence: intelligence,
 		Kubernetes:   kubernetes,
 		Logging:      logging,
@@ -58,61 +61,67 @@ func ZeroConfig() Config {
 
 // GetAPI returns the API value.
 // Value objects are immutable, so this returns a copy of the value.
-func (v Config) GetAPI() *APIConfig {
+func (v Config) GetAPI() *ConfigAPI {
 	return v.API
 }
 
 // GetAuth returns the Auth value.
 // Value objects are immutable, so this returns a copy of the value.
-func (v Config) GetAuth() *AuthConfig {
+func (v Config) GetAuth() *ConfigAuth {
 	return v.Auth
 }
 
 // GetBilling returns the Billing value.
 // Value objects are immutable, so this returns a copy of the value.
-func (v Config) GetBilling() *BillingConfig {
+func (v Config) GetBilling() *ConfigBilling {
 	return v.Billing
 }
 
 // GetDatabase returns the Database value.
 // Value objects are immutable, so this returns a copy of the value.
-func (v Config) GetDatabase() *DatabaseConfig {
+func (v Config) GetDatabase() *ConfigDatabase {
 	return v.Database
+}
+
+// GetGeneration returns the Generation value.
+// Value objects are immutable, so this returns a copy of the value.
+func (v Config) GetGeneration() *ConfigGeneration {
+	return v.Generation
 }
 
 // GetIntelligence returns the Intelligence value.
 // Value objects are immutable, so this returns a copy of the value.
-func (v Config) GetIntelligence() *IntelligenceConfig {
+func (v Config) GetIntelligence() *ConfigIntelligence {
 	return v.Intelligence
 }
 
 // GetKubernetes returns the Kubernetes value.
 // Value objects are immutable, so this returns a copy of the value.
-func (v Config) GetKubernetes() *KubernetesConfig {
+func (v Config) GetKubernetes() *ConfigKubernetes {
 	return v.Kubernetes
 }
 
 // GetLogging returns the Logging value.
 // Value objects are immutable, so this returns a copy of the value.
-func (v Config) GetLogging() *LoggingConfig {
+func (v Config) GetLogging() *ConfigLogging {
 	return v.Logging
 }
 
 // GetPlatform returns the Platform value.
 // Value objects are immutable, so this returns a copy of the value.
-func (v Config) GetPlatform() *PlatformConfig {
+func (v Config) GetPlatform() *ConfigPlatform {
 	return v.Platform
 }
 
 // GetRedis returns the Redis value.
 // Value objects are immutable, so this returns a copy of the value.
-func (v Config) GetRedis() *RedisConfig {
+func (v Config) GetRedis() *ConfigRedis {
 	return v.Redis
 }
 
 // GetStorage returns the Storage value.
 // Value objects are immutable, so this returns a copy of the value.
-func (v Config) GetStorage() *StorageConfig {
+func (v Config) GetStorage() *ConfigStorage {
 	return v.Storage
 }
 
@@ -136,6 +145,7 @@ func (v Config) String() string {
 	fields = append(fields, fmt.Sprintf("Auth: %v", v.Auth))
 	fields = append(fields, fmt.Sprintf("Billing: %v", v.Billing))
 	fields = append(fields, fmt.Sprintf("Database: %v", v.Database))
+	fields = append(fields, fmt.Sprintf("Generation: %v", v.Generation))
 	fields = append(fields, fmt.Sprintf("Intelligence: %v", v.Intelligence))
 	fields = append(fields, fmt.Sprintf("Kubernetes: %v", v.Kubernetes))
 	fields = append(fields, fmt.Sprintf("Logging: %v", v.Logging))

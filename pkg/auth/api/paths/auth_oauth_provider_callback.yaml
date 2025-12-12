@@ -1,3 +1,4 @@
+x-path: /auth/oauth/{provider}/callback
 get:
   x-internal: auth
   operationId: OauthCallback

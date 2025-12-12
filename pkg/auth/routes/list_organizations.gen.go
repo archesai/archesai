@@ -5,6 +5,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -39,9 +40,9 @@ func RegisterListOrganizationsRoute(mux *http.ServeMux, handler *ListOrganizatio
 
 // ListOrganizationsParams defines query parameters for ListOrganizations
 type ListOrganizationsParams struct {
-	Filter map[string]any   `json:"filter,omitempty"`
-	Page   map[string]any   `json:"page,omitempty"`
-	Sort   []map[string]any `json:"sort,omitempty"`
+	OrganizationsFilter *servermodels.FilterNode `json:"organizationsFilter"`
+	OrganizationsSort   *servermodels.FilterNode `json:"organizationsSort"`
+	Page                servermodels.Page        `json:"page"`
 }
 
 // Response types
@@ -131,12 +132,21 @@ func (h *ListOrganizationsHandler) ServeHTTP(w http.ResponseWriter, r *http.Requ
 	input := &handlers.ListOrganizationsInput{}
 	input.SessionID = sessionID
 
-	// Query parameters
-
-	// Optional query parameter "filter"
-	if err := runtime.BindQueryParameter("deepObject", true, false, "filter", r.URL.Query(), &input.Filter); err != nil {
+	// Optional query parameter "organizationsFilter"
+	if err := runtime.BindQueryParameter("deepObject", true, false, "organizationsFilter", r.URL.Query(), &input.OrganizationsFilter); err != nil {
 		errorResp := ListOrganizations400Response{
-			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter filter: %s", err), r.URL.Path),
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter organizationsFilter: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitListOrganizationsResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
+	}
+
+	// Optional query parameter "organizationsSort"
+	if err := runtime.BindQueryParameter("deepObject", true, false, "organizationsSort", r.URL.Query(), &input.OrganizationsSort); err != nil {
+		errorResp := ListOrganizations400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter organizationsSort: %s", err), r.URL.Path),
 		}
 		if err := errorResp.VisitListOrganizationsResponse(w); err != nil {
 			fmt.Fprintf(w, "error writing response: %v", err)
@@ -145,20 +155,9 @@ func (h *ListOrganizationsHandler) ServeHTTP(w http.ResponseWriter, r *http.Requ
 	}
 
 	// Optional query parameter "page"
-	if err := runtime.BindQueryParameter("form", true, false, "page", r.URL.Query(), &input.Page); err != nil {
+	if err := runtime.BindQueryParameter("deepObject", true, false, "page", r.URL.Query(), &input.Page); err != nil {
 		errorResp := ListOrganizations400Response{
 			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter page: %s", err), r.URL.Path),
-		}
-		if err := errorResp.VisitListOrganizationsResponse(w); err != nil {
-			fmt.Fprintf(w, "error writing response: %v", err)
-		}
-		return
-	}
-
-	// Optional query parameter "sort"
-	if err := runtime.BindQueryParameter("form", true, false, "sort", r.URL.Query(), &input.Sort); err != nil {
-		errorResp := ListOrganizations400Response{
-			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter sort: %s", err), r.URL.Path),
 		}
 		if err := errorResp.VisitListOrganizationsResponse(w); err != nil {
 			fmt.Fprintf(w, "error writing response: %v", err)
@@ -169,6 +168,7 @@ func (h *ListOrganizationsHandler) ServeHTTP(w http.ResponseWriter, r *http.Requ
 	// Execute
 	result, err := h.listOrganizations.Execute(ctx, input)
 	if err != nil {
+		slog.Error("handler error", "operation", "ListOrganizations", "error", err)
 		errorResp := ListOrganizations500Response{
 			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
 		}
