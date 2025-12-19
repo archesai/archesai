@@ -93,7 +93,7 @@ export const Toc = ({ entries }: { entries: TocEntry[] }) => {
         <div className="absolute inset-0 end-auto w-[2px] bg-border" />
         <div
           className={cn(
-            "-start-px -translate-y-1 absolute h-6 w-[4px] rounded-sm bg-primary",
+            "absolute -start-px h-6 w-[4px] -translate-y-1 rounded-sm bg-primary",
             paintedOnce.current &&
               "ease-out [transition:top_150ms,opacity_325ms]",
           )}

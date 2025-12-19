@@ -15,5 +15,5 @@ var ConfigShow ConfigShowFlags
 // SetConfigShowFlags configures flags on the config show command.
 func SetConfigShowFlags(cmd *cobra.Command) {
 	cmd.Flags().
-		StringVarP(&ConfigShow.OutputFormat, "output", "o", "yaml", "Output format (yaml, json, tui)")
+		StringVarP(&ConfigShow.OutputFormat, "output", "o", "yaml", "Output format (yaml, json)")
 }

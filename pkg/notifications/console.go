@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/archesai/archesai/pkg/auth"
+	"github.com/archesai/archesai/pkg/auth/schemas"
 )
 
 // ConsoleDeliverer prints magic links to console (for development).
@@ -23,7 +23,7 @@ func NewConsoleDeliverer() *ConsoleDeliverer {
 // Deliver prints the magic link to console.
 func (d *ConsoleDeliverer) Deliver(
 	_ context.Context,
-	token *auth.MagicLinkToken,
+	token *schemas.MagicLinkToken,
 	baseURL string,
 ) error {
 	magicLink := fmt.Sprintf("%s/auth/magic-link/verify?token=%s", baseURL, *token.Token)

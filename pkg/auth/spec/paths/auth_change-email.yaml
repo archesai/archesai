@@ -1,0 +1,50 @@
+x-path: /auth/change-email
+post:
+  x-internal: auth
+  x-codegen-custom-handler: true
+  operationId: RequestEmailChange
+  summary: Request e-mail change
+  tags:
+    - Auth
+  description: This endpoint will request your e-mail change with a token
+  security:
+    - bearerAuth: []
+    - sessionCookie: []
+  requestBody:
+    description: Email change request
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            newEmail:
+              description: The e-mail to send the confirmation token to
+              type: string
+              format: email
+              example: user@example.com
+              minLength: 1
+              maxLength: 255
+            userID:
+              description: The user ID of the user requesting the email change
+              type: string
+              format: uuid
+              example: 550e8400-e29b-41d4-a716-446655440000
+              minLength: 36
+              maxLength: 36
+          required:
+            - newEmail
+            - userID
+    required: true
+  responses:
+    '204':
+      $ref: ../components/responses/NoContent.yaml
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '422':
+      $ref: ../components/responses/UnprocessableEntity.yaml
+    '429':
+      $ref: ../components/responses/TooManyRequests.yaml
+    '500':
+      $ref: ../components/responses/InternalServerError.yaml

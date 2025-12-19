@@ -1,0 +1,9 @@
+openapi: 3.2.0
+x-project-name: github.com/archesai/archesai/pkg/executor
+info:
+  title: Arches Executor API
+  description: The Arches Executor API
+  version: v0.0.0
+tags:
+  - name: Executor
+    description: Custom executor management

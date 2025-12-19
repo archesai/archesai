@@ -1,0 +1,67 @@
+{{- /*
+Template: app_operations.go.tmpl
+Generates: Operations struct with proper dependency injection.
+Expects:
+- Operations: []Operation (for internal packages)
+- Repositories: []string (unique repository names, for internal packages)
+- ProjectName: string
+- NeedsPublisher: bool (true if any non-GET, non-custom operations exist)
+- InternalPackages: []InternalPackage (for composition apps)
+*/ -}}
+{{template "header" .}}
+package app
+
+{{- if and .InternalPackages (not .OwnOperations) }}
+import (
+{{- range .InternalPackages }}
+	{{ .Alias }}app "{{ .ImportPath }}/app"
+{{- end }}
+)
+
+// Operations composes all operations from internal packages.
+type Operations struct {
+{{- range .InternalPackages }}
+	{{ pascalCase .Name }} *{{ .Alias }}app.Operations
+{{- end }}
+}
+
+// NewOperations creates all operations from internal package ports.
+func NewOperations(ports *Ports) *Operations {
+	return &Operations{
+{{- range .InternalPackages }}
+		{{ pascalCase .Name }}: {{ .Alias }}app.NewOperations(ports.{{ pascalCase .Name }}),
+{{- end }}
+	}
+}
+{{- else }}
+import (
+	"{{ .ProjectName }}/operations"
+	"{{ .ProjectName }}/implement"
+)
+
+// Operations holds all operations for this package.
+type Operations struct {
+{{- range .OwnOperations }}
+	{{ .ID }} operations.{{ .ID }}
+{{- end }}
+}
+
+// NewOperations creates all operations with proper dependency injection.
+func NewOperations(ports *Ports) *Operations {
+	return &Operations{
+{{- range .OwnOperations }}
+{{- if .CustomHandler }}
+		{{ .ID }}: implement.New{{ .ID }}(),
+{{- else if eq .Method "GET" }}
+{{- if $.Repositories }}
+		{{ .ID }}: operations.New{{ .ID }}(ports.{{ or .Tag }}Repo),
+{{- else }}
+		{{ .ID }}: operations.New{{ .ID }}(),
+{{- end }}
+{{- else }}
+		{{ .ID }}: operations.New{{ .ID }}(ports.{{ or .Tag }}Repo, ports.Publisher),
+{{- end }}
+{{- end }}
+	}
+}
+{{- end }}

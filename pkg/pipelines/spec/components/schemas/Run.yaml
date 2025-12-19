@@ -1,0 +1,130 @@
+description: Schema for Run entity
+title: Run
+x-codegen-schema-type: entity
+x-codegen:
+  repository:
+    indices:
+      - pipelineID
+      - organizationID
+      - toolID
+    excludeFromCreate:
+      - CompletedAt
+      - Error
+      - StartedAt
+    excludeFromUpdate:
+      - OrganizationID
+    relations:
+      - field: organizationID
+        references: organization
+        onDelete: CASCADE
+        onUpdate: CASCADE
+      - field: pipelineID
+        references: pipeline
+        onDelete: SET_NULL
+        onUpdate: CASCADE
+      - field: toolID
+        references: tool
+        onDelete: SET_NULL
+        onUpdate: CASCADE
+    additionalMethods:
+      - name: ListRunsByPipeline
+        params:
+          - name: pipelineID
+            type: string
+            format: uuid
+            maxLength: 36
+        returns: multiple
+      - name: ListRunsByOrganization
+        params:
+          - name: organizationID
+            type: string
+            format: uuid
+            maxLength: 36
+        returns: multiple
+      - name: ListRunsByTool
+        params:
+          - name: toolID
+            type: string
+            format: uuid
+            maxLength: 36
+        returns: multiple
+x-internal: pipelines
+allOf:
+  - $ref: ./Base.yaml
+  - type: object
+    properties:
+      completedAt:
+        description: The timestamp when the run completed
+        oneOf:
+          - type: string
+            format: date-time
+            minLength: 1
+            maxLength: 255
+          - type: 'null'
+        example: '2024-01-15T09:30:00Z'
+      error:
+        description: The error message
+        oneOf:
+          - type: string
+            minLength: 1
+            maxLength: 255
+            pattern: ^[\w\s\-.,!?()@#+/':;]+$
+          - type: 'null'
+        example: Pipeline execution failed at step 3
+      organizationID:
+        description: The organization this run belongs to
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
+        maxLength: 36
+      pipelineID:
+        description: The pipeline this run is executing
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
+        maxLength: 36
+      progress:
+        description: The percent progress of the run (0-100)
+        type: integer
+        format: int32
+        minimum: 0
+        default: 0
+        maximum: 100
+        example: 75
+      startedAt:
+        description: The timestamp when the run started
+        oneOf:
+          - type: string
+            format: date-time
+            minLength: 1
+            maxLength: 255
+          - type: 'null'
+        example: '2024-01-15T09:30:00Z'
+      status:
+        type: string
+        enum:
+          - COMPLETED
+          - FAILED
+          - PROCESSING
+          - QUEUED
+        example: COMPLETED
+        default: QUEUED
+      toolID:
+        description: The tool being used in this run
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
+        maxLength: 36
+    required:
+      - organizationID
+      - pipelineID
+      - progress
+      - status
+      - toolID
+      - completedAt
+      - error
+      - startedAt
+unevaluatedProperties: false

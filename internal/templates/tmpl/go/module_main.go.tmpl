@@ -1,0 +1,24 @@
+{{- /*
+Template: module_main.go.tmpl
+Generates: Main entry point for composition apps
+Expects:
+- ProjectName: string
+*/ -}}
+{{template "header" .}}
+package main
+
+import (
+	"log"
+
+	"{{ .ProjectName }}/app"
+)
+
+func main() {
+	a := app.NewApp()
+	if err := a.Initialize(); err != nil {
+		log.Fatalf("failed to initialize app: %v", err)
+	}
+	if err := a.Start(); err != nil {
+		log.Fatalf("app error: %v", err)
+	}
+}

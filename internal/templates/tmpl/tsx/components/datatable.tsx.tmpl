@@ -1,0 +1,118 @@
+import { Badge, CalendarIcon, CheckIcon, DataTableContainer, ListIcon, TextIcon, Timestamp } from "@archesai/ui";
+import type { SearchQuery } from "@archesai/ui/types/entities";
+import { useNavigate } from "@tanstack/react-router";
+import type { JSX } from "react";
+[[- if or .Operations.HasCreate .Operations.HasUpdate ]]
+import [[ .EntityName ]]Form from "#components/forms/[[ .EntityNameKebab ]]-form";
+[[- end ]]
+import type {
+  [[ .EntityName ]],
+[[- if .Operations.ListHasFilterParam ]]
+  [[ .EntityName ]]sFilterParameter,
+[[- end ]]
+[[- if .Operations.ListHasSortParam ]]
+  [[ .EntityName ]]sSortParameter,
+[[- end ]]
+[[- if .Operations.ListHasPageParam ]]
+  PageQueryParameter,
+[[- end ]]
+} from "#lib/index";
+import { [[- if .Operations.HasDelete ]] delete[[ .EntityName ]],[[- end ]] getList[[ .EntityName ]]sSuspenseQueryOptions } from "#lib/index";
+
+export default function [[ .EntityName ]]DataTable(): JSX.Element {
+  const navigate = useNavigate();
+
+  const getQueryOptions = (query: SearchQuery) => {
+[[- if or .Operations.ListHasFilterParam .Operations.ListHasPageParam .Operations.ListHasSortParam ]]
+    return getList[[ .EntityName ]]sSuspenseQueryOptions({
+[[- if .Operations.ListHasFilterParam ]]
+      filter: query.filter as unknown as [[ .EntityName ]]sFilterParameter,
+[[- end ]]
+[[- if .Operations.ListHasPageParam ]]
+      page: query.page as PageQueryParameter,
+[[- end ]]
+[[- if .Operations.ListHasSortParam ]]
+      sort: query.sort as [[ .EntityName ]]sSortParameter,
+[[- end ]]
+    });
+[[- else ]]
+    return getList[[ .EntityName ]]sSuspenseQueryOptions();
+[[- end ]]
+  };
+
+  return (
+    <DataTableContainer<[[ .EntityName ]]>
+      columns={[
+[[- range .Columns ]]
+        {
+          accessorKey: "[[ .AccessorKey ]]",
+[[- if .IsLink ]]
+          cell: ({ row }) => {
+            return <Badge variant="secondary">{row.original.[[ .AccessorKey ]]}</Badge>;
+          },
+[[- else if eq .FilterVariant "date" ]]
+          cell: ({ row }) => {
+            const val = row.original.[[ .AccessorKey ]];
+            return val ? <Timestamp date={val as string} /> : "-";
+          },
+[[- else if eq .FilterVariant "multiSelect" ]]
+          cell: ({ row }) => {
+            return <Badge variant="secondary">{row.original.[[ .AccessorKey ]]}</Badge>;
+          },
+[[- else if eq .FilterVariant "boolean" ]]
+          cell: ({ row }) => {
+            return (
+              <Badge variant={row.original.[[ .AccessorKey ]] ? "default" : "secondary"}>
+                {row.original.[[ .AccessorKey ]] ? "Yes" : "No"}
+              </Badge>
+            );
+          },
+[[- else ]]
+          cell: ({ row }) => {
+            return row.original.[[ .AccessorKey ]];
+          },
+[[- end ]]
+          id: "[[ .AccessorKey ]]",
+[[- if or .EnableFilter (gt (len .Options) 0) ]]
+          meta: {
+            filterVariant: "[[ .FilterVariant ]]",
+            icon: [[ .Icon ]],
+            label: "[[ .Label ]]",
+[[- if .Options ]]
+            options: [
+[[- range .Options ]]
+              { label: "[[ .Label ]]", value: "[[ .Value ]]" },
+[[- end ]]
+            ],
+[[- end ]]
+          },
+[[- end ]]
+        },
+[[- end ]]
+      ]}
+[[- if .Operations.HasCreate ]]
+      createForm={[[ .EntityName ]]Form}
+[[- end ]]
+[[- if .Operations.HasDelete ]]
+      deleteItem={async (id) => {
+        await delete[[ .EntityName ]](id);
+      }}
+[[- end ]]
+      entityKey="[[ .EntityKey ]]"
+      // biome-ignore lint/suspicious/noExplicitAny: Query options type is compatible at runtime
+      getQueryOptions={getQueryOptions as any}
+      handleSelect={async ([[ .EntityNameLower ]]) => {
+        await navigate({
+          params: {
+            [[ .EntityNameLower ]]ID: [[ .EntityNameLower ]].id,
+          },
+          to: `/[[ .EntityNameKebab ]]s/$[[ .EntityNameLower ]]ID`,
+        });
+      }}
+      icon={<ListIcon />}
+[[- if .Operations.HasUpdate ]]
+      updateForm={[[ .EntityName ]]Form}
+[[- end ]]
+    />
+  );
+}

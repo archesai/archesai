@@ -1,0 +1,26 @@
+description: Infrastructure configuration for Kubernetes deployments
+x-internal: config
+type: object
+title: ConfigInfrastructure
+properties:
+  images:
+    $ref: ./ConfigImages.yaml
+  migrations:
+    $ref: ./ConfigMigrations.yaml
+  namespace:
+    description: Kubernetes namespace where all resources will be deployed
+    type: string
+    default: arches-system
+    minLength: 1
+    example: arches-system
+    maxLength: 255
+    pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+  serviceAccount:
+    $ref: ./ConfigServiceAccount.yaml
+required:
+  - images
+  - migrations
+  - namespace
+  - serviceAccount
+additionalProperties: false
+x-codegen-schema-type: valueobject

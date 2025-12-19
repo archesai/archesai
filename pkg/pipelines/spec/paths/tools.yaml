@@ -1,0 +1,74 @@
+x-path: /tools
+get:
+  x-internal: pipelines
+  operationId: ListTools
+  summary: List tools
+  tags:
+    - Tool
+  description: List tools
+  parameters:
+    - $ref: ../components/parameters/ToolsFilter.yaml
+    - $ref: ../components/parameters/PageQuery.yaml
+    - $ref: ../components/parameters/ToolsSort.yaml
+  security:
+    - bearerAuth: []
+  responses:
+    '200':
+      $ref: ../components/responses/ToolListResponse.yaml
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '422':
+      $ref: ../components/responses/UnprocessableEntity.yaml
+    '429':
+      $ref: ../components/responses/TooManyRequests.yaml
+    '500':
+      $ref: ../components/responses/InternalServerError.yaml
+post:
+  x-internal: pipelines
+  operationId: CreateTool
+  summary: Create a tool
+  tags:
+    - Tool
+  description: Create a tool
+  requestBody:
+    description: Tool creation request
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            description:
+              description: The tool description
+              type: string
+              minLength: 1
+              maxLength: 1000
+              example: Example description text
+              pattern: ^[\w\s\-.,!?()@#+/]*$
+            name:
+              description: The name of the tool
+              type: string
+              minLength: 1
+              maxLength: 255
+              example: Example Name
+              pattern: ^[\w\s\-.,!?()@#+/]*$
+          required:
+            - description
+            - name
+    required: true
+  security:
+    - bearerAuth: []
+  responses:
+    '201':
+      $ref: ../components/responses/ToolResponse.yaml
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '422':
+      $ref: ../components/responses/UnprocessableEntity.yaml
+    '429':
+      $ref: ../components/responses/TooManyRequests.yaml
+    '500':
+      $ref: ../components/responses/InternalServerError.yaml

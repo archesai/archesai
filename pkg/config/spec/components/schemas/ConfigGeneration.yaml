@@ -1,0 +1,79 @@
+description: Code generation configuration
+type: object
+title: ConfigGeneration
+x-internal: config
+x-codegen-schema-type: valueobject
+properties:
+  spec:
+    description: Path to the OpenAPI specification file
+    type: string
+    minLength: 1
+    maxLength: 4096
+    pattern: ^[a-zA-Z0-9_./-]+$
+  output:
+    description: Output directory for generated files
+    type: string
+    minLength: 1
+    maxLength: 4096
+    pattern: ^[a-zA-Z0-9_./-]+$
+  style:
+    description: File output style
+    type: string
+    enum:
+      - multi
+      - single
+    default: multi
+  includes:
+    description: Built-in package includes
+    type: array
+    maxItems: 10
+    items:
+      type: string
+      enum:
+        - server
+        - auth
+        - config
+        - pipelines
+        - executor
+        - storage
+  groups:
+    description: Generator groups to enable (all enabled by default)
+    type: object
+    properties:
+      module:
+        description: Generate go.mod and main.go
+        type: boolean
+        default: true
+      schemas:
+        description: Generate model schemas
+        type: boolean
+        default: true
+      operations:
+        description: Generate operation types (use cases)
+        type: boolean
+        default: true
+      http:
+        description: Generate HTTP handlers
+        type: boolean
+        default: true
+      wire:
+        description: Generate app bootstrap and wiring
+        type: boolean
+        default: true
+      postgres:
+        description: Generate PostgreSQL repositories and migrations
+        type: boolean
+        default: true
+      sqlite:
+        description: Generate SQLite repositories
+        type: boolean
+        default: true
+      web:
+        description: Generate frontend web files
+        type: boolean
+        default: true
+    additionalProperties: false
+  lint:
+    description: Enable strict linting
+    type: boolean
+additionalProperties: false

@@ -1,0 +1,22 @@
+type: object
+properties:
+  executionTimeMs:
+    description: Execution time in milliseconds
+    type: integer
+    format: int64
+    minimum: 0
+    maximum: 600000
+    example: 1234
+  logs:
+    description: Execution logs from stderr
+    type: string
+    maxLength: 1000000
+    pattern: ^[\s\S]*$
+    example: "Container started\nExecution completed"
+  output:
+    description: Execution result (matches executor's output schema)
+    type: object
+    example:
+      doubled: 84
+required:
+  - output

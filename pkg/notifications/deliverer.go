@@ -4,10 +4,10 @@ package notifications
 import (
 	"context"
 
-	"github.com/archesai/archesai/pkg/auth"
+	"github.com/archesai/archesai/pkg/auth/schemas"
 )
 
 // Deliverer handles notification delivery for magic links and OTPs.
 type Deliverer interface {
-	Deliver(ctx context.Context, token *auth.MagicLinkToken, baseURL string) error
+	Deliver(ctx context.Context, token *schemas.MagicLinkToken, baseURL string) error
 }

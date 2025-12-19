@@ -1,6 +1,6 @@
 module github.com/archesai/archesai/runners/go
 
-go 1.25.4
+go 1.25.5
 
 require github.com/santhosh-tekuri/jsonschema/v6 v6.0.2
 

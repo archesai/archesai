@@ -1,0 +1,199 @@
+import type { FormFieldConfig } from "@archesai/ui";
+import {
+  FormControl,
+  GenericForm,
+  Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Textarea,
+  Checkbox,
+} from "@archesai/ui";
+import type { JSX } from "react";
+import type {
+[[- if .Operations.HasCreate ]]
+  Create[[ .EntityName ]]Body,
+[[- end ]]
+[[- if .Operations.HasUpdate ]]
+  Update[[ .EntityName ]]Body,
+[[- end ]]
+} from "#lib/index";
+import {
+[[- if .Operations.HasCreate ]]
+  useCreate[[ .EntityName ]],
+[[- end ]]
+[[- if .Operations.HasGet ]]
+  useGet[[ .EntityName ]],
+[[- end ]]
+[[- if .Operations.HasUpdate ]]
+  useUpdate[[ .EntityName ]],
+[[- end ]]
+} from "#lib/index";
+
+[[- define "formField" ]]
+    {
+      defaultValue: [[ if eq .Type "checkbox" ]](data?.[[ .Name ]] as boolean) ?? false[[ else ]](data?.[[ .Name ]] as string) ?? ""[[ end ]],
+[[- if .Description ]]
+      description: "[[ .Description ]]",
+[[- end ]]
+      label: "[[ .Label ]]",
+      name: "[[ .Name ]]",
+[[- if eq .Type "text" ]]
+      renderControl: (field) => (
+        <Input
+          {...field}
+          placeholder="Enter [[ .Label | lower ]]..."
+          type="text"
+        />
+      ),
+[[- else if eq .Type "email" ]]
+      renderControl: (field) => (
+        <Input
+          {...field}
+          placeholder="Enter [[ .Label | lower ]]..."
+          type="email"
+        />
+      ),
+[[- else if eq .Type "password" ]]
+      renderControl: (field) => (
+        <Input
+          {...field}
+          placeholder="Enter [[ .Label | lower ]]..."
+          type="password"
+        />
+      ),
+[[- else if eq .Type "url" ]]
+      renderControl: (field) => (
+        <Input
+          {...field}
+          placeholder="Enter [[ .Label | lower ]]..."
+          type="url"
+        />
+      ),
+[[- else if eq .Type "textarea" ]]
+      renderControl: (field) => (
+        <Textarea
+          {...field}
+          placeholder="Enter [[ .Label | lower ]]..."
+          rows={5}
+          value={field.value as string}
+        />
+      ),
+[[- else if eq .Type "select" ]]
+      renderControl: (field) => (
+        <Select defaultValue={field.value as string} onValueChange={field.onChange}>
+          <FormControl>
+            <SelectTrigger>
+              <SelectValue placeholder="Select [[ .Label | lower ]]..." />
+            </SelectTrigger>
+          </FormControl>
+          <SelectContent>
+[[- range .Options ]]
+            <SelectItem value="[[ .Value ]]">[[ .Label ]]</SelectItem>
+[[- end ]]
+          </SelectContent>
+        </Select>
+      ),
+[[- else if eq .Type "checkbox" ]]
+      renderControl: (field) => (
+        <Checkbox
+          checked={field.value as boolean}
+          onCheckedChange={field.onChange}
+        />
+      ),
+[[- else ]]
+      renderControl: (field) => (
+        <Input
+          {...field}
+          placeholder="Enter [[ .Label | lower ]]..."
+          type="text"
+        />
+      ),
+[[- end ]]
+    },
+[[- end ]]
+
+export default function [[ .EntityName ]]Form({ id }: { id?: string }): JSX.Element {
+[[- if .Operations.HasUpdate ]]
+  const { mutateAsync: update[[ .EntityName ]] } = useUpdate[[ .EntityName ]]();
+[[- end ]]
+[[- if .Operations.HasCreate ]]
+  const { mutateAsync: create[[ .EntityName ]] } = useCreate[[ .EntityName ]]();
+[[- end ]]
+[[- if .Operations.HasGet ]]
+  const { data: existing[[ .EntityName ]] } = useGet[[ .EntityName ]](id, { query: { enabled: !!id } });
+[[- end ]]
+
+[[- if .Operations.HasGet ]]
+  // Cast to Record to allow accessing request body fields that may differ from entity fields
+  const data = existing[[ .EntityName ]]?.data as Record<string, unknown> | undefined;
+[[- else ]]
+  const data: Record<string, unknown> | undefined = undefined;
+[[- end ]]
+
+[[- if .Operations.HasCreate ]]
+  const createFormFields: FormFieldConfig[] = [
+[[- range .CreateFormFields ]]
+[[- template "formField" . ]]
+[[- end ]]
+  ];
+[[- end ]]
+
+[[- if .Operations.HasUpdate ]]
+  const updateFormFields: FormFieldConfig[] = [
+[[- range .UpdateFormFields ]]
+[[- template "formField" . ]]
+[[- end ]]
+  ];
+[[- end ]]
+
+[[- if and .Operations.HasCreate .Operations.HasUpdate ]]
+  return (
+    <GenericForm<Create[[ .EntityName ]]Body, Update[[ .EntityName ]]Body>
+      description={!id ? "Create a new [[ .EntityNameLower ]]" : "Update an existing [[ .EntityNameLower ]]"}
+      entityKey="[[ .EntityKey ]]"
+      fields={!id ? createFormFields : updateFormFields}
+      isUpdateForm={!!id}
+      onSubmitCreate={async (createDto) => {
+        await create[[ .EntityName ]]({ data: createDto });
+      }}
+      onSubmitUpdate={async (updateDto) => {
+        await update[[ .EntityName ]]({ data: updateDto, id: id });
+      }}
+      title="[[ .EntityName ]]"
+    />
+  );
+[[- else if .Operations.HasUpdate ]]
+  return (
+    <GenericForm<Update[[ .EntityName ]]Body, Update[[ .EntityName ]]Body>
+      description="Update an existing [[ .EntityNameLower ]]"
+      entityKey="[[ .EntityKey ]]"
+      fields={updateFormFields}
+      isUpdateForm={true}
+      onSubmitUpdate={async (updateDto) => {
+        await update[[ .EntityName ]]({ data: updateDto, id: id });
+      }}
+      title="[[ .EntityName ]]"
+    />
+  );
+[[- else if .Operations.HasCreate ]]
+  return (
+    <GenericForm<Create[[ .EntityName ]]Body, Create[[ .EntityName ]]Body>
+      description="Create a new [[ .EntityNameLower ]]"
+      entityKey="[[ .EntityKey ]]"
+      fields={createFormFields}
+      isUpdateForm={false}
+      onSubmitCreate={async (createDto) => {
+        await create[[ .EntityName ]]({ data: createDto });
+      }}
+      title="[[ .EntityName ]]"
+    />
+  );
+[[- else ]]
+  return (
+    <div>No create or update operations available for [[ .EntityName ]]</div>
+  );
+[[- end ]]
+}

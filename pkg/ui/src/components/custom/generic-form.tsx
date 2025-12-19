@@ -22,7 +22,6 @@ import {
   FormLabel,
   FormMessage,
 } from "#components/shadcn/form";
-import { Separator } from "#components/shadcn/separator";
 import { cn } from "#lib/utils";
 
 export interface FormFieldConfig<T extends FieldValues = FieldValues> {
@@ -97,15 +96,11 @@ export function GenericForm<
 
   /* ---------- submit helpers ---------- */
   async function handleSubmit(values: FieldValues) {
-    const run = isUpdateForm
-      ? async () => {
-          await onSubmitUpdate(values as UpdateDto);
-        }
-      : async () => {
-          await onSubmitCreate(values as CreateDto);
-        };
-
-    await run();
+    if (isUpdateForm) {
+      await onSubmitUpdate(values as UpdateDto);
+    } else {
+      await onSubmitCreate(values as CreateDto);
+    }
   }
 
   return (
@@ -117,14 +112,16 @@ export function GenericForm<
         <Card
           className={cn(!showCard && "border-none shadow-none", "min-w-sm")}
         >
-          <CardHeader>
-            {title && <CardTitle>{title}</CardTitle>}
-            {description && <CardDescription>{description}</CardDescription>}
+          <CardHeader className="p-4 pb-2">
+            {title && <CardTitle className="text-base">{title}</CardTitle>}
+            {description && (
+              <CardDescription className="text-sm">
+                {description}
+              </CardDescription>
+            )}
           </CardHeader>
 
-          <Separator />
-
-          <CardContent className="flex flex-col gap-4 p-4">
+          <CardContent className="flex max-h-[60vh] flex-col gap-3 overflow-y-auto p-4 pt-2">
             {props.preContent}
             {fields
               .filter((f) => isUpdateForm || !f.ignoreOnCreate)
@@ -134,13 +131,15 @@ export function GenericForm<
                   key={String(fieldConfig.name)}
                   name={String(fieldConfig.name)}
                   render={({ field, fieldState }) => (
-                    <FormItem>
-                      <FormLabel>{fieldConfig.label}</FormLabel>
+                    <FormItem className="space-y-1">
+                      <FormLabel className="text-sm">
+                        {fieldConfig.label}
+                      </FormLabel>
                       <FormControl>
                         {fieldConfig.renderControl(field)}
                       </FormControl>
-                      {!fieldState.error && (
-                        <FormDescription>
+                      {!fieldState.error && fieldConfig.description && (
+                        <FormDescription className="text-xs">
                           {fieldConfig.description}
                         </FormDescription>
                       )}
@@ -152,9 +151,7 @@ export function GenericForm<
             {props.postContent}
           </CardContent>
 
-          <Separator />
-
-          <CardFooter>
+          <CardFooter className="border-t p-4 pt-3">
             <Button
               // disabled={
               //   !!(

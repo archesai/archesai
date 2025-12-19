@@ -1,0 +1,39 @@
+openapi: 3.2.0
+x-project-name: github.com/archesai/archesai/pkg/auth
+info:
+  title: Arches Auth API
+  description: The Arches Auth API
+  version: v0.0.0
+security:
+  - bearerAuth: []
+  - sessionCookie: []
+tags:
+  - name: APIKey
+    description: API key management
+  - name: Auth
+    description: Authentication and authorization operations
+  - name: Invitation
+    description: Organization invitation management
+  - name: Member
+    description: Organization member management
+  - name: OAuth
+    description: OAuth provider integration
+  - name: Organization
+    description: Organization management
+  - name: Session
+    description: User session management
+  - name: Token
+    description: API token management
+  - name: User
+    description: User profile management
+components:
+  securitySchemes:
+    bearerAuth:
+      description: API Token for authenticated requests
+      scheme: bearer
+      type: http
+    sessionCookie:
+      description: Session cookie for authenticated requests
+      type: apiKey
+      name: __Secure-better-auth.session_token
+      in: cookie

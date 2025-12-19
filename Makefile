@@ -38,20 +38,16 @@ BINARY_PATH := ./bin
 
 .PHONY: build
 build: ## Build archesai binary
-	@echo -e "$(YELLOW)▶ Building archesai...$(NC)"
-	@go build -o $(BINARY_PATH)/archesai  cmd/archesai
-	@echo -e "$(GREEN)✓ archesai built: $(BINARY_PATH)/archesai $(NC)"
+	@go build -o $(BINARY_PATH)/archesai ./cmd/archesai
+	@du -sh $(BINARY_PATH)/archesai
 
 .PHONY: build-studio
 build-studio: ## Build studio app
-	@echo -e "$(YELLOW)▶ Building studio app...$(NC)"
-	@echo -e "$(RED)▶ NOT IMPLEMENTED ...$(NC)"
+	@cd ./apps/studio && go run ../../cmd/archesai build -c arches.yaml
 
 .PHONY: build-docs
 build-docs: prepare-docs ## Build documentation site
-	@echo -e "$(YELLOW)▶ Building documentation site...$(NC)"
 	@pnpm -F @archesai/docs build
-	@echo -e "$(GREEN)✓ Documentation built in apps/docs/build/$(NC)"
 
 # ------------------------------------------
 # Run Commands (Production-like)
@@ -59,12 +55,10 @@ build-docs: prepare-docs ## Build documentation site
 
 .PHONY: run-studio
 run-studio: build ## Run the API server (production mode)
-	@echo -e "$(YELLOW)▶ Starting API server...$(NC)"
-	@go run ./cmd/archesai api
+	@cd ./apps/studio && go run ../../cmd/archesai run -c arches.yaml
 
 .PHONY: run-docs
 run-docs: prepare-docs ## Run documentation site (production build)
-	@echo -e "$(YELLOW)▶ Starting documentation server...$(NC)"
 	@pnpm -F @archesai/docs start
 
 # ------------------------------------------
@@ -73,48 +67,41 @@ run-docs: prepare-docs ## Run documentation site (production build)
 
 .PHONY: dev-studio
 dev-studio: ## Run API server with hot reload
-	@echo -e "$(YELLOW)▶ Starting API server with hot reload on port 3001...$(NC)"
-	@echo -e "$(YELLOW)Press Ctrl+C to stop$(NC)"
-	@go tool -modfile=tools.mod air
+	@cd ./apps/studio && go run ../../cmd/archesai dev -c arches.yaml
 
 .PHONY: dev-docs
 dev-docs: prepare-docs ## Run documentation with hot reload
-	@echo -e "$(YELLOW)▶ Starting documentation with hot reload...$(NC)"
 	@pnpm -F @archesai/docs dev
 
 # ------------------------------------------
-# Deployment Commands
+# Workflow Commands
 # ------------------------------------------
 
-.PHONY: deploy-docs
-deploy-docs: ## Manually trigger documentation deployment to GitHub Pages
-	@echo -e "$(YELLOW)▶ Triggering documentation deployment...$(NC)"
+.PHONY: workflow-deploy-docs
+workflow-deploy-docs: ## Manually trigger documentation deployment to GitHub Pages
 	@which gh > /dev/null || (echo -e "$(RED)✗ Please install GitHub CLI first$(NC)" && exit 1)
 	@gh workflow run deploy-docs.yaml
-	@echo -e "$(GREEN)✓ Documentation deployment triggered!$(NC)"
-	@echo -e "$(BLUE)Monitor progress: gh run list --workflow=deploy-docs.yaml$(NC)"
 
 # ------------------------------------------
 # Generate Commands
 # ------------------------------------------
 
-generate: ## Regenerate example configurations
+generate: ## Regenerate code
 	@$(MAKE) generate-packages
 	@$(MAKE) generate-examples generate-studio
-	@$(MAKE) format-prettier
 
 .PHONY: generate-packages
 generate-packages: ## Generate all packages
-	@go generate ./...
+	@go generate ./pkg/config ./...
 
 .PHONY:
 generate-studio: ## Generate codegen
-	@go run ./cmd/archesai generate --spec ./api/openapi.yaml --output ./apps/studio --pretty
+	@cd apps/studio && go run ../../cmd/archesai generate
 
 .PHONY: generate-examples ## Generate example configurations
 generate-examples:
-	@go run ./cmd/archesai generate --spec ./examples/basic/spec/openapi.yaml --output ./examples/basic --pretty
-	@go run ./cmd/archesai generate --spec ./examples/authentication/spec/openapi.yaml --output ./examples/authentication --pretty
+	@cd examples/basic && go run ../../cmd/archesai generate
+	@cd examples/authentication && go run ../../cmd/archesai generate
 
 # ------------------------------------------
 # Test Commands
@@ -165,14 +152,11 @@ run-workflow: ## Run GitHub workflow locally with act (usage: make run-workflow 
 		ls -1 .github/workflows/*.y*ml | sed 's|.github/workflows/||' | sed 's|\.y.*ml||' | sed 's|^|  - |'; \
 		exit 1; \
 	fi
-	@echo -e "$(YELLOW)▶ Running workflow: $(workflow)...$(NC)"
 	@which act > /dev/null || (echo -e "$(RED)✗ Please install act first: https://github.com/nektos/act$(NC)" && exit 1)
 	@act -W .github/workflows/$(workflow).yaml
-	@echo -e "$(GREEN)✓ Workflow execution complete!$(NC)"
 
 .PHONY: list-workflows
 list-workflows: ## List all available GitHub workflows
-	@echo -e "$(BLUE)Available workflows:$(NC)"
 	@ls -1 .github/workflows/*.y*ml | sed 's|.github/workflows/||' | sed 's|\.y.*ml||' | sed 's|^|  - |'
 
 # ------------------------------------------
@@ -180,13 +164,10 @@ list-workflows: ## List all available GitHub workflows
 # ------------------------------------------
 
 .PHONY: lint
-lint: lint-go lint-ts lint-docs ## Run all linters
-	@$(MAKE) lint-openapi
-	@echo -e "$(GREEN)✓ All linting complete!$(NC)"
+lint: lint-go lint-ts lint-openapi lint-docs ## Run all linters
 
 .PHONY: lint-go
 lint-go: ## Run Go linter
-	@echo -e "$(YELLOW)▶ Running Go linter...$(NC)"
 	@OUTPUT=$$(golangci-lint run --color always ./... 2>&1); \
 	if [ $$? -ne 0 ]; then \
 		echo -e "$(RED)✗ Go linting failed$(NC)"; \
@@ -195,11 +176,9 @@ lint-go: ## Run Go linter
 	elif echo "$$OUTPUT" | grep -v "^0 issues" | grep -q .; then \
 		echo "$$OUTPUT"; \
 	fi
-	@echo -e "$(GREEN)✓ Go linting complete!$(NC)"
 
 .PHONY: lint-ts
 lint-ts: lint-typecheck ## Run Node.js linter (includes typecheck)
-	@echo -e "$(YELLOW)▶ Running Node.js linter...$(NC)"
 	@OUTPUT=$$(pnpm biome check --fix 2>&1); \
 	if [ $$? -ne 0 ]; then \
 		echo -e "$(RED)✗ Node.js linting failed$(NC)"; \
@@ -208,112 +187,64 @@ lint-ts: lint-typecheck ## Run Node.js linter (includes typecheck)
 	elif echo "$$OUTPUT" | grep -v "No fixes applied" | grep -q .; then \
 		echo "$$OUTPUT"; \
 	fi
-	@echo -e "$(GREEN)✓ Node.js linting complete!$(NC)"
-
-.PHONY: lint-openapi
-lint-openapi: ## Lint OpenAPI specification
-	@go run ./cmd/archesai spec lint --spec ./api/openapi.yaml
 
 .PHONY: lint-typecheck
 lint-typecheck: ## Run TypeScript type checking
 	@pnpm tsc --build --emitDeclarationOnly
 
+.PHONY: lint-openapi
+lint-openapi: ## Lint OpenAPI specification
+	@cd ./apps/studio && go run ../../cmd/archesai spec lint -c arches.yaml
+
 .PHONY: lint-docs
 lint-docs: ## Lint documentation with markdownlint
-	@echo -e "$(YELLOW)▶ Linting documentation...$(NC)"
 	@pnpm markdownlint --fix 'docs/**/*.md' --config .markdownlint.json
-	@echo -e "$(GREEN)✓ Documentation linting complete!$(NC)"
 
 # ------------------------------------------
 # Format Commands
 # ------------------------------------------
 
 .PHONY: format
-format: format-go format-ts format-prettier ## Format all code
-	@echo -e "$(GREEN)✓ All code formatted!$(NC)"
+format: format-go format-prettier format-ts ## Format all code
 
 .PHONY: format-go
 format-go: ## Format Go code
-	@echo -e "$(YELLOW)▶ Formatting Go code...$(NC)"
 	@golangci-lint run --fix
-	@echo -e "$(GREEN)✓ Go code formatted!$(NC)"
 
 .PHONY: format-prettier
 format-prettier: ## Format code with Prettier
-	@echo -e "$(YELLOW)▶ Formatting code with Prettier...$(NC)"
 	@pnpm prettier --list-different --write --log-level warn .
-	@echo -e "$(GREEN)✓ Code formatted with Prettier!$(NC)"
 
 .PHONY: format-ts
 format-ts: ## Format Node.js/TypeScript code
-	@echo -e "$(YELLOW)▶ Formatting Node.js code...$(NC)"
 	@pnpm biome format --fix
-	@echo -e "$(GREEN)✓ Node.js code formatted!$(NC)"
 
 # ------------------------------------------
 # Clean Commands
 # ------------------------------------------
 
 .PHONY: clean
-clean: clean-ts clean-go clean-generated clean-test ## Clean all build artifacts
-	@echo -e "$(GREEN)✓ Clean complete!$(NC)"
+clean: clean-ts clean-go clean-generated ## Clean all build artifacts
 
 .PHONY: clean-ts
 clean-ts: ## Clean distribution builds
-	@echo -e "$(YELLOW)▶ Cleaning distribution builds...$(NC)"
 	@pnpm -r exec sh -c 'rm -rf .cache .tanstack dist .nitro .output'
-	@echo -e "$(GREEN)✓ Distribution builds cleaned!$(NC)"
 
 .PHONY: clean-go
 clean-go: ## Clean Go build artifacts
-	@rm -rf $(BINARY_PATH)
+	@go clean -testcache
+	@rm -rf $(BINARY_PATH) coverage.out coverage.html
 
 .PHONY: clean-generated
 clean-generated: ## Clean all generated code
-	@find . -type f -name "*.gen.*" -not -path "./internal/codegen/tmpl/*" -not -path "./pkg/auth/repositories/*" -not -path "./pkg/auth/models/*" -exec rm -f {} +
+	@find . -type f -name "*.gen.*" -not -path "./internal/codegen/tmpl/*" -exec rm -f {} +
 	@find . -type d -empty -delete 2>/dev/null || true
-	@rm -rf ./pkg/client/src/generated
-	@rm -f ./deployments/helm-minimal/values.schema.json
-	@echo -e "$(GREEN)✓ Generated code cleaned!$(NC)"
-
-.PHONY: clean-test
-clean-test: ## Clean test cache and coverage files
-	@echo -e "$(YELLOW)▶ Cleaning test cache...$(NC)"
-	@go clean -testcache
-	@rm -f coverage.out coverage.html
-	@echo -e "$(GREEN)✓ Test cache cleaned!$(NC)"
-
-.PHONY: clean-deps
-clean-deps: clean-ts-deps clean-go-deps ## Clean all dependencies
-	@echo -e "$(GREEN)✓ All dependencies cleaned!$(NC)"
-
-.PHONY: clean-ts-deps
-clean-ts-deps: ## Clean Node.js dependencies
-	@echo -e "$(YELLOW)▶ Cleaning Node.js dependencies...$(NC)"
-	@pnpm -r exec sh -c 'rm -rf node_modules pnpm-lock.yaml'
-	@echo -e "$(GREEN)✓ Node.js dependencies cleaned!$(NC)"
-
-.PHONY: clean-go-deps
-clean-go-deps: ## Clean Go module cache
-	@echo -e "$(YELLOW)▶ Cleaning Go module cache...$(NC)"
-	@go clean -modcache
-	@echo -e "$(GREEN)✓ Go module cache cleaned!$(NC)"
 
 .PHONY: prepare-docs
-prepare-docs: bundle-openapi ## Copy markdown docs to apps/docs/docs FIXME: bundle-openapi
-	@echo -e "$(YELLOW)▶ Copying markdown docs to apps/docs...$(NC)"
+prepare-docs: build-studio ## Copy markdown docs to apps/docs/docs FIXME: bundle-openapi
 	@mkdir -p ./apps/docs/apis ./apps/docs/pages/documentation
 	@cp ./api/openapi.bundled.yaml ./apps/docs/apis/openapi.yaml
 	@cp -r ./docs/** ./apps/docs/pages
-	@echo -e "$(GREEN)✓ Docs copied!$(NC)"
-
-# ------------------------------------------
-# API/OpenAPI Commands
-# ------------------------------------------
-
-.PHONY: bundle-openapi
-bundle-openapi:  ## Bundle OpenAPI into single file
-	@go run cmd/archesai generate --spec ./api/openapi.yaml --output ./apps/studio --only bundle
 
 # ------------------------------------------
 # Dependency Commands
@@ -321,67 +252,34 @@ bundle-openapi:  ## Bundle OpenAPI into single file
 
 .PHONY: deps
 deps: deps-go deps-ts ## Install all dependencies
-	@echo -e "$(GREEN)✓ All dependencies installed!$(NC)"
 
 .PHONY: deps-go
 deps-go: ## Install Go dependencies and tools
-	@echo -e "$(YELLOW)▶ Installing Go dependencies...$(NC)"
 	@go mod download
-	@echo -e "$(GREEN)✓ Go dependencies installed!$(NC)"
 
 .PHONY: deps-ts
 deps-ts: ## Install Node.js dependencies
-	@echo -e "$(YELLOW)▶ Installing Node.js dependencies...$(NC)"
 	@pnpm install
-	@echo -e "$(GREEN)✓ Node.js dependencies installed!$(NC)"
 
 .PHONY: deps-update
 deps-update: deps-update-go deps-update-ts ## Update all dependencies
-	@echo -e "$(GREEN)✓ All dependencies updated!$(NC)"
 
 .PHONY: deps-update-go
 deps-update-go: ## Update Go dependencies
-	@echo -e "$(YELLOW)▶ Updating Go dependencies...$(NC)"
 	@go get -u ./... 2>&1 | { grep -v "warning: ignoring symlink" || true; }
 	@go mod tidy
-	@echo -e "$(GREEN)✓ Go dependencies updated!$(NC)"
 
 .PHONY: deps-update-ts
 deps-update-ts: ## Update Node.js dependencies
-	@echo -e "$(YELLOW)▶ Updating Node.js dependencies...$(NC)"
 	@pnpm update -r --latest
-	@echo -e "$(GREEN)✓ Node.js dependencies updated!$(NC)"
 
-.PHONY: check-deps
-check-deps: ## Check for required dependencies
-	@echo -e "$(YELLOW)▶ Checking required dependencies...$(NC)"
-	@command -v go >/dev/null 2>&1 || { echo -e "$(RED)✗ Go is required but not installed$(NC)"; exit 1; }
-	@command -v pnpm >/dev/null 2>&1 || { echo -e "$(RED)✗ pnpm is required but not installed$(NC)"; exit 1; }
-	@command -v docker >/dev/null 2>&1 || { echo -e "$(GRAY)△ Docker not found (optional)$(NC)"; }
-	@echo -e "$(GREEN)✓ All required dependencies found!$(NC)"
-
-.PHONY: install-tools
-install-tools: check-deps ## Install required development tools
-	@echo -e "$(YELLOW)▶ Installing development tools...$(NC)"
-	@go install github.com/pressly/goose/v3/cmd/goose@latest
-	@go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
-	@go install github.com/air-verse/air@latest
-	@go install github.com/vektra/mockery/v2@latest
-	@echo -e "$(GREEN)✓ Development tools installed!$(NC)"
-
-# ------------------------------------------
-# Docker Commands
-# ------------------------------------------
-
-.PHONY: docker-run
-docker-run: ## Build and run with Docker Compose
-	@echo -e "$(YELLOW)▶ Starting Docker Compose...$(NC)"
-	@docker-compose up --build
-
-.PHONY: docker-stop
-docker-stop: ## Stop Docker Compose services
-	@echo -e "$(YELLOW)▶ Stopping Docker Compose...$(NC)"
-	@docker-compose down
+.PHONY: vendor-jsonschema
+vendor-jsonschema: ## Vendor google/jsonschema-go into internal/jsonschema
+	@rm -rf internal/jsonschema
+	@mkdir -p internal/jsonschema
+	@git clone --depth 1 https://github.com/google/jsonschema-go.git /tmp/jsonschema-go
+	@find /tmp/jsonschema-go/jsonschema -maxdepth 1 -name '*.go' ! -name '*_test.go' -exec cp {} internal/jsonschema/ \;
+	@rm -rf /tmp/jsonschema-go
 
 # ------------------------------------------
 # Container Executor Commands
@@ -389,25 +287,18 @@ docker-stop: ## Stop Docker Compose services
 
 .PHONY: build-runners
 build-runners: build-runner-python build-runner-node build-runner-go ## Build all runner containers
-	@echo -e "$(GREEN)✓ All runner containers built!$(NC)"
 
 .PHONY: build-runner-python
 build-runner-python: ## Build Python runner container
-	@echo -e "$(YELLOW)▶ Building Python runner container...$(NC)"
 	@docker build -t archesai/runner-python:latest deployments/containers/runners/python
-	@echo -e "$(GREEN)✓ Python runner container built!$(NC)"
 
 .PHONY: build-runner-node
 build-runner-node: ## Build Node runner base container
-	@echo -e "$(YELLOW)▶ Building Node runner base container...$(NC)"
 	@docker build -t archesai/runner-node:latest deployments/containers/runners/node
-	@echo -e "$(GREEN)✓ Node runner base container built!$(NC)"
 
 .PHONY: build-runner-go
 build-runner-go: ## Build Go runner container
-	@echo -e "$(YELLOW)▶ Building Go runner container...$(NC)"
 	@docker build -t archesai/runner-go:latest deployments/containers/runners/go
-	@echo -e "$(GREEN)✓ Go runner container built!$(NC)"
 
 # ------------------------------------------
 # Kubernetes Commands
@@ -455,38 +346,27 @@ skaffold-delete: ## Delete Skaffold deployment
 
 .PHONY: release-check
 release-check: ## Check if ready for release
-	@echo -e "$(YELLOW)━━━ Release Readiness Check ━━━$(NC)"
-	@echo -e "$(BLUE)Checking code generation...$(NC)"
 	@$(MAKE) generate
-	@echo -e "$(BLUE)Running tests...$(NC)"
 	@$(MAKE) test-short
-	@echo -e "$(BLUE)Building platform assets...$(NC)"
-	@$(MAKE) build-platform
-	@echo -e "$(BLUE)Linting code...$(NC)"
 	@$(MAKE) lint
-	@echo -e "$(GREEN)✓ Ready for release!$(NC)"
 
 .PHONY: release-snapshot
 release-snapshot: ## Create a snapshot release (test GoReleaser config)
-	@echo -e "$(YELLOW)━━━ Creating Snapshot Release ━━━$(NC)"
 	@if ! command -v goreleaser >/dev/null 2>&1; then \
 		echo -e "$(RED)✗ GoReleaser not found. Install with: go install github.com/goreleaser/goreleaser@latest$(NC)"; \
 		exit 1; \
 	fi
 	@$(MAKE) release-check
 	@goreleaser release --snapshot --clean
-	@echo -e "$(GREEN)✓ Snapshot release created in ./dist/$(NC)"
 
 .PHONY: release-test
 release-test: ## Test release configuration without publishing
-	@echo -e "$(YELLOW)━━━ Testing Release Configuration ━━━$(NC)"
 	@if ! command -v goreleaser >/dev/null 2>&1; then \
 		echo -e "$(RED)✗ GoReleaser not found. Install with: go install github.com/goreleaser/goreleaser@latest$(NC)"; \
 		exit 1; \
 	fi
 	@goreleaser check
 	@goreleaser build --snapshot --clean
-	@echo -e "$(GREEN)✓ Release configuration is valid$(NC)"
 
 .PHONY: release-tag
 release-tag: ## Create and push a new release tag (usage: make release-tag VERSION=v1.0.0)
@@ -494,13 +374,11 @@ release-tag: ## Create and push a new release tag (usage: make release-tag VERSI
 		echo -e "$(RED)✗ VERSION is required. Usage: make release-tag VERSION=v1.0.0$(NC)"; \
 		exit 1; \
 	fi
-	@echo -e "$(YELLOW)━━━ Creating Release Tag $(VERSION) ━━━$(NC)"
 	@if git rev-parse $(VERSION) >/dev/null 2>&1; then \
 		echo -e "$(RED)✗ Tag $(VERSION) already exists$(NC)"; \
 		exit 1; \
 	fi
 	@$(MAKE) release-check
-	@echo -e "$(BLUE)Creating tag $(VERSION)...$(NC)"
 	@git tag -a $(VERSION) -m "Release $(VERSION)"
 	@echo -e "$(BLUE)Pushing tag to origin...$(NC)"
 	@git push origin $(VERSION)
@@ -531,15 +409,7 @@ release-edge-local: ## Test edge release workflow locally
 
 .PHONY: release-nightly-local
 release-nightly-local: ## Test nightly release workflow locally
-	@echo -e "$(YELLOW)━━━ Testing Nightly Release Locally ━━━$(NC)"
 	@$(MAKE) release-snapshot
-	@echo -e "$(GREEN)✓ Nightly release test complete. Check ./dist/ directory$(NC)"
-
-.PHONY: release-clean
-release-clean: ## Clean release artifacts
-	@echo -e "$(YELLOW)━━━ Cleaning Release Artifacts ━━━$(NC)"
-	@rm -rf dist/
-	@echo -e "$(GREEN)✓ Release artifacts cleaned$(NC)"
 
 .PHONY: release-info
 release-info: ## Show release information and next steps
@@ -568,12 +438,6 @@ release-info: ## Show release information and next steps
 	@echo -e "  3. GitHub Actions will automatically build and publish"
 	@echo ""
 
-.PHONY: pre-commit
-pre-commit: ## Run all pre-commit checks
-	@echo -e "$(YELLOW)▶ Running pre-commit checks...$(NC)"
-	@go tool lefthook run pre-commit
-	@echo -e "$(GREEN)✓ Pre-commit checks complete!$(NC)"
-
 # ------------------------------------------
 # Shortcuts
 # ------------------------------------------
@@ -586,6 +450,3 @@ t: test ## Shortcut for test
 
 .PHONY: f
 f: format ## Shortcut for format
-
-.PHONY: w
-w: dev-all ## Shortcut for dev-all

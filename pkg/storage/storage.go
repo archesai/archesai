@@ -2,17 +2,21 @@
 package storage
 
 import (
+	"io/fs"
 	"os"
 	"path/filepath"
 )
 
-// Storage abstracts file system operations
+// Storage abstracts file system operations.
+// It embeds fs.FS, fs.ReadFileFS, and fs.ReadDirFS for compatibility with
+// standard library filesystem interfaces.
 type Storage interface {
+	fs.FS
+	fs.ReadFileFS
+	fs.ReadDirFS
+
 	// WriteFile writes data to a file at the given path
 	WriteFile(path string, data []byte, perm os.FileMode) error
-
-	// ReadFile reads the entire file at the given path
-	ReadFile(path string) ([]byte, error)
 
 	// Exists checks if a file or directory exists at the given path
 	Exists(path string) (bool, error)

@@ -1,0 +1,23 @@
+description: Persistent storage configuration
+x-internal: config
+type: object
+title: ConfigPersistence
+properties:
+  enabled:
+    description: Enable persistent storage
+    type: boolean
+    default: true
+    example: true
+  size:
+    description: Size of persistent volume
+    type: string
+    default: 10Gi
+    minLength: 1
+    example: 10Gi
+    maxLength: 255
+    pattern: ^[0-9]+(Ei|Pi|Ti|Gi|Mi|Ki|E|P|T|G|M|K)?$
+required:
+  - enabled
+  - size
+additionalProperties: false
+x-codegen-schema-type: valueobject

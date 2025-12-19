@@ -1,0 +1,27 @@
+x-path: /auth/sessions
+get:
+  x-internal: auth
+  operationId: ListSessions
+  summary: List sessions
+  tags:
+    - Session
+  description: List all active sessions for the current user
+  security:
+    - bearerAuth: []
+    - sessionCookie: []
+  parameters:
+    - $ref: ../components/parameters/PageQuery.yaml
+    - $ref: ../components/parameters/SessionsSort.yaml
+  responses:
+    '200':
+      $ref: ../components/responses/SessionListResponse.yaml
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '422':
+      $ref: ../components/responses/UnprocessableEntity.yaml
+    '429':
+      $ref: ../components/responses/TooManyRequests.yaml
+    '500':
+      $ref: ../components/responses/InternalServerError.yaml

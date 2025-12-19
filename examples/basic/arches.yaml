@@ -1,0 +1,7 @@
+# yaml-language-server: $schema=../../pkg/config/spec/components/schemas/Config.yaml
+generation:
+  spec: ./api/openapi.yaml
+  includes:
+    - server
+    - config
+    - auth

@@ -1,0 +1,26 @@
+x-path: /auth/accounts
+get:
+  x-internal: auth
+  operationId: ListAccounts
+  summary: List linked accounts
+  tags:
+    - Account
+  description: List all linked authentication providers for the current user
+  parameters:
+    - $ref: ../components/parameters/PageQuery.yaml
+  security:
+    - bearerAuth: []
+    - sessionCookie: []
+  responses:
+    '200':
+      $ref: ../components/responses/AccountListResponse.yaml
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '422':
+      $ref: ../components/responses/UnprocessableEntity.yaml
+    '429':
+      $ref: ../components/responses/TooManyRequests.yaml
+    '500':
+      $ref: ../components/responses/InternalServerError.yaml

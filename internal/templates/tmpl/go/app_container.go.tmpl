@@ -1,0 +1,82 @@
+{{- /*
+Template: app_container.go.tmpl
+Generates: Container that creates Ports with database repositories.
+Expects:
+- Entities: []*spec.Schema (entity schemas, for standalone apps)
+- ProjectName: string
+- InternalPackages: []InternalPackageWithEntities (for composition apps, has Repositories []string)
+*/ -}}
+{{template "header" .}}
+package app
+
+{{- if and .InternalPackages (not .OwnEntitySchemas) }}
+import (
+{{- range .InternalPackages }}
+	{{ .Alias }}app "{{ .ImportPath }}/app"
+{{- end }}
+	"{{ .ProjectName }}/database/postgres/repositories"
+	sqliterepos "{{ .ProjectName }}/database/sqlite/repositories"
+	"github.com/archesai/archesai/pkg/database"
+	"github.com/archesai/archesai/pkg/events"
+)
+
+// NewPorts creates Ports by composing internal package ports.
+func NewPorts(db *database.Database) *Ports {
+	publisher := events.NewNoOpPublisher()
+
+	if db.IsSQLite() {
+		sqlDB := db.SQLDB()
+		return &Ports{
+{{- range .InternalPackages }}
+			{{ pascalCase .Name }}: &{{ .Alias }}app.Ports{
+{{- range .Repositories }}
+				{{ . }}Repo: sqliterepos.NewSQLite{{ . }}Repository(sqlDB),
+{{- end }}
+{{- if .NeedsPublisher }}
+				Publisher: publisher,
+{{- end }}
+			},
+{{- end }}
+		}
+	}
+
+	pool := db.PgxPool()
+	return &Ports{
+{{- range .InternalPackages }}
+		{{ pascalCase .Name }}: &{{ .Alias }}app.Ports{
+{{- range .Repositories }}
+			{{ . }}Repo: repositories.NewPostgres{{ . }}Repository(pool),
+{{- end }}
+{{- if .NeedsPublisher }}
+			Publisher: publisher,
+{{- end }}
+		},
+{{- end }}
+	}
+}
+{{- else }}
+import (
+	"{{ .ProjectName }}/database/postgres/repositories"
+	sqliterepos "{{ .ProjectName }}/database/sqlite/repositories"
+	"github.com/archesai/archesai/pkg/database"
+)
+
+// NewPorts creates Ports with database repositories.
+func NewPorts(db *database.Database) *Ports {
+	if db.IsSQLite() {
+		sqlDB := db.SQLDB()
+		return &Ports{
+{{- range .OwnEntitySchemas }}
+			{{ .Title }}Repo: sqliterepos.NewSQLite{{ .Title }}Repository(sqlDB),
+{{- end }}
+		}
+	}
+
+	pool := db.PgxPool()
+	return &Ports{
+{{- range .OwnEntitySchemas }}
+		{{ .Title }}Repo: repositories.NewPostgres{{ .Title }}Repository(pool),
+{{- end }}
+	}
+}
+{{- end }}

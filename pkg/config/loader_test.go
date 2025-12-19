@@ -4,19 +4,17 @@ import (
 	"os"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-
-	"github.com/archesai/archesai/pkg/config/models"
+	"github.com/archesai/archesai/pkg/config/schemas"
 )
 
 func TestParserLoad(t *testing.T) {
 	tests := []struct {
-		name    string
-		setup   func()
-		cleanup func()
-		wantErr bool
-		check   func(*testing.T, *Configuration[models.Config])
+		name       string
+		setup      func()
+		cleanup    func()
+		configFile string // If set, use LoadFrom with this file path
+		wantErr    bool
+		check      func(*testing.T, *Configuration[schemas.Config])
 	}{
 		{
 			name: "load with defaults",
@@ -27,46 +25,23 @@ func TestParserLoad(t *testing.T) {
 			},
 			cleanup: func() {},
 			wantErr: false,
-			check: func(t *testing.T, c *Configuration[models.Config]) {
-				require.NotNil(t, c)
-				require.NotNil(t, c.Config)
+			check: func(t *testing.T, c *Configuration[schemas.Config]) {
+				t.Helper()
+				if c == nil {
+					t.Fatal("expected non-nil Configuration")
+				}
+				if c.Config == nil {
+					t.Fatal("expected non-nil Config")
+				}
 				// With no config file and no env vars, we get zero values
 			},
 		},
-		{
-			name: "load with environment variables",
-			setup: func() {
-				_ = os.Setenv("ARCHES_API_HOST", "127.0.0.1")
-				_ = os.Setenv("ARCHES_API_PORT", "8080")
-				_ = os.Setenv("ARCHES_DATABASE_URL", "postgres://test")
-				_ = os.Setenv("ARCHES_AUTH_ENABLED", "false")
-			},
-			cleanup: func() {
-				_ = os.Unsetenv("ARCHES_API_HOST")
-				_ = os.Unsetenv("ARCHES_API_PORT")
-				_ = os.Unsetenv("ARCHES_DATABASE_URL")
-				_ = os.Unsetenv("ARCHES_AUTH_ENABLED")
-			},
-			wantErr: false,
-			check: func(t *testing.T, c *Configuration[models.Config]) {
-				require.NotNil(t, c)
-				require.NotNil(t, c.Config)
-				if c.Config.API != nil {
-					assert.Equal(t, "127.0.0.1", c.Config.API.Host)
-					assert.Equal(t, int32(8080), c.Config.API.Port)
-				}
-				if c.Config.Database != nil {
-					assert.Equal(t, "postgres://test", c.Config.Database.URL)
-				}
-				if c.Config.Auth != nil {
-					assert.False(t, c.Config.Auth.Enabled)
-				}
-			},
-		},
+		// NOTE: Parser doesn't read environment variables.
+		// Use EnvLoader for environment variable tests.
 		{
 			name: "load with config file",
 			setup: func() {
-				// Create a temporary config file
+				// Create a temporary config file with unique name to avoid conflict with arches.yaml
 				configData := `
 api:
   host: "192.168.1.1"
@@ -80,29 +55,49 @@ logging:
   level: "debug"
   pretty: true
 `
-				err := os.WriteFile("config.yaml", []byte(configData), 0644)
+				err := os.WriteFile("test_config.yaml", []byte(configData), 0644)
 				if err != nil {
-					t.Fatalf("Failed to create test config file: %v", err)
+					panic("Failed to create test config file: " + err.Error())
 				}
 			},
 			cleanup: func() {
-				_ = os.Remove("config.yaml")
+				_ = os.Remove("test_config.yaml")
 			},
-			wantErr: false,
-			check: func(t *testing.T, c *Configuration[models.Config]) {
-				require.NotNil(t, c)
-				require.NotNil(t, c.Config)
-				if c.Config.API != nil {
-					assert.Equal(t, "192.168.1.1", c.Config.API.Host)
-					assert.Equal(t, int32(9090), c.Config.API.Port)
-					assert.Equal(t, models.APIConfigEnvironmentProduction, c.Config.API.Environment)
+			configFile: "test_config.yaml",
+			wantErr:    false,
+			check: func(t *testing.T, c *Configuration[schemas.Config]) {
+				t.Helper()
+				if c == nil {
+					t.Fatal("expected non-nil Configuration")
 				}
-				if c.Config.Database != nil {
-					assert.Equal(t, int32(50), c.Config.Database.MaxConns)
+				if c.Config == nil {
+					t.Fatal("expected non-nil Config")
 				}
-				if c.Config.Logging != nil {
-					assert.Equal(t, models.LoggingConfigLevelDebug, c.Config.Logging.Level)
-					assert.True(t, c.Config.Logging.Pretty)
+				if c.Config.API.Host != "192.168.1.1" {
+					t.Errorf("API.Host = %q, want %q", c.Config.API.Host, "192.168.1.1")
+				}
+				if c.Config.API.Port != 9090 {
+					t.Errorf("API.Port = %d, want %d", c.Config.API.Port, 9090)
+				}
+				if c.Config.API.Environment != schemas.ConfigAPIEnvironmentProduction {
+					t.Errorf(
+						"API.Environment = %v, want %v",
+						c.Config.API.Environment,
+						schemas.ConfigAPIEnvironmentProduction,
+					)
+				}
+				if c.Config.Database.MaxConns != 50 {
+					t.Errorf("Database.MaxConns = %d, want %d", c.Config.Database.MaxConns, 50)
+				}
+				if c.Config.Logging.Level != schemas.ConfigLoggingLevelDebug {
+					t.Errorf(
+						"Logging.Level = %v, want %v",
+						c.Config.Logging.Level,
+						schemas.ConfigLoggingLevelDebug,
+					)
+				}
+				if !c.Config.Logging.Pretty {
+					t.Error("Logging.Pretty = false, want true")
 				}
 			},
 		},
@@ -117,14 +112,24 @@ logging:
 				defer tt.cleanup()
 			}
 
-			parser := NewParser[models.Config]()
-			config, err := parser.Load()
+			parser := NewParser[schemas.Config]()
+			var config *Configuration[schemas.Config]
+			var err error
+			if tt.configFile != "" {
+				config, err = parser.LoadFrom(tt.configFile)
+			} else {
+				config, err = parser.Load()
+			}
 
 			if tt.wantErr {
-				require.Error(t, err)
+				if err == nil {
+					t.Error("expected error, got none")
+				}
 				return
 			}
-			require.NoError(t, err)
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
 
 			if tt.check != nil {
 				tt.check(t, config)
@@ -134,9 +139,23 @@ logging:
 }
 
 func TestConfigConstants(t *testing.T) {
-	assert.Equal(t, "config", DefaultConfigName)
-	assert.Equal(t, "yaml", DefaultConfigType)
-	assert.Equal(t, "ARCHES", EnvPrefix)
+	tests := []struct {
+		name     string
+		got      string
+		expected string
+	}{
+		{"DefaultConfigName", DefaultConfigName, "config"},
+		{"DefaultConfigType", DefaultConfigType, "yaml"},
+		{"EnvPrefix", EnvPrefix, "ARCHES"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.got != tt.expected {
+				t.Errorf("%s = %q, want %q", tt.name, tt.got, tt.expected)
+			}
+		})
+	}
 }
 
 func TestConfigPaths(t *testing.T) {
@@ -146,9 +165,13 @@ func TestConfigPaths(t *testing.T) {
 		"$HOME/.config/archesai",
 	}
 
-	assert.Equal(t, len(expectedPaths), len(ConfigPaths))
+	if len(ConfigPaths) != len(expectedPaths) {
+		t.Fatalf("len(ConfigPaths) = %d, want %d", len(ConfigPaths), len(expectedPaths))
+	}
 	for i, path := range ConfigPaths {
-		assert.Equal(t, expectedPaths[i], path)
+		if path != expectedPaths[i] {
+			t.Errorf("ConfigPaths[%d] = %q, want %q", i, path, expectedPaths[i])
+		}
 	}
 }
 
@@ -159,17 +182,12 @@ func TestConfigFileNames(t *testing.T) {
 		".archesai",
 	}
 
-	assert.Equal(t, len(expectedNames), len(ConfigFileNames))
-	for i, name := range ConfigFileNames {
-		assert.Equal(t, expectedNames[i], name)
+	if len(ConfigFileNames) != len(expectedNames) {
+		t.Fatalf("len(ConfigFileNames) = %d, want %d", len(ConfigFileNames), len(expectedNames))
 	}
-}
-
-func TestGetViperInstance(t *testing.T) {
-	parser := NewParser[models.Config]()
-	config, err := parser.Load()
-	require.NoError(t, err)
-
-	v := config.GetViperInstance()
-	assert.NotNil(t, v)
+	for i, name := range ConfigFileNames {
+		if name != expectedNames[i] {
+			t.Errorf("ConfigFileNames[%d] = %q, want %q", i, name, expectedNames[i])
+		}
+	}
 }

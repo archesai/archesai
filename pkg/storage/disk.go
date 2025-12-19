@@ -2,6 +2,7 @@ package storage
 
 import (
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 )
@@ -89,4 +90,14 @@ func (d *DiskStorage) Walk(root string, fn filepath.WalkFunc) error {
 // BaseDir returns the base directory of the storage
 func (d *DiskStorage) BaseDir() string {
 	return d.baseDir
+}
+
+// Open opens the named file for reading.
+func (d *DiskStorage) Open(name string) (fs.File, error) {
+	return os.Open(d.resolvePath(name))
+}
+
+// ReadDir reads the named directory and returns a list of directory entries.
+func (d *DiskStorage) ReadDir(name string) ([]fs.DirEntry, error) {
+	return os.ReadDir(d.resolvePath(name))
 }

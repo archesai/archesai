@@ -13,6 +13,8 @@ import (
 	"sync"
 	"syscall"
 	"time"
+
+	"github.com/charmbracelet/lipgloss"
 )
 
 // ProcessConfig defines the configuration for a process
@@ -58,32 +60,50 @@ func (s ProcessState) String() string {
 	}
 }
 
+// serviceColors maps service names to lipgloss colors for log output
+var serviceColors = map[string]lipgloss.Color{
+	"api":      lipgloss.Color("39"),  // cyan
+	"frontend": lipgloss.Color("213"), // pink
+}
+
 // Process represents a managed process
 type Process struct {
-	config   ProcessConfig
-	cmd      *exec.Cmd
-	state    ProcessState
-	logger   *slog.Logger
-	mu       sync.RWMutex
-	ctx      context.Context
-	cancel   context.CancelFunc
-	outputCh chan string
-	errorCh  chan error
-	doneCh   chan struct{}
+	config      ProcessConfig
+	cmd         *exec.Cmd
+	state       ProcessState
+	logger      *slog.Logger
+	mu          sync.RWMutex
+	ctx         context.Context
+	cancel      context.CancelFunc
+	outputCh    chan string
+	errorCh     chan error
+	doneCh      chan struct{}
+	prefixStyle lipgloss.Style
 }
 
 // NewProcess creates a new process instance
 func NewProcess(config ProcessConfig, logger *slog.Logger) *Process {
 	ctx, cancel := context.WithCancel(context.Background())
+
+	// Set up colored prefix for service
+	color, ok := serviceColors[config.Name]
+	if !ok {
+		color = lipgloss.Color("245") // default gray
+	}
+	prefixStyle := lipgloss.NewStyle().
+		Bold(true).
+		Foreground(color)
+
 	return &Process{
-		config:   config,
-		state:    ProcessStateStopped,
-		logger:   logger.With(slog.String("service", config.Name)),
-		ctx:      ctx,
-		cancel:   cancel,
-		outputCh: make(chan string, 100),
-		errorCh:  make(chan error, 10),
-		doneCh:   make(chan struct{}),
+		config:      config,
+		state:       ProcessStateStopped,
+		logger:      logger.With(slog.String("service", config.Name)),
+		ctx:         ctx,
+		cancel:      cancel,
+		outputCh:    make(chan string, 100),
+		errorCh:     make(chan error, 10),
+		doneCh:      make(chan struct{}),
+		prefixStyle: prefixStyle,
 	}
 }
 
@@ -223,9 +243,11 @@ func (p *Process) GetErrors() <-chan error {
 }
 
 // readOutput reads output from a pipe and sends it to the output channel
-func (p *Process) readOutput(pipe io.Reader, source string) {
+func (p *Process) readOutput(pipe io.Reader, _ string) {
 	scanner := bufio.NewScanner(pipe)
 	scanner.Buffer(make([]byte, 0, 64*1024), 1024*1024) // 1MB max line size
+
+	prefix := p.prefixStyle.Render(fmt.Sprintf("[%s]", p.config.Name))
 
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -235,10 +257,10 @@ func (p *Process) readOutput(pipe io.Reader, source string) {
 			continue
 		}
 
-		// Log to stdout/stderr normally
-		p.logger.Info(line, "source", source)
+		// Print directly to stdout with colored prefix
+		fmt.Printf("%s %s\n", prefix, line)
 
-		// Also send to output channel for buffer consumption
+		// Also send to output channel for any consumers
 		select {
 		case p.outputCh <- line:
 		case <-p.ctx.Done():
@@ -249,7 +271,7 @@ func (p *Process) readOutput(pipe io.Reader, source string) {
 	}
 
 	if err := scanner.Err(); err != nil {
-		p.errorCh <- fmt.Errorf("error reading %s: %w", source, err)
+		p.errorCh <- fmt.Errorf("error reading output: %w", err)
 	}
 }
 

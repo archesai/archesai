@@ -1,0 +1,121 @@
+x-codegen-schema-type: entity
+x-codegen:
+  repository:
+    excludeFromCreate:
+      - CreatedAt
+      - UpdatedAt
+      - LastUsedAt
+    excludeFromUpdate:
+      - CreatedAt
+      - UpdatedAt
+      - UserID
+      - OrganizationID
+      - KeyHash
+      - Prefix
+      - LastUsedAt
+    relations:
+      - field: organizationID
+        references: organization
+        onDelete: CASCADE
+        onUpdate: NO_ACTION
+      - field: userID
+        references: user
+        onDelete: CASCADE
+        onUpdate: NO_ACTION
+    indices:
+      - organizationID
+      - userID
+      - keyHash
+      - lastUsedAt
+title: APIKey
+description: Schema for API Key entity
+x-internal: auth
+allOf:
+  - $ref: ./Base.yaml
+  - type: object
+    properties:
+      userID:
+        description: The user who owns this API key
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
+        maxLength: 36
+      organizationID:
+        description: The organization this API key belongs to
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
+        maxLength: 36
+      keyHash:
+        type: string
+        minLength: 1
+        example: hashedskliveabc123
+        description: Hashed version of the API key for secure storage
+        maxLength: 255
+        pattern: ^[a-zA-Z0-9]+$
+      name:
+        oneOf:
+          - type: string
+            minLength: 1
+            maxLength: 255
+            pattern: ^[\w\s\-.,!?()@#+/']+$
+          - type: 'null'
+        example: Production API Key
+      prefix:
+        oneOf:
+          - type: string
+            minLength: 1
+            maxLength: 255
+            pattern: ^[a-z]+$
+          - type: 'null'
+        example: sklive
+      scopes:
+        type: array
+        items:
+          type: string
+          maxLength: 255
+          pattern: ^[a-z]+:[a-z]+$
+        example:
+          - read:users
+          - write:workflows
+        maxItems: 1000
+        default: []
+      rateLimit:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 2147483647
+        example: 1000
+        default: 60
+        description: Requests per minute allowed for this API key
+      lastUsedAt:
+        description: When this API key was last used
+        oneOf:
+          - type: string
+            format: date-time
+            minLength: 1
+            maxLength: 255
+          - type: 'null'
+        example: '2024-01-15T09:30:00Z'
+      expiresAt:
+        description: When this API key expires
+        oneOf:
+          - type: string
+            format: date-time
+            minLength: 1
+            maxLength: 255
+          - type: 'null'
+        example: '2025-01-15T09:30:00Z'
+    required:
+      - scopes
+      - rateLimit
+      - keyHash
+      - organizationID
+      - userID
+      - name
+      - prefix
+      - lastUsedAt
+      - expiresAt
+unevaluatedProperties: false

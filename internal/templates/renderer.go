@@ -14,30 +14,50 @@ import (
 
 // Renderer handles template rendering with proper formatting.
 type Renderer struct {
-	templates *template.Template
+	goTemplates  *template.Template
+	tsxTemplates *template.Template
 }
 
 // NewRenderer creates a new renderer with default settings.
-func NewRenderer(templates *template.Template) *Renderer {
+func NewRenderer(templates *Templates) *Renderer {
 	return &Renderer{
-		templates: templates,
+		goTemplates:  templates.Go,
+		tsxTemplates: templates.TSX,
 	}
 }
 
 // Render renders a template to the provided writer.
-// If the template ends with .go.tmpl, it will format the output.
+// It selects the correct template collection based on the template path.
+// Go templates (.go.tmpl) are formatted with gofmt/goimports.
 func (r *Renderer) Render(w io.Writer, templateName string, data any) error {
-	if r.templates == nil {
-		return fmt.Errorf("templates not configured")
+	var tmpl *template.Template
+	var isTSX bool
+
+	// Select template collection based on path prefix
+	// Templates are named by their basename, so strip the prefix for lookup
+	lookupName := templateName
+	if strings.HasPrefix(templateName, "tsx/") {
+		isTSX = true
+		if r.tsxTemplates == nil {
+			return fmt.Errorf("TSX templates not configured")
+		}
+		// Extract basename for lookup (e.g., "tsx/components/datatable.tsx.tmpl" -> "datatable.tsx.tmpl")
+		parts := strings.Split(templateName, "/")
+		lookupName = parts[len(parts)-1]
+		tmpl = r.tsxTemplates.Lookup(lookupName)
+	} else {
+		if r.goTemplates == nil {
+			return fmt.Errorf("go templates not configured")
+		}
+		tmpl = r.goTemplates.Lookup(lookupName)
 	}
 
-	tmpl := r.templates.Lookup(templateName)
 	if tmpl == nil {
-		return fmt.Errorf("template %s not found", templateName)
+		return fmt.Errorf("template %s not found (lookup: %s)", templateName, lookupName)
 	}
 
-	// If writing directly to a non-Go template, just execute it
-	if !strings.HasSuffix(templateName, ".go.tmpl") {
+	// For TSX templates or non-Go templates, just execute directly
+	if isTSX || !strings.HasSuffix(templateName, ".go.tmpl") {
 		return tmpl.Execute(w, data)
 	}
 
@@ -49,14 +69,13 @@ func (r *Renderer) Render(w io.Writer, templateName string, data any) error {
 
 	content := buf.Bytes()
 
-	// Format Go code
-	// First apply gofmt
+	// Format Go code with gofmt
 	formatted, err := format.Source(content)
 	if err != nil {
 		return fmt.Errorf("failed to format Go code from template %s: %w", templateName, err)
 	}
 
-	// Then apply goimports to fix imports (add missing, remove unused)
+	// Apply goimports to fix imports (add missing, remove unused)
 	imported, err := imports.Process("", formatted, &imports.Options{
 		Fragment:  false,
 		AllErrors: false,
@@ -74,4 +93,13 @@ func (r *Renderer) Render(w io.Writer, templateName string, data any) error {
 	// Write the formatted content to the writer
 	_, err = w.Write(content)
 	return err
+}
+
+// RenderToString renders a template to a string.
+func (r *Renderer) RenderToString(templateName string, data any) (string, error) {
+	var buf bytes.Buffer
+	if err := r.Render(&buf, templateName, data); err != nil {
+		return "", err
+	}
+	return buf.String(), nil
 }

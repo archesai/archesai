@@ -9,7 +9,7 @@
       "path": "./apps/docs"
     },
     {
-      "path": "./apps/studio"
+      "path": "./apps/studio/web"
     },
     {
       "path": "./deployments/containers/runners/node"

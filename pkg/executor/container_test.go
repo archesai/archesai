@@ -7,6 +7,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/archesai/archesai/internal/testutil"
 	"github.com/archesai/archesai/pkg/executor"
 )
 
@@ -48,8 +49,7 @@ func TestNodeRunnerWithoutMount(t *testing.T) {
 	// Should error with "No execution function provided"
 	if err == nil {
 		t.Fatal("Expected error from base runner without custom execute.js")
-	}
-	if err != nil {
+	} else {
 		t.Logf("Got expected error: %v", err)
 	}
 }
@@ -352,10 +352,7 @@ func TestAutoBuildWithExistingImage(t *testing.T) {
 	defer func() { _ = builder.Close() }()
 
 	// Get project root for build config
-	projectRoot, err := findProjectRoot()
-	if err != nil {
-		t.Fatalf("Failed to find project root: %v", err)
-	}
+	projectRoot := testutil.FindProjectRoot(t)
 
 	// First, ensure the image exists by building it
 	buildConfig := executor.ImageConfig{

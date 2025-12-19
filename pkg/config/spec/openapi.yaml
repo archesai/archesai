@@ -1,0 +1,9 @@
+openapi: 3.1.0
+x-project-name: github.com/archesai/archesai/pkg/config
+info:
+  title: Arches Configuration API
+  description: Configuration schemas for Arches platform
+  version: v0.0.0
+tags:
+  - name: Config
+    description: Configuration management

@@ -1,0 +1,78 @@
+x-path: /organizations/{organizationID}/invitations
+get:
+  x-internal: auth
+  operationId: ListInvitations
+  summary: List invitations
+  tags:
+    - Invitation
+  description: List invitations
+  parameters:
+    - $ref: ../components/parameters/OrganizationID.yaml
+    - $ref: ../components/parameters/InvitationsFilter.yaml
+    - $ref: ../components/parameters/PageQuery.yaml
+    - $ref: ../components/parameters/InvitationsSort.yaml
+  security:
+    - bearerAuth: []
+  responses:
+    '200':
+      $ref: ../components/responses/InvitationListResponse.yaml
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '422':
+      $ref: ../components/responses/UnprocessableEntity.yaml
+    '429':
+      $ref: ../components/responses/TooManyRequests.yaml
+    '500':
+      $ref: ../components/responses/InternalServerError.yaml
+post:
+  x-internal: auth
+  operationId: CreateInvitation
+  summary: Create an invitation
+  tags:
+    - Invitation
+  description: Create an invitation
+  parameters:
+    - $ref: ../components/parameters/OrganizationID.yaml
+  requestBody:
+    description: Invitation creation request
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            email:
+              description: The email of the invitated user
+              type: string
+              example: example-string
+              minLength: 1
+              maxLength: 255
+              pattern: ^[\w\s\-.,!?()@#+/]*$
+            role:
+              description: The role of the invitation
+              type: string
+              enum:
+                - admin
+                - owner
+                - member
+              example: admin
+          required:
+            - email
+            - role
+    required: true
+  security:
+    - bearerAuth: []
+  responses:
+    '201':
+      $ref: ../components/responses/InvitationResponse.yaml
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '422':
+      $ref: ../components/responses/UnprocessableEntity.yaml
+    '429':
+      $ref: ../components/responses/TooManyRequests.yaml
+    '500':
+      $ref: ../components/responses/InternalServerError.yaml

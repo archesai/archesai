@@ -1,0 +1,9 @@
+openapi: 3.1.0
+x-project-name: github.com/archesai/archesai/pkg/storage
+info:
+  title: Arches Storage API
+  description: Storage schemas for Arches platform
+  version: v0.0.0
+tags:
+  - name: Storage
+    description: Storage management

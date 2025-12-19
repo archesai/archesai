@@ -1,0 +1,14 @@
+description: Monitoring configuration for Grafana and Loki
+x-internal: config
+type: object
+title: ConfigMonitoring
+properties:
+  grafana:
+    $ref: ./ConfigGrafana.yaml
+  loki:
+    $ref: ./ConfigLoki.yaml
+required:
+  - grafana
+  - loki
+additionalProperties: false
+x-codegen-schema-type: valueobject

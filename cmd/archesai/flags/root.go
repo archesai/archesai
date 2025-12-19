@@ -19,7 +19,7 @@ var Root RootFlags
 // SetRootFlags configures persistent flags on the root command.
 func SetRootFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().
-		StringVar(&Root.ConfigFile, "config", "", "config file (default is .archesai.yaml)")
+		StringVarP(&Root.ConfigFile, "config", "c", "", "config file (default is .archesai.yaml)")
 	cmd.PersistentFlags().BoolVarP(&Root.Verbose, "verbose", "v", false, "verbose output")
 	cmd.PersistentFlags().BoolVar(&Root.Pretty, "pretty", false, "enable pretty logging output")
 

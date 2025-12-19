@@ -9,6 +9,8 @@ import (
 	"github.com/spf13/viper"
 
 	"github.com/archesai/archesai/cmd/archesai/flags"
+	"github.com/archesai/archesai/pkg/config"
+	configschemas "github.com/archesai/archesai/pkg/config/schemas"
 	"github.com/archesai/archesai/pkg/logger"
 )
 
@@ -24,6 +26,9 @@ This command provides various modes to run the Arches server:
 - Configuration viewer and TUI interface`,
 }
 
+// Config is the loaded configuration (nil if not loaded).
+var Config *config.Configuration[configschemas.Config]
+
 func init() {
 	// Initialize configuration
 	cobra.OnInitialize(loadConfig)
@@ -34,25 +39,24 @@ func init() {
 
 // loadConfig reads in config file and ENV variables if set.
 func loadConfig() {
-	if flags.Root.ConfigFile != "" {
-		// Use config file from the flag.
-		viper.SetConfigFile(flags.Root.ConfigFile)
+	// Load typed config
+	parser := config.NewParser[configschemas.Config]()
+	cfg, err := parser.LoadFrom(flags.Root.ConfigFile)
+	if err != nil {
+		// Config loading is optional for some commands (e.g., version, completion)
+		if flags.Root.Verbose {
+			fmt.Fprintln(os.Stderr, "Warning: failed to load config:", err)
+		}
 	} else {
-		// Search for config in current directory and home directory
-		viper.AddConfigPath(".")
-		viper.AddConfigPath("$HOME")
-		viper.SetConfigType("yaml")
-		viper.SetConfigName(".archesai")
+		Config = cfg
+		if flags.Root.Verbose {
+			fmt.Fprintln(os.Stderr, "Using config file:", Config.ConfigPath)
+		}
 	}
 
-	// Read in environment variables
+	// Setup viper for env var support
 	viper.SetEnvPrefix("ARCHESAI")
 	viper.AutomaticEnv()
-
-	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil && flags.Root.Verbose {
-		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
-	}
 
 	// Configure logger based on flags and set as default
 	logLevel := "info"

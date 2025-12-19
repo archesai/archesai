@@ -1,0 +1,79 @@
+{{- /*
+Template: sqlite.tmpl
+Generates: A repository for SQLite with basic CRUD implementations and stubs for additional methods
+Expected data: InfrastructureTemplateData
+*/ -}}
+{{template "header" .}}
+package repositories
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+
+	"{{ .ModelImportPath }}"
+	"github.com/google/uuid"
+)
+
+{{- $entity := .Entity }}
+
+// SQLite{{ $entity.Title }}Repository implements {{ $entity.Title }}Repository using SQLite.
+type SQLite{{ $entity.Title }}Repository struct {
+	queries *Queries
+}
+
+// NewSQLite{{ $entity.Title }}Repository creates a new SQLite repository.
+func NewSQLite{{ $entity.Title }}Repository(db *sql.DB) *SQLite{{ $entity.Title }}Repository {
+	return &SQLite{{ $entity.Title }}Repository{
+		queries: New(db),
+	}
+}
+
+// {{ $entity.Title }} operations
+
+// Create creates a new {{ lower $entity.Title }}
+func (r *SQLite{{ $entity.Title }}Repository) Create(ctx context.Context, {{ camelCase $entity.Title }} *schemas.{{ $entity.Title }}) (*schemas.{{ $entity.Title }}, error) {
+	// For now, return a basic implementation
+	// Actual implementation would need to be customized per {{ camelCase $entity.Title }}
+	return nil, fmt.Errorf("Create{{ $entity.Title }} not yet implemented - requires custom mapping")
+}
+
+// Get retrieves a {{ lower $entity.Title }} by ID
+func (r *SQLite{{ $entity.Title }}Repository) Get(ctx context.Context, id uuid.UUID) (*schemas.{{ $entity.Title }}, error) {
+	// For now, return a basic implementation
+	// Actual implementation would need to be customized per {{ camelCase $entity.Title }}
+	return nil, fmt.Errorf("Get{{ $entity.Title }} not yet implemented - requires custom mapping")
+}
+
+// Update updates an existing {{ lower $entity.Title }}
+func (r *SQLite{{ $entity.Title }}Repository) Update(ctx context.Context, id uuid.UUID, {{ camelCase $entity.Title }} *schemas.{{ $entity.Title }}) (*schemas.{{ $entity.Title }}, error) {
+	// For now, return a basic implementation
+	// Actual implementation would need to be customized per {{ camelCase $entity.Title }}
+	return nil, fmt.Errorf("Update{{ $entity.Title }} not yet implemented - requires custom mapping")
+}
+
+// Delete removes a {{ lower $entity.Title }}
+func (r *SQLite{{ $entity.Title }}Repository) Delete(ctx context.Context, id uuid.UUID) error {
+	// For now, return a basic implementation
+	// Actual implementation would need to be customized per {{ camelCase $entity.Title }}
+	return fmt.Errorf("Delete{{ $entity.Title }} not yet implemented - requires custom mapping")
+}
+
+// List returns a paginated list of {{ lower $entity.Title }}s
+func (r *SQLite{{ $entity.Title }}Repository) List(ctx context.Context, limit, offset int32) ([]*schemas.{{ $entity.Title }}, int64, error) {
+	// For now, return a basic implementation
+	// Actual implementation would need to be customized per {{ camelCase $entity.Title }}
+	return nil, 0, fmt.Errorf("List{{ $entity.Title }}s not yet implemented - requires custom mapping")
+}
+
+{{ if and $entity.XCodegen $entity.XCodegen.Repository }}{{- $repo := $entity.XCodegen.Repository }}{{if $repo.AdditionalMethods}}
+// Additional methods
+{{ range $repo.AdditionalMethods }}
+{{- $additionalMethod := . }}
+// {{ $additionalMethod.Name }} retrieves {{if eq $additionalMethod.Returns "multiple"}}multiple {{ lower $entity.Title }}s{{ else }}a single {{ lower $entity.Title }}{{ end }}{{ if $additionalMethod.Params }} by {{ range $i, $param := $additionalMethod.Params }}{{ if $i }} and {{ end }}{{ $param.Name }}{{ end }}{{ end }}
+func (r *SQLite{{ $entity.Title }}Repository) {{ $additionalMethod.Name }}(ctx context.Context{{ if $additionalMethod.Params }}{{ range $i, $param := $additionalMethod.Params }}, {{ $param.Name }} {{ $param.Type }}{{ end }}{{ end }}) ({{ if eq $additionalMethod.Returns "single" }}*schemas.{{ $entity.Title }}{{ else if eq $additionalMethod.Returns "multiple" }}[]*schemas.{{ $entity.Title }}{{ end }}, error) {
+	// TODO: Implement {{ $additionalMethod.Name }}
+	return nil, fmt.Errorf("{{ $additionalMethod.Name }} not yet implemented - requires custom mapping")
+}
+{{ end }}
+{{ end }}{{ end }}

@@ -1,0 +1,13 @@
+openapi: 3.2.0
+x-project-name: github.com/archesai/archesai/pkg/pipelines
+info:
+  title: Arches Pipelines API
+  description: The Arches Pipelines API
+  version: v0.0.0
+tags:
+  - name: Pipeline
+    description: Pipeline management
+  - name: Run
+    description: Pipeline run management
+  - name: Tool
+    description: Tool management

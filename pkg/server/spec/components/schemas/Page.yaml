@@ -1,0 +1,23 @@
+title: Page
+description: Pagination parameters (limit & offset)
+x-internal: server
+x-codegen-schema-type: valueobject
+type: object
+additionalProperties: false
+properties:
+  limit:
+    description: Maximum number of items to return
+    type: integer
+    format: int32
+    minimum: 1
+    default: 10
+    maximum: 100
+    example: 10
+  offset:
+    description: Number of items to skip before starting to collect the result set
+    type: integer
+    format: int32
+    minimum: 0
+    default: 0
+    maximum: 9007199254740991
+    example: 0

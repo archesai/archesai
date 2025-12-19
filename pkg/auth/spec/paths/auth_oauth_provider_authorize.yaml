@@ -1,0 +1,105 @@
+x-path: /auth/oauth/{provider}/authorize
+get:
+  x-internal: auth
+  operationId: OauthAuthorize
+  summary: Start OAuth authorization flow
+  tags:
+    - Auth
+  description: Redirect user to OAuth provider authorization page
+  x-codegen-custom-handler: true
+  security:
+    - bearerAuth: []
+    - sessionCookie: []
+  parameters:
+    - schema:
+        type: string
+        enum:
+          - google
+          - github
+          - microsoft
+        example: google
+      in: path
+      name: provider
+      required: true
+      description: The OAuth provider to use for authorization
+    - schema:
+        type: string
+        format: uri
+        maxLength: 2048
+        example: http://localhost:3000/auth/callback
+      in: query
+      name: redirect_uri
+      required: false
+      description:
+        Where to redirect after authorization (optional, uses default if
+        not provided)
+    - schema:
+        type: string
+        maxLength: 255
+        pattern: ^[\w\s\-.,!?()@#+/:]*$
+        example: read:user
+      in: query
+      name: scope
+      required: false
+      description: OAuth scopes to request (optional, uses default if not provided)
+    - schema:
+        type: string
+        maxLength: 255
+        pattern: ^[\w\-]+$
+        example: random_state_123
+      in: query
+      name: state
+      required: false
+      description: State parameter for CSRF protection
+  responses:
+    '200':
+      description: Authorization URL generated successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              authorizationUrl:
+                type: string
+                minLength: 1
+                example: https://accounts.google.com/oauth/authorize?client_id=...
+                description: URL to redirect user for OAuth authorization
+                maxLength: 2048
+                format: uri
+            required:
+              - authorizationUrl
+      headers:
+        X-RateLimit-Limit:
+          $ref: ../components/headers/RateLimitLimit.yaml
+        X-RateLimit-Remaining:
+          $ref: ../components/headers/RateLimitRemaining.yaml
+        X-RateLimit-Reset:
+          $ref: ../components/headers/RateLimitReset.yaml
+    '302':
+      description: Redirect to OAuth provider
+      headers:
+        Location:
+          description: The OAuth provider authorization URL
+          schema:
+            type: string
+            format: uri
+            maxLength: 2048
+            example: https://accounts.google.com/oauth/authorize?client_id=...
+        X-RateLimit-Limit:
+          $ref: ../components/headers/RateLimitLimit.yaml
+        X-RateLimit-Remaining:
+          $ref: ../components/headers/RateLimitRemaining.yaml
+        X-RateLimit-Reset:
+          $ref: ../components/headers/RateLimitReset.yaml
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '422':
+      $ref: ../components/responses/UnprocessableEntity.yaml
+    '404':
+      $ref: ../components/responses/NotFound.yaml
+    '429':
+      $ref: ../components/responses/TooManyRequests.yaml
+    '500':
+      $ref: ../components/responses/InternalServerError.yaml

@@ -9,20 +9,26 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/pkg/auth/oauth"
+	authschemas "github.com/archesai/archesai/pkg/auth/schemas"
+	configschemas "github.com/archesai/archesai/pkg/config/schemas"
+
 	"github.com/archesai/archesai/pkg/cache"
+)
+
+const (
+	bindHost = "0.0.0.0"
 )
 
 // Service provides authentication functionality across all transport layers.
 // It implements the core services.AuthService interface.
 type Service struct {
-	config             *Config
-	sessionRepo        SessionRepository
-	userRepo           UserRepository
-	accountRepo        AccountRepository
+	config             configschemas.Config
+	sessionRepo        authschemas.SessionRepository
+	userRepo           authschemas.UserRepository
+	accountRepo        authschemas.AccountRepository
 	tokenManager       *TokenManager
 	magicLink          *MagicLinkProvider
-	oauthProviders     map[string]oauth.Provider
+	oauthProviders     map[string]Provider
 	cache              cache.Cache[string]
 	jwtSecret          string
 	magicLinkDeliverer MagicLinkDeliverer
@@ -31,20 +37,20 @@ type Service struct {
 
 // MagicLinkDeliverer handles magic link notification delivery.
 type MagicLinkDeliverer interface {
-	Deliver(ctx context.Context, token *MagicLinkToken, baseURL string) error
+	Deliver(ctx context.Context, token *authschemas.MagicLinkToken, baseURL string) error
 }
 
 // OTPDeliverer handles OTP notification delivery.
 type OTPDeliverer interface {
-	Deliver(ctx context.Context, token *MagicLinkToken, baseURL string) error
+	Deliver(ctx context.Context, token *authschemas.MagicLinkToken, baseURL string) error
 }
 
 // NewService creates a new authentication service.
 func NewService(
-	cfg *Config,
-	sessionRepo SessionRepository,
-	userRepo UserRepository,
-	accountRepo AccountRepository,
+	cfg configschemas.Config,
+	sessionRepo authschemas.SessionRepository,
+	userRepo authschemas.UserRepository,
+	accountRepo authschemas.AccountRepository,
 	cacheService cache.Cache[string],
 	magicLinkDeliverer MagicLinkDeliverer,
 	otpDeliverer OTPDeliverer,
@@ -62,7 +68,7 @@ func NewService(
 		accountRepo:        accountRepo,
 		tokenManager:       NewTokenManager(cfg.Auth.Local.JWTSecret),
 		magicLink:          NewMagicLinkProvider(cfg.Auth.Local.JWTSecret, baseURL),
-		oauthProviders:     make(map[string]oauth.Provider),
+		oauthProviders:     make(map[string]Provider),
 		cache:              cacheService,
 		jwtSecret:          cfg.Auth.Local.JWTSecret,
 		magicLinkDeliverer: magicLinkDeliverer,
@@ -71,7 +77,7 @@ func NewService(
 
 	// Initialize OAuth providers based on config
 	if cfg.Auth.Google != nil && cfg.Auth.Google.Enabled && cfg.Auth.Google.ClientID != nil {
-		s.oauthProviders["google"] = oauth.NewGoogleProvider(
+		s.oauthProviders["google"] = NewGoogleProvider(
 			*cfg.Auth.Google.ClientID,
 			*cfg.Auth.Google.ClientSecret,
 			*cfg.Auth.Google.RedirectURL,
@@ -79,7 +85,7 @@ func NewService(
 	}
 
 	if cfg.Auth.Github != nil && cfg.Auth.Github.Enabled && cfg.Auth.Github.ClientID != nil {
-		s.oauthProviders["github"] = oauth.NewGitHubProvider(
+		s.oauthProviders["github"] = NewGitHubProvider(
 			*cfg.Auth.Github.ClientID,
 			*cfg.Auth.Github.ClientSecret,
 			*cfg.Auth.Github.RedirectURL,
@@ -88,8 +94,8 @@ func NewService(
 
 	if cfg.Auth.Microsoft != nil && cfg.Auth.Microsoft.Enabled &&
 		cfg.Auth.Microsoft.ClientID != nil {
-		s.oauthProviders["microsoft"] = oauth.NewMicrosoftProvider(
-			*cfg.Auth.Microsoft.ClientID,
+		s.oauthProviders["microsoft"] = NewMicrosoftProvider(
+			cfg.Auth.Microsoft.ClientID.String(),
 			*cfg.Auth.Microsoft.ClientSecret,
 			*cfg.Auth.Microsoft.RedirectURL,
 		)
@@ -162,7 +168,7 @@ func (s *Service) GenerateMagicLink(
 
 	// Extract token from link for notification
 	tokenStr := link[strings.LastIndex(link, "token=")+6:]
-	token := &MagicLinkToken{
+	token := &authschemas.MagicLinkToken{
 		Token:      &tokenStr,
 		Identifier: identifier,
 		ExpiresAt:  time.Now().Add(15 * time.Minute),
@@ -197,12 +203,12 @@ func (s *Service) VerifyMagicLink(
 	user, err := s.userRepo.GetUserByEmail(ctx, claims.Identifier)
 	if err != nil {
 		// Only create new user if not found, otherwise propagate the error
-		if !errors.Is(err, ErrUserNotFound) {
+		if !errors.Is(err, authschemas.ErrUserNotFound) {
 			return nil, fmt.Errorf("failed to get user: %w", err)
 		}
 
 		// Create new user if not exists
-		newUser, createErr := NewUser(
+		newUser, createErr := authschemas.NewUser(
 			claims.Identifier,
 			true,              // Magic link verifies email
 			nil,               // No image initially
@@ -306,7 +312,7 @@ func (s *Service) RefreshToken(
 func (s *Service) GetSessionByToken(
 	ctx context.Context,
 	accessToken string,
-) (*Session, error) {
+) (*authschemas.Session, error) {
 	// Validate the access token
 	claims, err := s.tokenManager.ValidateAccessToken(accessToken)
 	if err != nil {
@@ -331,8 +337,8 @@ func (s *Service) ValidateAccessToken(token string) (*TokenClaims, error) {
 
 func (s *Service) findOrCreateUser(
 	ctx context.Context,
-	userInfo *oauth.UserInfo,
-) (*User, error) {
+	userInfo *UserInfo,
+) (*authschemas.User, error) {
 	// Try to find existing muser by email
 	user, err := s.userRepo.GetUserByEmail(ctx, userInfo.Email)
 	if err == nil {
@@ -340,7 +346,7 @@ func (s *Service) findOrCreateUser(
 	}
 
 	// Create new user
-	user = &User{
+	user = &authschemas.User{
 		ID:            uuid.New(),
 		Email:         userInfo.Email,
 		EmailVerified: userInfo.EmailVerified,
@@ -357,7 +363,7 @@ func (s *Service) createSession(
 	ctx context.Context,
 	userID uuid.UUID,
 	metadata map[string]any,
-) (*Session, error) {
+) (*authschemas.Session, error) {
 	// Extract auth method and provider from metadata
 	authMethod := "local"
 	authProvider := "local"
@@ -377,9 +383,9 @@ func (s *Service) createSession(
 	userAgent := "unknown"
 
 	// Convert authProvider string to SessionAuthProvider enum
-	provider := SessionAuthProvider(authProvider)
+	provider := authschemas.SessionAuthProvider(authProvider)
 
-	session := &Session{
+	session := &authschemas.Session{
 		ID:           uuid.New(),
 		UserID:       userID,
 		Token:        token,
@@ -401,8 +407,8 @@ func (s *Service) createSession(
 }
 
 func (s *Service) generateTokens(
-	user *User,
-	session *Session,
+	user *authschemas.User,
+	session *authschemas.Session,
 ) (*Tokens, error) {
 	// Generate access token (short-lived)
 	accessToken, err := s.tokenManager.CreateAccessToken(user.ID, session.ID)
@@ -443,7 +449,7 @@ func (s *Service) Register(
 	}
 
 	// Create the user
-	user, err := NewUser(email, false, nil, name)
+	user, err := authschemas.NewUser(email, false, nil, name)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create user entity: %w", err)
 	}
@@ -455,10 +461,10 @@ func (s *Service) Register(
 	}
 
 	// Create a local account to store the password
-	account := &Account{
+	account := &authschemas.Account{
 		ID:                uuid.New(),
 		UserID:            createdUser.ID,
-		Provider:          AccountProviderLocal,
+		Provider:          authschemas.AccountProviderLocal,
 		AccountIdentifier: email,           // Use email as account ID for local auth
 		AccessToken:       &hashedPassword, // Store password hash in AccessToken temporarily
 		CreatedAt:         time.Now(),
@@ -733,7 +739,7 @@ func (s *Service) LinkAccount(
 	sessionID uuid.UUID,
 	provider string,
 	_ *string,
-) (*Account, error) {
+) (*authschemas.Account, error) {
 	// Get session to find user
 	session, err := s.sessionRepo.Get(ctx, sessionID)
 	if err != nil {
@@ -755,7 +761,7 @@ func (s *Service) LinkAccount(
 func (s *Service) DeleteAccount(
 	ctx context.Context,
 	sessionID uuid.UUID,
-) (*Account, error) {
+) (*authschemas.Account, error) {
 	// Get session to find user
 	session, err := s.sessionRepo.Get(ctx, sessionID)
 	if err != nil {
@@ -782,7 +788,7 @@ func (s *Service) DeleteAccount(
 
 	// Return a placeholder account for now
 	// TODO: Return actual account once we can retrieve it before deletion
-	account := &Account{
+	account := &authschemas.Account{
 		ID:     uuid.New(),
 		UserID: session.UserID,
 	}
@@ -795,7 +801,7 @@ func (s *Service) UpdateAccount(
 	ctx context.Context,
 	sessionID uuid.UUID,
 	updates map[string]any,
-) (*User, error) {
+) (*authschemas.User, error) {
 	// Get session to find user
 	session, err := s.sessionRepo.Get(ctx, sessionID)
 	if err != nil {

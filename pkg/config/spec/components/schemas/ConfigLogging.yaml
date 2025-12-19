@@ -1,0 +1,28 @@
+description: Logging configuration
+x-internal: config
+type: object
+title: ConfigLogging
+properties:
+  level:
+    description: Minimum log level to output
+    type: string
+    enum:
+      - fatal
+      - error
+      - warn
+      - info
+      - debug
+      - trace
+      - silent
+    default: info
+    example: fatal
+  pretty:
+    description: Enable pretty-printed logs for development
+    type: boolean
+    default: false
+    example: true
+required:
+  - level
+  - pretty
+additionalProperties: false
+x-codegen-schema-type: valueobject
